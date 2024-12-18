@@ -1,0 +1,10 @@
+<div class="w-100 flex row shadow" [ngStyle]="{ 'height': height }">
+    <ng-container *ngIf="withLogo">
+        <div class="logo">
+            <img class="logo" src="assets/images/ng-app-logo.png" alt="applogo"/>
+        </div>
+        <mat-divider vertical="true"></mat-divider>
+    </ng-container>
+    <app-tabs-nav-bar #navTabs class="tabs-menu" [tabs]="config" [height]="height" [type]="'list'" (onTabClicked)="onTabClick($event)"></app-tabs-nav-bar>
+</div>
+

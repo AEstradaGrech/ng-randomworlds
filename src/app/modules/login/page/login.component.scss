@@ -1,0 +1,32 @@
+.box-login{
+    height: 360px;
+    width: 620px;
+    background-color: #00000063;
+    border-radius: 6px;
+    position: relative;
+    box-shadow: rgba(60,64,67,0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 6px 2px;
+}
+
+.bg-img{
+    border-bottom-left-radius: 6px;
+    border-top-left-radius: 6px;
+    background: url('/assets/images/MetaMask-Logo.png');
+    background-position: center;
+    background-size: cover;
+}
+
+.metamask-btn{
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    background: url('/assets/images/MetaMask-Logo.png') ;
+    background-position: center;
+    background-size: cover;
+    border-block-width: 1px;
+    border-block-color: #64cb03;
+    border-radius: 13px;
+    margin: 40px 0px 15px 0px
+}
+.metamask-btn:hover {
+    background-color: #c3ff89; /* Change this value as needed */
+  }

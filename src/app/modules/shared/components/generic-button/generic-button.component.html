@@ -1,0 +1,36 @@
+<ng-container [ngSwitch]="type">
+    <button *ngSwitchCase="'stroked'"
+        class="w-100"
+        mat-stroked-button
+        [color]="color"
+        [disabled]="disabled || loading"
+        (click)="onBtnClick()"
+    >
+    <div class="relative w-100 h-100 flex jc-center ai-center">
+        <div class="w-100 h-100 flex jc-center ai-center padding-6 absolute">
+            <mat-spinner color="color" *ngIf="loading" diameter="24"></mat-spinner>
+        </div>
+        <span>{{text}}</span>
+        <input hidden (change)="onFileSelect($event)" #fileInput type="file" id="file"/>
+    </div>
+    </button>
+    <button *ngSwitchCase="'fileInput'"
+        class="w-100"
+        mat-stroked-button
+        [color]="color"
+        [disabled]="disabled || loading"
+        (click)="onBtnClick()"
+    >
+    <div class="relative w-100 h-100 flex jc-center ai-center">
+        <div class="w-100 h-100 flex jc-center ai-center padding-6 absolute">
+            <mat-spinner color="color" *ngIf="loading" diameter="24"></mat-spinner>
+        </div>
+        <span>{{text}}</span>
+    </div>
+    </button>
+    <button *ngSwitchDefault class="w-100" mat-raised-button [color]="color" [disabled]="disabled" (click)="onBtnClick()">
+        <div class="relative w-100 h-100 flex jc-center ai-center">
+            <span>{{text}}</span>
+        </div>
+    </button>
+</ng-container>

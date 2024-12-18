@@ -1,0 +1,13 @@
+<div style="margin: 1px 1px 1px 1px; background-color: #2b0c29; border-radius: 7px;">
+    <h3 class="jc-center" style="display: flex; color: antiquewhite; margin-top: 3px;" mat-dialog-title>Search Session</h3>
+    <mat-dialog-content class="jc-center" style="display: flex; color: antiquewhite;">Search previous sessions containing the specified tag</mat-dialog-content>
+    <div class="jc-center" style="display: block;padding: 0px 180px 0px 180px; margin: 0px 10px 0px 10px;">
+        <app-search-input [config]="searchConfig" (onValueSelected)="onSessionSelected($event)"></app-search-input>
+    </div>
+    
+    <textarea #summarybox [disabled]="true" rows="30" cols="100" class="text-area" [scrollTop]="summarybox.scrollHeight" placeholder="Current chat summary..."></textarea>
+    <mat-dialog-actions align="center">
+    <button  mat-button mat-dialog-close>Cancel</button>
+    <button class="modal-btn" mat-button [mat-dialog-close]="getSelectedSession()" >Select</button>
+    </mat-dialog-actions>    
+</div>

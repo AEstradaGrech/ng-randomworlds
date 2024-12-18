@@ -1,0 +1,36 @@
+<div *ngIf="type === 'buttons'" class="container w-100 flex row" [ngStyle]="{ height: height }">
+    <ng-container *ngFor="let tab of tabs">
+        <div class="tab-cell flex">
+            <button class="w-100 h-100 cell-btn"
+                [ngClass]="{'active-cell': tab.isActive, 'disabled': tab.disabled}"
+                [disabled]="tab.disabled"
+                click="onTabClick($event)">
+                <div class="btn-content flex">
+                    {{tab.name}}
+                    <mat-icon *ngIf="!tab.matIcon && tab.withSelectIcon">chevron_right</mat-icon>
+                    <mat-icon class="menu-icon" *ngIf="tab.matIcon">{{tab.matIcon}}</mat-icon>
+                </div>
+            </button>
+        </div>
+    </ng-container>
+</div>
+
+<mat-nav-list *ngIf="type === 'list'" class="mat-list">
+    <div class="container w-100 h-inherit flex row">
+        <ng-container *ngFor="let tab of tabs">
+            <a mat-list-item
+                class="cell-btn h-inherit list-link"
+               (click)="onTabClick(tab)"
+               [routerLink]="tab.link"
+               [ngClass]="{ 'open': tab.isActive,'active-cell': tab.isActive, 'disabled': tab.disabled }">
+                <div class="w-100 flex jc-between list-item-content" >
+                    {{tab.name}}
+                    <mat-icon *ngIf="tab.matIcon" class="menu-icon">{{tab.matIcon}}</mat-icon>
+                    <mat-icon *ngIf="tab.withSelectIcon" [@rotateArrow]="tab.isActive ? 'open' : 'close'">chevron_right</mat-icon>
+                </div>
+            </a>
+            <mat-divider vertical="true"></mat-divider>
+        </ng-container>
+    </div>
+</mat-nav-list>
+

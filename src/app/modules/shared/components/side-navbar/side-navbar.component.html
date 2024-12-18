@@ -1,0 +1,6 @@
+<div class="h-100 flex column" [ngStyle]="{ 'width': width }">
+    <div *ngIf="withLogo" class="logo">
+        <app-logo></app-logo>
+    </div>
+    <app-tree-menu class="tree-menu" [items]="config"></app-tree-menu>
+</div>

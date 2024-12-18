@@ -1,0 +1,47 @@
+.item-container{
+    transition: 0.3s;
+    color: #ffffff;
+    box-shadow: rgb(20 20 20 / 30%) 0px 1px 0px 0px inset, rgb(0 0 0 / 15%) 6px 3px 50px 1px inset;
+}
+.item-container:hover {
+    font-weight: 500;
+    background-color: #a12f9a;
+}
+.item-container:active{
+    background-color: #ca13c1;
+}
+.item-lvl1{
+    margin-left: 6px !important;
+}
+.item-lvl2{
+    padding-left: 36px !important;
+    font-size: 0.9rem;
+    //color
+}
+.item-lvl3{
+    padding-left: 54px !important;
+    font-size: 0.8rem;
+    //color
+}
+.menu-icon{
+    margin-left:6px;
+    margin-top:7px;
+    font-size: 1rem;
+}
+.bg-child{
+    background-color: rgb(210, 103, 214);
+}
+
+.open{
+    background-color: #4c1a49;
+    color: #ffffff !important
+}
+
+.selected{
+    background-color: rgba(205, 10, 251, 0.53) !important;
+    color: #fff
+}
+
+.item-text{
+    color: #e7e5e5;
+}

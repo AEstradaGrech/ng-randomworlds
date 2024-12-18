@@ -1,0 +1,83 @@
+
+<div class="card-container">  
+    <div class="chat-container shadow">
+        <mat-accordion multi >
+            <mat-expansion-panel (opened)="onExpanded()" (closed)="onCollapsed()" [expanded]="showSettings">
+              <mat-expansion-panel-header>
+                <mat-panel-description *ngIf="currentSession === null">
+                   {{selectedModel}}                  
+                </mat-panel-description>
+                <mat-panel-description *ngIf="currentSession !== null">
+                  {{selectedModel}} :: {{currentSession.tag}} :: Summarization message: {{sysMessageTag}}                
+               </mat-panel-description>
+               <!-- <button class="end-session-btn" (click)="onSaveIconClick()" [disabled]="isSummarizing || !currentSummary">-->
+                <button class="end-session-btn" (click)="onSaveIconClick()"> 
+                  <mat-icon *ngIf="!isSummarizing"
+                  aria-hidden="false" 
+                  aria-label="Example save icon" 
+                  fontIcon="save"
+                  [ngClass]="{'red' : !isSummarizing} "
+                  ></mat-icon>
+                  <mat-spinner *ngIf="isSummarizing" diameter="20"></mat-spinner>            
+               </button>
+               <mat-icon class="power-icon" 
+               aria-hidden="false" 
+               aria-label="Example power icon" 
+               fontIcon="power"
+               [ngClass]="{'red' : !isSummarizing, 'green' : isSummarizing} "
+               ></mat-icon>
+              </mat-expansion-panel-header>
+              <form [formGroup]="form">
+                <mat-form-field class="form-field">
+                  <mat-label>Temperature</mat-label>
+                  <input matInput formControlName="temperature" type="number" value="0.5"/>
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Max Tokens</mat-label>
+                  <input matInput formControlName="maxTokens" type="number" value="600"/>
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Context Length</mat-label>
+                  <input matInput formControlName="contextLength" type="number" value="800"/>
+                </mat-form-field>
+                <mat-slide-toggle [checked]="loadSessionModalOpened" (change)="onLoadSessionToggle($event)" style="padding-left: 20px;">Select Session</mat-slide-toggle>
+              </form>
+              
+              <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-description>
+                            System Message                  
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <mat-slide-toggle class="sys-setting-field"[checked]="false" value="editSysMsgEnabled" (change)="onEditSystemMessageToggle($event)">Edit System Message</mat-slide-toggle>
+                    <mat-slide-toggle class="sys-setting-field"[checked]="loadSummaryMsgOpened" (change)="onLoadSysMsgToggle($event)" [disabled]="editSysMsgEnabled">Load System message</mat-slide-toggle>
+                    <mat-slide-toggle *ngIf="originalSysMsg !== currentSysMsg" class="sys-setting-field"[checked]="saveSummaryMsgModalOpened" (change)="onSaveCurrentSysMsgToggle($event)" [disabled]="editSysMsgEnabled">Save System message</mat-slide-toggle>
+                    <button class="sys-setting-field" style="float: right;" mat-raised-button [disabled]="!editSysMsgEnabled" (click)="onUpdateSysMsg()">Update</button> 
+                    <mat-checkbox *ngIf="originalSysMsg !== currentSysMsg" [disabled]="editSysMsgEnabled" class="sys-setting-field" style="float: right;" (change)="onShowOriginalSysMsg($event)">Show Original</mat-checkbox>
+                </mat-expansion-panel>
+            </mat-expansion-panel>
+            <div class="w-100 h-100 shadow">
+                <app-header-navbar #navTabs class="shadow" [config]="headBarConfig" [height]="'85px'" [withLogo]="false" (onTabClicked)="onMenuTabClick($event)"></app-header-navbar>
+                <mat-divider vertical="false"></mat-divider>
+            </div>
+        </mat-accordion>
+        <div *ngIf="currentTab === 'Summarization message'">
+          <textarea #sysmsgbox [disabled]="!editSysMsgEnabled" rows="33" cols="130" class="text-area" placeholder="Enable the toggle in the settings tab to edit and press the UPDATE button...changes will be lost on toggle-off">{{currentSysMsg}}</textarea>
+          <form (submit)="$event.preventDefault()" style="display: flex; justify-content: center;">
+            <button mat-raised-button class="submit-btn" [ngClass]="{'prompt-btn-disabled': isSummarizing}" (click)="onSummarize()"[disabled]="isSummarizing">
+              <div class="w-100 h-100 flex jc-center ai-center padding-6 absolute">
+                <mat-spinner *ngIf="isSummarizing" diameter="32"></mat-spinner>
+              </div>
+              <span>Summarize</span>
+            </button>
+          </form>
+        </div>
+        <div *ngIf="currentTab === 'Summary'">
+          <textarea #summarybox readonly rows="33" cols="130" class="text-area" placeholder="...">{{currentSummaryText}}</textarea>
+        </div>
+        <div *ngIf="currentTab === 'Prompt'">
+          <textarea #promptbox readonly rows="33" cols="130" class="text-area" placeholder="Final prompt passed to the LLM">{{summaryPromptText}}</textarea>
+        </div>
+</div>
+
+

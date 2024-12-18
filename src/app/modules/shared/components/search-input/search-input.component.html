@@ -1,0 +1,15 @@
+<mat-form-field class="input-field">
+    <mat-label *ngIf="config.formLabel !== ''">{{config.formLabel}}</mat-label>
+    <input #input
+           [disabled]="disabled"
+           type="text"
+           placeholder="Type to search"
+           matInput
+           [matAutocomplete]="auto"
+           (input)="filter()"
+           >
+    <mat-autocomplete (optionSelected)="onSelected($event)" #auto="matAutocomplete">
+      @for (option of filteredOptions; track option) {
+        <mat-option [id]="option.id" [value]="option[this.config.key]">{{option[this.config.key]}}</mat-option>
+      }
+    </mat-autocomplete>

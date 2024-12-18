@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>Initialize Chat Session</h2>
+<mat-dialog-content class="mat-typography">
+  <h3>You are about to begin a new chat session</h3>
+  <p>Please, chose a User name for you to be addressed by the LLM and tag the session 
+     with something meaningful, like the name of the bot and yours</p>
+  <br>
+       <div class="form-inputs">
+        <div class="input-group">
+          <mat-label style="margin-left: 10px;">Username</mat-label>
+          <input class="form-input" matInput type="text" placeholder="..." [(ngModel)]="username"/> 
+        </div>
+       
+        <div class="input-group">
+          <mat-label style="margin-left: 10px;">Tag</mat-label>
+          <input class="form-input" matInput type="text" placeholder="..." [(ngModel)]="tag"/>
+        </div>
+        
+       </div> 
+      <!-- <div class="form-input">
+        <mat-label>Tag</mat-label>
+        <input matInput type="text" placeholder="Tag..." [(ngModel)]="tag"/>
+      </div> -->
+
+  <br>
+  <h1>System message:</h1>
+  <h2>Below is the system instruction that will be passed to the LLM at the beginning of 
+    the conversation, be sure it is OK since it cannot be changed later. If you choose
+    leave it empty, the chatbot will be initialized with a generic 'helpful assistant' role
+  </h2>
+    <br>
+  {{data.systemMessage}} 
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="cancel()">Cancel</button>
+  <button mat-button [mat-dialog-close]="getFormValues()" >Init</button>
+</mat-dialog-actions>

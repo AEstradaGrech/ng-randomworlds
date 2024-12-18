@@ -1,0 +1,57 @@
+.tab-cell{
+    display: contents;
+    width: inherit;
+    height: inherit;
+    border: unset;
+    // box-shadow: 
+    //     rgb(30, 45, 45, 0.3) 0px 1px 1px 0px, 
+    //     rgb(60, 64, 67, 0.15) 0px 1px 0px 1px;
+    box-shadow: rgb(20 20 20 / 30%) 0px 1px 0px 0px inset, rgb(0 0 0 / 15%) 6px 3px 50px 1px inset;
+}
+
+.cell-btn{
+    font-size: large;
+   
+    color:#ffffff;
+    background: #3c3c3c;
+
+}
+
+.cell-btn:hover{
+    font-weight: 500;
+    background-color: #2e2d2e;
+}
+.cell-btn:active{
+    background-color: #481945;
+}
+.active-cell{
+    background-color: #481945;
+}
+.tab-icon{
+    padding-left: 15px;
+}
+.btn-content{
+    display: flex;
+    justify-content: center;
+    align-items: normal;
+}
+.list-item-content{
+    display: flex;
+    justify-content: center;
+    align-items: normal;
+    color: #ffffff;
+}
+.list-link{
+    box-shadow:rgb(20 20 20 / 30%) 0px 2px 0px 1px, rgb(0 0 0 / 15%) 4px 1px 1px 2px
+}
+.disabled{
+    color: #3c3c3c;
+}
+
+.mat-list{
+    height: inherit;
+    padding: unset;
+}
+.menu-icon{
+    margin-left: 20px;
+}

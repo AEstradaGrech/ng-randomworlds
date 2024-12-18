@@ -1,0 +1,98 @@
+.modal-btn{
+    color: antiquewhite !important;
+}
+
+.card-container{
+    display: block;
+    margin: 10px 75px 10px 75px;
+    
+}
+.form-inputs{
+    margin: 30px 10px 0px 10px;
+}
+
+.form-controls{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.msgs-table{
+    display: block;
+    width: 85%;
+    margin: 25px 10px 10px 45px;
+}
+
+.details-btn{
+    border: transparent;
+    background-color: transparent;
+}
+.details-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #c203f1;
+}
+
+.delete-btn{
+    border: transparent;
+    background-color: transparent;
+}
+.delete-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: rgb(97, 96, 97);
+}
+
+.reset-btn{
+    border: transparent;
+    border-radius: 100px;
+    background-color: rgb(177, 145, 3);
+    height: 20%;
+    margin-top: 40px;
+    margin-left: 20px;
+    margin-right: 10px;
+}
+
+.reset-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #c203f1;
+}
+
+.search-btn{
+    border: transparent;
+    border-radius: 100px;
+    background-color: rgb(123 35 119);
+    height: 20%;
+    margin-top: 40px;
+    margin-left: 20px;
+}
+
+.search-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #c203f1;
+}
+
+.add-btn{
+    border: transparent;
+    border-radius: 100px;
+    background-color: rgb(123 35 119);
+    height: 20%;
+    margin-top: 40px;
+    margin-left: 20px;
+}
+
+.add-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #c203f1;
+}
+
+.mat-sort-header.mat-mdc-header-cell {
+    justify-items: left !important;
+  }
+
+.mat-mdc-cell {
+    text-align: left !important;
+}

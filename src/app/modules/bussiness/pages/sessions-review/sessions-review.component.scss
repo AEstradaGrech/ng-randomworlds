@@ -1,0 +1,136 @@
+.card-container{
+    display: block;
+    margin: 10px 75px 10px 75px;
+    
+}
+.form-inputs{
+    margin: 30px 10px 0px 10px;
+}
+
+.form-controls{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.msgs-table{
+    display: block;
+    
+    width: 98%;
+    margin: 25px 10px 0px 15px;
+}
+
+.details-btn{
+    border: transparent;
+    background-color: transparent;
+}
+.details-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #c203f1;
+}
+
+.delete-btn{
+    border: transparent;
+    background-color: transparent;
+}
+.delete-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: rgb(97, 96, 97);
+}
+
+.reset-btn{
+    border: transparent;
+    border-radius: 100px;
+    background-color: rgb(177, 145, 3);
+    height: 20%;
+    margin-top: 40px;
+    margin-left: 20px;
+    margin-right: 10px;
+}
+
+.reset-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #c203f1;
+}
+
+.search-btn{
+    border: transparent;
+    border-radius: 100px;
+    background-color: rgb(123 35 119);
+    height: 20%;
+    margin-top: 40px;
+    margin-left: 20px;
+}
+
+.search-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #c203f1;
+}
+
+.add-btn{
+    border: transparent;
+    border-radius: 100px;
+    background-color: rgb(36 31 36);
+    height: 20%;
+    margin-top: 40px;
+    margin-left: 20px;
+}
+
+.add-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #c203f1;
+}
+
+.mat-sort-header.mat-mdc-header-cell {
+    justify-items: center !important;
+  }
+
+.mat-mdc-cell {
+    text-align: center !important;
+}
+
+tr.example-detail-row {
+    height: 0;
+  }
+  
+tr.example-element-row:not(.example-expanded-row):hover {
+background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+background: #efefef;
+}
+
+.example-element-row td {
+border-bottom-width: 0;
+}
+
+.example-element-detail {
+overflow: hidden;
+display: flex;
+}
+
+.summary-description{
+    margin: 10px 0px 10px 50px;
+    width: 70%;
+}
+.summary-title{
+    align-content: center;
+    font-weight: 500;
+}
+
+.mat-sort-header.mat-mdc-header-cell.mat-header-cell {
+    justify-items: center !important;
+  }
+
+.msgs-table{
+    display: block;
+    
+    width: 98%;
+    margin: 25px 10px 0px 15px;
+}
