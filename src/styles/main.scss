@@ -225,23 +225,13 @@ h2 {
 .snack-warning{
   --mdc-snackbar-container-color: #dd9c0f !important;
   --mdc-snackbar-supporting-text-color: #242424;
-  margin:0px 0px 15px 290px !important
+  margin:0px 0px 15px 0px !important;
 }
 .snack-success{
-  --mdc-snackbar-container-color: #cf059d !important;
-  --mdc-snackbar-supporting-text-color: #d8d7d7;
-  margin:0px 0px 15px 290px !important
-}
-
-.snack-warning-uncen{
-  --mdc-snackbar-container-color: #dd9c0f !important;
-  --mdc-snackbar-supporting-text-color: #242424;
-  margin:0px 0px 15px 0px !important
-}
-.snack-success-uncen{
-  --mdc-snackbar-container-color: #cf059d !important;
-  --mdc-snackbar-supporting-text-color: #d8d7d7;
-  margin:0px 0px 15px 0px !important
+  --mdc-snackbar-container-color: #4cb804  !important;
+  --mdc-snackbar-supporting-text-color: #e0e0e0;
+  --mdc-snackbar-supporting-text-font-weight:bold;
+  margin:0px 0px 15px 0px !important;
 }
 
 .error-snackbar .mat-simple-snackbar-action {

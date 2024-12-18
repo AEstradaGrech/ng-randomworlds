@@ -4,7 +4,7 @@
   "newProjectRoot": "projects",
   
   "projects": {
-    "ng-seed-app": {
+    "ng-randomworlds": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -25,7 +25,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/ng-seed-app",
+            "outputPath": "dist/ng-randomworlds",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -79,10 +79,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ng-seed-app:build:production"
+              "buildTarget": "ng-randomworlds:build:production"
             },
             "development": {
-              "buildTarget": "ng-seed-app:build:development"
+              "buildTarget": "ng-randomworlds:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -90,7 +90,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "ng-seed-app:build"
+            "buildTarget": "ng-randomworlds:build"
           }
         },
         "test": {
