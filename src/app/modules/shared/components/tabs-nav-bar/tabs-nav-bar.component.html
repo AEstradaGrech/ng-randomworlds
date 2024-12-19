@@ -22,8 +22,9 @@
                 class="cell-btn h-inherit list-link"
                (click)="onTabClick(tab)"
                [routerLink]="tab.link"
-               [ngClass]="{ 'open': tab.isActive,'active-cell': tab.isActive, 'disabled': tab.disabled }">
-                <div class="w-100 flex jc-between list-item-content" >
+               [ngClass]="{ 'open': tab.isActive,'active-cell': tab.isActive}">
+                <div class="w-100 h-100 flex jc-between list-item-content" 
+                    [ngClass]="{ 'active-cell-content': tab.isActive === true}">
                     {{tab.name}}
                     <mat-icon *ngIf="tab.matIcon" class="menu-icon">{{tab.matIcon}}</mat-icon>
                     <mat-icon *ngIf="tab.withSelectIcon" [@rotateArrow]="tab.isActive ? 'open' : 'close'">chevron_right</mat-icon>

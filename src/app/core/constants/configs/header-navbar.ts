@@ -1,11 +1,10 @@
 import { NavBarTab } from "../../../modules/shared/components/tabs-nav-bar/nav-bar-tab.model";
 
 export const demoNavBarConfig = [
-    new NavBarTab('Tab 1', 'home', false),
-    new NavBarTab('Tab 2', 'home', false),
-    new NavBarTab('Tab 3', 'home', false),
-    new NavBarTab('Tab 4', 'home', false),
-    new NavBarTab('Tab 5', 'home', false)
+    new NavBarTab('Play', 'randomworlds/home', false),
+    new NavBarTab('Chat', 'randomworlds/home', false),
+    new NavBarTab('Assets', 'randomworlds/home', false),
+    new NavBarTab('Marketplace', 'auth/login', false)
 ]
 
 export const chatSessionNavBarConfig = [

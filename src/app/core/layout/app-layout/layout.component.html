@@ -1,9 +1,10 @@
 <div class="container w-100 h-100 flex">
     <!-- <nav-bar -->
-    <app-side-bar class="shadow" [config]="sideBarConfig" [width]="'270px'" [withLogo]="true"></app-side-bar>
-    <mat-divider vertical="true"></mat-divider>
-    <div class="w-100 h-100 shadow">
-        
+    <!-- <app-side-bar class="shadow" [config]="sideBarConfig" [width]="'270px'" [withLogo]="true"></app-side-bar> -->
+    
+    
+    <div class="w-100 h-100">
+        <app-header-navbar #navbar [config]="headBarConfig" [height]="'85px'" [withLogo]="true" ></app-header-navbar>    
         <router-outlet></router-outlet>
     </div>
 </div>

@@ -6,26 +6,32 @@
     // box-shadow: 
     //     rgb(30, 45, 45, 0.3) 0px 1px 1px 0px, 
     //     rgb(60, 64, 67, 0.15) 0px 1px 0px 1px;
-    box-shadow: rgb(20 20 20 / 30%) 0px 1px 0px 0px inset, rgb(0 0 0 / 15%) 6px 3px 50px 1px inset;
+    box-shadow: rgba(20, 20, 20, 0.3) 0px 0px 0px 1px, rgba(0, 0, 0, 0.15) 1px 1px 1px 1px;
 }
 
 .cell-btn{
     font-size: large;
-   
+    align-items: center;
+    justify-content: center;
     color:#ffffff;
-    background: #3c3c3c;
-
+    background: #99c531;
+    display: block;
 }
 
 .cell-btn:hover{
     font-weight: 500;
-    background-color: #2e2d2e;
+    background-color: #ffffff;
+    color:#90cc05;
+    display: block;
 }
 .cell-btn:active{
-    background-color: #481945;
+    background-color: #ffffff;
 }
 .active-cell{
-    background-color: #481945;
+    background-color: #ffffff;
+}
+.active-cell-content{
+    color: #90cc05 !important;
 }
 .tab-icon{
     padding-left: 15px;
@@ -36,13 +42,26 @@
     align-items: normal;
 }
 .list-item-content{
-    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: normal;
     color: #ffffff;
+    align-content: center;
+}
+.list-item-content:hover{
+    color: #90cc05;
+}
+.list-item-content:active{
+    color: #90cc05;
+}
+.list-item-content:focus{
+    color: #90cc05;
 }
 .list-link{
-    box-shadow:rgb(20 20 20 / 30%) 0px 2px 0px 1px, rgb(0 0 0 / 15%) 4px 1px 1px 2px
+    box-shadow: rgba(20, 20, 20, 0.2) 0px 0px 0px 1px, rgba(0, 0, 0, 0.10) 0px 1px 0px 0px
+}
+.list-link:hover{
+    color: #90cc05;
 }
 .disabled{
     color: #3c3c3c;
