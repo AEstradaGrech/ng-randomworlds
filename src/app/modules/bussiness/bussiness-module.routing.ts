@@ -9,6 +9,7 @@ import { ChatsReviewComponent } from "./pages/chats-review/chats-review.componen
 import { SessionsReviewComponent } from "./pages/sessions-review/sessions-review.component";
 import { SummarizeSessionComponent } from "./pages/summarize-session/summarize-session.component";
 import { SummarizeTextComponent } from "./pages/summarize-text/summarize-text.component";
+import { CharacterSelectionComponent } from "./pages/character-selection/character-selection.component";
 
 const routes: Routes =[
     {
@@ -21,12 +22,12 @@ const routes: Routes =[
         component: HomeComponent
     },
     {
+        path: 'character/select',
+        component: CharacterSelectionComponent
+    }, 
+    {
         path: 'prompting/chat',
         component: ChatComponent
-    },
-    {
-        path: 'prompting/summarize/session',
-        component: SummarizeSessionComponent
     },
     {
         path: 'prompting/summarize/text',

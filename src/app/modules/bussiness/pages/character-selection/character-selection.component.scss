@@ -1,0 +1,83 @@
+
+.img-container{
+    width: 90%;
+    height: 100%;
+    margin: 15px 15px 15px 15px;
+    border-radius: 15px;
+    min-height: 87.5vh;
+    max-height: 100vh;
+    align-items: center;
+    // overflow-y: hidden;
+    // white-space: nowrap;
+    // .game-card {
+    //     display: inline-block;
+    // }
+    display: flex !important;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    .game-card {
+        flex: 0 0 auto;
+    }
+}
+.card-container{
+    display: flex !important;
+    justify-content: center;
+}
+
+.game-card {
+    max-width: 40%; //45% x 2 nfts //if NFTs = 1 [NgClass] --> justify-content:center en parent (desactivado por scrollbox)
+    margin: 0px 50px 0px 50px;
+  }
+  
+.char-card-header-image-1 {
+    background-image: url('/assets/images/Char_1.png');
+    background-size: cover;
+  }
+
+.char-card-header-image-2 {
+    background-image: url('/assets/images/Char_2.png');
+    background-size: cover;
+  }
+  .char-card-header-image-3 {
+    background-image: url('/assets/images/Char_3.png');
+    background-size: cover;
+  }
+
+  .game-card-image{
+    border-radius: 15px !important;
+    margin: 20px 7px 15px 7px;
+    height: 560px;
+    width: 60%
+  }
+.game-card-content{
+    color:#6b6b6c;
+    font-size:13px;
+}
+.begin-btn{
+    width: 20%;
+    color: #99c531 !important;
+    border-color: rgb(175 239 24) !important;
+}
+.begin-btn:hover{
+    width: 20%;
+    color: #ffffff !important;
+    border-color: rgb(245, 247, 243) !important;
+    background-color: #99c531 !important;
+}
+.game-card-actions{
+    justify-content: center;
+    align-items: center;
+}
+
+.game-card-title{
+    color:#99c531;
+}
+.game-card-subtitle{
+    font-style: oblique;
+    color: #c3c3c5;
+    font-weight: 300;
+}
+
+.card-body{
+    display: flex;
+}

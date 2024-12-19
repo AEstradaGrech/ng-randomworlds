@@ -24,6 +24,7 @@ import { SummarizedSessionReviewComponent } from './pages/summarize-session/comp
 import { LoadSummarizationMessageComponent } from './pages/summarize-session/components/load-summarization-message/load-summarization-message.component';
 import { SaveSysMessageComponent } from './pages/summarize-session/components/save-sys-message/save-sys-message.component';
 import { SaveSummaryComponent } from './pages/summarize-session/components/save-summary/save-summary.component';
+import { CharacterSelectionComponent } from './pages/character-selection/character-selection.component';
 
 
 
@@ -48,7 +49,8 @@ import { SaveSummaryComponent } from './pages/summarize-session/components/save-
         SummarizedSessionReviewComponent,
         LoadSummarizationMessageComponent,
         SaveSysMessageComponent,
-        SaveSummaryComponent
+        SaveSummaryComponent,
+        CharacterSelectionComponent
     ],
     imports:[
         CommonModule,
