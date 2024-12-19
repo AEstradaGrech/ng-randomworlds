@@ -17,6 +17,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort'
 import {MatChipsModule} from '@angular/material/chips';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
 declarations:[],
@@ -54,7 +55,8 @@ exports:[
     MatSelectModule,
     MatTableModule,
     MatSortModule,
-    MatChipsModule
+    MatChipsModule,
+    MatCardModule
 ],
 providers:[]
 })

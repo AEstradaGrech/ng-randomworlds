@@ -1,6 +1,59 @@
 <div class="card-container">
     <div class="img-container shadow">
-        <img class="home-img" [src]="imageSource" alt="Image Source">
+        <mat-card class="game-card" appearance="outlined">
+            <mat-card-header>
+              <div mat-card-avatar class="game-card-header-image-l"></div>
+              <mat-card-title class="game-card-title">Quest Mode</mat-card-title>
+              <mat-card-subtitle class="game-card-subtitle">Choose your own adventure style quest</mat-card-subtitle>
+            </mat-card-header>
+            <img mat-card-image class="game-card-image" src="/assets/images/City_1.png" alt="Photo of a Shiba Inu">
+            <mat-card-content class="game-card-content">
+              <p>
+                In Quest Mode you can play an adventure in a random world with your selected character. The genre of the story
+                and the generated lore depends on your selected character and your the settings you choose at the beginning
+                of the adventure.
+              </p>
+              <p>
+                In this mode all the adventures begin in a tavern of the generated world, where you will be able to start different
+                quests with the guidance of the AI Game Master.
+                <br>
+                The game follows a 'Choose your own adventure' style in which the Game Master will present you an scenario with 
+                up to four possible actions to choose from, and progress in your
+                story in order to complete your Quest and save your progression or die trying!  
+              </p>
+            </mat-card-content>
+            <mat-card-actions class="game-card-actions">
+              <button mat-stroked-button class="begin-btn">BEGIN</button>
+            </mat-card-actions>
+          </mat-card>
+          <mat-card class="game-card" appearance="outlined">
+            <mat-card-header>
+              <div mat-card-avatar class="game-card-header-image-r"></div>
+              <mat-card-title class="game-card-title">Adventure Mode</mat-card-title>
+              <mat-card-subtitle class="game-card-subtitle">Open world RPG</mat-card-subtitle>
+            </mat-card-header>
+            <img mat-card-image class="game-card-image" src="/assets/images/City_2.png" alt="Photo of a Shiba Inu">
+            <mat-card-content class="game-card-content">
+                <p>
+                    Join and explore a random world that has been generated according to your preferences and the style of
+                    your selected character and play endless adventures with the help of the AI Game Master
+                </p>
+                <p>
+                    In this mode you start at a random place of your generated world and you have to prompt
+                    your desired actions in order to view, explore and interact with the environment and the
+                    other game characters. 
+                    <br>
+                    <br>
+                    Discover an infinite random world with endless random adventures to play with your 
+                    preferred characters and aqcuire different skills and items in your journeys to 
+                    upgrade your character and unlock different game possibilities   
+                </p>
+            </mat-card-content>
+            <mat-card-actions class="game-card-actions">
+              
+              <button mat-stroked-button class="begin-btn">BEGIN</button>
+            </mat-card-actions>
+          </mat-card>
     </div>
 </div>
 

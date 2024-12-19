@@ -27,7 +27,6 @@ export class HeaderNavbarComponent implements OnInit {
     if(selected.link && selected.link !== "")
       this.router.navigateByUrl(selected.link);
     this.onTabClicked.emit(selected)
-    
   }
 
   public getTabsComponent(): TabsNavBarComponent{
