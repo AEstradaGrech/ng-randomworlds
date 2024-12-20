@@ -7,21 +7,43 @@
               <mat-card-title class="game-card-title">World Generator </mat-card-title>
               <mat-card-subtitle class="game-card-subtitle">Generate a universe for your {{gameType}}</mat-card-subtitle>
             </mat-card-header>
-            <img mat-card-image class="game-card-image" src="/assets/images/City_1.png" alt="Photo of a Shiba Inu">
+            <mat-accordion multi="false">
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Bayaz, el Primero de los Magos
+                    </mat-panel-title>
+                    <mat-panel-description style="justify-content: center;">
+                      Story setup
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                    <form [formGroup]="form">
+                        <mat-form-field class="form-control">
+                            <mat-label>Ambience</mat-label>
+                            <input matInput type="text" readonly formControlName="ambience"/>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Genres</mat-label>
+                            <input matInput type="text" [disabled]="true" formControlName="genres"/>
+                        </mat-form-field>
+                    </form>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header style="height: 35px;">
+                          <mat-panel-description style="justify-content: center;">
+                            Plot suggestion
+                          </mat-panel-description>
+                        </mat-expansion-panel-header>       
+                            <mat-form-field class="form-control" style="width: 100%;">
+                                <mat-label>Plot</mat-label>
+                                <input matInput type="text" formControlName="plot" max="20"/>
+                            </mat-form-field>
+                      </mat-expansion-panel>
+                </mat-expansion-panel>
+              </mat-accordion>  
             <mat-card-content class="game-card-content">
-              <p>
-                In Quest Mode you can play an adventure in a random world with your selected character. The genre of the story
-                and the generated lore depends on your selected character and your the settings you choose at the beginning
-                of the adventure.
-              </p>
-              <p>
-                In this mode all the adventures begin in a tavern of the generated world, where you will be able to start different
-                quests with the guidance of the AI Game Master.
-                <br>
-                The game follows a 'Choose your own adventure' style in which the Game Master will present you an scenario with 
-                up to four possible actions to choose from, and progress in your
-                story in order to complete your Quest and save your progression or die trying!  
-              </p>
+                <div class="text-container">
+                    <textarea class="text-area"></textarea>
+                </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">
               <button mat-stroked-button class="begin-btn" (click)="onGenerateClick()">GENERATE</button>

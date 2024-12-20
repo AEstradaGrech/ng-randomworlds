@@ -24,7 +24,8 @@
 }
 
 .game-card {
-    max-width: 45%;
+    width: 50%;
+    max-width: 50%;
     margin: 0px 50px 0px 50px;
   }
   
@@ -65,4 +66,27 @@
     font-style: oblique;
     color: #c3c3c5;
     font-weight: 300;
+}
+
+.text-container{
+    background-image: url('/assets/images/City_1.png');
+    background-size: cover;
+    height: 45vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.text-area{
+    background-color: #101010a6;
+    min-width: 41vw;
+    max-width: 41vw;
+    min-height: 41vh;
+    max-height: 41vh;
+}
+
+.form-control{
+    margin:0px 10px 0px 10px
+}
+.mat-expansion-panel-body{
+    padding: 0px 24px 10px;
 }
