@@ -2,9 +2,11 @@
     <div class="img-container shadow">
         <div class="background-img"></div>
         <div class="expandable-l " >
-            <div class="btn-slot-r">
-                <button mat-stroked-button class="btn-r" (click)="onOpenBtnClick('left')">
+            <div class="btn-slot">
+                <button mat-stroked-button class="expand-btn" (click)="onOpenBtnClick('left')">
                     <mat-icon 
+                        [ngClass]="{'left-btn-icon': panelStateL === 'hidden'}"
+                        style="color: #ffffff; size: 10px;"
                         aria-hidden="false" 
                         aria-label="Example power icon" 
                         fontIcon="keyboard_arrow_right"
@@ -45,11 +47,16 @@
         <mat-divider vertical="true"></mat-divider>
         <div class="expandable-r">
             <div class="actions-display" [@panelStateR]="panelStateR">
-                <p> <br>Blah awdfgasdgag aga gadga dgfha dfga ga</p>
+                <p>[...Main Screen]</p>
+                <p> [... World Lore inspector with actions (General, Locations Characters and Whatever)]</p>
+                <p> [... Default actions? (Home, Inventory, X...)</p>
+                <p> A medid a que se van seleccionando se van pintando en la textarea los datos</p>
             </div>
-            <div class="btn-slot-r">
-                <button mat-stroked-button class="btn-r" (click)="onOpenBtnClick('right')">
+            <div class="btn-slot">
+                <button mat-stroked-button class="expand-btn" (click)="onOpenBtnClick('right')">
                     <mat-icon 
+                        [ngClass]="{'right-btn-icon-open': panelStateR === 'visible'}"
+                        style="color: #ffffff; size: 10px;"
                         aria-hidden="false" 
                         aria-label="Example power icon" 
                         fontIcon="keyboard_arrow_right"
