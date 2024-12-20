@@ -56,10 +56,7 @@
         <mat-divider vertical="true"></mat-divider>
         <div class="expandable-r">
             <div class="actions-display" [@panelStateR]="panelStateR">
-                <p>[...Main Screen]</p>
-                <p> [... World Lore inspector with actions (General, Locations Characters and Whatever)]</p>
-                <p> [... Default actions? (Home, Inventory, X...)</p>
-                <p> A medid a que se van seleccionando se van pintando en la textarea los datos</p>
+                <app-side-bar [width]="'100%'" [config]="actionsBarConfig"></app-side-bar>
             </div>
             <div class="btn-slot">
                 <button mat-stroked-button class="expand-btn" (click)="onOpenBtnClick('right')">

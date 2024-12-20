@@ -8,7 +8,7 @@
            @fade>
             <mat-icon *ngIf="item.matIcon" class="menu-icon">{{item.matIcon}}</mat-icon>
             <div class="w-100 flex jc-between item-text" 
-                 [ngClass]="{ 'item-lvl1': item.level === 1, 'item-lvl2': item.level === 2, 'item-lvl3': item.level === 3}">
+                 [ngClass]="{ 'item-lvl1': item.level === 1, 'item-lvl2': item.level === 2, 'item-lvl3': item.level === 3, 'selected-text': selectedItem && item == selectedItem || item.isOpen}">
                 {{item.name}}
                 <mat-icon *ngIf="item.expandable" [@rotateArrow]="item.isOpen ? 'open' : 'close'">chevron_right</mat-icon>
             </div>

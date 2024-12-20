@@ -1,5 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
+import { questViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
+import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-menu-item.model';
 
 @Component({
   selector: 'app-quest-view',
@@ -22,6 +24,7 @@ import { Component } from '@angular/core';
 })
 export class QuestViewComponent {
 
+  actionsBarConfig:Array<TreeMenuItem> = questViewSidebarConfig;
   panelStateR = 'hidden';
   panelStateL = 'hidden';
 

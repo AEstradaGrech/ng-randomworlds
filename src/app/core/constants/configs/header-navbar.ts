@@ -1,6 +1,6 @@
 import { NavBarTab } from "../../../modules/shared/components/tabs-nav-bar/nav-bar-tab.model";
 
-export const demoNavBarConfig = [
+export const mainNavBarConfig = [
     new NavBarTab('Play', 'randomworlds/home', false),
     new NavBarTab('Chat', 'randomworlds/home', false),
     new NavBarTab('Assets', 'randomworlds/home', false),
