@@ -25,7 +25,7 @@
 
 .game-card {
     max-width: 45%;
-    margin: 0px 50px 0px 50px;
+    
   }
   
 .game-card-header-image{
@@ -65,4 +65,97 @@
     font-style: oblique;
     color: #c3c3c5;
     font-weight: 300;
+}
+
+.btn-slot-r{
+    width: 5%;
+    height: 100%;
+    color: #ffffff;
+}
+.btn-r{
+    background-color: #c3ff36;
+    height: 100%;
+    width: 100%;
+    padding: 0px 0px 0px 0px !important;
+    min-width: 0px !important;
+    color: #ffffff;
+}
+.expandable-r{
+    //width: 20%;
+    width: 21%;
+    height: 69vh;
+    display: flex;
+}
+
+/* Accordion with 3 panels, stretching from top to bottom */
+.accordion-r {
+    display: block;
+    transform-origin: top left;
+    transform: rotate(-90deg) translate(-80vh, 0vh); /* rotate and position it; translateX value corresponds to panel height */
+    width: 80vh; /* this will be the height of the accordion (inversed due to rotation) */
+    height: 20%;
+  }
+  
+.expansion-panel-r {
+    max-height: 20vw; /* this will be the width of the panel (inversed due to rotation), 3 is panel amount */
+}
+  
+.panel-content-r {
+    background-color: rgb(192, 255, 156);
+    transform-origin: top left;
+    transform: rotate(90deg); /* rotate back */
+    margin-left: 100%; /* position it */
+    height: 25vw; /* real height of the content */
+    width: calc(20vw - 80px); /* real width of the content, 3 is panel amount */
+}
+
+.expandable-l{
+    width: 21%;
+    height: 69vh;
+    display: flex;
+    justify-content: end;
+    //width: 20%;
+    // transform: translateY(159px);
+}
+
+/* Accordion with 3 panels, stretching from top to bottom */
+.accordion-l {
+    display: block;
+    transform-origin: bottom left;
+    transform: rotate(90deg) translate(-10vh, -276px); /* rotate and position it; translateX value corresponds to panel height */
+    width: 80vh; /* this will be the height of the accordion (inversed due to rotation) */
+    height: 20%;
+  }
+  
+.expansion-panel-l {
+    max-height: 20vw; /* this will be the width of the panel (inversed due to rotation), 3 is panel amount */
+}
+  
+.panel-content-l {
+    background-color: rgb(192, 255, 156);
+    transform-origin: bottom left;
+    transform: rotate(-90deg); /* rotate back */
+    margin-left: 100%; /* position it */
+    height: 25vw; /* real height of the content */
+    width: calc(20vw - 80px); /* real width of the content, 3 is panel amount */
+}
+
+.main-widget{
+    display: flex;
+    justify-content: center;
+}
+
+.char-display{
+    background-image: url('/assets/images/Char_1.png');
+    background-size: cover;
+    border-radius: 7px;
+    width: 100%;
+    height: 100%;
+}
+.actions-display{
+    background-color: #ffffff; 
+    color: black; 
+    border-radius: 7px;
+    width: 95%;
+    height: 100%;
 }
