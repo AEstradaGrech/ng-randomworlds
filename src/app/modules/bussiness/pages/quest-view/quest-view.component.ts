@@ -24,6 +24,14 @@ export class QuestViewComponent {
 
   panelStateR = 'hidden';
   panelStateL = 'hidden';
+
+  choicesMock = [
+    "In Quest Mode you can play an adventure in a random world with your selected character. The genre of the story and the generated lore depends on your selected character and your the settings you choose at the beginning of the adventure",
+    "In this mode all the adventures begin in a tavern of the generated world, where you will be able to start different quests with the guidance of the AI Game Master",
+    "The game follows a 'Choose your own adventure' style in which the Game Master will present you an scenario with up to four possible actions to choose from, and progress in your story in order to complete your Quest and save your progression or die trying!",
+    "And this is a shorter option to see how does it fit"
+  ]
+  selectedChoice!:string | null;
   public onSubmit(){
     console.log('-- on submit --')
   }

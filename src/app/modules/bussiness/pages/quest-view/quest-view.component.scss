@@ -18,6 +18,21 @@
     background-image: url('/assets/images/City_2.png');
     background-size: cover;
 }
+.text-container{
+    background-image: url('/assets/images/City_1.png');
+    background-size: cover;
+    height: 45vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.text-area{
+    background-color: #101010a6;
+    min-width: 37vw;
+    max-width: 37vw;
+    min-height: 40vh;
+    max-height: 40vh;
+}
 .card-container{
     display: flex !important;
     justify-content: center;
@@ -88,28 +103,6 @@
     display: flex;
 }
 
-/* Accordion with 3 panels, stretching from top to bottom */
-.accordion-r {
-    display: block;
-    transform-origin: top left;
-    transform: rotate(-90deg) translate(-80vh, 0vh); /* rotate and position it; translateX value corresponds to panel height */
-    width: 80vh; /* this will be the height of the accordion (inversed due to rotation) */
-    height: 20%;
-  }
-  
-.expansion-panel-r {
-    max-height: 20vw; /* this will be the width of the panel (inversed due to rotation), 3 is panel amount */
-}
-  
-.panel-content-r {
-    background-color: rgb(192, 255, 156);
-    transform-origin: top left;
-    transform: rotate(90deg); /* rotate back */
-    margin-left: 100%; /* position it */
-    height: 25vw; /* real height of the content */
-    width: calc(20vw - 80px); /* real width of the content, 3 is panel amount */
-}
-
 .left-btn-icon{
     color: #ffffff;
     size: 10px;
@@ -129,33 +122,6 @@
     // transform: translateY(159px);
 }
 
-/* Accordion with 3 panels, stretching from top to bottom */
-.accordion-l {
-    display: block;
-    transform-origin: bottom left;
-    transform: rotate(90deg) translate(-10vh, -276px); /* rotate and position it; translateX value corresponds to panel height */
-    width: 80vh; /* this will be the height of the accordion (inversed due to rotation) */
-    height: 20%;
-  }
-  
-.expansion-panel-l {
-    max-height: 20vw; /* this will be the width of the panel (inversed due to rotation), 3 is panel amount */
-}
-  
-.panel-content-l {
-    background-color: rgb(192, 255, 156);
-    transform-origin: bottom left;
-    transform: rotate(-90deg); /* rotate back */
-    margin-left: 100%; /* position it */
-    height: 25vw; /* real height of the content */
-    width: calc(20vw - 80px); /* real width of the content, 3 is panel amount */
-}
-
-.main-widget{
-    display: flex;
-    justify-content: center;
-}
-
 .char-display{
     background-image: url('/assets/images/Char_1.png');
     background-size: cover;
@@ -169,4 +135,25 @@
     border-radius: 7px;
     width: 95%;
     height: 100%;
+}
+
+  
+.mat-mdc-row .mat-mdc-cell {
+border-bottom: 1px solid transparent;
+border-top: 1px solid transparent;
+font-size: 13px;
+cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+border-color: currentColor;
+}
+
+.demo-row-is-clicked {
+font-weight: bold;
+}
+
+.choices-table{
+    overflow-y: scroll;
+    max-height: 20vh;
 }

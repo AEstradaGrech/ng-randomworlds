@@ -24,21 +24,30 @@
               <mat-card-title class="game-card-title">Random Quest </mat-card-title>
               <mat-card-subtitle class="game-card-subtitle">Progress in your story with the right choice</mat-card-subtitle>
             </mat-card-header>
-            <img mat-card-image class="game-card-image" src="/assets/images/City_1.png" alt="Photo of a Shiba Inu">
+            
+            
             <mat-card-content class="game-card-content">
-              <p>
-                In Quest Mode you can play an adventure in a random world with your selected character. The genre of the story
-                and the generated lore depends on your selected character and your the settings you choose at the beginning
-                of the adventure.
-              </p>
-              <p>
-                In this mode all the adventures begin in a tavern of the generated world, where you will be able to start different
-                quests with the guidance of the AI Game Master.
-                <br>
-                The game follows a 'Choose your own adventure' style in which the Game Master will present you an scenario with 
-                up to four possible actions to choose from, and progress in your
-                story in order to complete your Quest and save your progression or die trying!  
-              </p>
+                <div class="text-container">
+                    <textarea class="text-area"></textarea>
+                </div>
+                <mat-divider style="margin: 10px 15px 5px 25px; color:#74fa26" vertical="false"></mat-divider>
+                <div class="choices-table">
+                    <table mat-table [dataSource]="choicesMock" class="mat-elevation-z8 demo-table">
+                       
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="choices">
+                          <th mat-header-cell *matHeaderCellDef>Choices</th>
+                          <td mat-cell *matCellDef="let element">{{element}}</td>
+                        </ng-container>
+                        <!-- <tr mat-header-row *matHeaderRowDef="['choices']"></tr> -->
+                        <tr
+                            mat-row
+                            (click)="selectedChoice = row"
+                            [class.demo-row-is-clicked]="selectedChoice === row"
+                            *matRowDef="let row; columns: ['choices'];"
+                        ></tr>
+                      </table>
+                </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">
               <button mat-stroked-button class="begin-btn" (click)="onSubmit()">SUBMIT</button>
