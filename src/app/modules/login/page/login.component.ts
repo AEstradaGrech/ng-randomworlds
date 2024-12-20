@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit {
           this._snackBar.open("An error has occured while loging with MetaMask", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
           return;
         }
-        this._snackBar.open("Welcome to the Random Worlds!", undefined, { duration: 2500,panelClass: ['snack-success'], verticalPosition: 'bottom'})
+        this._snackBar.open("Welcome to the Random Worlds!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'})
         this.router.navigateByUrl('randomworlds/home');
         //// 5. check if user is already logged in and update the global userWalletAddress variable
         //window.userWalletAddress = window.localStorage.getItem("userWalletAddress");

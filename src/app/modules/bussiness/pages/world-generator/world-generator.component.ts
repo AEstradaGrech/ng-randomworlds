@@ -11,6 +11,8 @@ import { Router } from '@angular/router'
 export class WorldGeneratorComponent implements OnInit{
   public gameType!: string | null;
   public charName!: string | null;
+  public nftAmbiences:string[] = ['Fantasy', 'Medieval']
+  public selectedAmbiences: string[] = []
   public form!: FormGroup;  
   private _fb:FormBuilder = inject(FormBuilder);
   private _router = inject(Router);
@@ -26,7 +28,7 @@ export class WorldGeneratorComponent implements OnInit{
     }
 
     this.form = this._fb.group({
-      ambience: new FormControl('Fantasy, Medieval'),
+      ambience: new FormControl([]),
       genres: new FormControl('Thriller, Survival, Suspense'),
       plot: new FormControl(undefined, [Validators.maxLength(200)])
     })
@@ -34,5 +36,9 @@ export class WorldGeneratorComponent implements OnInit{
   public onGenerateClick(){
     console.log('-- onGenerate --')
     this._router.navigateByUrl('randomworlds/game/quest')
+  }
+
+  public removeAmbience(ambience:string){
+    this.selectedAmbiences = this.selectedAmbiences.filter(x => x !== ambience);
   }
 }

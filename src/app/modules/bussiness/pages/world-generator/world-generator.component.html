@@ -18,10 +18,7 @@
                     </mat-panel-description>
                   </mat-expansion-panel-header>
                     <form [formGroup]="form">
-                        <mat-form-field class="form-control">
-                            <mat-label>Ambience</mat-label>
-                            <input matInput type="text" readonly formControlName="ambience"/>
-                        </mat-form-field>
+                        
                         <mat-form-field>
                             <mat-label>Genres</mat-label>
                             <input matInput type="text" [disabled]="true" formControlName="genres"/>

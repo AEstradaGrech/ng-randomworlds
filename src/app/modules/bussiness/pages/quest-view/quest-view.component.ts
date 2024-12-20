@@ -1,5 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { questViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
 import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-menu-item.model';
 
@@ -27,7 +28,7 @@ export class QuestViewComponent {
   actionsBarConfig:Array<TreeMenuItem> = questViewSidebarConfig;
   panelStateR = 'hidden';
   panelStateL = 'hidden';
-
+  
   choicesMock = [
     "In Quest Mode you can play an adventure in a random world with your selected character. The genre of the story and the generated lore depends on your selected character and your the settings you choose at the beginning of the adventure",
     "In this mode all the adventures begin in a tavern of the generated world, where you will be able to start different quests with the guidance of the AI Game Master",
@@ -35,8 +36,13 @@ export class QuestViewComponent {
     "And this is a shorter option to see how does it fit"
   ]
   selectedChoice!:string | null;
+  private _snackBar = inject(MatSnackBar);
   public onSubmit(){
     console.log('-- on submit --')
+    if(!this.selectedChoice || this.selectedChoice === '' ){
+      this._snackBar.open("You must pick a choice from the available to continue", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+      return;
+    }
   }
 
   onOpenBtnClick(btn:string){
