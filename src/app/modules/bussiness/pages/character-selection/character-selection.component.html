@@ -19,13 +19,13 @@
                     quests with the guidance of the AI Game Master.
                     <br>
                     The game follows a 'Choose your own adventure' style in which the Game Master will present you an scenario with 
-                    up to four possible actions to choose from, and progress in your
+                    up to four possible actions to choose from and progress in your
                     story in order to complete your Quest and save your progression or die trying!  
                   </p>
                 </mat-card-content>
             </div>
             <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="begin-btn">SELECT</button>
+              <button mat-stroked-button class="begin-btn" (click)="onCharSelect('Char_1')">SELECT</button>
             </mat-card-actions>
           </mat-card>
           <mat-card class="game-card" appearance="outlined">
@@ -53,7 +53,7 @@
                 </mat-card-content>
             </div>
             <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="begin-btn">SELECT</button>
+              <button mat-stroked-button class="begin-btn" (click)="onCharSelect('Char_2')">SELECT</button>
             </mat-card-actions>
           </mat-card>      
           <mat-card class="game-card" appearance="outlined">
@@ -81,7 +81,7 @@
                 </mat-card-content>
             </div>
             <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="begin-btn">SELECT</button>
+              <button mat-stroked-button class="begin-btn" (click)="onCharSelect('Char_3')">SELECT</button>
             </mat-card-actions>
           </mat-card> 
     </div>

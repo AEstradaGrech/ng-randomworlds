@@ -1,0 +1,33 @@
+<div class="card-container">
+    <div class="img-container shadow">
+        <div class="background-img"></div>
+        <mat-card class="game-card" appearance="outlined">
+            <mat-card-header>
+              <div mat-card-avatar class="game-card-header-image"></div>
+              <mat-card-title class="game-card-title">Random Quest </mat-card-title>
+              <mat-card-subtitle class="game-card-subtitle">Progress in your story with the right choice</mat-card-subtitle>
+            </mat-card-header>
+            <img mat-card-image class="game-card-image" src="/assets/images/City_1.png" alt="Photo of a Shiba Inu">
+            <mat-card-content class="game-card-content">
+              <p>
+                In Quest Mode you can play an adventure in a random world with your selected character. The genre of the story
+                and the generated lore depends on your selected character and your the settings you choose at the beginning
+                of the adventure.
+              </p>
+              <p>
+                In this mode all the adventures begin in a tavern of the generated world, where you will be able to start different
+                quests with the guidance of the AI Game Master.
+                <br>
+                The game follows a 'Choose your own adventure' style in which the Game Master will present you an scenario with 
+                up to four possible actions to choose from, and progress in your
+                story in order to complete your Quest and save your progression or die trying!  
+              </p>
+            </mat-card-content>
+            <mat-card-actions class="game-card-actions">
+              <button mat-stroked-button class="begin-btn" (click)="onSubmit()">SUBMIT</button>
+            </mat-card-actions>
+          </mat-card>
+    </div>
+</div>
+
+

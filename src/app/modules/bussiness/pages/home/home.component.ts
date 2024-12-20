@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit{
     switch(gameType){
       case('quest'):
         localStorage.setItem('game-type', 'quest')
+        console.log('-- stored game --', localStorage.getItem('game-type'))
         this.router.navigateByUrl('randomworlds/character/select');
         break;
       case('adventure'):
@@ -32,7 +33,7 @@ export class HomeComponent implements OnInit{
         this.router.navigateByUrl('randomworlds/character/select');
         break;
       default: 
-      this._snackBar.open("An error has occured while trying to begin the game", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
+        this._snackBar.open("An error has occured while trying to begin the game", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
       break;
     }
   }

@@ -10,6 +10,8 @@ import { SessionsReviewComponent } from "./pages/sessions-review/sessions-review
 import { SummarizeSessionComponent } from "./pages/summarize-session/summarize-session.component";
 import { SummarizeTextComponent } from "./pages/summarize-text/summarize-text.component";
 import { CharacterSelectionComponent } from "./pages/character-selection/character-selection.component";
+import { WorldGeneratorComponent } from "./pages/world-generator/world-generator.component";
+import { QuestViewComponent } from "./pages/quest-view/quest-view.component";
 
 const routes: Routes =[
     {
@@ -25,6 +27,14 @@ const routes: Routes =[
         path: 'character/select',
         component: CharacterSelectionComponent
     }, 
+    {
+        path: 'world/generator',
+        component: WorldGeneratorComponent
+    },
+    {
+        path: 'game/quest',
+        component: QuestViewComponent
+    },
     {
         path: 'prompting/chat',
         component: ChatComponent

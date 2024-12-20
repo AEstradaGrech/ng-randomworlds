@@ -25,6 +25,9 @@ import { LoadSummarizationMessageComponent } from './pages/summarize-session/com
 import { SaveSysMessageComponent } from './pages/summarize-session/components/save-sys-message/save-sys-message.component';
 import { SaveSummaryComponent } from './pages/summarize-session/components/save-summary/save-summary.component';
 import { CharacterSelectionComponent } from './pages/character-selection/character-selection.component';
+import { WorldGeneratorComponent } from './pages/world-generator/world-generator.component';
+import { QuestViewComponent } from './pages/quest-view/quest-view.component';
+import { AdventureViewComponent } from './pages/adventure-view/adventure-view.component';
 
 
 
@@ -50,7 +53,10 @@ import { CharacterSelectionComponent } from './pages/character-selection/charact
         LoadSummarizationMessageComponent,
         SaveSysMessageComponent,
         SaveSummaryComponent,
-        CharacterSelectionComponent
+        CharacterSelectionComponent,
+        WorldGeneratorComponent,
+        QuestViewComponent,
+        AdventureViewComponent
     ],
     imports:[
         CommonModule,
