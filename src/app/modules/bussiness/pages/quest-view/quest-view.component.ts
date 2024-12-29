@@ -3,10 +3,10 @@ import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { questViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
 import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-menu-item.model';
-import { GameData } from 'src/app/modules/shared/models/common-interfaces';
+import { GameData, QueryCondition, SortedFilter } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router'
 import { QuestsService } from '../../services/quests.service';
-import { QuestBlockDto, QuestInitRequest } from 'src/app/core/interfaces/business/prompting.interface';
+import { QuestBlockDto, QuestInitRequest, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
 @Component({
   selector: 'app-quest-view',
   templateUrl: './quest-view.component.html',
@@ -36,20 +36,19 @@ export class QuestViewComponent implements OnInit {
   actionsBarConfig:Array<TreeMenuItem> = questViewSidebarConfig;
   panelStateR = 'hidden';
   panelStateL = 'hidden';
-  hasGameOngoing:boolean = false;
   gameData!:GameData;
-  currentBlock!:QuestBlockDto; 
-  choicesMock = [
-    "In Quest Mode you can play an adventure in a random world with your selected character. The genre of the story and the generated lore depends on your selected character and your the settings you choose at the beginning of the adventure",
-    "In this mode all the adventures begin in a tavern of the generated world, where you will be able to start different quests with the guidance of the AI Game Master",
-    "The game follows a 'Choose your own adventure' style in which the Game Master will present you an scenario with up to four possible actions to choose from, and progress in your story in order to complete your Quest and save your progression or die trying!",
-    "And this is a shorter option to see how does it fit"
-  ]
+  currentQuest!:RandomQuestDto;
+  currentBlock!:QuestBlockDto | null; 
   selectedChoice!:string | null;
   private _snackBar = inject(MatSnackBar);
   private _router:Router = inject(Router);
   private _service: QuestsService = inject(QuestsService);
   @ViewChild('scenebox') scenebox!:ElementRef;
+
+  get hasGameOngoing():boolean{
+    return this.gameData && this.gameData.gameSessionId !== "";
+  }
+
   ngOnInit(): void {
     let gameData = this._getGameData();
     if(gameData){
@@ -57,53 +56,38 @@ export class QuestViewComponent implements OnInit {
         this._router.navigateByUrl('randomworlds/home');
         return;
       }
-      this.hasGameOngoing = gameData.gameSessionId !== "";
       this.gameData = gameData;
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
   }
-
+ 
   public onSubmit(){
     console.log('-- on submit --')
-    if(this.hasGameOngoing){
+    if(this.hasGameOngoing && this.currentBlock){
       if(!this.selectedChoice || this.selectedChoice === '' ){
         this._snackBar.open("You must pick a choice from the available to continue", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
         return;
       }
-    }else{
-      let req:QuestInitRequest = {
-        username:this.gameData.username,
-        charname:this.gameData.charname,
-        charCollectionAddress:this.gameData.charCollectionAddress,
-        charTokenId:this.gameData.charTokenId,
-        charInfo:this.gameData.charInfo,
-        ambiences:this.gameData.userPreferences["ambiences"],
-        genres:this.gameData.userPreferences["genres"],
-        moods:this.gameData.userPreferences["moods"],
-        suggestion:this.gameData.userPreferences["suggestion"],
-        constraints:this.gameData.userPreferences["constraints"],
-        maxBlocks:10
-      }
-      console.log('-- init req -- ', req);
-      this.hasStreamedScene = false;
-      this.sceneText = "";
+      this.currentBlock.choice=this.selectedChoice;
+      this.currentQuest.blocks.push(this.currentBlock);
+      this.currentBlock = null;
       this.isStreamingOn = true;
-      this._service.initQuest(req).subscribe(res => {
-        console.log(res)
-        if(this._handleResponseStream(res)){
-          this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+      this._service.handleQuest(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
+        if(this._handleResponseStream(res) && this.currentBlock){
           this.gameData.currentBlock++;
-          this.currentBlock.id = this.gameData.currentBlock;
-          console.log('-- new block parsed --', this.currentBlock);
+          this.currentBlock.id = this.gameData.currentBlock; 
         }
+        else this._snackBar.open("An error has occured while streaming the next SCENE", undefined, { duration: 2500,panelClass: ['snack-success-warning'], verticalPosition: 'bottom'});
       })
     }
+    else this._initializeQuest()
+    
   }
   private _validateCurrentBlock() : boolean{
     if(this.sceneText && this.sceneText !== ""){
       if(this.choicesText && this.choicesText !== ""){
         this.currentBlock = {
-          id:0,
+          id: 0,//this.currentQuest ? this.currentQuest.blocks.length + 1 : 1, //Esto es para in memory historic (pag.data) pero es una ñapa. #TODO: if Blocks > 10
           scene:this.sceneText,
           options: [],
           choice:""
@@ -116,7 +100,7 @@ export class QuestViewComponent implements OnInit {
         options.forEach(option => {
           let value = option.trim();
           if(value && value !== "")
-            this.currentBlock.options.push(value);
+            this.currentBlock?.options.push(value);
         })
         return this.currentBlock.options.length > 0;
       }
@@ -155,5 +139,72 @@ export class QuestViewComponent implements OnInit {
   private _getGameData():GameData | null{
       let gameDataCache = localStorage.getItem('game-data')
       return gameDataCache ? JSON.parse(gameDataCache) : null;
+  }
+
+  private _initializeQuest(){
+    let req:QuestInitRequest = {
+      username:this.gameData.username,
+      charname:this.gameData.charname,
+      charCollectionAddress:this.gameData.charCollectionAddress,
+      charTokenId:this.gameData.charTokenId,
+      charInfo:this.gameData.charInfo,
+      ambiences:this.gameData.userPreferences["ambiences"],
+      genres:this.gameData.userPreferences["genres"],
+      moods:this.gameData.userPreferences["moods"],
+      suggestion:this.gameData.userPreferences["suggestion"],
+      constraints:this.gameData.userPreferences["constraints"],
+      maxBlocks:10
+    }
+    console.log('-- init req -- ', req);
+    this.hasStreamedScene = false;
+    this.sceneText = "";
+    this.isStreamingOn = true;
+    this.gameData.gameStatus = 'INITIALIZING';
+    this._service.initQuest(req).subscribe(res => {
+      console.log(res)
+      if(this._handleResponseStream(res) && this.currentBlock){
+        this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+        this.gameData.currentBlock++;
+        this.currentBlock.id = this.gameData.currentBlock;
+        this._completeInitialization(req);
+      }
+    })
+  }
+  private _completeInitialization(req:QuestInitRequest){
+    let conditions:QueryCondition[] = []
+    const vars = Object.keys(req)
+    vars.forEach((v:string) => {
+      switch(v){
+        case("username"):
+        case("charname"):
+        case("charTokenId"):
+        case("charCollectionAddress"):
+          conditions.push({field:v, value:req[v]})
+        break;
+        default: break;
+      }
+    })
+    console.log('-- conditions --', conditions)
+    let filter: SortedFilter = {
+      conditions:conditions,
+      page:0,
+      page_size:1,
+      sort_var:'creationDate',
+      is_descending:true
+    }
+    this._service.sortedQuery(filter).subscribe(res => {
+      if(res.data.length > 0){
+        this.currentQuest = res.data[0];
+        this.gameData.gameSessionId = this.currentQuest.id;
+        localStorage.setItem('game-data', JSON.stringify(this.gameData));
+        console.log('game-data',this.gameData);
+        this._service.setQuestStatus(this.gameData.gameSessionId, 'ONGOING').subscribe(res => {
+          this.currentQuest = res;
+          this.gameData.gameStatus = this.currentQuest.status;
+          localStorage.setItem('game-data', JSON.stringify(this.gameData))
+        })
+      }
+      else this._snackBar.open("An error has occured while retrieving the new generated Quest", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+    })
   }
 }

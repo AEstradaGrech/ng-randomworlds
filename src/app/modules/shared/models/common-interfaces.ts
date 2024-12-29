@@ -4,6 +4,10 @@ export interface QueryFilter{
     page_size:number
 }
 
+export interface SortedFilter extends QueryFilter{
+    sort_var:string,
+    is_descending:boolean
+}
 export interface QueryCondition{
     field:string,
     value:any
@@ -24,6 +28,7 @@ export interface UserLogin{
 export interface GameData{
     username:string,
     gameType:string,
+    gameStatus:string,
     charname:string,
     charTokenId:number,
     charCollectionAddress:string,

@@ -55,6 +55,7 @@ export class HomeComponent implements OnInit{
     let data: GameData ={
       username: creds.username,
       gameType:gameType,
+      gameStatus: "READY",
       charname:'',
       charTokenId:0,
       charCollectionAddress:'',
