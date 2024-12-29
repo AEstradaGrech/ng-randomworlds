@@ -15,3 +15,20 @@ export interface CollectionResponse<T>{
     page:number | null,
     total_pages:number | null
 }
+
+export interface UserLogin{
+    provider:string //metamask
+    username:string //connectedWallet
+}
+
+export interface GameData{
+    username:string,
+    gameType:string,
+    charname:string,
+    charTokenId:number,
+    charCollectionAddress:string,
+    charInfo:string,
+    gameSessionId:string | null//dbId RandomQuest | RandomAdventure
+    userPreferences: any,
+    currentBlock:number
+}

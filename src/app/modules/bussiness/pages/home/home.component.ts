@@ -3,6 +3,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ImagesService } from '../../services/images.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -24,8 +25,17 @@ export class HomeComponent implements OnInit{
   onBeginClick(gameType:string){
     switch(gameType){
       case('quest'):
-        localStorage.setItem('game-type', 'quest')
-        console.log('-- stored game --', localStorage.getItem('game-type'))
+        let gameData = localStorage.getItem('game-data')
+        if(gameData){
+          let object = JSON.parse(gameData)
+          if(object.gameType !== 'quest'){
+            localStorage.removeItem('game-data') //TODO: Modal 'Warning'
+            this._setGameData('quest')
+          }
+        }else{
+          this._setGameData('quest')
+          console.log('-- stored game --', localStorage.getItem('game-type'))
+        }
         this.router.navigateByUrl('randomworlds/character/select');
         break;
       case('adventure'):
@@ -36,5 +46,23 @@ export class HomeComponent implements OnInit{
         this._snackBar.open("An error has occured while trying to begin the game", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
       break;
     }
+  }
+
+  private _setGameData(gameType:string){
+    let login = localStorage.getItem('user-login')
+    if(!login) return;
+    let creds = JSON.parse(login)
+    let data: GameData ={
+      username: creds.username,
+      gameType:gameType,
+      charname:'',
+      charTokenId:0,
+      charCollectionAddress:'',
+      charInfo:'',
+      gameSessionId:'',
+      userPreferences:{},
+      currentBlock:0
+    }
+    localStorage.setItem('game-data', JSON.stringify(data))
   }
 }

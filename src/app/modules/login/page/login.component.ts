@@ -2,6 +2,7 @@ import { Component, Inject, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { LoginCredentialsDto } from '../../../core/interfaces/auth/credentials.interface';
+import { UserLogin } from '../../../modules/shared/models/common-interfaces'
 import { Router } from '@angular/router';
 import Web3 from 'web3';
 import { DOCUMENT } from '@angular/common';
@@ -72,7 +73,13 @@ export class LoginComponent implements OnInit {
           this._snackBar.open("An error has occured while loging with MetaMask", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
           return;
         }
+        let login:UserLogin = {
+          provider:'metamask',
+          username:accounts[0]
+        }
+        localStorage.setItem('user-login', JSON.stringify(login))
         this._snackBar.open("Welcome to the Random Worlds!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'})
+        localStorage.removeItem('game-data')
         this.router.navigateByUrl('randomworlds/home');
         //// 5. check if user is already logged in and update the global userWalletAddress variable
         //window.userWalletAddress = window.localStorage.getItem("userWalletAddress");

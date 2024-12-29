@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from './core/layout/app-layout/layout.component';
 import { HomeComponent } from './modules/bussiness/pages/home/home.component';
 import { AuthLayoutComponent } from './core/layout/auth-layout/auth-layout.component';
-import { ChatComponent } from './modules/bussiness/pages/chat/chat.component';
 
 const routes: Routes = [
    {

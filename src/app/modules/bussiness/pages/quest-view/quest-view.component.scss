@@ -32,6 +32,8 @@
     max-width: 37vw;
     min-height: 40vh;
     max-height: 40vh;
+    color:antiquewhite;
+    font-size: 16px;
 }
 .card-container{
     display: flex !important;
@@ -156,4 +158,10 @@ font-weight: bold;
 .choices-table{
     overflow-y: scroll;
     max-height: 20vh;
+}
+
+.loading{
+    display: flex;
+    justify-content: center;
+    margin: 15px 0px 15px 0px !important;
 }

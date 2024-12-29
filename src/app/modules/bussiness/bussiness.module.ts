@@ -5,11 +5,6 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../shared/material.module';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
-import { ChatComponent } from './pages/chat/chat.component';
-import { InitSessionDialogComponent } from './pages/chat/components/init-session-dialog/init-session-dialog.component';
-import { LoadSessionDialogComponent } from './pages/chat/components/load-session-dialog/load-session-dialog.component';
-import { SaveCurrentDialogComponent } from './pages/chat/components/save-current-dialog/save-current-dialog.component';
-import { LoadProfileDialogComponent } from './pages/chat/components/load-profile-dialog/load-profile-dialog.component';
 import { ImageGenComponent } from './pages/image-gen/image-gen.component';
 import { ImageReviewComponent } from './pages/image-review/image-review.component';
 import { SystemMessagesComponent } from './pages/system-messages/system-messages.component';
@@ -34,11 +29,6 @@ import { AdventureViewComponent } from './pages/adventure-view/adventure-view.co
 @NgModule({
     declarations: [
         HomeComponent,
-        ChatComponent,
-        InitSessionDialogComponent,
-        LoadSessionDialogComponent,
-        SaveCurrentDialogComponent,
-        LoadProfileDialogComponent,
         ImageGenComponent,
         ImageReviewComponent,
         SystemMessagesComponent,

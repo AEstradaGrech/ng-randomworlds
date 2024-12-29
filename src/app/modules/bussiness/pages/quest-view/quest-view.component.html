@@ -28,11 +28,22 @@
             
             <mat-card-content class="game-card-content">
                 <div class="text-container">
-                    <textarea class="text-area"></textarea>
+                    <textarea #scenebox class="text-area" [scrollTop]="scenebox.scrollHeight">{{sceneText}}</textarea>
                 </div>
                 <mat-divider style="margin: 10px 15px 5px 25px; color:#74fa26" vertical="false"></mat-divider>
-                <div class="choices-table">
-                    <table mat-table [dataSource]="choicesMock" class="mat-elevation-z8 demo-table">
+                <div class="loading" *ngIf="!currentBlock">
+                    <mat-spinner *ngIf="isStreamingOn" diameter="45"></mat-spinner>
+                    <mat-icon 
+                        *ngIf="!isStreamingOn"
+                        style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
+                        aria-hidden="false" 
+                        aria-label="Play icon" 
+                        fontIcon="play_circle_fill"
+                  ></mat-icon>
+                </div>
+                
+                <div *ngIf="currentBlock" class="choices-table">
+                    <table mat-table [dataSource]="currentBlock.options" class="mat-elevation-z8 demo-table">
                        
                         <!-- Name Column -->
                         <ng-container matColumnDef="choices">
@@ -50,7 +61,7 @@
                 </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="begin-btn" (click)="onSubmit()">SUBMIT</button>
+              <button mat-stroked-button class="begin-btn" (click)="onSubmit()">{{btnTxt}}</button>
             </mat-card-actions>
         </mat-card>
         <mat-divider vertical="true"></mat-divider>
@@ -70,67 +81,6 @@
                 </button>
             </div>
         </div>
-        <!-- <div class="main-widget">
-            <div class="expandable-l">
-                <mat-accordion multi="true" class="accordion-l">
-                    <mat-expansion-panel class="expansion-panel-l">
-                      <mat-expansion-panel-header>
-                
-                        <mat-panel-description>
-                          Some description
-                        </mat-panel-description>
-                      </mat-expansion-panel-header>
-                      <div class="panel-content-l">
-                        <p><strong>Panel Content</strong>If you ask Chuck Norris what time it is, he always says, "Two seconds 'til." After you ask, "Two seconds 'til what?" he roundhouse kicks you in the face, The quickest way to a man's heart is with Chuck Norris' fist Even corn flakes become deadly weapons in the hands of Chuck Norris.</p>
-                        <p>More content</p>
-                      </div>
-                    </mat-expansion-panel>
-                  </mat-accordion>  
-            </div>
-            <mat-card class="game-card" appearance="outlined">
-                <mat-card-header>
-                  <div mat-card-avatar class="game-card-header-image"></div>
-                  <mat-card-title class="game-card-title">Random Quest </mat-card-title>
-                  <mat-card-subtitle class="game-card-subtitle">Progress in your story with the right choice</mat-card-subtitle>
-                </mat-card-header>
-                <img mat-card-image class="game-card-image" src="/assets/images/City_1.png" alt="Photo of a Shiba Inu">
-                <mat-card-content class="game-card-content">
-                  <p>
-                    In Quest Mode you can play an adventure in a random world with your selected character. The genre of the story
-                    and the generated lore depends on your selected character and your the settings you choose at the beginning
-                    of the adventure.
-                  </p>
-                  <p>
-                    In this mode all the adventures begin in a tavern of the generated world, where you will be able to start different
-                    quests with the guidance of the AI Game Master.
-                    <br>
-                    The game follows a 'Choose your own adventure' style in which the Game Master will present you an scenario with 
-                    up to four possible actions to choose from, and progress in your
-                    story in order to complete your Quest and save your progression or die trying!  
-                  </p>
-                </mat-card-content>
-                <mat-card-actions class="game-card-actions">
-                  <button mat-stroked-button class="begin-btn" (click)="onSubmit()">SUBMIT</button>
-                </mat-card-actions>
-              </mat-card>
-            <div class="expandable-r">
-                <mat-accordion multi="true" class="accordion-r">
-                    <mat-expansion-panel class="expansion-panel-r">
-                      <mat-expansion-panel-header>
-                
-                        <mat-panel-description>
-                          Some description
-                        </mat-panel-description>
-                      </mat-expansion-panel-header>
-                      <div class="panel-content-r">
-                        <p><strong>Panel Content</strong>If you ask Chuck Norris what time it is, he always says, "Two seconds 'til." After you ask, "Two seconds 'til what?" he roundhouse kicks you in the face, The quickest way to a man's heart is with Chuck Norris' fist Even corn flakes become deadly weapons in the hands of Chuck Norris.</p>
-                        <p>More content</p>
-                      </div>
-                    </mat-expansion-panel>
-                  </mat-accordion>  
-            </div>
-        </div> -->
-        
     </div>
 </div>
 

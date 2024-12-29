@@ -16,10 +16,11 @@ export class SmartContractsService {
       {
         id:1,
         name: 'Char_1',
-        description: 'Dark-fantasy / horror character',
+        description: 'Appereance & Background & Personality & Motivations', //TODO: una estructura clara para la metadata
         fileName:'Char1',
         imageType:'.png',
-        genres:["Fantasy", "Dark", "Horror", "Medieval"]
+        ambiences:["Fantasy", "Medieval"],
+        moods:["Dark", "Horror"]
       },
       {
         id:2,
@@ -27,7 +28,8 @@ export class SmartContractsService {
         description: 'Dark-fantasy / horror character',
         fileName:'Char2',
         imageType:'.png',
-        genres:["Sci-fi", "Cyberpunk", "Dystopia"]
+        ambiences:["Sci-fi", "Belic"],
+        moods:["Cyberpunk", "Dystopia"]
       }
     ]
   } 

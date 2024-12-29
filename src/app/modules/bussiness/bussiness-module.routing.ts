@@ -1,7 +1,6 @@
 import { NgModule } from "@angular/core";
 import { HomeComponent } from "./pages/home/home.component";
 import { RouterModule, Routes } from "@angular/router";
-import { ChatComponent } from "./pages/chat/chat.component";
 import { ImageGenComponent } from "./pages/image-gen/image-gen.component";
 import { ImageReviewComponent } from "./pages/image-review/image-review.component";
 import { SystemMessagesComponent } from "./pages/system-messages/system-messages.component";
@@ -34,10 +33,6 @@ const routes: Routes =[
     {
         path: 'game/quest',
         component: QuestViewComponent
-    },
-    {
-        path: 'prompting/chat',
-        component: ChatComponent
     },
     {
         path: 'prompting/summarize/text',
