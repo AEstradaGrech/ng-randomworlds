@@ -15,7 +15,7 @@ export class SmartContractsService {
     return [
       {
         id:1,
-        name: 'Char_1',
+        name: 'Bloody Logen',
         description: 'Appereance & Background & Personality & Motivations', //TODO: una estructura clara para la metadata
         fileName:'Char1',
         imageType:'.png',
@@ -24,7 +24,7 @@ export class SmartContractsService {
       },
       {
         id:2,
-        name: 'Char_2',
+        name: 'K.',
         description: 'Dark-fantasy / horror character',
         fileName:'Char2',
         imageType:'.png',
