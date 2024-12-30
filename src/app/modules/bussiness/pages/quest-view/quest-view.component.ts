@@ -72,12 +72,16 @@ export class QuestViewComponent implements OnInit {
       this.currentQuest.blocks.push(this.currentBlock);
       this.currentBlock = null;
       this.isStreamingOn = true;
+      this.hasStreamedScene = false;
       this._service.handleQuest(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
         if(this._handleResponseStream(res) && this.currentBlock){
           this.gameData.currentBlock++;
-          this.currentBlock.id = this.gameData.currentBlock; 
+          this.currentBlock.id = this.gameData.currentBlock;
+          if(this.currentBlock.id === this.currentQuest.maxBlocks){
+            this._snackBar.open("The current QUEST has ended. Mint it if you wish and play again!", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+          } 
         }
-        else this._snackBar.open("An error has occured while streaming the next SCENE", undefined, { duration: 2500,panelClass: ['snack-success-warning'], verticalPosition: 'bottom'});
+        else this._snackBar.open("An error has occured while streaming the next SCENE", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
       })
     }
     else this._initializeQuest()
