@@ -28,17 +28,24 @@
             
             <mat-card-content class="game-card-content">
                 <div class="text-container">
-                    <textarea #scenebox class="text-area" [scrollTop]="scenebox.scrollHeight">{{sceneText}}</textarea>
+                    <textarea #scenebox class="text-area">{{sceneText}}</textarea>
                 </div>
                 <mat-divider style="margin: 10px 15px 5px 25px; color:#74fa26" vertical="false"></mat-divider>
                 <div class="loading" *ngIf="!currentBlock">
-                    <mat-spinner *ngIf="isStreamingOn" diameter="45"></mat-spinner>
+                    <mat-spinner *ngIf="isStreamingOn" diameter="50"></mat-spinner>
                     <mat-icon 
-                        *ngIf="!isStreamingOn"
+                        *ngIf="!isStreamingOn && !hasFinishedQuest"
                         style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
                         aria-hidden="false" 
                         aria-label="Play icon" 
                         fontIcon="play_circle_fill"
+                  ></mat-icon>
+                  <mat-icon 
+                        *ngIf="!isStreamingOn && hasFinishedQuest"
+                        style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
+                        aria-hidden="false" 
+                        aria-label="Play icon" 
+                        fontIcon="endgameIcon"
                   ></mat-icon>
                 </div>
                 
