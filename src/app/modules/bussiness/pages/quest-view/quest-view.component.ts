@@ -40,15 +40,18 @@ export class QuestViewComponent implements OnInit {
   currentQuest!:RandomQuestDto;
   currentBlock!:QuestBlockDto | null; 
   selectedChoice!:string | null;
+  endgameIcon:string = "mood"
   private _snackBar = inject(MatSnackBar);
   private _router:Router = inject(Router);
   private _service: QuestsService = inject(QuestsService);
   @ViewChild('scenebox') scenebox!:ElementRef;
 
   get hasGameOngoing():boolean{
-    return this.gameData && this.gameData.gameSessionId !== "";
+    return this.gameData && this.gameData.gameSessionId !== '';
   }
-
+  get hasFinishedQuest():boolean{
+    return this.gameData && (this.gameData.gameStatus !== 'READY' && this.gameData.gameStatus !== 'INITIALIZING' && this.gameData.gameStatus !== 'ONGOING');
+  }
   ngOnInit(): void {
     let gameData = this._getGameData();
     if(gameData){
@@ -57,8 +60,25 @@ export class QuestViewComponent implements OnInit {
         return;
       }
       this.gameData = gameData;
+      this.gameData.gameSessionId = '6774d74e7c530fac4e76e96c';
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
+    if(this.hasGameOngoing){
+      this.isStreamingOn = true;
+      this._service.getById(this.gameData.gameSessionId).subscribe(res => {
+        this.isStreamingOn = false;
+        this.currentQuest = res;
+        if(this.currentQuest.blocks.length > 0){
+          this.currentBlock = this.currentQuest.blocks.slice(-1)[0];
+          this.sceneText = this.currentBlock.scene;
+        }
+        this.gameData.gameStatus = this.currentQuest.status;
+        this.gameData.currentBlock = this.currentQuest.blocks.length;
+      })
+      //Quest.getById
+      // render desc
+      // render choices
+    }
   }
  
   public onSubmit(){
@@ -73,15 +93,37 @@ export class QuestViewComponent implements OnInit {
       this.currentBlock = null;
       this.isStreamingOn = true;
       this.hasStreamedScene = false;
-      this._service.handleQuest(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
+      this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
         if(this._handleResponseStream(res) && this.currentBlock){
           this.gameData.currentBlock++;
           this.currentBlock.id = this.gameData.currentBlock;
-          if(this.currentBlock.id === this.currentQuest.maxBlocks){
-            this._snackBar.open("The current QUEST has ended. Mint it if you wish and play again!", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-          } 
+          if(this.hasFinishedQuest){
+            this.btnTxt = 'PLAY AGAIN';
+            this.currentQuest.blocks.push(this.currentBlock);
+            this.currentBlock = null;
+            switch(this.gameData.gameStatus){
+              case('COMPLETED'):
+                this._snackBar.open("QUEST FINISHED!", undefined, { duration: 3000,panelClass: ['snack-success'], verticalPosition: 'bottom'});
+              break;
+              case('FAILED'):
+                this._snackBar.open("GAME OVER", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+              break;
+              case('UNCONCLUDED'):
+                this._snackBar.open("TO BE CONTINUED...", undefined, { duration: 3000,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+              break;
+              default:
+                break;
+            }
+            this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
+              this.currentQuest = res;
+            })
+          }else{ //TODO: esto tambien es 'FINISHED_QUEST <- gestionar en _validateBlock igual que GAME OVER y leer status de gameData (igual que GAME OVER)'
+            if(this.currentBlock.id === this.currentQuest.maxBlocks){
+              this._snackBar.open("The current QUEST has ended. Mint it if you wish and play again!", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+              //_service.endQuest(id, block)
+            } 
+          }
         }
-        else this._snackBar.open("An error has occured while streaming the next SCENE", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
       })
     }
     else this._initializeQuest()
@@ -99,6 +141,28 @@ export class QuestViewComponent implements OnInit {
         this.choicesText = this.choicesText.replace("<<OPTIONS>>", "");
         this.choicesText.trim();
         console.log('-- trimed choices text --', this.choicesText);
+        if(this.choicesText.includes('QUEST FINISHED!')){
+          this.currentBlock.choice = 'END QUEST';
+          this.gameData.gameStatus = 'COMPLETED';
+          this.currentQuest.status = 'COMPLETED';
+          this._setEndgameIcon('FAILED');
+          return true;
+        }
+        if(this.choicesText.includes('GAME OVER')){
+          this.currentBlock.choice = 'END QUEST';
+          this.gameData.gameStatus = 'FAILED';
+          this.currentQuest.status = 'FAILED';
+          this._setEndgameIcon('FAILED');
+          return true;
+        }
+        if(this.choicesText.includes('TO BE CONTINUED...')){
+          this.currentBlock.choice = 'END QUEST';
+          this.gameData.gameStatus = 'UNCONCLUDED';
+          this.currentQuest.status = 'UNCONCLUDED';
+          this._setEndgameIcon('FAILED');
+          return true;
+        }
+   
         let options = this.choicesText.split('OPTION:');
         console.log('-- options split --', options);
         options.forEach(option => {
@@ -107,6 +171,8 @@ export class QuestViewComponent implements OnInit {
             this.currentBlock?.options.push(value);
         })
         return this.currentBlock.options.length > 0;
+        
+        
       }
     }
     return false;
@@ -164,8 +230,7 @@ export class QuestViewComponent implements OnInit {
     this.sceneText = "";
     this.isStreamingOn = true;
     this.gameData.gameStatus = 'INITIALIZING';
-    this._service.initQuest(req).subscribe(res => {
-      console.log(res)
+    this._service.initQuestStream(req).subscribe(res => {
       if(this._handleResponseStream(res) && this.currentBlock){
         this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
         this.gameData.currentBlock++;
@@ -206,9 +271,24 @@ export class QuestViewComponent implements OnInit {
           this.currentQuest = res;
           this.gameData.gameStatus = this.currentQuest.status;
           localStorage.setItem('game-data', JSON.stringify(this.gameData))
+          console.log('-- current intro --', this.currentQuest.intro)
         })
       }
       else this._snackBar.open("An error has occured while retrieving the new generated Quest", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
     })
+  }
+
+  private _setEndgameIcon(status:string){
+    switch(status){
+      case('FAILED'):
+        this.endgameIcon = 'mood_bad';
+      break;
+      case('UNCONCLUDED'):
+        this.endgameIcon = 'sentiment_neutral';
+      break;
+      case('SUCCESS'):
+      default:
+        this.endgameIcon = 'mood';
+    }
   }
 }

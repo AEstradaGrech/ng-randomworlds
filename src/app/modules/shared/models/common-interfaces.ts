@@ -33,7 +33,7 @@ export interface GameData{
     charTokenId:number,
     charCollectionAddress:string,
     charInfo:string,
-    gameSessionId:string | null//dbId RandomQuest | RandomAdventure
+    gameSessionId:string,//dbId RandomQuest | RandomAdventure
     userPreferences: any,
     currentBlock:number
 }
