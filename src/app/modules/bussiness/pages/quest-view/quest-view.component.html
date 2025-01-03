@@ -31,21 +31,21 @@
                     <textarea #scenebox class="text-area">{{sceneText}}</textarea>
                 </div>
                 <mat-divider style="margin: 10px 15px 5px 25px; color:#74fa26" vertical="false"></mat-divider>
-                <div class="loading" *ngIf="!currentBlock">
-                    <mat-spinner *ngIf="isStreamingOn" diameter="50"></mat-spinner>
+                <div class="loading">
+                    <mat-spinner *ngIf="isLoading" diameter="50"></mat-spinner>
                     <mat-icon 
-                        *ngIf="!isStreamingOn && !hasFinishedQuest"
+                        *ngIf="!isLoading && !hasFinishedQuest"
                         style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
                         aria-hidden="false" 
                         aria-label="Play icon" 
                         fontIcon="play_circle_fill"
                   ></mat-icon>
                   <mat-icon 
-                        *ngIf="!isStreamingOn && hasFinishedQuest"
+                        *ngIf="!isLoading && hasFinishedQuest"
                         style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
                         aria-hidden="false" 
                         aria-label="Play icon" 
-                        fontIcon="endgameIcon"
+                        fontIcon="questFinishedIcon()"
                   ></mat-icon>
                 </div>
                 
