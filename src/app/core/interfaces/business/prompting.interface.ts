@@ -36,3 +36,12 @@ export interface CharacterNFT_Mock{
     fileName:string,
     imageType:string
 }
+
+export interface SceneOptionsRequest{
+    id:string,
+    scene:string
+}
+export interface SceneOptionsResponse{
+    options: string[],
+    bad_choice:string
+}
