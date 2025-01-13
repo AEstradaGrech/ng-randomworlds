@@ -64,7 +64,7 @@ export class QuestViewComponent implements OnInit {
         return;
       }
       this.gameData = gameData;
-      //this.gameData.gameSessionId = '6776deeec07b1f14844cfcc3';
+      //this.gameData.gameSessionId = '677ab56ed0260b9ab658ad9d';
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
     if(this.hasGameOngoing){
@@ -92,10 +92,9 @@ export class QuestViewComponent implements OnInit {
         this._snackBar.open("You must pick a choice from the available to continue", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
         return;
       }
-      if(this._currentBadChoice && this.selectedChoice.includes(this._currentBadChoice)){
-        this.selectedChoice = this.selectedChoice.replace("(BAD CHOICE)", "").trim(); //devonly
-        this.selectedChoice += ' <<BAD_CHOICE>>';
-      }
+      // if(this._currentBadChoice && this.selectedChoice.includes(this._currentBadChoice) && this._currentBadChoice.toUpperCase().includes("END_TYPE:")){
+      //   this.selectedChoice = this.selectedChoice.replace("<<BAD CHOICE>>", "").trim(); //devonly
+      // }
       this.currentBlock.choice=this.selectedChoice;
       this.currentQuest.blocks.push(this.currentBlock);
       this.currentBlock = null;
@@ -103,42 +102,43 @@ export class QuestViewComponent implements OnInit {
       this.hasStreamedScene = false;
       this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
         if(this._handleResponseStream(res) ){
-          this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText}).subscribe(res => {
-            this.isLoading=false; 
-            if(this.currentBlock && res.options.length >0){
-              this.gameData.currentBlock++;
-              this.currentBlock.id = this.gameData.currentBlock;
-              this.currentBlock.options = res.options;
-              this.currentBlock.options.push(`${res.bad_choice} (BAD CHOICE)`)
-              this._currentBadChoice = res.bad_choice;
-              if(this.hasFinishedQuest){
-                this.btnTxt = 'PLAY AGAIN';
-                this.currentQuest.blocks.push(this.currentBlock);
-                this.currentBlock = null;
-                switch(this.gameData.gameStatus){
-                  case('COMPLETED'):
-                    this._snackBar.open("QUEST FINISHED!", undefined, { duration: 3000,panelClass: ['snack-success'], verticalPosition: 'bottom'});
-                  break;
-                  case('FAILED'):
-                    this._snackBar.open("GAME OVER", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-                  break;
-                  case('UNCONCLUDED'):
-                    this._snackBar.open("TO BE CONTINUED...", undefined, { duration: 3000,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
-                  break;
-                  default:
-                    break;
-                }
-                this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
-                  this.currentQuest = res;
-                })
-              }else{ //TODO: esto tambien es 'FINISHED_QUEST <- gestionar en _validateBlock igual que GAME OVER y leer status de gameData (igual que GAME OVER)'
-                if(this.currentBlock.id === this.currentQuest.maxBlocks){
-                  this._snackBar.open("The current QUEST has ended. Mint it if you wish and play again!", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-                  //_service.endQuest(id, block)
-                } 
+          if(!this.hasFinishedQuest){
+            this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText}).subscribe(res => {
+              this.isLoading=false; 
+              if(this.currentBlock && res.options.length >0){
+                this.gameData.currentBlock++;
+                this.currentBlock.id = this.gameData.currentBlock;
+                this.currentBlock.options = res.options;
+                let badTag = res.bad_choice.toUpperCase().includes("END_TYPE:") ? "": " <<BAD CHOICE>>"
+                this.currentBlock.options.push(`${res.bad_choice}${badTag}`)
+                this._currentBadChoice = res.bad_choice;
               }
+            }) 
+          }
+          else{
+            if(!this.currentBlock) return;
+            this.btnTxt = 'PLAY AGAIN';
+            this.currentQuest.blocks.push(this.currentBlock);
+            this.currentBlock = null;
+            switch(this.gameData.gameStatus){
+              case('COMPLETED'):
+                this._snackBar.open("QUEST FINISHED!", undefined, { duration: 3000,panelClass: ['snack-success'], verticalPosition: 'bottom'});
+              break;
+              case('FAILED'):
+                this._snackBar.open("GAME OVER", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+              break;
+              case('UNCERTAIN'):
+                this._snackBar.open("TO BE CONTINUED...", undefined, { duration: 3000,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+              break;
+              default:
+                break;
             }
-          }) 
+            this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
+              this.currentQuest = res;
+              this.isLoading=false; 
+              this._snackBar.open("The current QUEST has ended. Mint it if you wish and play again!", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+            })
+          }
         }
       })
     }
@@ -173,8 +173,8 @@ export class QuestViewComponent implements OnInit {
         }
         if(this.choicesText.includes('TO BE CONTINUED...')){
           this.currentBlock.choice = 'END QUEST';
-          this.gameData.gameStatus = 'UNCONCLUDED';
-          this.currentQuest.status = 'UNCONCLUDED';
+          this.gameData.gameStatus = 'UNCERTAIN';
+          this.currentQuest.status = 'UNCERTAIN';
           this._setEndgameIcon('FAILED');
           return true;
         }
@@ -211,6 +211,29 @@ export class QuestViewComponent implements OnInit {
         options: [],
         choice:""
       }
+      if(this.sceneText && this.sceneText !== ""){
+        if(this.sceneText.includes('QUEST FINISHED!')){
+          this.currentBlock.choice = 'END QUEST';
+          this.gameData.gameStatus = 'COMPLETED';
+          this.currentQuest.status = 'COMPLETED';
+          this._setEndgameIcon('COMPLETED');
+          return true;
+        }
+        if(this.sceneText.includes('GAME OVER')){
+          this.currentBlock.choice = 'END QUEST';
+          this.gameData.gameStatus = 'FAILED';
+          this.currentQuest.status = 'FAILED';
+          this._setEndgameIcon('FAILED');
+          return true;
+        }
+        if(this.sceneText.includes('TO BE CONTINUED...')){
+          this.currentBlock.choice = 'END QUEST';
+          this.gameData.gameStatus = 'UNCERTAIN';
+          this.currentQuest.status = 'UNCERTAIN';
+          this._setEndgameIcon('UNCERTAIN');
+          return true;
+        }
+      }
       return true;
       //return this._validateCurrentBlock();
     }
@@ -226,34 +249,33 @@ export class QuestViewComponent implements OnInit {
   }
 
   private _initializeQuest(){
-    let req:QuestInitRequest = {
-      username:this.gameData.username,
-      charname:this.gameData.charname,
-      charCollectionAddress:this.gameData.charCollectionAddress,
-      charTokenId:this.gameData.charTokenId,
-      charInfo:this.gameData.charInfo,
-      ambiences:this.gameData.userPreferences["ambiences"],
-      genres:this.gameData.userPreferences["genres"],
-      moods:this.gameData.userPreferences["moods"],
-      suggestion:this.gameData.userPreferences["suggestion"],
-      constraints:this.gameData.userPreferences["constraints"],
-      maxBlocks:10
-    }
-    console.log('-- init req -- ', req);
-    this.hasStreamedScene = false;
-    this.sceneText = "";
-    this.isLoading = true;
-    this.gameData.gameStatus = 'INITIALIZING';
-    this._service.initQuestStream(req).subscribe(res => {
-      console.log('-- on response --', res)
-      if(this._handleResponseStream(res) && this.currentBlock){
-        this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
-        this.gameData.currentBlock++;
-        this.currentBlock.id = this.gameData.currentBlock;
-        this.btnTxt = "SUBMIT";
-        this._completeInitialization(req);
+    if(this.gameData.character && this.gameData.userPreferences){
+      let req:QuestInitRequest = {
+        username:this.gameData.username,
+        charname:this.gameData.charname,
+        charCollectionAddress:this.gameData.charCollectionAddress,
+        charTokenId:this.gameData.charTokenId,
+        character:this.gameData.character,
+        preferences:this.gameData.userPreferences,
+        isRandomCharacter:this.gameData.isRandomCharacter,
+        maxBlocks:5
       }
-    })
+      console.log('-- init req -- ', req);
+      this.hasStreamedScene = false;
+      this.sceneText = "";
+      this.isLoading = true;
+      this.gameData.gameStatus = 'INITIALIZING';
+      this._service.initQuestStream(req).subscribe(res => {
+        console.log('-- on response --', res)
+        if(this._handleResponseStream(res) && this.currentBlock){
+          this.gameData.currentBlock++;
+          this.currentBlock.id = this.gameData.currentBlock;
+          this.btnTxt = "SUBMIT";
+          this._completeInitialization(req);
+        }
+      })
+    }
+    
   }
   private _completeInitialization(req:QuestInitRequest){
     let conditions:QueryCondition[] = []
@@ -287,8 +309,9 @@ export class QuestViewComponent implements OnInit {
           this.isLoading=false; 
           if(this.currentBlock){
             this.currentBlock.options = res.options;
-            this.currentBlock.options.push(`${res.bad_choice} (BAD_CHOICE)`)//devonly
+            this.currentBlock.options.push(`${res.bad_choice} <<BAD_CHOICE>>`)//devonly
             this._currentBadChoice = res.bad_choice;
+            this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
             this._service.setQuestStatus(this.gameData.gameSessionId, 'ONGOING').subscribe(res => {
               this.currentQuest = res;
               this.gameData.gameStatus = this.currentQuest.status;
@@ -307,7 +330,7 @@ export class QuestViewComponent implements OnInit {
       case('FAILED'):
         this.endgameIcon = 'mood_bad';
       break;
-      case('UNCONCLUDED'):
+      case('UNCERTAIN'):
         this.endgameIcon = 'sentiment_neutral';
       break;
       case('SUCCESS'):

@@ -14,8 +14,6 @@
                 </button>
             </div>
             <div class="char-display" [@panelStateL]="panelStateL"></div>
-            
-            <!-- <img mat-card-image class="char-display" src="/assets/images/Char_1.png" alt="Photo of a Shiba Inu"> -->
         </div>
         <mat-divider vertical="true"></mat-divider>
         <mat-card class="game-card" appearance="outlined">
@@ -40,13 +38,27 @@
                         aria-label="Play icon" 
                         fontIcon="play_circle_fill"
                   ></mat-icon>
-                  <mat-icon 
-                        *ngIf="!isLoading && hasFinishedQuest"
+                  <ng-container *ngIf="!isLoading && hasFinishedQuest" [ngSwitch]="gameData.gameStatus">
+                    <mat-icon  *ngSwitchCase="'COMPLETED'"
                         style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
                         aria-hidden="false" 
                         aria-label="Play icon" 
-                        fontIcon="questFinishedIcon()"
-                  ></mat-icon>
+                        fontIcon="mood"
+                    ></mat-icon>
+                    <mat-icon  *ngSwitchCase="'FAILED'"
+                        style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
+                        aria-hidden="false" 
+                        aria-label="Play icon" 
+                        fontIcon="mood_bad"
+                    ></mat-icon>
+                    <mat-icon *ngSwitchCase="'UNCERTAIN'"
+                        style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
+                        aria-hidden="false" 
+                        aria-label="Play icon" 
+                        fontIcon="sentiment_neutral"
+                    ></mat-icon>
+                  </ng-container>
+                  
                 </div>
                 
                 <div *ngIf="currentBlock" class="choices-table">

@@ -1,3 +1,5 @@
+import { CharacterMetadata, QuestCharacter, QuestPreferences } from "src/app/core/interfaces/business/prompting.interface"
+
 export interface QueryFilter{
     conditions: QueryCondition[],
     page: number
@@ -32,8 +34,10 @@ export interface GameData{
     charname:string,
     charTokenId:number,
     charCollectionAddress:string,
-    charInfo:string,
+    characterMeta?: CharacterMetadata, // retrieved from contract. Contains Char & AvailablePreferences
+    character?:QuestCharacter, // CharMeta | RandomChar from preferences
+    isRandomCharacter:boolean,
     gameSessionId:string,//dbId RandomQuest | RandomAdventure
-    userPreferences: any,
+    userPreferences?: QuestPreferences,
     currentBlock:number
 }
