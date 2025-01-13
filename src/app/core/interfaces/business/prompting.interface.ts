@@ -1,14 +1,38 @@
+export interface QuestIntroRequest {
+    character: QuestCharacter | null,
+    preferences: QuestPreferences,
+    desiredName:string | null,
+    useRandomCharacter: boolean
+}
+export interface QuestIntroResponse{
+    intro:string,
+    character:QuestCharacter
+}
+export interface QuestPreferences{
+    ambiences: string[],
+    moods: string[],
+    genres: string[], 
+    constraints: string[],
+    suggestion: string,
+}
+export interface QuestCharacter{
+    name:string,
+    age:string,
+    appereance:string,
+    background:string,
+    personality: string,
+    motivations: string,
+    iconicMoment: string,
+    comment:string
+}
 export interface QuestInitRequest{
     username:string,
     charname:string,
     charTokenId: number,
     charCollectionAddress:string,
-    charInfo:string //TODO: CharNFTData (ahora mismo hacer rebujito en front)
-    ambiences:string[]
-    genres:string[]
-    moods: string[]
-    constraints: string[]
-    suggestion:string
+    character:QuestCharacter,
+    isRandomCharacter:boolean,
+    preferences: QuestPreferences,
     maxBlocks:number
 }
 export interface RandomQuestDto{
@@ -27,10 +51,16 @@ export interface QuestBlockDto{
     options:string[]
     choice:string | null
 }
-export interface CharacterNFT_Mock{
+export interface CharacterMetadata{
     id:number,
     name: string,
-    description:string,
+    age: string,
+    appereance:string,
+    background:string,
+    personality:string,
+    motivations:string,
+    iconicMoment:string,
+    comment:string,
     ambiences:string[],
     moods:string[],
     fileName:string,

@@ -3,6 +3,7 @@ import { SmartContractsService } from '../../services/smart-contracts.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
+import { QuestCharacter } from 'src/app/core/interfaces/business/prompting.interface';
 @Component({
   selector: 'app-character-selection',
   templateUrl: './character-selection.component.html',
@@ -32,13 +33,22 @@ export class CharacterSelectionComponent implements OnInit {
     let gameData = this._getGameData();
     if(gameData){
       gameData.charname =name;
-      let fakeNFT = this._smartContractsService.getMockedNFTs()[0];
+      let fakeNFT = this._smartContractsService.getMockedNFTs()[1];
       console.log('-- getting fake nft --', fakeNFT);
       gameData.charTokenId = fakeNFT.id;
       gameData.charCollectionAddress = '0xBLAHBLAH';
-      gameData.userPreferences["ambiences"] = fakeNFT.ambiences;
-      gameData.userPreferences["moods"] = fakeNFT.moods;
-      gameData.charInfo = '';//nftMetadata
+      gameData.characterMeta = fakeNFT;//nftMetadata
+      gameData.character = {
+        name: fakeNFT.name,
+        age: fakeNFT.age,
+        appereance: fakeNFT.appereance,
+        background: fakeNFT.background,
+        personality: fakeNFT.personality,
+        motivations: fakeNFT.motivations,
+        iconicMoment: fakeNFT.iconicMoment,
+        comment: fakeNFT.comment
+      }
+    
       localStorage.setItem('game-data', JSON.stringify(gameData));
       console.log('-- JSON --' , JSON.stringify(gameData))
       this._router.navigateByUrl('randomworlds/world/generator');

@@ -1,7 +1,7 @@
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { filter, Observable } from 'rxjs';
-import { QuestBlockDto, QuestInitRequest, RandomQuestDto, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
+import { QuestBlockDto, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
 import { CollectionResponse, SortedFilter } from '../../shared/models/common-interfaces';
 
 @Injectable({
@@ -50,8 +50,10 @@ export class QuestsService {
   public endQuest(id:string, status:string, block:QuestBlockDto) : Observable<RandomQuestDto>{
     return this.http.post<RandomQuestDto>(`${this._baseUrl}/${id}/end/${status}`, block)
   }
-
   public generateSceneOptions(req:SceneOptionsRequest) : Observable<SceneOptionsResponse>{
-    return this.http.post<SceneOptionsResponse>(`${this._baseUrl}/generate-scene-options`,req)
+    return this.http.post<SceneOptionsResponse>(`${this._baseUrl}/scene-options`,req)
+  }
+  public generateIntro(req:QuestIntroRequest) : Observable<QuestIntroResponse>{
+    return this.http.post<QuestIntroResponse>(`${this._baseUrl}/intro`, req)
   }
 }

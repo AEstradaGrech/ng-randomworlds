@@ -1,11 +1,13 @@
 <div class="card-container">
     <div class="img-container shadow">
         <div class="background-img"></div>
+        <div class="panel-l" >       
+        </div>
         <mat-card class="game-card" appearance="outlined">
             <mat-card-header>
               <div mat-card-avatar class="game-card-header-image"></div>
-              <mat-card-title class="game-card-title">World Generator </mat-card-title>
-              <mat-card-subtitle class="game-card-subtitle">Generate a universe for your {{gameType}}</mat-card-subtitle>
+              <mat-card-title class="game-card-title">Intro Generator </mat-card-title>
+              <mat-card-subtitle class="game-card-subtitle">Generate and choose an introduction for yout QUEST</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content class="game-card-content">
               <mat-accordion multi="false">
@@ -19,55 +21,72 @@
                     </mat-panel-description>
                   </mat-expansion-panel-header>
                     <form [formGroup]="form">
-
                       <mat-form-field class="form-control">
-                        <mat-label>Story Genre</mat-label>
-                        <mat-chip-grid #genreChipGrid aria-label="Genre selection">
-                          @for (genre of selectedGenres; track genre) {
-                            <mat-chip-row (removed)="removeGenre(genre)">
-                              {{genre}}
-                              <button matChipRemove [attr.aria-label]="'removeGenre ' + genre">
-                                <mat-icon>cancel</mat-icon>
-                              </button>
-                            </mat-chip-row>
-                          }
-                        </mat-chip-grid>
-                        <input placeholder="Add Genre..." #genreInput formControlName="genre"
-                          [matChipInputFor]="genreChipGrid" [matAutocomplete]="auto"
-                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                          (matChipInputTokenEnd)="addGenre($event)"/>
-                        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="genreSelected($event)">
-                          @for (genre of filteredGenres; track genre) {
-                            <mat-option [value]="genre">{{genre}}</mat-option>
-                          }
-                        </mat-autocomplete>  
-                      </mat-form-field>
-                      <mat-form-field class="form-control">
-                        <mat-label>World Ambience</mat-label>
-                        <mat-chip-grid #ambienceChipGrid aria-label="Ambience selection">
+                        <mat-label>Quest Ambience</mat-label>
+                        <mat-chip-grid #ambienceChipGrid aria-label="Ambience selection" formControlName="ambiences">
                           @for (ambience of selectedAmbiences; track ambience) {
                             <mat-chip-row (removed)="removeAmbience(ambience)">
                               {{ambience}}
-                              <button matChipRemove [attr.aria-label]="'removeAmbience ' + ambience">
+                              <button matChipRemove aria-label="'removeAmbience ' + ambience">
                                 <mat-icon>cancel</mat-icon>
                               </button>
                             </mat-chip-row>
                           }
                         </mat-chip-grid>
-                        <input placeholder="Add Ambience..." #ambienceInput formControlName="ambience"
-                          [matChipInputFor]="ambienceChipGrid" [matAutocomplete]="auto"
+                        <input placeholder="Add Ambience..." #ambienceInput
+                          [matChipInputFor]="ambienceChipGrid" [matAutocomplete]="ambsAuto"
                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                           (matChipInputTokenEnd)="addAmbience($event)"/>
-                        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="ambienceSelected($event)">
+                        <mat-autocomplete #ambsAuto="matAutocomplete" (optionSelected)="ambienceSelected($event)">
                           @for (ambience of filteredAmbiences; track ambience) {
                             <mat-option [value]="ambience">{{ambience}}</mat-option>
                           }
                         </mat-autocomplete>  
                       </mat-form-field> 
-                        <!--<mat-form-field class="form-control">
-                            <mat-label>Genres</mat-label>
-                            <input matInput type="text" [disabled]="true" formControlName="genres"/>
-                        </mat-form-field> -->
+                      <mat-form-field class="form-control">
+                        <mat-label>Quest Mood</mat-label>
+                        <mat-chip-grid #moodChipGrid aria-label="Mood selection" formControlName="moods">
+                          @for (mood of selectedMoods; track mood) {
+                            <mat-chip-row (removed)="removeMood(mood)">
+                              {{mood}}
+                              <button matChipRemove aria-label="'removeMood ' + mood">
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip-row>
+                          }
+                        </mat-chip-grid>
+                        <input placeholder="Add Mood..." #moodInput
+                          [matChipInputFor]="moodChipGrid" [matAutocomplete]="moodsAuto"
+                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                          (matChipInputTokenEnd)="addMood($event)"/>
+                        <mat-autocomplete #moodsAuto="matAutocomplete" (optionSelected)="moodSelected($event)">
+                          @for (mood of filteredMoods; track mood) {
+                            <mat-option [value]="mood">{{mood}}</mat-option>
+                          }
+                        </mat-autocomplete>  
+                      </mat-form-field>
+                      <mat-form-field class="form-control">
+                        <mat-label>Story Genre</mat-label>
+                        <mat-chip-grid #genresChipGrid aria-label="Genre selection" formControlName="genres">
+                          @for (genre of selectedGenres; track genre) {
+                            <mat-chip-row (removed)="removeGenre(genre)">
+                              {{genre}}
+                              <button matChipRemove aria-label="'removeMood ' + genre">
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip-row>
+                          }
+                        </mat-chip-grid>
+                        <input placeholder="Add Genre..." #genreInput
+                          [matChipInputFor]="genresChipGrid" [matAutocomplete]="gensAuto"
+                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                          (matChipInputTokenEnd)="addGenre($event)"/>
+                        <mat-autocomplete #gensAuto="matAutocomplete" (optionSelected)="genreSelected($event)">
+                          @for (genre of filteredGenres; track genre) {
+                            <mat-option [value]="genre">{{genre}}</mat-option>
+                          }
+                        </mat-autocomplete>  
+                      </mat-form-field>
                     </form>
                     <mat-expansion-panel>
                         <mat-expansion-panel-header style="height: 35px;">
@@ -89,7 +108,44 @@
             <mat-card-actions class="game-card-actions">
               <button mat-stroked-button class="begin-btn" (click)="onGenerateClick()">GENERATE</button>
             </mat-card-actions>
+        </mat-card>
+        <div class="panel-r">
+          <ng-container *ngFor="let quest of quests">
+            <mat-card class="quest-card" appearance="outlined">
+              <mat-card-header>
+                <div mat-card-avatar class="game-card-header-image"></div>
+                <mat-card-title class="game-card-title">Quest {{quest.id}}</mat-card-title>
+                <mat-card-subtitle class="game-card-subtitle">Click Play to begin this Quest</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-actions class="game-card-actions">
+                <button mat-stroked-button class="quest-card-btn" (click)="onReviewQuestClick(quest)">REVIEW</button>
+                <button mat-stroked-button class="quest-card-btn" (click)="onGenerateClick()">PLAY</button>
+              </mat-card-actions>   
+            </mat-card>
+          </ng-container>    
+          <!-- <mat-card class="quest-card" appearance="outlined">
+            <mat-card-header>
+              <div mat-card-avatar class="game-card-header-image"></div>
+              <mat-card-title class="game-card-title">Quest 1 </mat-card-title>
+              <mat-card-subtitle class="game-card-subtitle">Click Play to begin this Quest</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions class="game-card-actions">
+              <button mat-stroked-button class="quest-card-btn" (click)="onReviewQuestClick('Blah 1')">REVIEW</button>
+              <button mat-stroked-button class="quest-card-btn" (click)="onGenerateClick()">PLAY</button>
+            </mat-card-actions>   
           </mat-card>
+          <mat-card class="quest-card" appearance="outlined">
+            <mat-card-header>
+              <div mat-card-avatar class="game-card-header-image"></div>
+              <mat-card-title class="game-card-title">Quest 2 </mat-card-title>
+              <mat-card-subtitle class="game-card-subtitle">Click Play to begin this Quest</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions class="game-card-actions">
+              <button mat-stroked-button class="quest-card-btn" (click)="onReviewQuestClick('Blah 2')">REVIEW</button>
+              <button mat-stroked-button class="quest-card-btn" (click)="onGenerateClick()">PLAY</button>
+            </mat-card-actions>   
+          </mat-card> -->
+        </div>
     </div>
 </div>
 

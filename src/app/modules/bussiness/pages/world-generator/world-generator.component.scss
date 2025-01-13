@@ -24,8 +24,8 @@
 }
 
 .game-card {
-    width: 50%;
-    max-width: 50%;
+    width: 55%;
+    max-width: 55%;
     margin: 0px 50px 0px 50px;
   }
   
@@ -85,8 +85,32 @@
 }
 
 .form-control{
-    margin:0px 10px 0px 10px
+    margin:0px 5px 0px 5px;
+    width: 32%;
 }
 .mat-expansion-panel-body{
     padding: 0px 24px 10px;
+}
+.panel-l{
+    width: 21%;
+    height: 69vh;
+    display: flex;
+}
+.panel-r{
+    width: 21%;
+    display: block;
+}
+.quest-card{
+    margin: 40px 0px 40px 0px;
+}
+.quest-card-btn{
+    width: 30%;
+    color: #99c531 !important;
+    border-color: rgb(175 239 24) !important;
+    margin: 0px 10px 0px 10px;
+}
+.quest-card-btn:hover{
+    color: #ffffff !important;
+    border-color: rgb(245, 247, 243) !important;
+    background-color: #99c531 !important;
 }

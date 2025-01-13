@@ -59,9 +59,11 @@ export class HomeComponent implements OnInit{
       charname:'',
       charTokenId:0,
       charCollectionAddress:'',
-      charInfo:'',
+      characterMeta:undefined,
+      character:undefined,
+      isRandomCharacter:false,
       gameSessionId:'',
-      userPreferences:{},
+      userPreferences:undefined,
       currentBlock:0
     }
     localStorage.setItem('game-data', JSON.stringify(data))
