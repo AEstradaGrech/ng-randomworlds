@@ -45,6 +45,8 @@ export class WorldGeneratorComponent implements OnInit{
   public quests:any[] = []
   public showSettings:string = 'visible';
   public isRandomCharacter:boolean = false;
+  public isLoading:boolean = false;
+  public currentIntro:string = ''
   private _fb:FormBuilder = inject(FormBuilder);
   private _router = inject(Router);
   private _snackBar = inject(MatSnackBar);
@@ -230,15 +232,18 @@ export class WorldGeneratorComponent implements OnInit{
         preferences:preferences
       }
       console.log('-- intro req --', introReq);
+      this.isLoading = true;
       this._service.generateIntro(introReq).subscribe(res => {
-        console.log('-- on intro response --')
+        console.log('-- on intro response --', res)
         //add to array
+        this.isLoading = false;
         this.showSettings = 'hidden';
         if(this.quests.length == 2){
           this.quests = this.quests.slice(-1)
           this.quests[0].id = 1
         }
-        this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences})
+        this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences, character: res.character})
+        this.currentIntro = res.intro;
         //
       })
       //TODO: generat Lore w/AssTeam. Add to gameData | userPrefs
@@ -252,6 +257,7 @@ export class WorldGeneratorComponent implements OnInit{
   }
   public onReviewQuestClick(quest:any){
     console.log(quest)
+    this.currentIntro = quest.data.intro;
   }
   public onShowSettings(value:boolean){
     this.showSettings = value ? 'visible' : 'hidden';
