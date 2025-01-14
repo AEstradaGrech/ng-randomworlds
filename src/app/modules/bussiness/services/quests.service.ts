@@ -54,6 +54,7 @@ export class QuestsService {
     return this.http.post<SceneOptionsResponse>(`${this._baseUrl}/scene-options`,req)
   }
   public generateIntro(req:QuestIntroRequest) : Observable<QuestIntroResponse>{
+    console.log('generate intro')
     return this.http.post<QuestIntroResponse>(`${this._baseUrl}/intro`, req)
   }
 }

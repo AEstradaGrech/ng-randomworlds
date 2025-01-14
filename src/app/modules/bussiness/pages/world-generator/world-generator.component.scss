@@ -78,15 +78,20 @@
 }
 .text-area{
     background-color: #101010a6;
-    min-width: 41vw;
-    max-width: 41vw;
+    min-width: 45vw;
+    max-width: 45vw;
     min-height: 41vh;
     max-height: 41vh;
 }
-
+.hidden-text-area{
+    display: none;
+}
 .form-control{
     margin:0px 5px 0px 5px;
     width: 32%;
+}
+.form-toggle{
+ width: 32%;
 }
 .mat-expansion-panel-body{
     padding: 0px 24px 10px;
@@ -95,10 +100,12 @@
     width: 21%;
     height: 69vh;
     display: flex;
+    margin-left:10px;
 }
 .panel-r{
     width: 21%;
     display: block;
+    margin-right: 10px;
 }
 .quest-card{
     margin: 40px 0px 40px 0px;
