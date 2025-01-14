@@ -11,7 +11,7 @@
             </mat-card-header>
             <mat-card-content class="game-card-content">
               <mat-accordion multi="false">
-                <mat-expansion-panel>
+                <mat-expansion-panel (opened)="onShowSettings(true)" (closed)="onShowSettings(false)" [expanded]="showSettings==='visible'">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                         Bayaz, el Primero de los Magos
@@ -87,22 +87,44 @@
                           }
                         </mat-autocomplete>  
                       </mat-form-field>
-                    </form>
-                    <mat-expansion-panel>
+                      <mat-form-field class="form-control">
+                        <mat-label>Story Constraints</mat-label>
+                        <mat-chip-grid #constraintsChipGrid aria-label="Constraints" formControlName="constraints">
+                          @for (constraint of selectedConstraints; track constraint) {
+                            <mat-chip-row (removed)="removeConstraint(constraint)">
+                              {{constraint}}
+                              <button matChipRemove aria-label="'removeConstraint ' + constraint">
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip-row>
+                          }
+                        </mat-chip-grid>
+                        <input placeholder="Add Constraint..." #constraintsInput
+                          [matChipInputFor]="constraintsChipGrid"
+                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                          (matChipInputTokenEnd)="addConstraint($event)"/>
+                      </mat-form-field>
+                      <mat-slide-toggle class="form-control"[checked]="isRandomCharacter" (change)="onUseRandomCharToggle($event)">Use Random Character</mat-slide-toggle>
+                      <mat-form-field class="form-control" *ngIf="isRandomCharacter">
+                        <mat-label>Desired Name</mat-label>
+                        <input matInput type="text" placeholder="Character name..." formControlName="desiredName">
+                      </mat-form-field>
+                      <mat-expansion-panel>
                         <mat-expansion-panel-header style="height: 35px;">
                           <mat-panel-description style="justify-content: center;">
                             Plot suggestion
                           </mat-panel-description>
                         </mat-expansion-panel-header>       
-                            <mat-form-field class="form-control" style="width: 100%;">
-                                <mat-label>Plot</mat-label>
-                                <input matInput type="text" formControlName="plot" max="20"/>
-                            </mat-form-field>
+                        <mat-form-field class="form-control" style="width: 100%;">
+                            <mat-label>Plot</mat-label>
+                            <input formControlName="plot" matInput type="text" max="20"/>
+                        </mat-form-field>
                       </mat-expansion-panel>
+                    </form>
                 </mat-expansion-panel>
               </mat-accordion>  
-                <div class="text-container">
-                    <textarea *ngIf="false" class="text-area"></textarea>
+                <div class="text-container" [@settingsState]="showSettings">
+                    <textarea [ngClass]="{'text-area': showSettings === 'hidden', 'hidden-text-area': showSettings === 'visible'}"></textarea>
                 </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">

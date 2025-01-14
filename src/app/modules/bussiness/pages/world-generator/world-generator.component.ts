@@ -2,25 +2,27 @@ import { Component, inject, OnInit,  ElementRef, ViewChild, } from '@angular/cor
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router'
-
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatAutocompleteSelectedEvent, MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
-import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
-import {MatIconModule} from '@angular/material/icon';
-import {AsyncPipe} from '@angular/common';
-import {MatFormFieldModule} from '@angular/material/form-field';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { QuestsService } from '../../services/quests.service';
-import { QuestIntroRequest } from 'src/app/core/interfaces/business/prompting.interface';
+import { QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-world-generator',
   templateUrl: './world-generator.component.html',
-  styleUrl: './world-generator.component.scss'
+  styleUrl: './world-generator.component.scss',
+  animations:[
+    trigger('settingsState', [
+          state('visible', style({ height: '0vh' })),
+          state('hidden', style({ height:'45vh', overflow: 'hidden' })),
+          transition('* => visible', animate('150ms ease-in')),
+          transition('* => hidden', animate('150ms ease-out'))
+        ])
+  ]
 })
 export class WorldGeneratorComponent implements OnInit{
   public gameType!: string | null;
@@ -38,16 +40,17 @@ export class WorldGeneratorComponent implements OnInit{
   public selectedAmbiences: string[] = []
   public selectedMoods: string[]=[]
   public selectedGenres: string[]=[]
+  public selectedConstraints: string[]=[]
   public form!: FormGroup;  
   public quests:any[] = []
+  public showSettings:string = 'visible';
+  public isRandomCharacter:boolean = false;
   private _fb:FormBuilder = inject(FormBuilder);
   private _router = inject(Router);
   private _snackBar = inject(MatSnackBar);
   private _service = inject(QuestsService);
   private _gameData!:GameData;
   separatorKeysCodes: number[] = [ENTER, COMMA];
-  // filteredAmbiences: Observable<string[]>;
-  // filteredGenres: Observable<string[]>;
   filteredAmbiences: string[] = [];
   filteredMoods: string[]=[]
   filteredGenres: string[]= ['Action', 'Drama','Thriller', 'Horror', 'Comedy', 'Mystery', 'Romance', 'Fantasy'];
@@ -55,6 +58,7 @@ export class WorldGeneratorComponent implements OnInit{
   @ViewChild('ambienceInput') ambienceInput!: ElementRef<HTMLInputElement>;
   @ViewChild('moodsInput') moodsInput!: ElementRef<HTMLInputElement>;
   @ViewChild('genresInput') genreInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('genresInput') constraintsInput!: ElementRef<HTMLInputElement>;
   announcer = inject(LiveAnnouncer);
 
   constructor() {
@@ -83,19 +87,13 @@ export class WorldGeneratorComponent implements OnInit{
         ambiences: new FormControl(this.selectedAmbiences),
         moods: new FormControl(this.selectedMoods),
         genres: new FormControl(''),
-        plot: new FormControl(undefined, [Validators.maxLength(200)])
+        constraints: new FormControl(this.selectedConstraints),
+        plot: new FormControl('', [Validators.maxLength(100)]),
+        desiredName: new FormControl(undefined, [Validators.maxLength(30)])
       })
     }
     // this.quests.push({id: this.quests.length +1})
     // this.quests.push({id: this.quests.length +1})
-    // this.form.controls['ambience'].valueChanges.subscribe((ambience: string | null) =>{ 
-    //   console.log('-- on ambience change --', ambience)
-    //   this.filteredAmbiences = (ambience ? this._filterAmbience(ambience) : this._gameData.characterMeta?.ambiences.slice() ?? [])
-    // });
-    // this.form.controls['genre'].valueChanges.subscribe((genre: string | null) =>{ 
-    //   console.log('-- on genre change -- ', genre)
-    //   this.filteredGenres = (genre ? this._filterGenre(genre) : this.availableGenres.slice())
-    // });
   }
   addAmbience(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
@@ -179,8 +177,28 @@ export class WorldGeneratorComponent implements OnInit{
     //this.form.controls['genre'].setValue(null);
   }
 
+  addConstraint(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    // Add our fruit
+    if (value) 
+      this.selectedConstraints.push(value);
+    // Clear the input value
+    event.chipInput!.clear();
+    //this.form.controls['genre'].setValue(null);
+  }
+
+  removeConstraint(constraint: string): void {
+    const index = this.selectedConstraints.indexOf(constraint);
+    if (index >= 0) {
+      this.selectedConstraints = this.selectedConstraints.filter(x => x !== constraint)
+      this.announcer.announce(`Removed ${constraint}`);
+    }
+  }
+  public onUseRandomCharToggle(event:any){
+    this.isRandomCharacter = event.checked;
+  }
   private _getGameData():GameData | null{
-      let gameDataCache = localStorage.getItem('game-data')
+      let gameDataCache = localStorage.getItem('game-data');
       return gameDataCache ? JSON.parse(gameDataCache) : null;
   }
   public onGenerateClick(){
@@ -194,16 +212,28 @@ export class WorldGeneratorComponent implements OnInit{
       //   "suggestion":"",
       //   "constraints":[""]
       // }
-    if(this._gameData.userPreferences){
+    console.log('-- form val --',this.form.getRawValue())
+    let formValues = this.form.getRawValue();
+    let preferences:QuestPreferences = {
+      ambiences: formValues.ambiences,
+      moods: formValues.moods,
+      genres: formValues.genres,
+      constraints: formValues.constraints,
+      suggestion: formValues.plot
+    }
+    console.log('-- intro req prefs --', preferences)
+    if(this._hasValidPreferences(preferences)){
       let introReq: QuestIntroRequest = {
-        character:null,
-        useRandomCharacter:true, //formControl
-        desiredName:"", //formControl
-        preferences:this._gameData.userPreferences
+        character:this.isRandomCharacter ? null : this._gameData.character ?? null,
+        useRandomCharacter:this.isRandomCharacter, //formControl
+        desiredName:this.isRandomCharacter ? formValues.desiredName : "", //formControl
+        preferences:preferences
       }
+      console.log('-- intro req --', introReq);
       this._service.generateIntro(introReq).subscribe(res => {
         console.log('-- on intro response --')
         //add to array
+        this.showSettings = 'hidden';
         if(this.quests.length == 2){
           this.quests = this.quests.slice(-1)
           this.quests[0].id = 1
@@ -222,5 +252,19 @@ export class WorldGeneratorComponent implements OnInit{
   }
   public onReviewQuestClick(quest:any){
     console.log(quest)
+  }
+  public onShowSettings(value:boolean){
+    this.showSettings = value ? 'visible' : 'hidden';
+  }
+  private _hasValidPreferences(preferences:QuestPreferences) : boolean{
+    if(preferences.ambiences.length <= 0){
+      this._snackBar.open("You have to select at least one 'Quest Ambience'", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
+      return false;
+    }
+    if(preferences.genres.length <= 0){
+      this._snackBar.open("You have to select at least one 'Story Genre'", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
+      return false;
+    }
+    return true
   }
 }
