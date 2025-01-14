@@ -122,13 +122,18 @@
                       </mat-expansion-panel>
                     </form>
                 </mat-expansion-panel>
-              </mat-accordion>  
+              </mat-accordion>
                 <div class="text-container" [@settingsState]="showSettings">
-                    <textarea [ngClass]="{'text-area': showSettings === 'hidden', 'hidden-text-area': showSettings === 'visible'}"></textarea>
+                    <textarea [ngClass]="{'text-area': showSettings === 'hidden', 'hidden-text-area': showSettings === 'visible'}">{{currentIntro}}</textarea>
                 </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="begin-btn" (click)="onGenerateClick()">GENERATE</button>
+              <button mat-stroked-button class="begin-btn" (click)="onGenerateClick()" [disabled]="isLoading">
+                <div class="w-100 h-100 flex jc-center ai-center padding-6 absolute">
+                  <mat-spinner *ngIf="isLoading" diameter="32"></mat-spinner>
+                </div>  
+                <span>GENERATE</span>
+              </button>
             </mat-card-actions>
         </mat-card>
         <div class="panel-r">
