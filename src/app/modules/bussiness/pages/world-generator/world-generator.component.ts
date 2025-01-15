@@ -8,7 +8,7 @@ import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { QuestsService } from '../../services/quests.service';
-import { QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
+import { QuestCharacter, QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -90,7 +90,7 @@ export class WorldGeneratorComponent implements OnInit{
         moods: new FormControl(this.selectedMoods),
         genres: new FormControl(''),
         constraints: new FormControl(this.selectedConstraints),
-        plot: new FormControl('', [Validators.maxLength(100)]),
+        plot: new FormControl('', [Validators.maxLength(200)]),
         desiredName: new FormControl(undefined, [Validators.maxLength(30)])
       })
     }
@@ -243,7 +243,7 @@ export class WorldGeneratorComponent implements OnInit{
           this.quests[0].id = 1
         }
         this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences, character: res.character})
-        this.currentIntro = res.intro;
+        this.currentIntro = `CHARACTER:\n${this._formatCharacterData(res.character)}\nINTRO SCENE:\n\n${res.intro}`;
         //
       })
       //TODO: generat Lore w/AssTeam. Add to gameData | userPrefs
@@ -257,7 +257,23 @@ export class WorldGeneratorComponent implements OnInit{
   }
   public onReviewQuestClick(quest:any){
     console.log(quest)
-    this.currentIntro = quest.data.intro;
+    this.currentIntro = `CHARACTER:\n${this._formatCharacterData(quest.data.character)}\nINTRO SCENE:\n\n${quest.data.intro}`;
+    this.selectedAmbiences = [...quest.preferences.ambiences];
+    this.selectedMoods = [...quest.preferences.moods];
+    this.selectedGenres = [...quest.preferences.genres];
+    this.selectedConstraints = [...quest.preferences.constraints];
+    // para cada array --> handle filtered... (comparar con gameData.character (source of truth)) #TODO 
+    this.isRandomCharacter = quest.data.isRandomCharacter;
+    if(this.isRandomCharacter)
+      this.form.controls["desiredName"].setValue(quest.character.name);
+    this.form = this._fb.group({
+      ambiences: new FormControl(this.selectedAmbiences),
+      moods: new FormControl(this.selectedMoods),
+      genres: new FormControl(this.selectedGenres),
+      constraints: new FormControl(this.selectedConstraints),
+      plot: new FormControl(quest.preferences.suggestion, [Validators.maxLength(200)]),
+      desiredName: new FormControl(quest.character.name, [Validators.maxLength(30)])
+    })
   }
   public onShowSettings(value:boolean){
     this.showSettings = value ? 'visible' : 'hidden';
@@ -272,5 +288,17 @@ export class WorldGeneratorComponent implements OnInit{
       return false;
     }
     return true
+  }
+  private _formatCharacterData(data: QuestCharacter):string{
+    return `
+NAME: ${data.name}
+AGE: ${data.age}
+APPEREANCE: ${data.appereance}
+BACKGROUND: ${data.background}
+PERSONALITY: ${data.personality}
+MOTIVATIONS: ${data.motivations}
+ICONIC MOMENT: ${data.iconicMoment}
+REMARKABLE COMMENT: ${data.comment}
+    `
   }
 }
