@@ -1,9 +1,9 @@
 import { TreeMenuItem } from "../../../modules/shared/components/tree-menu/tree-menu-item.model";
 
-export const questViewSidebarConfig = [
+export const adventuresViewSidebarConfig = [
     new TreeMenuItem('Story', 1, undefined, true, false, true),
     new TreeMenuItem('Quest', 2, undefined, false, false, false),
-    new TreeMenuItem('World Info', 1, undefined, true, false, true),
+    new TreeMenuItem('Quest Info', 1, undefined, true, false, true),
     new TreeMenuItem('General', 2, undefined, false, false, false),
     new TreeMenuItem('Locations', 2, undefined, false, false, false),
     new TreeMenuItem('Characters', 2, undefined, false, false, false),
@@ -11,6 +11,12 @@ export const questViewSidebarConfig = [
     new TreeMenuItem('Check Inventory', 2, undefined, false, false, false),
     new TreeMenuItem('Back to Tavern', 2, undefined, false, false, false)
     
+]
+export const questsViewSidebarConfig = [
+    new TreeMenuItem('Quest Info', 1, undefined, true, true, true),
+    new TreeMenuItem('Character', 2, undefined, false, false, true),
+    new TreeMenuItem('Intro', 2, undefined, false, false, true),
+    new TreeMenuItem('Story', 1, undefined, true, true, true),
 ]
 
 export const chatSideBarConfig = [

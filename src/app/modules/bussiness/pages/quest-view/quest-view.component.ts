@@ -1,12 +1,12 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { questViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
+import { questsViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
 import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-menu-item.model';
 import { GameData, QueryCondition, SortedFilter } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router'
 import { QuestsService } from '../../services/quests.service';
-import { QuestBlockDto, QuestInitRequest, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
+import { QuestBlockDto, QuestCharacter, QuestInitRequest, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
 @Component({
   selector: 'app-quest-view',
   templateUrl: './quest-view.component.html',
@@ -33,14 +33,16 @@ export class QuestViewComponent implements OnInit {
   streamedText!:string;
   isLoading:boolean = false;
   hasStreamedScene:boolean = false;
-  actionsBarConfig:Array<TreeMenuItem> = questViewSidebarConfig;
+  actionsBarConfig:Array<TreeMenuItem> = questsViewSidebarConfig;
   panelStateR = 'hidden';
   panelStateL = 'hidden';
   gameData!:GameData;
   currentQuest!:RandomQuestDto;
-  currentBlock!:QuestBlockDto | null; 
+  currentBlock!:QuestBlockDto | null;
+  currentChoices: string[] = []; 
   selectedChoice!:string | null;
   endgameIcon:string = "mood"
+  storyText!:string;
   private _snackBar = inject(MatSnackBar);
   private _router:Router = inject(Router);
   private _service: QuestsService = inject(QuestsService);
@@ -64,6 +66,7 @@ export class QuestViewComponent implements OnInit {
         return;
       }
       this.gameData = gameData;
+      console.log('-- quest game data --', this.gameData);
       //this.gameData.gameSessionId = '677ab56ed0260b9ab658ad9d';
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
@@ -79,9 +82,6 @@ export class QuestViewComponent implements OnInit {
         this.gameData.gameStatus = this.currentQuest.status;
         this.gameData.currentBlock = this.currentQuest.blocks.length;
       })
-      //Quest.getById
-      // render desc
-      // render choices
     }
   }
  
@@ -109,9 +109,20 @@ export class QuestViewComponent implements OnInit {
                 this.gameData.currentBlock++;
                 this.currentBlock.id = this.gameData.currentBlock;
                 this.currentBlock.options = res.options;
+                this.currentChoices = this.currentBlock.options;
                 let badTag = res.bad_choice.toUpperCase().includes("END_TYPE:") ? "": " <<BAD CHOICE>>"
                 this.currentBlock.options.push(`${res.bad_choice}${badTag}`)
                 this._currentBadChoice = res.bad_choice;
+                this._addSceneMenuOption();
+                //update currentQuest -> getById -> blocks w/summary
+                this._service.getById(this.currentQuest.id).subscribe(res => {
+                  this.currentQuest = res;
+                  if(this.currentQuest.blocks.length > 0){
+                    let previousBlock = this.currentQuest.blocks.slice(-1)[0];
+                    if(previousBlock && previousBlock.summary)
+                      this.storyText += `\n\n${previousBlock.summary}`;
+                  }
+                })
               }
             }) 
           }
@@ -152,7 +163,8 @@ export class QuestViewComponent implements OnInit {
           id: 0,//this.currentQuest ? this.currentQuest.blocks.length + 1 : 1, //Esto es para in memory historic (pag.data) pero es una ñapa. #TODO: if Blocks > 10
           scene:this.sceneText,
           options: [],
-          choice:""
+          choice:"",
+          summary:""
         }
         this.choicesText = this.choicesText.replace("<<OPTIONS>>", "");
         this.choicesText.trim();
@@ -202,14 +214,46 @@ export class QuestViewComponent implements OnInit {
       this.panelStateR = (this.panelStateR === 'visible') ? 'hidden' : 'visible';
     }
   }
-
+  public onMenuSelect(event:TreeMenuItem){
+    console.log('-- questview - on menu click --', event)
+    switch(event.name){
+      case('Character'):
+      if(this.gameData.character)
+        this.sceneText = this._formatCharacterData(this.gameData.character)
+      break;
+      case('Intro'):
+      this.sceneText = this.gameData.intro;
+      break;
+      case('Story'):
+      this.sceneText = this.storyText;
+      break;
+      default: 
+        let split = event.name.split(' ');
+        if(split.length > 1){
+          if(this.currentBlock && parseInt(split[1].trim()) === this.currentBlock.id){
+            this.sceneText = this.currentBlock.scene;
+            this.currentChoices = this.currentBlock.options;
+            break;
+          }
+          let block = this.currentQuest.blocks.filter(x => x.id === parseInt(split[1].trim()));
+          if(block !== undefined && block.length > 0){
+            this.sceneText = block[0].scene;
+            this.currentChoices = block[0].options;
+            this.selectedChoice = block[0].choice;
+          }
+        }
+        
+      break;
+    }
+  }
   private _handleResponseStream(res:any) : boolean{
     if(res.status === 200){  
       this.currentBlock = {
         id: 0,//this.currentQuest ? this.currentQuest.blocks.length + 1 : 1, //Esto es para in memory historic (pag.data) pero es una ñapa. #TODO: if Blocks > 10
         scene:this.sceneText,
         options: [],
-        choice:""
+        choice:"",
+        summary:""
       }
       if(this.sceneText && this.sceneText !== ""){
         if(this.sceneText.includes('QUEST FINISHED!')){
@@ -252,11 +296,11 @@ export class QuestViewComponent implements OnInit {
     if(this.gameData.character && this.gameData.userPreferences){
       let req:QuestInitRequest = {
         username:this.gameData.username,
-        charname:this.gameData.charname,
         charCollectionAddress:this.gameData.charCollectionAddress,
         charTokenId:this.gameData.charTokenId,
         character:this.gameData.character,
         preferences:this.gameData.userPreferences,
+        intro:this.gameData.intro,
         isRandomCharacter:this.gameData.isRandomCharacter,
         maxBlocks:5
       }
@@ -270,6 +314,7 @@ export class QuestViewComponent implements OnInit {
         if(this._handleResponseStream(res) && this.currentBlock){
           this.gameData.currentBlock++;
           this.currentBlock.id = this.gameData.currentBlock;
+          this._addSceneMenuOption();
           this.btnTxt = "SUBMIT";
           this._completeInitialization(req);
         }
@@ -283,7 +328,6 @@ export class QuestViewComponent implements OnInit {
     vars.forEach((v:string) => {
       switch(v){
         case("username"):
-        case("charname"):
         case("charTokenId"):
         case("charCollectionAddress"):
           conditions.push({field:v, value:req[v]})
@@ -309,6 +353,7 @@ export class QuestViewComponent implements OnInit {
           this.isLoading=false; 
           if(this.currentBlock){
             this.currentBlock.options = res.options;
+            this.currentChoices = this.currentBlock.options;
             this.currentBlock.options.push(`${res.bad_choice} <<BAD_CHOICE>>`)//devonly
             this._currentBadChoice = res.bad_choice;
             this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
@@ -338,4 +383,25 @@ export class QuestViewComponent implements OnInit {
         this.endgameIcon = 'mood';
     }
   }
+  private _addSceneMenuOption(){
+    this.actionsBarConfig.push(new TreeMenuItem(`Scene ${this.currentBlock?.id}`, 2, undefined, false, false, true, undefined))
+  }
+  private _formatCharacterData(data: QuestCharacter):string{
+    return `
+NAME: ${data.name}
+
+AGE: ${data.age}
+
+APPEREANCE: ${data.appereance}
+
+BACKGROUND: ${data.background}
+
+PERSONALITY: ${data.personality}
+
+MOTIVATIONS: ${data.motivations}
+
+ICONIC MOMENT: ${data.iconicMoment}
+
+REMARKABLE COMMENT: ${data.comment}`
+    }
 }

@@ -253,6 +253,10 @@ export class WorldGeneratorComponent implements OnInit{
   public onPlayQuestClick(quest: any){
     // this._gameData.intro = intro
     //localStorage.setItem('game-data', JSON.stringify(gameData))
+    this._gameData.character = quest.data.character;
+    this._gameData.intro = quest.data.intro;
+    this._gameData.userPreferences = quest.preferences;
+    localStorage.setItem('game-data', JSON.stringify(this._gameData));
     this._router.navigateByUrl('randomworlds/game/quest')
   }
   public onReviewQuestClick(quest:any){
