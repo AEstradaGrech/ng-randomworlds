@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TreeMenuItem } from '../tree-menu/tree-menu-item.model';
 
 @Component({
@@ -10,4 +10,9 @@ export class SideNavbarComponent {
   @Input() config!: Array<TreeMenuItem>;
   @Input() width: string = '240px'
   @Input() withLogo: boolean = true;
+  @Output() onSelect: EventEmitter<TreeMenuItem> = new EventEmitter<TreeMenuItem>()
+
+  public onMenuSelect(event:TreeMenuItem){
+    this.onSelect.emit(event)
+  }
 }

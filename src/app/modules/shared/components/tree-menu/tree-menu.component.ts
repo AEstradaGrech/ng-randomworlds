@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TreeMenuItem } from './tree-menu-item.model';
 import { Router } from '@angular/router';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -29,7 +29,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 export class TreeMenuComponent implements OnInit {
 
   @Input() items!: Array<TreeMenuItem>;
-  
+  @Output() onSelect: EventEmitter<TreeMenuItem> = new EventEmitter<TreeMenuItem>()
   public selectedItem!: TreeMenuItem
 
   constructor(public router: Router) {}
@@ -47,6 +47,7 @@ export class TreeMenuComponent implements OnInit {
     console.log(item);
     if(item.link && item.link !== '')
       this.router.navigateByUrl(item.link)
+    this.onSelect.next(item)
   }
 
   updateChildren(selected: TreeMenuItem) {

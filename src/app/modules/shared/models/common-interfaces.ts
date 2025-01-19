@@ -39,5 +39,6 @@ export interface GameData{
     isRandomCharacter:boolean,
     gameSessionId:string,//dbId RandomQuest | RandomAdventure
     userPreferences?: QuestPreferences,
+    intro: string,
     currentBlock:number
 }

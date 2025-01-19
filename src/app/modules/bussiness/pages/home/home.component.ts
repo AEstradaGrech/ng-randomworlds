@@ -64,6 +64,7 @@ export class HomeComponent implements OnInit{
       isRandomCharacter:false,
       gameSessionId:'',
       userPreferences:undefined,
+      intro:"",
       currentBlock:0
     }
     localStorage.setItem('game-data', JSON.stringify(data))
