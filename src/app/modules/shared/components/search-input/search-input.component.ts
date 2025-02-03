@@ -1,10 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { SessionsMgmtService } from '../../../bussiness/services/sessions-mgmt.service';
 import { SearchInputConfig } from './search-input-config';
-
-
 
 @Component({
   selector: 'app-search-input',
@@ -12,9 +8,7 @@ import { SearchInputConfig } from './search-input-config';
   styleUrl: './search-input.component.scss'
 })
 export class SearchInputComponent {
-  constructor(private http: HttpClient, sessionsMgmtService:SessionsMgmtService){
-    
-  }
+  constructor(private http: HttpClient){}
 
   private _baseUrl:string = 'http://localhost:8000'
   currentValue:string = ""

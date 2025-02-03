@@ -52,7 +52,7 @@ export interface QuestBlockDto{
     choice:string | null,
     summary:string
 }
-export interface CharacterMetadata{
+export interface CharacterInfo{
     id:number,
     name: string,
     age: string,
