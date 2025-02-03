@@ -6,7 +6,7 @@ import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-m
 import { GameData, QueryCondition, SortedFilter } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router'
 import { QuestsService } from '../../services/quests.service';
-import { QuestBlockDto, QuestCharacter, QuestInitRequest, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
+import { QuestBlockDto, QuestCharacter, QuestInitRequest, QuestPreferences, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
 @Component({
   selector: 'app-quest-view',
   templateUrl: './quest-view.component.html',
@@ -221,6 +221,10 @@ export class QuestViewComponent implements OnInit {
   public onMenuSelect(event:TreeMenuItem){
     console.log('-- questview - on menu click --', event)
     switch(event.name){
+      case('Preferences'):
+      if(this.gameData && this.gameData.userPreferences)
+        this.sceneText = this._formatUserPreferences(this.gameData.userPreferences);
+      break;
       case('Character'):
       if(this.gameData.character)
         this.sceneText = this._formatCharacterData(this.gameData.character)
@@ -389,6 +393,20 @@ export class QuestViewComponent implements OnInit {
   }
   private _addSceneMenuOption(){
     this.actionsBarConfig.push(new TreeMenuItem(`Scene ${this.currentBlock?.id}`, 2, undefined, false, false, true, undefined))
+  }
+
+  private _formatUserPreferences(data:QuestPreferences): string{
+    return `
+AMBIENCES: ${data.ambiences}
+
+MOODS: ${data.moods}
+
+GENRES: ${data.genres}
+
+CONSTRAINTS: ${data.constraints ?? 'NONE'}
+
+SUGGESTION: ${data.suggestion ?? 'NONE'}
+    `
   }
   private _formatCharacterData(data: QuestCharacter):string{
     return `

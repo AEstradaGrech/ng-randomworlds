@@ -14,6 +14,7 @@ export const adventuresViewSidebarConfig = [
 ]
 export const questsViewSidebarConfig = [
     new TreeMenuItem('Quest Info', 1, undefined, true, true, true),
+    new TreeMenuItem('Preferences', 2, undefined, false, false, true),
     new TreeMenuItem('Character', 2, undefined, false, false, true),
     new TreeMenuItem('Intro', 2, undefined, false, false, true),
     new TreeMenuItem('Story', 1, undefined, true, true, true),
