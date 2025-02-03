@@ -1,17 +1,118 @@
-import { Injectable } from '@angular/core';
-import { CharacterMetadata } from 'src/app/core/interfaces/business/prompting.interface';
+import { Inject, Injectable } from '@angular/core';
+import { CharacterInfo } from 'src/app/core/interfaces/business/prompting.interface';
+import { DOCUMENT } from '@angular/common';
+import Web3Provider from 'src/app/core/scripts/web3'
+import Factory from 'src/app/core/scripts/immutableFactory'
+import Collection from 'src/app/core/scripts/immutableCollection'
+import { firstValueFrom } from 'rxjs';
+import { CatalogueCollection, CharacterProfile, CollectionSummary, ModelInfo } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SmartContractsService {
+  public web3!:any;
+  public factory:any;
+  public collections: CatalogueCollection[] = [];
+  public connectedAccount!:string;
+  constructor(@Inject(DOCUMENT) private document: Document, private http:HttpClient) { 
+    console.log('-- smarts constructor --');
+    this.web3 = Web3Provider(this.document);
+    this.factory = Factory(this.web3);
+    this.getConnectedAccounts().then(res => {
+      console.log('-- smarts connected observable --', res);
+      if(res.length <= 0){
+        console.log('-- no accounts connected with MetaMask browser extension --');
+        return;
+      }
+      this.connectedAccount = res[0];
+      console.log('-- smart contracts service :: connected account', this.connectedAccount);
+    })
+    this.getCollectionsCatalogue().then(res => {
+      console.log('--contract address--',this.factory._address)
+      //------------- devonly -------------
+      if(this.factory._address === '0x5f7b59a66B4a87fD910017abfF934852A96E596C')
+        res = res.filter(x => x.contractAddress === '0x89d336B82232c680F7786e18DC3d766601F061BD');
+      // ----------------------------------
+      this.collections = this._mapCatalogueData(res);
+      console.log('-- factory cats --', this.collections);
+    })
+  }
+  
+  public getCollectionContract(address:string) : any{
+    return Collection(this.web3, address);
+  }
+  public async getConnectedAccounts() : Promise<any[]>{
+    return await this.web3.eth.getAccounts();
+  }
+  public async getCollectionsCatalogue(): Promise<any[]>{
+    return await this.factory.methods.getCatalogue().call();
+  }
+  public async getCollectionSummary(address: string): Promise<CollectionSummary>{
+    let data = await this.getCollectionContract(address).methods.getContractSummary().call();
+    let summary:CollectionSummary = {
+      name: data.name,
+      symbol: data.symbol,
+      collectionName: data.collectionName,
+      description: data.description,
+      isFreeCollection: data.isFreeCollection,
+      isLimitedCollection: data.isLimitedCollection,
+      isOutOfStock: data.isOutOfStock,
+      maxMints: parseInt(data.maxMints),
+      totalMints: parseInt(data.totalMints),
+      models: data.models,
+      gateway:data.gateway,
+      owner:data.owner
+    }
+    return summary;
+  }
+  public async getModelInfo(model:string, address:string): Promise<ModelInfo>{
+    let data = await this.getCollectionContract(address).methods.modelInfo(model).call();
+    let info: ModelInfo = {
+      name: data.name,
+      description: data.description,
+      weiPrice: data.weiPrice,
+      fileName: data.fileName,
+      fileExtension: data.fileExtension,
+      maxMints: parseInt(data.maxMints),
+      mints: parseInt(data.totalMints),
+      available: data.available
+    }
+    return info;
+  }
+  public async getModelMetadata(model:ModelInfo, collection: CollectionSummary, contract:any) : Promise<any>{
+    let metaCid = await contract.methods.getMetadataFolderCid().call(); //v2 --> viene en summary desde contract
+    let url = `${collection.gateway}/${metaCid}/${model.fileName}.json`;
+    console.log('meta url', url);
+    let rawMetadata = await firstValueFrom(this.http.get<any>(url));
+    console.log('meta resp', rawMetadata);
 
-  constructor() { }
-
+    // TODO: decrypt profile
+    // let profile: CharacterProfile = {
+    //   name: metadata.name,
+      
+    // }
+    return rawMetadata;
+  }
+  private _mapCatalogueData(res: any) : CatalogueCollection[]{
+    return res.map((item:any) => { 
+      let dto: CatalogueCollection = {
+        contractAddress: item.contractAddress,
+        name: item.name,
+        description: item.description,
+        symbol: item.symbol,
+        isFree: item.isFree,
+        isLimited: item.isLimited,
+        logoImage: item.logoImage
+      }; 
+      return dto;
+    })
+  }
   //instanciar contrato w/abi
   // recuperar blockchain data
   // mappear
-  public getMockedNFTs(): CharacterMetadata[]{
+  public getMockedNFTs(): CharacterInfo[]{
     return [
       {
         id:1,
