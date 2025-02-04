@@ -6,8 +6,6 @@ import { Router } from '@angular/router';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { DOCUMENT } from '@angular/common';
 import web3 from 'src/app/core/scripts/web3'
-import Factory from 'src/app/core/scripts/immutableFactory'
-import Collection from 'src/app/core/scripts/immutableCollection'
 import { SmartContractsService } from '../../services/smart-contracts.service';
 
 
