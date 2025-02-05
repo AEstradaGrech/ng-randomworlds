@@ -4,11 +4,12 @@ import { RouterModule, Routes } from "@angular/router";
 import { CharacterSelectionComponent } from "./pages/character-selection/character-selection.component";
 import { WorldGeneratorComponent } from "./pages/world-generator/world-generator.component";
 import { QuestViewComponent } from "./pages/quest-view/quest-view.component";
+import { MarketplaceComponent } from "./pages/marketplace/marketplace.component";
 
 const routes: Routes =[
     {
         path: '',
-        redirectTo:"prompting/chat",
+        redirectTo:"home",
         pathMatch: 'full'
     },
     {
@@ -26,6 +27,10 @@ const routes: Routes =[
     {
         path: 'game/quest',
         component: QuestViewComponent
+    },
+    {
+        path: 'marketplace',
+        component: MarketplaceComponent
     }
 ]
 

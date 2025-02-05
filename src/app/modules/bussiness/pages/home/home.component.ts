@@ -59,7 +59,7 @@ export class HomeComponent implements OnInit{
         for(let i = 0; i < awaitedSummary.models.length; i++){
           let modelInfo = await this._smartContractsService.getModelInfo(awaitedSummary.models[i], devCollection.contractAddress);
           console.log('-- retrieved model info --', modelInfo);
-          let metadata = await this._smartContractsService.getModelMetadata(modelInfo, awaitedSummary, collectionContract);
+          let metadata = await this._smartContractsService.getModelMetadata(modelInfo, awaitedSummary);
           console.log('-- character meta --', metadata);
         }
       }

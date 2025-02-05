@@ -9,6 +9,7 @@ import { CharacterSelectionComponent } from './pages/character-selection/charact
 import { WorldGeneratorComponent } from './pages/world-generator/world-generator.component';
 import { QuestViewComponent } from './pages/quest-view/quest-view.component';
 import { AdventureViewComponent } from './pages/adventure-view/adventure-view.component';
+import { MarketplaceComponent } from './pages/marketplace/marketplace.component';
 
 
 
@@ -18,7 +19,8 @@ import { AdventureViewComponent } from './pages/adventure-view/adventure-view.co
         CharacterSelectionComponent,
         WorldGeneratorComponent,
         QuestViewComponent,
-        AdventureViewComponent
+        AdventureViewComponent,
+        MarketplaceComponent
     ],
     imports:[
         CommonModule,
