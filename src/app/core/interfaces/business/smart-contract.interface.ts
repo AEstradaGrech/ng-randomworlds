@@ -19,6 +19,8 @@ export interface CollectionSummary {
     maxMints: number,
     totalMints: number,
     models:string[],
+    modelsCid:string,
+    metaCid:string,
     gateway:string,
     owner: string
 }
