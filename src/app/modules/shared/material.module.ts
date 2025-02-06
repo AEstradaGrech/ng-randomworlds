@@ -18,7 +18,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort'
 import {MatChipsModule} from '@angular/material/chips';
 import {MatCardModule} from '@angular/material/card';
-
+import {MatMenuModule} from '@angular/material/menu';
 @NgModule({
 declarations:[],
 imports:[
@@ -33,7 +33,8 @@ imports:[
     MatButtonModule,
     MatProgressSpinnerModule,
     MatDivider ,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatMenuModule
 ],
 exports:[
     MatListModule,
@@ -56,7 +57,8 @@ exports:[
     MatTableModule,
     MatSortModule,
     MatChipsModule,
-    MatCardModule
+    MatCardModule,
+    MatMenuModule
 ],
 providers:[]
 })

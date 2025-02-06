@@ -25,8 +25,10 @@ export class MarketplaceComponent implements OnInit{
               ...modelInfo,
               imageUrl: imageUrl,
               collectionSymbol: item.symbol,
-              collectionImage: `url(${item.logoImage})`,
+              logoUrl: `url(${item.logoImage})`,
+              collectionUrl: item.logoImage,
               contractAddress: item.contractAddress,
+              collectionDescription:item.description,
               modelsCid: summary.modelsCid,
               metadataCid: summary.metaCid
             }
