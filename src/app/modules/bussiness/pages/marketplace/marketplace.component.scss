@@ -33,16 +33,30 @@
     color:#6b6b6c;
     font-size:13px;
 }
-.begin-btn{
+.sold-color{
+    color: #dbbd0e!important;
+}
+.view-btn{
     width: 20%;
     color: #99c531 !important;
     border-color: rgb(175 239 24) !important;
 }
-.begin-btn:hover{
+.view-btn:hover{
     width: 20%;
     color: #ffffff !important;
     border-color: rgb(245, 247, 243) !important;
     background-color: #99c531 !important;
+}
+.sold-btn{
+    width: 20%;
+    color: #dbbd0e !important;
+    border-color: rgb(224, 191, 1) !important;
+}
+.sold-btn:hover{
+    width: 20%;
+    color: #ffffff !important;
+    border-color: rgb(245, 247, 243) !important;
+    background-color: #d8bb00 !important;
 }
 .game-card-actions{
     justify-content: center;
