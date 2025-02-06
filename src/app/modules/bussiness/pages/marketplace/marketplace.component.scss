@@ -22,7 +22,11 @@
     margin: 10px 10px 5px 10px;
     border-radius: 15px !important;
   }
-  
+.game-card-header-image{
+    background-size: cover;
+    margin-right: 16px;
+    margin-bottom: 20px !important;
+  }
 .game-card-image{
     border-radius: 15px !important;
     margin: 10px 15px 5px 15px;
@@ -61,7 +65,7 @@
 .game-card-actions{
     justify-content: center;
     align-items: center;
-    height: 8%;
+    height: 7%;
 }
 
 .game-card-title{
@@ -76,8 +80,9 @@
 .card-body{
     display: flex;
     justify-content: center;
-    height: 80%;
+    height: 81%;
 }
 .card-header{
     height: 12%;
+
 }

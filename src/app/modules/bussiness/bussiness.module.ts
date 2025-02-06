@@ -10,6 +10,7 @@ import { WorldGeneratorComponent } from './pages/world-generator/world-generator
 import { QuestViewComponent } from './pages/quest-view/quest-view.component';
 import { AdventureViewComponent } from './pages/adventure-view/adventure-view.component';
 import { MarketplaceComponent } from './pages/marketplace/marketplace.component';
+import { CharDetailDialogComponent } from './pages/marketplace/char-detail-dialog/char-detail-dialog.component';
 
 
 
@@ -20,7 +21,8 @@ import { MarketplaceComponent } from './pages/marketplace/marketplace.component'
         WorldGeneratorComponent,
         QuestViewComponent,
         AdventureViewComponent,
-        MarketplaceComponent
+        MarketplaceComponent,
+        CharDetailDialogComponent
     ],
     imports:[
         CommonModule,
