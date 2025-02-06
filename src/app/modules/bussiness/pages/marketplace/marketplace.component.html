@@ -4,7 +4,7 @@
             <mat-card class="game-card" appearance="outlined">
                 <mat-card-header class="card-header">
                     <div style="display: flex; align-items: center; justify-items: flex-start;">
-                        <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': model.collectionImage}"></div>
+                        <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': model.logoUrl}"></div>
                     </div>
                     <div style="display: flexbox; align-items: center;">
                         <mat-card-title class="game-card-title" [ngClass]="{'sold-color': !model.available}" >{{model.name}}</mat-card-title>
@@ -15,7 +15,25 @@
                     <img mat-card-image class="game-card-image" [src]="model.imageUrl" alt="Character NFT image">
                 </div>
                 <mat-card-actions class="game-card-actions">
-                  <button *ngIf="model.available" mat-stroked-button class="view-btn" (click)="onCharSelect(model.name)">VIEW</button>
+                    <button *ngIf="model.available" mat-stroked-button class="view-btn" (click)="onCharSelect(model.name)" [matMenuTriggerFor]="colMenu">VIEW</button>
+                    <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
+                        <mat-card class="example-card" appearance="outlined">
+                            <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                              <mat-card-title class="collection-card-title">Random Worlds - Season 1</mat-card-title>
+                              <mat-card-subtitle class="collection-card-subtitle">0xee6870759cbDdFb12EE3A4547C35FFB667717df4</mat-card-subtitle>
+                            </mat-card-header>
+                            <img mat-card-image [src]="model.collectionUrl" alt="Photo of a Shiba Inu">
+                            <mat-card-content class="collection-card-content">
+                              <p>
+                                {{model.collectionDescription}}
+                              </p>
+                            </mat-card-content>
+                            <mat-card-actions>
+                             
+                              <button mat-button>SHARE</button>
+                            </mat-card-actions>
+                          </mat-card>
+                    </mat-menu>
                   <button *ngIf="!model.available" mat-stroked-button class="sold-btn" (click)="onCharSelect(model.name)">SOLD</button>
                 </mat-card-actions>
             </mat-card>
