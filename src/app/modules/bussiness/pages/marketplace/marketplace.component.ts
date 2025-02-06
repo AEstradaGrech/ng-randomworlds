@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { CatalogueCollection, CatalogueModel, ModelInfo } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from './char-detail-dialog/char-detail-dialog.component';
 
 @Component({
@@ -42,6 +42,10 @@ export class MarketplaceComponent implements OnInit{
   }
   public onCharSelect(model:CatalogueModel){
     console.log('-- on char select --', model);
-    this._dialog.open(CharDetailDialogComponent, {data:model})
+    let cfg = new MatDialogConfig();
+    cfg.data = model;
+    cfg.height = '95vh';
+    cfg.width = '1100px';
+    this._dialog.open(CharDetailDialogComponent, cfg)
   }
 }
