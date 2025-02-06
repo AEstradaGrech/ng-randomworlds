@@ -43,8 +43,7 @@ export interface CatalogueModel extends ModelInfo{
     logoUrl: string,
     collectionUrl:string,
     imageUrl: string,
-    modelsCid:string,
-    metadataCid: string
+    metadataUrl: string
 }
 export interface CharacterMetadata{
     name:string,

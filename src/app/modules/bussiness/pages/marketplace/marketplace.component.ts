@@ -2,6 +2,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { CatalogueCollection, CatalogueModel, ModelInfo } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
+import { MatDialog } from '@angular/material/dialog';
+import { CharDetailDialogComponent } from './char-detail-dialog/char-detail-dialog.component';
 
 @Component({
   selector: 'app-marketplace',
@@ -10,7 +12,7 @@ import web3 from 'web3';
 })
 export class MarketplaceComponent implements OnInit{
   private _smartContractsService = inject(SmartContractsService);
-
+  private _dialog:MatDialog = inject(MatDialog);
   public modelsCatalogue: CatalogueModel[] = [];
   ngOnInit(): void {
     this._smartContractsService.collections.forEach(item => {
@@ -20,18 +22,16 @@ export class MarketplaceComponent implements OnInit{
           this._smartContractsService.getModelInfo(model, item.contractAddress).then(modelInfo => {
             console.log('-- model info --', modelInfo);
             modelInfo.price = parseFloat(web3.utils.fromWei(modelInfo.price.toString(), 'ether'));
-            let imageUrl = `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`;
             let catalogueModel: CatalogueModel = {
               ...modelInfo,
-              imageUrl: imageUrl,
+              imageUrl: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
+              metadataUrl:`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`,
               collectionSymbol: item.symbol,
               logoUrl: `url(${item.logoImage})`,
               collectionUrl: item.logoImage,
               contractAddress: item.contractAddress,
               collectionName: item.name,
-              collectionDescription:item.description,
-              modelsCid: summary.modelsCid,
-              metadataCid: summary.metaCid
+              collectionDescription:item.description
             }
             this.modelsCatalogue.push(catalogueModel);
             console.log('-- on init cats --', this.modelsCatalogue);
@@ -42,5 +42,6 @@ export class MarketplaceComponent implements OnInit{
   }
   public onCharSelect(model:CatalogueModel){
     console.log('-- on char select --', model);
+    this._dialog.open(CharDetailDialogComponent, {data:model})
   }
 }
