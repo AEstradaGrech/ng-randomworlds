@@ -24,10 +24,7 @@ export interface CollectionSummary {
     gateway:string,
     owner: string
 }
-export interface FullSummary extends CollectionSummary{
-    modelsCid: string,
-    metaCid: string
-}
+
 export interface ModelInfo{
     name:string,
     description: string,
@@ -38,7 +35,14 @@ export interface ModelInfo{
     maxMints: number,
     available: boolean
 }
-
+export interface CatalogueModel extends ModelInfo{
+    contractAddress: string,
+    collectionSymbol:string,
+    collectionImage: string,
+    imageUrl: string,
+    modelsCid:string,
+    metadataCid: string
+}
 export interface CharacterMetadata{
     name:string,
     description:string,
