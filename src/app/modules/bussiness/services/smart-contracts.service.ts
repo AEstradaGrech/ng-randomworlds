@@ -32,10 +32,6 @@ export class SmartContractsService {
     })
     this.getCollectionsCatalogue().then(res => {
       console.log('--contract address--',this.factory._address)
-      //------------- devonly -------------
-      if(this.factory._address === '0x5f7b59a66B4a87fD910017abfF934852A96E596C')
-        res = res.filter(x => x.contractAddress === '0x89d336B82232c680F7786e18DC3d766601F061BD');
-      // ----------------------------------
       this.collections = this._mapCatalogueData(res);
       console.log('-- factory cats --', this.collections);
     })
@@ -75,7 +71,7 @@ export class SmartContractsService {
     let info: ModelInfo = {
       name: data.name,
       description: data.description,
-      weiPrice: data.weiPrice,
+      price: data.weiPrice,
       fileName: data.fileName,
       fileExtension: data.fileExtension,
       maxMints: parseInt(data.maxMints),

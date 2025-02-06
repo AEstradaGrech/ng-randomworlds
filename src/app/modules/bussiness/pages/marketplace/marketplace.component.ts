@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { CatalogueCollection, ModelInfo } from 'src/app/core/interfaces/business/smart-contract.interface';
+import web3 from 'web3';
 
 @Component({
   selector: 'app-marketplace',
@@ -18,6 +19,7 @@ export class MarketplaceComponent implements OnInit{
         summary.models.forEach(model => {
           this._smartContractsService.getModelInfo(model, item.contractAddress).then(modelInfo => {
             console.log('-- model info --', modelInfo);
+            modelInfo.price = parseFloat(web3.utils.fromWei(modelInfo.price.toString(), 'ether'));
             let imageUrl = `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`;
             this.modelsCatalogue.push({...modelInfo, imageUrl: imageUrl});
             console.log('-- on init cats --', this.modelsCatalogue);

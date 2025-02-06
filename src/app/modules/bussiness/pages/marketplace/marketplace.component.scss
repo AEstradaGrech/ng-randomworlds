@@ -1,22 +1,15 @@
 .img-container{
-    width: 90%;
+    width: 97%;
     height: 100%;
     margin: 15px 15px 15px 15px;
     border-radius: 15px;
     min-height: 87.5vh;
-    max-height: 100vh;
+    justify-content: center;
     align-items: center;
-    // overflow-y: hidden;
-    // white-space: nowrap;
-    // .game-card {
-    //     display: inline-block;
-    // }
     display: flex !important;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    .game-card {
-        flex: 0 0 auto;
-    }
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 .card-container{
     display: flex !important;
@@ -24,9 +17,9 @@
 }
 
 .game-card {
-    width: 25%; //45% x 2 nfts //if NFTs = 1 [NgClass] --> justify-content:center en parent (desactivado por scrollbox)
+    width: 23%; //45% x 2 nfts //if NFTs = 1 [NgClass] --> justify-content:center en parent (desactivado por scrollbox)
     height: 80vh;
-    margin: 0px 10px 0px 10px;
+    margin: 10px 10px 5px 10px;
     border-radius: 15px !important;
   }
   
