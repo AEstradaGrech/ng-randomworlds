@@ -6,7 +6,7 @@ import Factory from 'src/app/core/scripts/immutableFactory'
 import Collection from 'src/app/core/scripts/immutableCollection'
 import Decrypter from 'src/app/core/scripts/profileDecrypt'
 import { firstValueFrom } from 'rxjs';
-import { CatalogueCollection, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { CatalogueCollection, CatalogueModel, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -84,6 +84,20 @@ export class SmartContractsService {
     let url = `${collection.gateway}/${collection.metaCid}/${model.fileName}.json`;
     console.log('meta url', url);
     let rawData = await firstValueFrom(this.http.get<any>(url));
+    console.log('meta resp', rawData);
+    let profile: CharacterProfile = JSON.parse(Decrypter(rawData.encryptedProfile));
+    let metadata: CharacterMetadata = {
+      name:rawData.name,
+      description: rawData.description,
+      rarity: rawData.rarity,
+      profile:profile,
+      image: rawData.endpoint
+    }
+    console.log('-- decrypted char meta --', metadata);
+    return metadata;
+  }
+  public async getMetadata(model:CatalogueModel) : Promise<any>{
+    let rawData = await firstValueFrom(this.http.get<any>(model.metadataUrl));
     console.log('meta resp', rawData);
     let profile: CharacterProfile = JSON.parse(Decrypter(rawData.encryptedProfile));
     let metadata: CharacterMetadata = {

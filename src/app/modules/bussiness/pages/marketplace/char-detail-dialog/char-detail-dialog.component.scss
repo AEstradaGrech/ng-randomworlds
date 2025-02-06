@@ -1,0 +1,53 @@
+.card-container{
+    display: flex !important;
+    justify-content: center;
+}
+
+.game-card {
+    width: 100%; //45% x 2 nfts //if NFTs = 1 [NgClass] --> justify-content:center en parent (desactivado por scrollbox)
+    margin: 0px 5px 0px 5px;
+}
+
+.game-card-image{
+    border-radius: 15px !important;
+    margin: 10px 7px 10px 7px;
+    height: 70vh;
+}
+.game-card-content{
+    color:#6b6b6c;
+    font-size:13px;
+    display: block;
+}
+.begin-btn{
+    width: 20%;
+    color: #99c531 !important;
+    border-color: rgb(175 239 24) !important;
+}
+.begin-btn:hover{
+    width: 20%;
+    color: #ffffff !important;
+    border-color: rgb(245, 247, 243) !important;
+    background-color: #99c531 !important;
+}
+.game-card-actions{
+    justify-content: center;
+    align-items: center;
+}
+
+.game-card-title{
+    color:#99c531;
+}
+.game-card-subtitle{
+    font-style: oblique;
+    color: #c3c3c5;
+    font-weight: 300;
+}
+
+.card-body{
+    display: flex;
+}
+
+.dialog-container{
+    width: 1100px;
+    max-height: 100vw;
+}
