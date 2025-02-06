@@ -3,15 +3,14 @@
         @for(model of modelsCatalogue; track model){
             <mat-card class="game-card" appearance="outlined">
                 <mat-card-header class="card-header">
-                  <mat-card-title class="game-card-title">{{model.name}}</mat-card-title>
+                  <mat-card-title class="game-card-title">{{model.name}} - {{model.price}} (ETH)</mat-card-title>
                   <mat-card-subtitle class="game-card-subtitle">{{model.description}}</mat-card-subtitle>
                 </mat-card-header>
                 <div class="card-body">
                     <img mat-card-image class="game-card-image" [src]="model.imageUrl" alt="Character NFT image">
-
                 </div>
                 <mat-card-actions class="game-card-actions">
-                  <button mat-stroked-button class="begin-btn" (click)="onCharSelect(model.name)">SELECT</button>
+                  <button mat-stroked-button class="begin-btn" (click)="onCharSelect(model.name)">VIEW</button>
                 </mat-card-actions>
             </mat-card>
         }

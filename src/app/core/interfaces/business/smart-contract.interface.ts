@@ -31,7 +31,7 @@ export interface FullSummary extends CollectionSummary{
 export interface ModelInfo{
     name:string,
     description: string,
-    weiPrice: number,
+    price: number,
     fileName: string,
     fileExtension: string,
     mints: number,
