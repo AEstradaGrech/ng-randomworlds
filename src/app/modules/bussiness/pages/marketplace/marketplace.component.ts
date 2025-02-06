@@ -28,6 +28,7 @@ export class MarketplaceComponent implements OnInit{
               logoUrl: `url(${item.logoImage})`,
               collectionUrl: item.logoImage,
               contractAddress: item.contractAddress,
+              collectionName: item.name,
               collectionDescription:item.description,
               modelsCid: summary.modelsCid,
               metadataCid: summary.metaCid
@@ -39,7 +40,7 @@ export class MarketplaceComponent implements OnInit{
       })
     })
   }
-  public onCharSelect(name:string){
-    console.log('-- on char select --', name);
+  public onCharSelect(model:CatalogueModel){
+    console.log('-- on char select --', model);
   }
 }

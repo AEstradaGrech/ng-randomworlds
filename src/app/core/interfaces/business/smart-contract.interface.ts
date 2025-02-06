@@ -38,6 +38,7 @@ export interface ModelInfo{
 export interface CatalogueModel extends ModelInfo{
     contractAddress: string,
     collectionSymbol:string,
+    collectionName:string,
     collectionDescription: string,
     logoUrl: string,
     collectionUrl:string,

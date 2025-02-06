@@ -40,17 +40,17 @@
 .sold-color{
     color: #dbbd0e!important;
 }
-.view-btn{
-    width: 20%;
-    color: #99c531 !important;
-    border-color: rgb(175 239 24) !important;
-}
-.view-btn:hover{
-    width: 20%;
-    color: #ffffff !important;
-    border-color: rgb(245, 247, 243) !important;
-    background-color: #99c531 !important;
-}
+// .view-btn{
+//     width: 20%;
+//     color: #99c531 !important;
+//     border-color: rgb(175 239 24) !important;
+// }
+// .view-btn:hover{
+//     width: 20%;
+//     color: #ffffff !important;
+//     border-color: rgb(245, 247, 243) !important;
+//     background-color: #99c531 !important;
+// }
 .sold-btn{
     width: 20%;
     color: #dbbd0e !important;
@@ -107,11 +107,53 @@
 
 }
 
-.example-card {
-    max-width: 400px;
+.collection-card {
+    max-width: 420px;
   }
-  
-  .example-header-image {
-    background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-    background-size: cover;
-  }
+.col-details-btn{
+margin: 0px 10px 0px 10px;
+border-radius: 100px;
+background-color: #ffffff;
+border-color: rgb(175 239 24) !important;
+}
+
+.col-details-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #99c531;
+    color: #ffffff;
+    .mat-icon{
+        color: #ffffff !important;
+    }
+}
+.buy-btn{
+    margin: 0px 10px 0px 10px;
+    border-radius: 100px;
+    background-color: #ffffff;
+    border-color: rgb(239, 217, 24) !important;
+    }
+    
+.buy-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #dbbd0e;
+    .mat-icon{
+        color: #ffffff !important;
+    }
+}
+.view-btn{
+    margin: 0px 10px 0px 10px;
+    border-radius: 100px;
+    background-color: #ffffff;
+    border-color: rgb(175 239 24) !important;
+}
+
+.view-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    background-color: #99c531;
+    color: #ffffff;
+    .mat-icon{
+        color: #ffffff !important;
+    }
+}
