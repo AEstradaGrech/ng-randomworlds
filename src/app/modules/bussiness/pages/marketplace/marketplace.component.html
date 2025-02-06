@@ -3,14 +3,15 @@
         @for(model of modelsCatalogue; track model){
             <mat-card class="game-card" appearance="outlined">
                 <mat-card-header class="card-header">
-                  <mat-card-title class="game-card-title">{{model.name}} - {{model.price}} (ETH)</mat-card-title>
+                  <mat-card-title class="game-card-title" [ngClass]="{'sold-color': !model.available}" >{{model.name}} - {{model.price}} (ETH)</mat-card-title>
                   <mat-card-subtitle class="game-card-subtitle">{{model.description}}</mat-card-subtitle>
                 </mat-card-header>
                 <div class="card-body">
                     <img mat-card-image class="game-card-image" [src]="model.imageUrl" alt="Character NFT image">
                 </div>
                 <mat-card-actions class="game-card-actions">
-                  <button mat-stroked-button class="begin-btn" (click)="onCharSelect(model.name)">VIEW</button>
+                  <button *ngIf="model.available" mat-stroked-button class="view-btn" (click)="onCharSelect(model.name)">VIEW</button>
+                  <button *ngIf="!model.available" mat-stroked-button class="sold-btn" (click)="onCharSelect(model.name)">SOLD</button>
                 </mat-card-actions>
             </mat-card>
         }
