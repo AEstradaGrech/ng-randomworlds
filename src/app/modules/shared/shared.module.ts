@@ -11,6 +11,7 @@ import { HeaderNavbarComponent } from './components/header-navbar/header-navbar.
 import { SideNavbarComponent } from './components/side-navbar/side-navbar.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SearchInputComponent } from './components/search-input/search-input.component';
+import { NanToNumPipe } from './pipes/nan-to-num.pipe';
 
 @NgModule({
     //components, directives, and pipes that belong exclusively to this particular module

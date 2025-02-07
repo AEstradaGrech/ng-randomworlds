@@ -44,7 +44,7 @@ export class MarketplaceComponent implements OnInit{
     console.log('-- on char select --', model);
     let cfg = new MatDialogConfig();
     cfg.data = model;
-    cfg.height = '95vh';
+    cfg.height = '90vh';
     cfg.width = '1100px';
     this._dialog.open(CharDetailDialogComponent, cfg)
   }

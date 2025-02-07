@@ -5,18 +5,20 @@
 
 .game-card {
     width: 98%;
-    margin: 0px 0px 0px 10px;
+    height: 98%;
+    margin: 12px 0px 0px 10px;
 }
 
 .game-card-image{
     border-radius: 15px !important;
-    margin: 10px 7px 10px 7px;
+    margin: 20px 7px 10px 7px;
     height: 70vh;
 }
 .game-card-content{
     color:#6b6b6c;
-    font-size:13px;
+    font-size:12px;
     display: block;
+    padding-top: 10px;
 }
 .begin-btn{
     width: 20%;
@@ -61,4 +63,23 @@
     color: #ffffff !important;
     border-color: rgb(245, 247, 243) !important;
     background-color: #99c531 !important;
+}
+
+.header-titles{
+    width: 40%;
+    padding-top: 5px;
+}
+.header-data{
+    font-size: 14px;
+    width: 40%;
+    padding-top: 5px;
+    padding-left: 7px;
+    font-weight: 300;
+}
+.header-contract-data{
+    font-size:14px;
+    width: 20%;
+    padding-top: 5px;
+    text-align: end;
+    font-weight: 500;
 }

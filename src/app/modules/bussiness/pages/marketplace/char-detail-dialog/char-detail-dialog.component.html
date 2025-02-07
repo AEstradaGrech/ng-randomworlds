@@ -1,17 +1,27 @@
 <div class="dialog-container">
-    <div style="display: flex; justify-content: center; padding: 0px; margin: 0px; height: 7vh;">
-        <h4 mat-dialog-title>Character Details </h4>
-    </div>
-    <mat-dialog-content style="display: contents; justify-content: center; padding: 10px 15px 0px 15px; ">
+ 
+    <mat-dialog-content style="display: contents; justify-content: center; padding: 10px 15px 0px 5px; ">
         <mat-card class="game-card" appearance="outlined">
-            <mat-card-header>
-                <mat-card-title class="game-card-title">Name: "{{data.name}}"</mat-card-title>
+            <mat-card-header style="justify-content: space-evenly; padding-top: 0px !important;">
+              <div class="header-titles">
+                <mat-card-title class="game-card-title">"{{data.name}} - {{metadata.rarity}}"</mat-card-title>
                 <mat-card-subtitle class="game-card-subtitle">Age: "{{metadata.profile.age}}"</mat-card-subtitle>
+              </div>
+              <mat-divider vertical="true"></mat-divider>
+              <div class="header-data">
+                <p>Ambience: {{ambiences}}</p>
+                <p>Mood: {{moods}}</p>
+              </div>
+              <mat-divider vertical="true"></mat-divider>
+              <div class="header-contract-data">
+                <p>Price: {{data.price}} ETH</p>
+                <p>Mints: {{data.mints | nanToNum}} of {{data.maxMints}}</p>
+              </div>
               </mat-card-header>
+              <mat-divider vertical="false"></mat-divider>
             <div class="card-body">
                 <img mat-card-image class="game-card-image" [src]="data.imageUrl" alt="Photo of a RandomWorlds character">
                 <mat-card-content class="game-card-content">
-                    
                   <p>
                     Appereance:<br> "{{metadata.profile.appereance}}""
                   </p>
@@ -38,9 +48,10 @@
                   </p> -->
                 </mat-card-content>
             </div>
+            <mat-divider vertical="false"></mat-divider>
+            <mat-card-actions style="display: flex; align-items: end; justify-content: center;">
+              <button mat-stroked-button class="close-btn" (click)="onClose()">CLOSE</button>
+            </mat-card-actions>
           </mat-card>
     </mat-dialog-content>
-    <mat-dialog-actions align="center">
-      <button mat-stroked-button class="close-btn" mat-dialog-close>CLOSE</button>
-    </mat-dialog-actions>
 </div>
