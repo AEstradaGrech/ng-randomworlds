@@ -43,7 +43,8 @@ export interface CatalogueModel extends ModelInfo{
     logoUrl: string,
     collectionUrl:string,
     imageUrl: string,
-    metadataUrl: string
+    metadataUrl: string,
+    paymentTokens:string[]
 }
 export interface CharacterMetadata{
     name:string,
@@ -63,4 +64,10 @@ export interface CharacterProfile {
     comment: string,
     ambiences: string[],
     moods: string[]
+}
+
+export interface TokenDetails{
+    tokenContract:string,
+    multiplier:number,
+    decimals:number
 }

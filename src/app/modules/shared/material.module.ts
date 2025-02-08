@@ -19,6 +19,8 @@ import {MatSortModule} from '@angular/material/sort'
 import {MatChipsModule} from '@angular/material/chips';
 import {MatCardModule} from '@angular/material/card';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatRadioModule} from '@angular/material/radio';
+
 @NgModule({
 declarations:[],
 imports:[
@@ -58,7 +60,8 @@ exports:[
     MatSortModule,
     MatChipsModule,
     MatCardModule,
-    MatMenuModule
+    MatMenuModule,
+    MatRadioModule
 ],
 providers:[]
 })
