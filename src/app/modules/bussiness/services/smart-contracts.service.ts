@@ -2,11 +2,12 @@ import { Inject, Injectable } from '@angular/core';
 import { CharacterInfo } from 'src/app/core/interfaces/business/prompting.interface';
 import { DOCUMENT } from '@angular/common';
 import Web3Provider from 'src/app/core/scripts/web3'
+import Web3 from 'web3';
 import Factory from 'src/app/core/scripts/immutableFactory'
 import Collection from 'src/app/core/scripts/immutableCollection'
 import Decrypter from 'src/app/core/scripts/profileDecrypt'
 import { firstValueFrom } from 'rxjs';
-import { CatalogueCollection, CatalogueModel, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { CatalogueCollection, CatalogueModel, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -66,6 +67,18 @@ export class SmartContractsService {
     }
     return summary;
   }
+  public async getEnabledTokens(collectionAddress:string) : Promise<string[]>{
+    return this.getCollectionContract(collectionAddress).methods.getEnabledTokens().call();
+  }
+  public async getTokenDetails(collectionAddress:string, tokenSymbol: string): Promise<TokenDetails>{
+    let details = await this.getCollectionContract(collectionAddress).methods.paymentTokens(tokenSymbol).call();
+    let dto:TokenDetails = {
+      tokenContract:details.tokenContract,
+      multiplier: parseInt(details.multiplier),
+      decimals: parseInt(details.decimals)
+    };
+    return dto;
+  }
   public async getModelInfo(model:string, address:string): Promise<ModelInfo>{
     let data = await this.getCollectionContract(address).methods.modelInfo(model).call();
     let info: ModelInfo = {
@@ -124,7 +137,21 @@ export class SmartContractsService {
       return dto;
     })
   }
-
+  public async etherMintCharacter(contractAddress:string, model: string, price:number, collectorAddress: string) : Promise<boolean>{
+    try{
+      let accounts = await this.getConnectedAccounts();
+      await this.getCollectionContract(contractAddress).methods.etherMint(collectorAddress, model).send({from: accounts[0], value: Web3.utils.toWei(price, 'ether')});
+      return true;
+    }
+    catch(error){
+      console.log('-- ether mint error --',error)
+      return false;
+    }
+  }
+  public async mintCharacter(contractAddress:string, paymentToken:string, model: string, collectorAddress: string) : Promise<boolean>{
+    
+    return false;
+  }
   //instanciar contrato w/abi
   // recuperar blockchain data
   // mappear
