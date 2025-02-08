@@ -8,8 +8,8 @@ import Web3 from 'web3';
 import Factory from 'src/app/core/scripts/immutableFactory'
 import Collection from 'src/app/core/scripts/immutableCollection'
 import Decrypter from 'src/app/core/scripts/profileDecrypt'
-import { firstValueFrom } from 'rxjs';
-import { CatalogueCollection, CatalogueModel, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { firstValueFrom, Observable } from 'rxjs';
+import { CatalogueCollection, CatalogueModel, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -20,6 +20,7 @@ export class SmartContractsService {
   public factory:any;
   public collections: CatalogueCollection[] = [];
   public connectedAccount!:string;
+  private _baseUrl:string = 'http://localhost:9000/randomworlds'
   constructor(@Inject(DOCUMENT) private document: Document, private http:HttpClient) { 
     console.log('-- smarts constructor --');
     this.web3 = Web3Provider(this.document);
@@ -105,10 +106,24 @@ export class SmartContractsService {
     }
     return info;
   }
-  public async getModelMetadata(model:ModelInfo, collection: CollectionSummary) : Promise<any>{
+  public async getModelMetadata(model:ModelInfo, collection: CollectionSummary) : Promise<CharacterMetadata>{
     let url = `${collection.gateway}/${collection.metaCid}/${model.fileName}.json`;
     console.log('meta url', url);
     let rawData = await firstValueFrom(this.http.get<any>(url));
+    console.log('meta resp', rawData);
+    let profile: CharacterProfile = JSON.parse(Decrypter(rawData.encryptedProfile));
+    let metadata: CharacterMetadata = {
+      name:rawData.name,
+      description: rawData.description,
+      rarity: rawData.rarity,
+      profile:profile,
+      image: rawData.endpoint
+    }
+    console.log('-- decrypted char meta --', metadata);
+    return metadata;
+  }
+  public async getCharacterMetadata(metadataUrl:string) : Promise<CharacterMetadata>{
+    let rawData = await firstValueFrom(this.http.get<any>(metadataUrl));
     console.log('meta resp', rawData);
     let profile: CharacterProfile = JSON.parse(Decrypter(rawData.encryptedProfile));
     let metadata: CharacterMetadata = {
@@ -135,6 +150,7 @@ export class SmartContractsService {
     console.log('-- decrypted char meta --', metadata);
     return metadata;
   }
+  //public async getAssetInfo()
   private _mapCatalogueData(res: any) : CatalogueCollection[]{
     return res.map((item:any) => { 
       let dto: CatalogueCollection = {
@@ -177,9 +193,52 @@ export class SmartContractsService {
     }
     return false;
   }
-  //instanciar contrato w/abi
-  // recuperar blockchain data
-  // mappear
+  public async getWalletNFTs(address:string) : Promise<any>{
+    let assets = await this.http.get<any>(`${this._baseUrl}/wallet-nfts/${address}`)
+  }
+  public async getWalletCollectionNFTs(address:string, collectionAddress:string) : Promise<any>{
+    let assets = await firstValueFrom(this.http.get<any>(`${this._baseUrl}/moralis/wallet-nfts/${address}/collection-address/${collectionAddress}`));
+    return assets.map((item:any) => {
+      let asset: WalletNFT ={
+        id:item.token_id,
+        contractType: item.contract_type,
+        collectionName: item.name,
+        tokenAddress: item.token_address,
+        symbol: item.symbol,
+        owner: item.owner_of,
+        name: item.normalized_metadata.name,
+        description: item.normalized_metadata.description,
+        imageUrl: item.normalized_metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/'),
+        metadataUrl: item.token_uri.replace('ipfs://', 'https://ipfs.io/ipfs/')
+      }
+      return asset;
+    })
+  }
+  public getWalletNFTsObservable(collectionAddress:string) : Observable<WalletNFT[]>{
+    return this.http.get<any>(`${this._baseUrl}/moralis/wallet-nfts/0xee6870759cbddfb12ee3a4547c35ffb667717df4/collection-address/${collectionAddress}`);
+  }
+  public async getAccountCollectionNFTs(collectionAddress:string) : Promise<WalletNFT[]>{
+    let signers = await this.getConnectedAccounts();
+    console.log('get account nfts -- signers', signers);
+    let assets = await firstValueFrom(this.http.get<any>(`${this._baseUrl}/moralis/wallet-nfts/${signers[0]}/collection-address/${collectionAddress.toLocaleLowerCase()}`));
+    console.log('get account nfts -- assets', assets);
+    return assets.map((item:any) => {
+      let asset: WalletNFT ={
+        id:item.token_id,
+        contractType: item.contract_type,
+        collectionName: item.name,
+        tokenAddress: item.token_address,
+        symbol: item.symbol,
+        owner: item.owner_of,
+        name: item.normalized_metadata.name,
+        description: item.normalized_metadata.description,
+        imageUrl: item.normalized_metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/'),
+        metadataUrl: item.token_uri.replace('ipfs://', 'https://ipfs.io/ipfs/'),
+      }
+      return asset;
+    })
+  }
+
   public getMockedNFTs(): CharacterInfo[]{
     return [
       {
