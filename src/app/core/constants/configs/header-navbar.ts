@@ -3,7 +3,7 @@ import { NavBarTab } from "../../../modules/shared/components/tabs-nav-bar/nav-b
 export const mainNavBarConfig = [
     new NavBarTab('Play', 'randomworlds/home', false),
     new NavBarTab('Chat', 'auth/login', false),
-    new NavBarTab('Assets', 'randomworlds/home', false),
+    new NavBarTab('Assets', 'randomworlds/assets', false),
     new NavBarTab('Marketplace', 'randomworlds/marketplace', false)
 ]
 

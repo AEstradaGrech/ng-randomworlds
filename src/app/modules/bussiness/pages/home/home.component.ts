@@ -48,23 +48,6 @@ export class HomeComponent implements OnInit{
         this.router.navigateByUrl('randomworlds/character/select');
         break;
       case('adventure'):
-
-      
-        //https://medium.com/upstate-interactive/how-to-connect-an-angular-application-to-a-smart-contract-using-web3js-f83689fb6909
-
-        // let accounts = await this.web3provider.eth.getAccounts();
-        // console.log('-get accs-', accounts);
-        // let factoryInstance:any = Factory(this.web3provider);
-        // console.log('fact inst', factoryInstance);
-        // let catalogue = await factoryInstance.methods.getCatalogue().call({from:accounts[0]});
-        // console.log('catalogue', catalogue);
-        // let devCol = catalogue.filter((x:any) => x.contractAddress === '0x89d336B82232c680F7786e18DC3d766601F061BD')[0];
-        // console.log('dev col', devCol);
-        // if(devCol){
-        //   let collection:any = Collection(this.web3provider, devCol.contractAddress);
-        //   let summary = await collection.methods.getContractSummary().call({from: accounts[0]});
-        //   console.log('col summary', summary);
-        // }
         localStorage.setItem('game-type', 'adventure')
         this.router.navigateByUrl('randomworlds/character/select');
         break;
