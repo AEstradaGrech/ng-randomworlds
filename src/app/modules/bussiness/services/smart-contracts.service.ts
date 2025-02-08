@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@angular/core';
 import { CharacterInfo } from 'src/app/core/interfaces/business/prompting.interface';
 import { DOCUMENT } from '@angular/common';
 import Web3Provider from 'src/app/core/scripts/web3'
+import Kaka from 'src/app/core/scripts/kakaCoin'
+import Crap from 'src/app/core/scripts/crapCoin'
 import Web3 from 'web3';
 import Factory from 'src/app/core/scripts/immutableFactory'
 import Collection from 'src/app/core/scripts/immutableCollection'
@@ -40,6 +42,16 @@ export class SmartContractsService {
   
   public getCollectionContract(address:string) : any{
     return Collection(this.web3, address);
+  }
+  public getCoinContract(symbol:string) : any {
+    switch(symbol){
+      case('KAKA'):
+        return Kaka(this.web3);
+      case('CRAP'):
+        return Crap(this.web3);
+      default:break;
+    }
+    return 
   }
   public async getConnectedAccounts() : Promise<any[]>{
     return await this.web3.eth.getAccounts();
@@ -88,7 +100,7 @@ export class SmartContractsService {
       fileName: data.fileName,
       fileExtension: data.fileExtension,
       maxMints: parseInt(data.maxMints),
-      mints: parseInt(data.totalMints),
+      mints: parseInt(data.mints),
       available: data.available
     }
     return info;
@@ -148,8 +160,21 @@ export class SmartContractsService {
       return false;
     }
   }
-  public async mintCharacter(contractAddress:string, paymentToken:string, model: string, collectorAddress: string) : Promise<boolean>{
-    
+  public async mintCharacter(contractAddress:string, paymentToken:string, price:string, model: string, collectorAddress: string) : Promise<boolean>{
+    let tokenContract = this.getCoinContract(paymentToken);
+    if(tokenContract){
+      try{
+        let accounts = await this.getConnectedAccounts();
+        console.log('price', price);
+        console.log('account', accounts[0]);
+        await tokenContract.methods.approve(accounts[0], price).send({from:accounts[0]});
+        await this.getCollectionContract(contractAddress).methods.customTokenMint(collectorAddress, model, paymentToken).send({from:accounts[0],gas:'7000000'})
+        return true;
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
     return false;
   }
   //instanciar contrato w/abi

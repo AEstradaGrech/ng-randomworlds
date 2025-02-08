@@ -48,21 +48,8 @@ export class HomeComponent implements OnInit{
         this.router.navigateByUrl('randomworlds/character/select');
         break;
       case('adventure'):
-      if(this._smartContractsService.collections.length > 0){
-        let devCollection = this._smartContractsService.collections[0];
-        let collectionContract = this._smartContractsService.getCollectionContract(devCollection.contractAddress);
-        this._smartContractsService.getCollectionSummary(devCollection.contractAddress).then(res => {
-          console.log('-- service col summary --', res)
-        })
-        let awaitedSummary = await this._smartContractsService.getCollectionSummary(devCollection.contractAddress);
-        console.log('-- awaited summary --', awaitedSummary)
-        for(let i = 0; i < awaitedSummary.models.length; i++){
-          let modelInfo = await this._smartContractsService.getModelInfo(awaitedSummary.models[i], devCollection.contractAddress);
-          console.log('-- retrieved model info --', modelInfo);
-          let metadata = await this._smartContractsService.getModelMetadata(modelInfo, awaitedSummary);
-          console.log('-- character meta --', metadata);
-        }
-      }
+
+      
         //https://medium.com/upstate-interactive/how-to-connect-an-angular-application-to-a-smart-contract-using-web3js-f83689fb6909
 
         // let accounts = await this.web3provider.eth.getAccounts();
@@ -78,7 +65,6 @@ export class HomeComponent implements OnInit{
         //   let summary = await collection.methods.getContractSummary().call({from: accounts[0]});
         //   console.log('col summary', summary);
         // }
-        return;
         localStorage.setItem('game-type', 'adventure')
         this.router.navigateByUrl('randomworlds/character/select');
         break;

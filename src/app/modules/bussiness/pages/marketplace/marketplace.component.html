@@ -29,12 +29,15 @@
                     fontIcon="visibility"
                     ></mat-icon>
                  </button>
-                 <button class="buy-btn" [matMenuTriggerFor]="payMenu" (click)="onBuyClick(model)">
-                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
+                 <button [disabled]="loading" class="buy-btn" [matMenuTriggerFor]="payMenu" (click)="onBuyClick(model)">
+                    <mat-icon *ngIf="!loading" style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
                     aria-hidden="false" 
                     aria-label="Example power icon"
                     fontIcon="shopping_cart"
                     ></mat-icon>
+                    <div *ngIf="loading" style="margin: 6px 2px;">
+                      <mat-spinner diameter="20"></mat-spinner>
+                    </div>
                  </button>
                  <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
                     <mat-card class="collection-card" appearance="outlined">
