@@ -66,7 +66,13 @@
                                 <img mat-card-image class="game-card-image" [src]="model.imageUrl" alt="Character NFT image">
                             </div>
                             <mat-card-actions class="game-card-actions">
-                        
+                                <button class="view-btn" (click)="onViewOnOpenSeaClick(model)">
+                                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                                    aria-hidden="false" 
+                                    aria-label="Example power icon"
+                                    fontIcon="content_paste"
+                                    ></mat-icon>
+                                 </button>
                              <button class="view-btn" (click)="onViewClick(model)">
                                 <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
                                 aria-hidden="false" 
@@ -78,26 +84,12 @@
                                 <mat-icon *ngIf="!loading" style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
                                 aria-hidden="false" 
                                 aria-label="Example power icon"
-                                fontIcon="shopping_cart"
+                                fontIcon="payment"
                                 ></mat-icon>
                                 <div *ngIf="loading" style="margin: 6px 2px;">
                                   <mat-spinner diameter="20"></mat-spinner>
                                 </div>
                              </button>
-                             <!-- <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
-                                <mat-card class="collection-card" appearance="outlined">
-                                    <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
-                                      <mat-card-title class="collection-card-title">{{model.collectionName}} ({{model.collectionSymbol}})</mat-card-title>
-                                      <mat-card-subtitle class="collection-card-subtitle">{{model.tokenAddress}}</mat-card-subtitle>
-                                    </mat-card-header>
-                                    <img mat-card-image [src]="model.collectionUrl" alt="Photo of a Shiba Inu">
-                                    <mat-card-content class="collection-card-content">
-                                      <p>
-                                        {{currentCollection.summary.description}}
-                                      </p>
-                                    </mat-card-content>
-                                  </mat-card>
-                            </mat-menu> -->
                             <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
                               <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
                                   <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">

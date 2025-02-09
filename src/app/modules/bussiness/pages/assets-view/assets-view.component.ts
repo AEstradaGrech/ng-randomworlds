@@ -104,10 +104,12 @@ export class AssetsViewComponent implements OnInit {
   
   public onViewCollectionClick(address:string){
     window.open(`https://sepolia.etherscan.io/token/${address}`, "_blank");
-    //this.document.location.href = `https://sepolia.etherscan.io/token/${address}`;
+  }
+  public onViewOnOpenSeaClick(model:AssetModel){
+    window.open(`https://testnets.opensea.io/assets/sepolia/${model.tokenAddress}/${model.id}`, "_blank");
   }
   public onViewClick(model:AssetModel){
-    console.log('-- on view click')
+    console.log('-- on view click',model);
   }
   public onSellClick(model:AssetModel){
     console.log('-- on sell click --', model)
