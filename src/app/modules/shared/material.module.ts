@@ -20,6 +20,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatCardModule} from '@angular/material/card';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatRadioModule} from '@angular/material/radio';
+import {MatSidenavModule} from '@angular/material/sidenav';
 
 @NgModule({
 declarations:[],
@@ -61,7 +62,8 @@ exports:[
     MatChipsModule,
     MatCardModule,
     MatMenuModule,
-    MatRadioModule
+    MatRadioModule,
+    MatSidenavModule
 ],
 providers:[]
 })

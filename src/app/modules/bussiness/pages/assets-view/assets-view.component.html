@@ -1,1 +1,98 @@
-<p>assets-view works!</p>
+  <div class="sidenav-div">
+    <mat-sidenav-container class="sidenav-container" (backdropClick)="closeSidenav()">
+        <mat-sidenav #sidenav (keydown.escape)="closeSidenav()" disableClose>
+            <p><button mat-button (click)="closeSidenav()">Close</button></p>
+            <mat-card class="game-card" appearance="outlined">
+                <mat-card-header>
+                  <div mat-card-avatar class="char-card-header-image-2"></div>
+                  <mat-card-title class="game-card-title">Character 2</mat-card-title>
+                  <mat-card-subtitle class="game-card-subtitle">Choose your own adventure style quest</mat-card-subtitle>
+                </mat-card-header>
+                <div class="card-body">
+                    <img mat-card-image class="game-card-image" src="/assets/images/Char_2.png" alt="Photo of a Shiba Inu">
+                </div>
+                <mat-card-actions class="game-card-actions">
+                  <button mat-stroked-button class="begin-btn">SELECT</button>
+                </mat-card-actions>
+              </mat-card>    
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <div class="card-container">
+                <p style="display: flex; align-items: start; margin:15px 25px 0px 0px"><button class="view-btn" (click)="sidenav.open()">
+                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                    aria-hidden="false" 
+                    aria-label="Collections sidenav view"
+                    fontIcon="keyboard_arrow_right"
+                    ></mat-icon>
+                 </button></p>
+                <div class="img-container shadow">
+                    @for(model of currentCollection.assets; track model){
+                        <mat-card class="game-card" appearance="outlined">
+                            <mat-card-header class="card-header">
+                                <div style="display: flex; align-items: center; justify-items: flex-start;">
+                                    <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': currentCollection.summary.logoImage}"></div>
+                                </div>
+                                <div style="display: flexbox; align-items: center;">
+                                    <mat-card-title class="game-card-title">{{model.name}}</mat-card-title>
+                                    <mat-card-subtitle class="game-card-subtitle">{{model.description}}</mat-card-subtitle>
+                                </div>
+                            </mat-card-header>
+                            <div class="card-body">
+                                <img mat-card-image class="game-card-image" [src]="model.imageUrl" alt="Character NFT image">
+                            </div>
+                            <mat-card-actions class="game-card-actions">
+                        
+                             <button class="view-btn" (click)="onViewClick(model)">
+                                <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                                aria-hidden="false" 
+                                aria-label="Example power icon"
+                                fontIcon="visibility"
+                                ></mat-icon>
+                             </button>
+                             <button [disabled]="loading" class="buy-btn" [matMenuTriggerFor]="payMenu" (click)="onSellClick(model)">
+                                <mat-icon *ngIf="!loading" style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
+                                aria-hidden="false" 
+                                aria-label="Example power icon"
+                                fontIcon="shopping_cart"
+                                ></mat-icon>
+                                <div *ngIf="loading" style="margin: 6px 2px;">
+                                  <mat-spinner diameter="20"></mat-spinner>
+                                </div>
+                             </button>
+                             <!-- <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
+                                <mat-card class="collection-card" appearance="outlined">
+                                    <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                                      <mat-card-title class="collection-card-title">{{model.collectionName}} ({{model.collectionSymbol}})</mat-card-title>
+                                      <mat-card-subtitle class="collection-card-subtitle">{{model.tokenAddress}}</mat-card-subtitle>
+                                    </mat-card-header>
+                                    <img mat-card-image [src]="model.collectionUrl" alt="Photo of a Shiba Inu">
+                                    <mat-card-content class="collection-card-content">
+                                      <p>
+                                        {{currentCollection.summary.description}}
+                                      </p>
+                                    </mat-card-content>
+                                  </mat-card>
+                            </mat-menu> -->
+                            <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
+                              <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
+                                  <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                                    <mat-card-title class="collection-card-title">{{model.name}}</mat-card-title>
+                                    <mat-card-subtitle class="collection-card-subtitle">{{model.collectionName}}</mat-card-subtitle>
+                                  </mat-card-header>
+                                  <mat-card-content class="payment-card-content">
+                                   
+                                  </mat-card-content>
+                                  <mat-card-actions style="display: flex; justify-content: center;">
+                                    <button mat-stroked-button class="pay-btn" (click)="onSellClick(model)">SELL</button>
+                                  </mat-card-actions>
+                                </mat-card>
+                          </mat-menu>
+                            </mat-card-actions>
+                        </mat-card>
+                    }
+                </div>
+            </div>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+  
