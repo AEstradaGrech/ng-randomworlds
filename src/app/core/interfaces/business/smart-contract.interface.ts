@@ -14,7 +14,8 @@ export interface AssetsCollectionSummary extends CatalogueCollection {
     maxMints: number,
     mints: number,
     modelsCid:string,
-    metaCid:string
+    metaCid:string,
+    tokenName: string
 }
 export interface CollectionSummary {
     name:string,

@@ -1,36 +1,72 @@
   <div class="sidenav-div">
     <mat-sidenav-container class="sidenav-container" (backdropClick)="closeSidenav()">
-        <mat-sidenav #sidenav (keydown.escape)="closeSidenav()" disableClose>
-            <p><button mat-button (click)="closeSidenav()">Close</button></p>
-            <mat-card class="game-card" appearance="outlined">
-                <mat-card-header>
-                  <div mat-card-avatar class="char-card-header-image-2"></div>
-                  <mat-card-title class="game-card-title">Character 2</mat-card-title>
-                  <mat-card-subtitle class="game-card-subtitle">Choose your own adventure style quest</mat-card-subtitle>
-                </mat-card-header>
-                <div class="card-body">
-                    <img mat-card-image class="game-card-image" src="/assets/images/Char_2.png" alt="Photo of a Shiba Inu">
-                </div>
-                <mat-card-actions class="game-card-actions">
-                  <button mat-stroked-button class="begin-btn">SELECT</button>
-                </mat-card-actions>
-              </mat-card>    
+        <mat-sidenav #sidenav (keydown.escape)="closeSidenav()" disableClose class="sidenav">
+            
+                <p style="display: flex; align-items: center; justify-content:center; margin:15px 25px 15px 0px">
+                    <button class="close-sidenav-btn" (click)="closeSidenav()">
+                        <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                            aria-hidden="false" 
+                            aria-label="Collections sidenav view"
+                            fontIcon="keyboard_arrow_left"></mat-icon>
+                    </button>
+                </p>
+                <mat-accordion class="example-headers-align">
+                    <mat-expansion-panel  [expanded]="step() === 0" (opened)="setStep(0)" hideToggle>
+                      <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
+                        <div style="display: block; width: 80%;">
+                            <mat-panel-title class="col-title"> {{currentCollection.summary.name}} </mat-panel-title>
+                            <mat-panel-description class="col-subtitle">
+                                {{currentCollection.summary.contractAddress}}
+                            </mat-panel-description>
+                        </div>
+                        <img style="width: 25%; margin: 5px 5px 5px 5px" [src]="currentCollection.summary.logoImage" alt="Photo of a Shiba Inu">
+                      </mat-expansion-panel-header>
+                  
+                        <p style="color: #99c531;">{{currentCollection.summary.description}}</p>
+                    </mat-expansion-panel>
+                    <mat-expansion-panel  [expanded]="step() === 0" (opened)="setStep(0)" hideToggle>
+                        <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
+                          <div style="display: block; width: 80%;">
+                              <mat-panel-title class="col-title"> {{currentCollection.summary.name}} </mat-panel-title>
+                              <mat-panel-description class="col-subtitle">
+                                  {{currentCollection.summary.contractAddress}}
+                              </mat-panel-description>
+                          </div>
+                          <img style="width: 25%; margin: 5px 5px 5px 5px" [src]="currentCollection.summary.logoImage" alt="Photo of a Shiba Inu">
+                        </mat-expansion-panel-header>
+                    
+                          <p style="color: #99c531;">{{currentCollection.summary.description}}</p>
+                      </mat-expansion-panel>
+                      <mat-expansion-panel  [expanded]="step() === 0" (opened)="setStep(0)" hideToggle>
+                        <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
+                          <div style="display: block; width: 80%;">
+                              <mat-panel-title class="col-title"> {{currentCollection.summary.name}} </mat-panel-title>
+                              <mat-panel-description class="col-subtitle">
+                                  {{currentCollection.summary.contractAddress}}
+                              </mat-panel-description>
+                          </div>
+                          <img style="width: 25%; margin: 5px 5px 5px 5px" [src]="currentCollection.summary.logoImage" alt="Photo of a Shiba Inu">
+                        </mat-expansion-panel-header>
+                    
+                          <p style="color: #99c531;">{{currentCollection.summary.description}}</p>
+                      </mat-expansion-panel>
+                  </mat-accordion>
         </mat-sidenav>
         <mat-sidenav-content>
             <div class="card-container">
-                <p style="display: flex; align-items: start; margin:15px 25px 0px 0px"><button class="view-btn" (click)="sidenav.open()">
+                <p style="display: flex; align-items: start; margin:15px 25px 0px 0px"><button class="view-cols-btn" (click)="sidenav.open()">
                     <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
                     aria-hidden="false" 
                     aria-label="Collections sidenav view"
                     fontIcon="keyboard_arrow_right"
                     ></mat-icon>
                  </button></p>
-                <div class="img-container shadow">
+                <div class="img-container shadow" [ngClass]="{'jc-center': currentCollection.assets.length <= 4}">
                     @for(model of currentCollection.assets; track model){
                         <mat-card class="game-card" appearance="outlined">
                             <mat-card-header class="card-header">
                                 <div style="display: flex; align-items: center; justify-items: flex-start;">
-                                    <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': currentCollection.summary.logoImage}"></div>
+                                    <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': currentCollectionLogoUrl}"></div>
                                 </div>
                                 <div style="display: flexbox; align-items: center;">
                                     <mat-card-title class="game-card-title">{{model.name}}</mat-card-title>
