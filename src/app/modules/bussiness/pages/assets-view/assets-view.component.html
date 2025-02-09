@@ -11,45 +11,34 @@
                     </button>
                 </p>
                 <mat-accordion class="example-headers-align">
-                    <mat-expansion-panel  [expanded]="step() === 0" (opened)="setStep(0)" hideToggle>
-                      <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
-                        <div style="display: block; width: 80%;">
-                            <mat-panel-title class="col-title"> {{currentCollection.summary.name}} </mat-panel-title>
-                            <mat-panel-description class="col-subtitle">
-                                {{currentCollection.summary.contractAddress}}
-                            </mat-panel-description>
-                        </div>
-                        <img style="width: 25%; margin: 5px 5px 5px 5px" [src]="currentCollection.summary.logoImage" alt="Photo of a Shiba Inu">
-                      </mat-expansion-panel-header>
-                  
-                        <p style="color: #99c531;">{{currentCollection.summary.description}}</p>
-                    </mat-expansion-panel>
-                    <mat-expansion-panel  [expanded]="step() === 0" (opened)="setStep(0)" hideToggle>
-                        <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
-                          <div style="display: block; width: 80%;">
-                              <mat-panel-title class="col-title"> {{currentCollection.summary.name}} </mat-panel-title>
-                              <mat-panel-description class="col-subtitle">
-                                  {{currentCollection.summary.contractAddress}}
-                              </mat-panel-description>
-                          </div>
-                          <img style="width: 25%; margin: 5px 5px 5px 5px" [src]="currentCollection.summary.logoImage" alt="Photo of a Shiba Inu">
-                        </mat-expansion-panel-header>
-                    
-                          <p style="color: #99c531;">{{currentCollection.summary.description}}</p>
-                      </mat-expansion-panel>
-                      <mat-expansion-panel  [expanded]="step() === 0" (opened)="setStep(0)" hideToggle>
-                        <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
-                          <div style="display: block; width: 80%;">
-                              <mat-panel-title class="col-title"> {{currentCollection.summary.name}} </mat-panel-title>
-                              <mat-panel-description class="col-subtitle">
-                                  {{currentCollection.summary.contractAddress}}
-                              </mat-panel-description>
-                          </div>
-                          <img style="width: 25%; margin: 5px 5px 5px 5px" [src]="currentCollection.summary.logoImage" alt="Photo of a Shiba Inu">
-                        </mat-expansion-panel-header>
-                    
-                          <p style="color: #99c531;">{{currentCollection.summary.description}}</p>
-                      </mat-expansion-panel>
+                    @for(collection of collections; track collection){
+                        <mat-expansion-panel  [expanded]="currentCollection.summary.contractAddress === collection.summary.contractAddress" (opened)="setStep(collection)" hideToggle>
+                            <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
+                              <div style="display: block; width: 80%; margin: 15px 10px 5px 15px">
+                                  <mat-panel-title class="col-title"> {{collection.summary.name}} </mat-panel-title>
+                                  <mat-panel-description class="col-subtitle">
+                                      <p style="margin: 0 0 5px !important;">{{collection.summary.symbol}} - {{collection.summary.tokenName}}</p>
+                                      <p style="margin: 0 0 5px !important;">{{collection.summary.contractAddress}}</p>
+                                      <p style="margin: 0 0 5px !important;">Total assets: {{collection.assets.length}}</p>
+                                  </mat-panel-description>
+                              </div>
+                              <img style="width: 25%; margin: 5px 5px 5px 5px; padding-top: 5px; padding-bottom: 5px; border-radius: 15px !important;" [src]="currentCollection.summary.logoImage" alt="Photo of a Shiba Inu">
+                            </mat-expansion-panel-header>
+                            <div style="display: flex;">
+                              <div style="width: 75%;">
+                                  <p style="color: #99c531; padding-top: 15px;">{{collection.summary.description}}</p>
+                              </div>
+                              <div class="col-sel-div">
+                                  <button class="col-sel-btn" (click)="onViewCollectionClick(collection.summary.contractAddress)">
+                                      <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                                          aria-hidden="false" 
+                                          aria-label="Collections sidenav view"
+                                          fontIcon="content_paste"></mat-icon>
+                                  </button>
+                              </div>
+                            </div>
+                          </mat-expansion-panel>
+                    }
                   </mat-accordion>
         </mat-sidenav>
         <mat-sidenav-content>
