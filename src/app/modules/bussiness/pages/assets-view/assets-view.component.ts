@@ -1,8 +1,11 @@
 import { Component, signal, inject, OnInit, ViewChild, Inject } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, AssetsCollectionSummary } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
+import web3 from 'src/app/core/scripts/web3';
 @Component({
   selector: 'app-assets-view',
   templateUrl: './assets-view.component.html',
@@ -14,6 +17,7 @@ export class AssetsViewComponent implements OnInit {
   public currentCollection!: AssetsCollection;
   public currentCollectionLogoUrl: any;
   public loading:boolean = false;
+  private _dialog:MatDialog = inject(MatDialog);
   @ViewChild('sidenav') sidenav!: MatSidenav;
   constructor(@Inject(DOCUMENT) private document:Document){}
   ngOnInit(): void {
@@ -108,8 +112,37 @@ export class AssetsViewComponent implements OnInit {
   public onViewOnOpenSeaClick(model:AssetModel){
     window.open(`https://testnets.opensea.io/assets/sepolia/${model.tokenAddress}/${model.id}`, "_blank");
   }
-  public onViewClick(model:AssetModel){
+  public async onViewClick(model:AssetModel){
     console.log('-- on view click',model);
+    let collection = this.collections.filter(x => x.summary.contractAddress.toLowerCase() === model.tokenAddress.toLowerCase())[0]
+    if(collection){
+      let fileName = model.imageUrl.split('/').slice(-1)[0].replace('.png','');
+      let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.summary.contractAddress);
+      let catModel:CatalogueModel = {
+        collectionDescription: collection.summary.description,
+        collectionName:collection.summary.name,
+        collectionSymbol: collection.summary.symbol,
+        contractAddress: collection.summary.contractAddress,
+        logoUrl:collection.summary.logoImage,
+        paymentTokens:[],
+        fileName:modelInfo.fileName,
+        fileExtension:modelInfo.fileExtension,
+        available:modelInfo.available,
+        mints:modelInfo.mints,
+        maxMints:modelInfo.maxMints,
+        metadataUrl: model.metadataUrl,
+        description:model.description,
+        price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
+        name:model.name,
+        imageUrl:model.imageUrl,
+        collectionUrl: collection.summary.logoImage
+      }
+      let cfg = new MatDialogConfig();
+      cfg.data = catModel;
+      cfg.height = '90vh';
+      cfg.width = '1100px';
+      this._dialog.open(CharDetailDialogComponent, cfg);
+    }
   }
   public onSellClick(model:AssetModel){
     console.log('-- on sell click --', model)
@@ -117,13 +150,7 @@ export class AssetsViewComponent implements OnInit {
   closeSidenav() {
     this.sidenav.close();
   }
-
-  //--------------------------------------------
-  step = signal(0);
-
-  setStep(collection: AssetsCollection) {
+  selectCollection(collection: AssetsCollection) {
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
   }
-
-  //--------------------------------------------
 }

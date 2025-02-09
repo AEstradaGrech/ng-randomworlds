@@ -4,7 +4,7 @@
         <mat-card class="game-card" appearance="outlined">
             <mat-card-header style="justify-content: space-evenly; padding-top: 0px !important;">
               <div class="header-titles">
-                <mat-card-title class="game-card-title">"{{data.name}} - {{metadata.rarity}}"</mat-card-title>
+                <mat-card-title class="game-card-title">"{{data.name}} - {{metadata.rarity ?? ''}}"</mat-card-title>
                 <mat-card-subtitle class="game-card-subtitle">Age: "{{metadata.profile.age}}"</mat-card-subtitle>
               </div>
               <mat-divider vertical="true"></mat-divider>

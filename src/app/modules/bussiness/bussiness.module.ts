@@ -10,7 +10,7 @@ import { WorldGeneratorComponent } from './pages/world-generator/world-generator
 import { QuestViewComponent } from './pages/quest-view/quest-view.component';
 import { AdventureViewComponent } from './pages/adventure-view/adventure-view.component';
 import { MarketplaceComponent } from './pages/marketplace/marketplace.component';
-import { CharDetailDialogComponent } from './pages/marketplace/char-detail-dialog/char-detail-dialog.component';
+import { CharDetailDialogComponent } from './pages/char-detail-dialog/char-detail-dialog.component';
 import { NanToNumPipe } from '../shared/pipes/nan-to-num.pipe';
 import { ValueToNanCasePipe } from '../shared/pipes/val-to-nan.pipe';
 import { AssetsViewComponent } from './pages/assets-view/assets-view.component';

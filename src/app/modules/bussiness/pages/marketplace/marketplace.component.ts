@@ -4,7 +4,7 @@ import { CatalogueCollection, CatalogueModel, CollectionSummary, ModelInfo, Toke
 import web3, { eth } from 'web3';
 import Web3Provider from 'src/app/core/scripts/web3';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { CharDetailDialogComponent } from './char-detail-dialog/char-detail-dialog.component';
+import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 

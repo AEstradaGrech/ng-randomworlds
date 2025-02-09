@@ -6,7 +6,7 @@ import {
   MatDialogContent,
 } from '@angular/material/dialog';
 import { CatalogueModel, CharacterMetadata, ModelInfo } from 'src/app/core/interfaces/business/smart-contract.interface';
-import { SmartContractsService } from '../../../services/smart-contracts.service';
+import { SmartContractsService } from '../../services/smart-contracts.service';
 import { NanToNumPipe } from 'src/app/modules/shared/pipes/nan-to-num.pipe';
 @Component({
   selector: 'app-char-detail-dialog',
@@ -21,7 +21,7 @@ export class CharDetailDialogComponent implements OnInit{
   public ambiences: string = "";
   public moods: string = "";
   ngOnInit(): void {
-    //getImage
+    console.log('-- detail init --', this.metadata);
     this._contractsService.getMetadata(this.data).then(res => {
       this.metadata = res;
       console.log('-- on get metadata --', this.metadata);
