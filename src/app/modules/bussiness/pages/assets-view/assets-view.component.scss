@@ -192,12 +192,14 @@
 .col-title{
     color: #99c531;
     font-weight: 500;
+    padding-bottom: 10px;
 }
 .col-subtitle{
     font-size: 12px;
     font-style: italic;
     color: #a3a3a3;
     font-weight: 300;
+    display: contents;
 }
 .sidenav{
     width: 28%;
@@ -212,3 +214,29 @@
   .example-headers-align .mat-mdc-form-field + .mat-mdc-form-field {
     margin-left: 8px;
   }
+
+  .col-sel-div{
+    width: 25%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+
+.col-sel-btn{
+    height: 59%;
+    margin:0px 10px 0px 10px;
+    border-radius: 100px;
+    background-color: #ffffff;
+    border-color: rgb(175 239 24) !important;
+}
+
+.col-sel-btn:hover{
+    border: transparent;
+    border-radius: 100px;
+    padding:0px 8px 0px 8px;
+    background-color: #99c531;
+    color: #ffffff;
+    .mat-icon{
+        color: #ffffff !important;
+    }
+}
