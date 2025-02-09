@@ -62,7 +62,7 @@ export interface AssetModel extends WalletNFT {
 }
 export interface AssetsCollection{
     summary: AssetsCollectionSummary,
-    assets: WalletNFT[]
+    assets: AssetModel[]
 }
 export interface ModelInfo{
     name:string,
