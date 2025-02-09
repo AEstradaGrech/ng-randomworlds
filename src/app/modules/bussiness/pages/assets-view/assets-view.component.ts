@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject, OnInit, ViewChild } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, AssetsCollection, AssetsCollectionSummary } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -12,6 +12,7 @@ export class AssetsViewComponent implements OnInit {
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   public collections: AssetsCollection[] = []
   public currentCollection!: AssetsCollection;
+  public currentCollectionLogoUrl: any;
   public loading:boolean = false;
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
@@ -19,9 +20,11 @@ export class AssetsViewComponent implements OnInit {
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
       cat.forEach(item => {
         this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
+          console.log('summary', summary);
           let assetsSummary:AssetsCollectionSummary ={
             contractAddress: item.contractAddress,
-            name: item.collectionName,
+            name: summary.collectionName,
+            tokenName: summary.name,
             symbol: item.symbol,
             description: item.description,
             isFree: item.isFree,
@@ -36,8 +39,10 @@ export class AssetsViewComponent implements OnInit {
           }
           let collection:AssetsCollection = {summary:assetsSummary, assets:[]};
           this.collections.push(collection);
-          if(!this.currentCollection)
+          if(!this.currentCollection){
             this.currentCollection = this.collections[0];
+            this.currentCollectionLogoUrl = `url(${this.currentCollection.summary.logoImage}`;
+          }
           this._smartContractsService.getAccountCollectionNFTs(assetsSummary.contractAddress).then(walletNFTs => {
             console.log('-- on col wallet resp --', walletNFTs)
             walletNFTs.forEach(nft => {
@@ -63,4 +68,19 @@ export class AssetsViewComponent implements OnInit {
     this.sidenav.close();
   }
 
+  //--------------------------------------------
+  step = signal(0);
+
+  setStep(index: number) {
+    this.step.set(index);
+  }
+
+  nextStep() {
+    this.step.update(i => i + 1);
+  }
+
+  prevStep() {
+    this.step.update(i => i - 1);
+  }
+  //--------------------------------------------
 }
