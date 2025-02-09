@@ -12,7 +12,7 @@
                 </p>
                 <mat-accordion class="example-headers-align">
                     @for(collection of collections; track collection){
-                        <mat-expansion-panel  [expanded]="currentCollection.summary.contractAddress === collection.summary.contractAddress" (opened)="setStep(collection)" hideToggle>
+                        <mat-expansion-panel  [expanded]="currentCollection.summary.contractAddress === collection.summary.contractAddress" (opened)="selectCollection(collection)" hideToggle>
                             <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
                               <div style="display: block; width: 80%; margin: 15px 10px 5px 15px">
                                   <mat-panel-title class="col-title"> {{collection.summary.name}} </mat-panel-title>
