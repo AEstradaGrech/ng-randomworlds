@@ -1,7 +1,7 @@
 <div class="dialog-container">
  
     <mat-dialog-content style="display: contents; justify-content: center; padding: 10px 15px 0px 5px; ">
-        <mat-card class="game-card" appearance="outlined">
+        <mat-card class="game-card" appearance="outlined" *ngIf="metadata">
             <mat-card-header style="justify-content: space-evenly; padding-top: 0px !important;">
               <div class="header-titles">
                 <mat-card-title class="game-card-title">"{{data.name}} - {{metadata.rarity ?? ''}}"</mat-card-title>

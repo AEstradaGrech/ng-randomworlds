@@ -21,7 +21,6 @@ export class CharDetailDialogComponent implements OnInit{
   public ambiences: string = "";
   public moods: string = "";
   ngOnInit(): void {
-    console.log('-- detail init --', this.metadata);
     this._contractsService.getMetadata(this.data).then(res => {
       this.metadata = res;
       console.log('-- on get metadata --', this.metadata);

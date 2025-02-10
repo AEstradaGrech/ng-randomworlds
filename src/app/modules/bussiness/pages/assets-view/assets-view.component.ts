@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, ViewChild, Inject } from '@angular/core';
+import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -6,6 +6,7 @@ import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import web3 from 'src/app/core/scripts/web3';
+import { ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 @Component({
   selector: 'app-assets-view',
   templateUrl: './assets-view.component.html',
@@ -18,7 +19,20 @@ export class AssetsViewComponent implements OnInit {
   public currentCollectionLogoUrl: any;
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
+  private _slideScrollState: ScrollState = {
+    step: 100,
+    mult: 1,
+    direction:'',
+    isScrolling:false
+  }
+  private _clickScrollState: ScrollState = {
+    step: 100,
+    mult: 10,
+    direction:'',
+    isScrolling:false
+  }
   @ViewChild('sidenav') sidenav!: MatSidenav;
+  @ViewChild('nftsContainer') nftsContainer!: ElementRef;
   constructor(@Inject(DOCUMENT) private document:Document){}
   ngOnInit(): void {
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
@@ -90,16 +104,18 @@ export class AssetsViewComponent implements OnInit {
               this._smartContractsService.getCharacterMetadata(nft.metadataUrl).then(meta => {
                 let asset:AssetModel = {...nft, metadata: meta}
                 collection.assets.push(asset);
-                console.log('-- current collection -- ', this.currentCollection)
-              })
-            })
-            walletNFTs.forEach(nft => {
-              this._smartContractsService.getCharacterMetadata(nft.metadataUrl).then(meta => {
-                let asset:AssetModel = {...nft, metadata: meta}
+                collection.assets.push(asset);
+                collection.assets.push(asset);
+                collection.assets.push(asset);
+                collection.assets.push(asset);
+                collection.assets.push(asset);
+                collection.assets.push(asset);
+                collection.assets.push(asset);
                 collection.assets.push(asset);
                 console.log('-- current collection -- ', this.currentCollection)
               })
             })
+            
           })
         })
       })
@@ -146,6 +162,40 @@ export class AssetsViewComponent implements OnInit {
   }
   public onSellClick(model:AssetModel){
     console.log('-- on sell click --', model)
+  }
+  public onSlideViewClick(direction: string){
+    if(this._slideScrollState.isScrolling) return;
+    this._clickScrollState.direction = direction;
+    this._clickScrollState.isScrolling = true;
+    let currentScroll = this.nftsContainer.nativeElement.scrollLeft;
+    let dirMult:number = this._clickScrollState.direction === 'right' ? 1 : -1;
+    this.nftsContainer.nativeElement.scrollTo({
+      left: currentScroll + this._clickScrollState.step * this._clickScrollState.mult * dirMult,
+      behavior: 'smooth'
+    })
+  }
+  public onSlideViewPress(direction: string){
+    setTimeout(() => {
+      if(this._clickScrollState.isScrolling) return;
+      this._slideScrollState.direction = direction;
+      this._slideScrollState.isScrolling = true;
+      this._scrollVisor();
+    }, 90);
+  }
+  public onSlideViewRelease(){
+    setTimeout(()=> {
+      this._slideScrollState.direction = '';
+      this._slideScrollState.isScrolling = false;
+      this._clickScrollState.direction = '';
+      this._clickScrollState.isScrolling = false;
+    }, 75);
+  }
+  private _scrollVisor(){
+    if(this._slideScrollState.isScrolling && this._slideScrollState.direction){
+      let dirMult:number = this._slideScrollState.direction === 'right' ? 1 : -1;
+      this.nftsContainer.nativeElement.scrollLeft += this._slideScrollState.step * this._slideScrollState.mult * dirMult;
+      setTimeout(() => {this._scrollVisor()}, 50);
+    }
   }
   closeSidenav() {
     this.sidenav.close();

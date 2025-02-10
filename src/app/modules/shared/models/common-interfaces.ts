@@ -42,3 +42,10 @@ export interface GameData{
     intro: string,
     currentBlock:number
 }
+
+export interface ScrollState{
+    step: number,
+    mult: number,
+    direction: string,
+    isScrolling:boolean
+}

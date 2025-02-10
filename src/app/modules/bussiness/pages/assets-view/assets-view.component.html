@@ -1,7 +1,6 @@
   <div class="sidenav-div">
     <mat-sidenav-container class="sidenav-container" (backdropClick)="closeSidenav()">
         <mat-sidenav #sidenav (keydown.escape)="closeSidenav()" disableClose class="sidenav">
-            
                 <p style="display: flex; align-items: center; justify-content:center; margin:15px 25px 15px 0px">
                     <button class="close-sidenav-btn" (click)="closeSidenav()">
                         <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
@@ -43,14 +42,27 @@
         </mat-sidenav>
         <mat-sidenav-content>
             <div class="card-container">
-                <p style="display: flex; align-items: start; margin:15px 25px 0px 0px"><button class="view-cols-btn" (click)="sidenav.open()">
-                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                    aria-hidden="false" 
-                    aria-label="Collections sidenav view"
-                    fontIcon="keyboard_arrow_right"
-                    ></mat-icon>
-                 </button></p>
-                <div class="img-container shadow" [ngClass]="{'jc-center': currentCollection.assets.length <= 4}">
+                <div class="btns-col-l">
+                    <p style="display: flex; justify-content: center; align-items: center; margin:15px 0px 15px 0px">
+                        <button class="view-cols-btn" (click)="sidenav.open()">
+                            <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                            aria-hidden="false" 
+                            aria-label="Collections sidenav view"
+                            fontIcon="keyboard_arrow_right"
+                            ></mat-icon>
+                        </button>
+                    </p>
+                     <p style="display: flex; justify-content: center; align-items: center; margin:15px 0px 15px 0px">
+                        <button class="skip-l-btn" (click)="onSlideViewClick('left')" (mousedown)="onSlideViewPress('left')" (mouseup)="onSlideViewRelease()">
+                            <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                            aria-hidden="false" 
+                            aria-label="Collections sidenav view"
+                            fontIcon="skip_previous"
+                            ></mat-icon>
+                        </button>
+                    </p>
+                </div>
+                <div #nftsContainer class="img-container shadow" [ngClass]="{'jc-center': currentCollection.assets.length <= 4}">
                     @for(model of currentCollection.assets; track model){
                         <mat-card class="game-card" appearance="outlined">
                             <mat-card-header class="card-header">
@@ -73,23 +85,30 @@
                                     fontIcon="content_paste"
                                     ></mat-icon>
                                  </button>
-                             <button class="view-btn" (click)="onViewClick(model)">
+                                 <button class="view-btn" (click)="onViewClick(model)">
+                                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                                    aria-hidden="false" 
+                                    aria-label="Example power icon"
+                                    fontIcon="visibility"
+                                    ></mat-icon>
+                                 </button>
+                                <button [disabled]="loading" class="buy-btn" [matMenuTriggerFor]="payMenu" (click)="onSellClick(model)">
+                                    <mat-icon *ngIf="!loading" style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
+                                    aria-hidden="false" 
+                                    aria-label="Example power icon"
+                                    fontIcon="payment"
+                                    ></mat-icon>
+                                    <div *ngIf="loading" style="margin: 6px 2px;">
+                                        <mat-spinner diameter="20"></mat-spinner>
+                                    </div>
+                                </button>
+                             <!-- <button class="view-btn" (click)="onSelectClick(model)">
                                 <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
                                 aria-hidden="false" 
                                 aria-label="Example power icon"
-                                fontIcon="visibility"
+                                fontIcon="check"
                                 ></mat-icon>
-                             </button>
-                             <button [disabled]="loading" class="buy-btn" [matMenuTriggerFor]="payMenu" (click)="onSellClick(model)">
-                                <mat-icon *ngIf="!loading" style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
-                                aria-hidden="false" 
-                                aria-label="Example power icon"
-                                fontIcon="payment"
-                                ></mat-icon>
-                                <div *ngIf="loading" style="margin: 6px 2px;">
-                                  <mat-spinner diameter="20"></mat-spinner>
-                                </div>
-                             </button>
+                             </button> -->
                             <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
                               <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
                                   <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
@@ -108,6 +127,13 @@
                         </mat-card>
                     }
                 </div>
+                <p style="display: flex; align-items: start; margin:15px 25px 0px 0px"><button class="view-cols-btn" (click)="onSlideViewClick('right')" (mousedown)="onSlideViewPress('right')" (mouseup)="onSlideViewRelease()">
+                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                    aria-hidden="false" 
+                    aria-label="Collections sidenav view"
+                    fontIcon="skip_next"
+                    ></mat-icon>
+                 </button></p>
             </div>
         </mat-sidenav-content>
     </mat-sidenav-container>
