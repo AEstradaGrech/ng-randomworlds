@@ -174,24 +174,6 @@
         color: #ffffff !important;
     }
 }
-.skip-l-btn{
-    height: 5%;
-    margin:0px 10px 0px 10px;
-    border-radius: 100px;
-    background-color: #ffffff;
-    border-color: rgb(175 239 24) !important;
-}
-
-.skip-l-btn:hover{
-    border: transparent;
-    border-radius: 100px;
-    padding:3px 7px 3px 7px;
-    background-color: #99c531;
-    color: #ffffff;
-    .mat-icon{
-        color: #ffffff !important;
-    }
-}
 .buy-btn{
     margin: 0px 10px 0px 10px;
     border-radius: 100px;
@@ -259,7 +241,56 @@
     }
 }
 
-.btns-col-l{
-    display: block;
+.disabled-btn{
+    margin:0px 10px 0px 10px;
+    color: rgb(219, 219, 219) !important;
+    border-radius: 100px;
+    background-color: #ffffff;
+    border-color: rgb(219, 219, 219) !important;
+}
 
+.disabled-btn:hover{
+    background-color: #ffffff !important;
+    border-color: rgb(219, 219, 219) !important;
+    border-radius: 100px;
+    
+    .disabled-icon{
+        background-color: #ffffff !important;
+        color: rgb(219, 219, 219) !important;
+    }
+}
+.disabled-icon{
+    background-color: #ffffff;
+    color: rgb(219, 219, 219) !important;
+}
+.skip-l-btn{
+    height: 5%;
+    margin:0px 10px 0px 10px;
+    border-radius: 100px;
+    background-color: #ffffff;
+    border-color: rgb(175 239 24);
+}
+
+.skip-l-btn:hover{
+    border-radius: 100px;
+    background-color: #99c531;
+    color: #ffffff;
+    .mat-icon{
+        color:#ffffff !important;
+    }
+}
+.skip-r-btn{
+    margin:0px 10px 0px 10px;
+    border-radius: 100px;
+    background-color: #ffffff;
+    border-color: rgb(175 239 24);
+}
+
+.skip-r-btn:hover{
+    border-radius: 100px;
+    background-color: #99c531;
+    color: #ffffff;
+    .mat-icon{
+        color:#ffffff !important;
+    }
 }

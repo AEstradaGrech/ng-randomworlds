@@ -43,24 +43,30 @@
         <mat-sidenav-content>
             <div class="card-container">
                 <div class="btns-col-l">
-                    <p style="display: flex; justify-content: center; align-items: center; margin:15px 0px 15px 0px">
-                        <button class="view-cols-btn" (click)="sidenav.open()">
-                            <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                            aria-hidden="false" 
-                            aria-label="Collections sidenav view"
-                            fontIcon="keyboard_arrow_right"
-                            ></mat-icon>
-                        </button>
-                    </p>
-                     <p style="display: flex; justify-content: center; align-items: center; margin:15px 0px 15px 0px">
-                        <button class="skip-l-btn" (click)="onSlideViewClick('left')" (mousedown)="onSlideViewPress('left')" (mouseup)="onSlideViewRelease()">
-                            <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                            aria-hidden="false" 
-                            aria-label="Collections sidenav view"
-                            fontIcon="skip_previous"
-                            ></mat-icon>
-                        </button>
-                    </p>
+                    <div style="height: 15%;">
+                        <p style="display: flex; justify-content: center; align-items: center; margin:15px 0px 15px 0px">
+                            <button class="view-cols-btn" (click)="sidenav.open()">
+                                <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                                aria-hidden="false" 
+                                aria-label="Collections sidenav view"
+                                fontIcon="keyboard_arrow_right"
+                                ></mat-icon>
+                            </button>
+                        </p>
+                    </div>
+                    <div style="display: flex;height: 64%;align-items: center;">
+                        <p style="display: flex; justify-content: center; align-items: center; margin:15px 0px 15px 0px">
+                            <button class="skip-l-btn" (click)="onSlideViewClick('left')" [ngClass]="{'disabled-btn': currentCollection.assets.length <= 4 }" [disabled]="currentCollection.assets.length <= 4" 
+                                (mousedown)="onSlideViewPress('left')" (mouseup)="onSlideViewRelease()">
+                                <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                                    [ngClass]="{'disabled-icon': currentCollection.assets.length <= 4 }"
+                                    aria-hidden="false" 
+                                    aria-label="Collections sidenav view"
+                                    fontIcon="skip_previous"
+                                ></mat-icon>
+                            </button>
+                        </p>
+                    </div>
                 </div>
                 <div #nftsContainer class="img-container shadow" [ngClass]="{'jc-center': currentCollection.assets.length <= 4}">
                     @for(model of currentCollection.assets; track model){
@@ -127,13 +133,17 @@
                         </mat-card>
                     }
                 </div>
-                <p style="display: flex; align-items: start; margin:15px 25px 0px 0px"><button class="view-cols-btn" (click)="onSlideViewClick('right')" (mousedown)="onSlideViewPress('right')" (mouseup)="onSlideViewRelease()">
-                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                    aria-hidden="false" 
-                    aria-label="Collections sidenav view"
-                    fontIcon="skip_next"
-                    ></mat-icon>
-                 </button></p>
+                <p style="display: flex; align-items: center; margin:15px 5px 0px 0px">
+                    <button class="skip-r-btn" (click)="onSlideViewClick('right')" [ngClass]="{'disabled-btn': currentCollection.assets.length <= 4 }" [disabled]="currentCollection.assets.length <= 4"
+                        (mousedown)="onSlideViewPress('right')" (mouseup)="onSlideViewRelease()">
+                        <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                        [ngClass]="{'disabled-icon': currentCollection.assets.length <= 4 }"
+                            aria-hidden="false" 
+                            aria-label="Collections sidenav view"
+                            fontIcon="skip_next"
+                        ></mat-icon>
+                    </button>
+                </p>
             </div>
         </mat-sidenav-content>
     </mat-sidenav-container>

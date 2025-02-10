@@ -17,16 +17,6 @@ export class CharacterSelectionComponent implements OnInit {
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
   ngOnInit(): void {
     let gameData = this._getGameData()
-    
-    //getMoralisWalletData(localStorage.login.userId)
-    //charsData = []
-    // walletNFTs.foreach(nft => {
-    // if(collections.keys(nft.contractAddress)){
-    //    esto no hace falta si contract.getTokenData devuelve ya metadataUri
-    //    collectionIPFSData = _smarts.getCollectionIPFSData(nft.contractAddres) <- devuelve modelCID and metadataCID
-    // }
-    //  charsData.push(_smarts.getTokenData(nft.tokenId, nft.collectionAddress) <-- merge variables)
-    //})
   }
 
   public onCharSelect(name:string){
