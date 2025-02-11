@@ -6,7 +6,8 @@ import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import web3 from 'src/app/core/scripts/web3';
-import { ScrollState } from 'src/app/modules/shared/models/common-interfaces';
+import { GameData, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-character-selection',
@@ -20,6 +21,7 @@ export class CharacterSelectionComponent implements OnInit {
   public collections:AssetsCollectionSummary[]=[];
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
+  private _router:Router = inject(Router);
   private _slideScrollState: ScrollState = {
     step: 100,
     mult: 1,
@@ -114,7 +116,14 @@ export class CharacterSelectionComponent implements OnInit {
   }
   public onSelectClick(model:AssetModel){
     console.log('-- on sell click --', model);
-    
+    let data = localStorage.getItem('game-data');
+    if(data){
+      let gameData:GameData = JSON.parse(data);
+      gameData.selectedCharacter = model;
+      localStorage.setItem('game-data', JSON.stringify(gameData));
+      this._router.navigateByUrl('randomworlds/world/generator')
+    }
+
   }
   public onSlideViewClick(direction: string){
     if(this._slideScrollState.isScrolling) return;
