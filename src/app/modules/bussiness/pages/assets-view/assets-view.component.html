@@ -56,7 +56,8 @@
                     </div>
                     <div style="display: flex;height: 64%;align-items: center;">
                         <p style="display: flex; justify-content: center; align-items: center; margin:15px 0px 15px 0px">
-                            <button class="skip-l-btn" (click)="onSlideViewClick('left')" [ngClass]="{'disabled-btn': currentCollection.assets.length <= 4 }" [disabled]="currentCollection.assets.length <= 4" 
+                            @if(currentCollection.assets.length > 4){
+                                <button class="skip-l-btn" (click)="onSlideViewClick('left')" [ngClass]="{'disabled-btn': currentCollection.assets.length <= 4 }" [disabled]="currentCollection.assets.length <= 4" 
                                 (mousedown)="onSlideViewPress('left')" (mouseup)="onSlideViewRelease()">
                                 <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
                                     [ngClass]="{'disabled-icon': currentCollection.assets.length <= 4 }"
@@ -65,6 +66,9 @@
                                     fontIcon="skip_previous"
                                 ></mat-icon>
                             </button>
+                            }@else{
+                                <button class="invisible-btn" disabled></button>
+                            }
                         </p>
                     </div>
                 </div>
@@ -108,13 +112,6 @@
                                         <mat-spinner diameter="20"></mat-spinner>
                                     </div>
                                 </button>
-                             <!-- <button class="view-btn" (click)="onSelectClick(model)">
-                                <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                                aria-hidden="false" 
-                                aria-label="Example power icon"
-                                fontIcon="check"
-                                ></mat-icon>
-                             </button> -->
                             <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
                               <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
                                   <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
@@ -133,16 +130,20 @@
                         </mat-card>
                     }
                 </div>
-                <p style="display: flex; align-items: center; margin:15px 5px 0px 0px">
-                    <button class="skip-r-btn" (click)="onSlideViewClick('right')" [ngClass]="{'disabled-btn': currentCollection.assets.length <= 4 }" [disabled]="currentCollection.assets.length <= 4"
-                        (mousedown)="onSlideViewPress('right')" (mouseup)="onSlideViewRelease()">
-                        <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                        [ngClass]="{'disabled-icon': currentCollection.assets.length <= 4 }"
-                            aria-hidden="false" 
-                            aria-label="Collections sidenav view"
-                            fontIcon="skip_next"
-                        ></mat-icon>
-                    </button>
+                <p  style="display: flex; align-items: center; margin:15px 5px 0px 0px">
+                    @if(currentCollection.assets.length > 4){
+                        <button class="skip-r-btn" (click)="onSlideViewClick('right')"
+                            (mousedown)="onSlideViewPress('right')" (mouseup)="onSlideViewRelease()">
+                            <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                                aria-hidden="false" 
+                                aria-label="Collections sidenav view"
+                                fontIcon="skip_next"
+                            ></mat-icon>
+                        </button>
+                    }
+                    @else{
+                        <button class="invisible-btn" disabled></button>
+                    }
                 </p>
             </div>
         </mat-sidenav-content>

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { CharacterInfo } from 'src/app/core/interfaces/business/prompting.interface';
+import { CharacterProfileMock } from 'src/app/core/interfaces/business/prompting.interface';
 import { DOCUMENT } from '@angular/common';
 import Web3Provider from 'src/app/core/scripts/web3'
 import Kaka from 'src/app/core/scripts/kakaCoin'
@@ -239,7 +239,7 @@ export class SmartContractsService {
     })
   }
 
-  public getMockedNFTs(): CharacterInfo[]{
+  public getMockedNFTs(): CharacterProfileMock[]{
     return [
       {
         id:1,

@@ -4,23 +4,25 @@
         <mat-card class="game-card" appearance="outlined" *ngIf="metadata">
             <mat-card-header style="justify-content: space-evenly; padding-top: 0px !important;">
               <div class="header-titles">
-                <mat-card-title class="game-card-title">"{{data.name}} - {{metadata.rarity ?? ''}}"</mat-card-title>
+                <mat-card-title class="game-card-title">"{{data.modelname}} - {{metadata.rarity ?? ''}}"</mat-card-title>
                 <mat-card-subtitle class="game-card-subtitle">Age: "{{metadata.profile.age}}"</mat-card-subtitle>
               </div>
               <mat-divider vertical="true"></mat-divider>
-              <div class="header-data">
+              <div class="header-data" [ngClass]="{'w-60': data.showContractData === false}">
                 <p>Ambience: {{ambiences}}</p>
                 <p>Mood: {{moods}}</p>
               </div>
-              <mat-divider vertical="true"></mat-divider>
-              <div class="header-contract-data">
-                <p>Price: {{data.price}} ETH</p>
-                <p>Mints: {{data.mints | nanToNum}} of {{data.maxMints}}</p>
-              </div>
+           
+                <mat-divider *ngIf="data.showContractData" vertical="true"></mat-divider>
+                <div *ngIf="data.showContractData" class="header-contract-data">
+                  <p>Price: {{data.model.price}} ETH</p>
+                  <p>Mints: {{data.model.mints | nanToNum}} of {{data.model.maxMints}}</p>
+                </div>
+    
               </mat-card-header>
               <mat-divider vertical="false"></mat-divider>
             <div class="card-body">
-                <img mat-card-image class="game-card-image" [src]="data.imageUrl" alt="Photo of a RandomWorlds character">
+                <img mat-card-image class="game-card-image" [src]="data.model.imageUrl" alt="Photo of a RandomWorlds character">
                 <mat-card-content class="game-card-content">
                   <p>
                     Appereance:<br> "{{metadata.profile.appereance}}""
