@@ -1,4 +1,5 @@
-import { CharacterInfo, QuestCharacter, QuestPreferences } from "src/app/core/interfaces/business/prompting.interface"
+import { CharacterProfileMock, QuestCharacter, QuestPreferences } from "src/app/core/interfaces/business/prompting.interface"
+import { AssetModel } from "src/app/core/interfaces/business/smart-contract.interface"
 
 export interface QueryFilter{
     conditions: QueryCondition[],
@@ -32,9 +33,7 @@ export interface GameData{
     gameType:string,
     gameStatus:string,
     charname:string,
-    charTokenId:number,
-    charCollectionAddress:string,
-    characterMeta?: CharacterInfo, // retrieved from contract. Contains Char & AvailablePreferences
+    selectedCharacter?: AssetModel, // retrieved from contract. Contains Char & AvailablePreferences
     character?:QuestCharacter, // CharMeta | RandomChar from preferences
     isRandomCharacter:boolean,
     gameSessionId:string,//dbId RandomQuest | RandomAdventure

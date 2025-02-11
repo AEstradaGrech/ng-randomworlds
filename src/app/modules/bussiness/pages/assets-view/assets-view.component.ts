@@ -154,7 +154,7 @@ export class AssetsViewComponent implements OnInit {
         collectionUrl: collection.summary.logoImage
       }
       let cfg = new MatDialogConfig();
-      cfg.data = catModel;
+      cfg.data = {model:catModel, showContractData:true};
       cfg.height = '90vh';
       cfg.width = '1100px';
       this._dialog.open(CharDetailDialogComponent, cfg);

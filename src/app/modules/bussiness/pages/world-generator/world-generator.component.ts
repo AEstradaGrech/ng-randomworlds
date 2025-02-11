@@ -10,6 +10,7 @@ import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { QuestsService } from '../../services/quests.service';
 import { QuestCharacter, QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { AssetModel, CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
 
 @Component({
   selector: 'app-world-generator',
@@ -63,10 +64,9 @@ export class WorldGeneratorComponent implements OnInit{
   @ViewChild('genresInput') constraintsInput!: ElementRef<HTMLInputElement>;
   announcer = inject(LiveAnnouncer);
 
-  constructor() {
-    // this.filteredAmbiences = new Observable<string[]>()
-    // this.filteredGenres = new Observable<string[]>()
-  }
+  public selectedCharacter!: AssetModel;
+  public metadata!: CharacterMetadata;
+  constructor() {}
 
   ngOnInit(): void {
     // this.gameType = localStorage.getItem('game-type');
@@ -82,9 +82,18 @@ export class WorldGeneratorComponent implements OnInit{
       return;
     }
     this._gameData = gameData;
-    if(this._gameData.characterMeta){
-      this.selectedAmbiences = this._gameData.characterMeta.ambiences;
-      this.selectedMoods = this._gameData.characterMeta.moods;
+    if(this._gameData.selectedCharacter){
+      this.selectedCharacter = this._gameData.selectedCharacter;
+      if(this.selectedCharacter.metadata){
+        this.metadata = this.selectedCharacter.metadata;
+      }
+      else {
+        // snakAlert
+        console.log('-- no char metadata found --');
+        return;
+      }
+      this.selectedAmbiences = this.metadata.profile.ambiences;
+      this.selectedMoods = this.metadata.profile.moods;
       this.form = this._fb.group({
         ambiences: new FormControl(this.selectedAmbiences),
         moods: new FormControl(this.selectedMoods),

@@ -302,11 +302,11 @@ export class QuestViewComponent implements OnInit {
   }
 
   private _initializeQuest(){
-    if(this.gameData.character && this.gameData.userPreferences){
+    if(this.gameData.character && this.gameData.userPreferences && this.gameData.selectedCharacter){
       let req:QuestInitRequest = {
         username:this.gameData.username,
-        charCollectionAddress:this.gameData.charCollectionAddress,
-        charTokenId:this.gameData.charTokenId,
+        charCollectionAddress:this.gameData.selectedCharacter.tokenAddress,
+        charTokenId:this.gameData.selectedCharacter.id,
         character:this.gameData.character,
         preferences:this.gameData.userPreferences,
         intro:this.gameData.intro,

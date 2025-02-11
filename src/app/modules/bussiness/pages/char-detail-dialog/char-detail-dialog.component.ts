@@ -14,14 +14,14 @@ import { NanToNumPipe } from 'src/app/modules/shared/pipes/nan-to-num.pipe';
   styleUrl: './char-detail-dialog.component.scss'
 })
 export class CharDetailDialogComponent implements OnInit{
-  public data: CatalogueModel = inject(MAT_DIALOG_DATA);
+  public data: any = inject(MAT_DIALOG_DATA);
   private _dialog:MatDialogRef<CharDetailDialogComponent> = inject(MatDialogRef<CharDetailDialogComponent>)
   private _contractsService: SmartContractsService = inject(SmartContractsService);
   public metadata!:CharacterMetadata;
   public ambiences: string = "";
   public moods: string = "";
   ngOnInit(): void {
-    this._contractsService.getMetadata(this.data).then(res => {
+    this._contractsService.getMetadata(this.data.model).then(res => {
       this.metadata = res;
       console.log('-- on get metadata --', this.metadata);
       for(let i=0; i<this.metadata.profile.ambiences.length; i++){
