@@ -2,13 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { GeneratedImageDto, GenerateImageResponse, GenerateImageRequest } from '../../shared/models/images.interfaces';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImagesService {
 
-  private _baseUrl:string = 'http://localhost:8000/images'
+  private _baseUrl:string = `${environment.baseUrl}/images`;
+
   constructor(private http:HttpClient) { }
 
   generate(req: GenerateImageRequest) : Observable<GenerateImageResponse[]>{

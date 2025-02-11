@@ -9,7 +9,7 @@ import { CollectionResponse, SortedFilter } from '../../shared/models/common-int
 })
 export class QuestsService {
 
-  private _baseUrl:string = 'http://localhost:9000/random-quest'
+  private _baseUrl:string = 'http://localhost:9000/randomworlds/random-quest'
   constructor(private http: HttpClient) { }
 
   public initQuestStream(req:QuestInitRequest):Observable<any>{

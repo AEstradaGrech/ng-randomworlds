@@ -11,7 +11,7 @@ import Decrypter from 'src/app/core/scripts/profileDecrypt'
 import { firstValueFrom, Observable } from 'rxjs';
 import { CatalogueCollection, CatalogueModel, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
-
+import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +20,7 @@ export class SmartContractsService {
   public factory:any;
   public collections: CatalogueCollection[] = [];
   public connectedAccount!:string;
-  private _baseUrl:string = 'http://localhost:9000/randomworlds'
+  private _baseUrl:string = environment.baseUrl;
   constructor(@Inject(DOCUMENT) private document: Document, private http:HttpClient) { 
     console.log('-- smarts constructor --');
     this.web3 = Web3Provider(this.document);

@@ -26,8 +26,6 @@ import { AssetModel, CharacterMetadata } from 'src/app/core/interfaces/business/
   ]
 })
 export class WorldGeneratorComponent implements OnInit{
-  public gameType!: string | null;
-  public charName!: string | null;
   /* (https://www.premiumbeat.com/blog/guide-to-basic-film-genres/#the-basic-film-genres)
   Action
   Comedy
@@ -66,6 +64,7 @@ export class WorldGeneratorComponent implements OnInit{
 
   public selectedCharacter!: AssetModel;
   public metadata!: CharacterMetadata;
+  public imageUrl: string = '';
   constructor() {}
 
   ngOnInit(): void {
@@ -84,6 +83,7 @@ export class WorldGeneratorComponent implements OnInit{
     this._gameData = gameData;
     if(this._gameData.selectedCharacter){
       this.selectedCharacter = this._gameData.selectedCharacter;
+      this.imageUrl = `url(${this.selectedCharacter.imageUrl})`
       if(this.selectedCharacter.metadata){
         this.metadata = this.selectedCharacter.metadata;
       }
