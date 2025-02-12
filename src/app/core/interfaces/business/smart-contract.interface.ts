@@ -59,7 +59,8 @@ export interface WalletNFT{
     */
 }
 export interface AssetModel extends WalletNFT {
-    metadata: CharacterMetadata
+    metadata: CharacterMetadata,
+    collectionLogoUrl: string
 }
 export interface AssetsCollection{
     summary: AssetsCollectionSummary,

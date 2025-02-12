@@ -65,7 +65,7 @@ export class AssetsViewComponent implements OnInit {
             console.log('-- on col wallet resp --', walletNFTs)
             walletNFTs.forEach(nft => {
               this._smartContractsService.getCharacterMetadata(nft.metadataUrl).then(meta => {
-                let asset:AssetModel = {...nft, metadata: meta}
+                let asset:AssetModel = {...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
                 collection.assets.push(asset);
                 console.log('-- current collection -- ', this.currentCollection)
               })
@@ -102,13 +102,7 @@ export class AssetsViewComponent implements OnInit {
             console.log('-- on col wallet resp --', walletNFTs)
             walletNFTs.forEach(nft => {
               this._smartContractsService.getCharacterMetadata(nft.metadataUrl).then(meta => {
-                let asset:AssetModel = {...nft, metadata: meta}
-                collection.assets.push(asset);
-                collection.assets.push(asset);
-                collection.assets.push(asset);
-                collection.assets.push(asset);
-                collection.assets.push(asset);
-                collection.assets.push(asset);
+                let asset:AssetModel = {...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
                 collection.assets.push(asset);
                 collection.assets.push(asset);
                 collection.assets.push(asset);

@@ -39,6 +39,11 @@ export class TreeMenuComponent implements OnInit {
     //   this.selectedItem = this.items[0];
   }
 
+  setMenuEnabled(name: string){
+    let item:TreeMenuItem = this.items.filter(x => x.name === name)[0]
+    if(item)
+      this.openItem(item);
+  }
   openItem(item: TreeMenuItem){
     if(item.expandable)
       item.isOpen = !item.isOpen;

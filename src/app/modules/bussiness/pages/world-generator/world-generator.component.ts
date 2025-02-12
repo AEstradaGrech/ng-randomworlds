@@ -235,7 +235,7 @@ export class WorldGeneratorComponent implements OnInit{
     console.log('-- intro req prefs --', preferences)
     if(this._hasValidPreferences(preferences)){
       let introReq: QuestIntroRequest = {
-        character:this.isRandomCharacter ? null : this._gameData.character ?? null,
+        character:this.isRandomCharacter ? null : this.selectedCharacter.metadata.profile as QuestCharacter ?? null,
         useRandomCharacter:this.isRandomCharacter, //formControl
         desiredName:this.isRandomCharacter ? formValues.desiredName : "", //formControl
         preferences:preferences

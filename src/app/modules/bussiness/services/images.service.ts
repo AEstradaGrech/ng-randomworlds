@@ -9,8 +9,8 @@ import { environment } from 'src/environments/environment';
 })
 export class ImagesService {
 
-  private _baseUrl:string = `${environment.baseUrl}/images`;
-
+  // private _baseUrl:string = `${environment.baseUrl}/images`;
+  private _baseUrl:string = 'http://localhost:9000/randomworlds'
   constructor(private http:HttpClient) { }
 
   generate(req: GenerateImageRequest) : Observable<GenerateImageResponse[]>{
