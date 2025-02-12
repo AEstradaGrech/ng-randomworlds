@@ -61,7 +61,7 @@
                   
                 </div>
                 
-                <div *ngIf="currentBlock" class="choices-table">
+                <div *ngIf="currentBlock && !isLoading" class="choices-table">
                     <table mat-table [dataSource]="currentChoices" class="mat-elevation-z8 demo-table">
                        
                         <!-- Name Column -->
@@ -80,7 +80,7 @@
                 </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="begin-btn" (click)="onSubmit()" [disabled]="currentBlock && sceneText !== currentBlock.scene">{{btnTxt}}</button>
+              <button mat-stroked-button class="begin-btn" (click)="onSubmit()" [disabled]="currentBlock && sceneText !== currentBlock.scene && !hasFinishedQuest">{{btnTxt}}</button>
             </mat-card-actions>
         </mat-card>
         <mat-divider vertical="true"></mat-divider>
