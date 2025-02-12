@@ -13,12 +13,12 @@
                   ></mat-icon>
                 </button>
             </div>
-            <div class="char-display" [@panelStateL]="panelStateL"></div>
+            <div class="char-display" [@panelStateL]="panelStateL" [ngStyle]="{'background-image': charImageUrl}"></div>
         </div>
         <mat-divider vertical="true"></mat-divider>
         <mat-card class="game-card" appearance="outlined">
             <mat-card-header>
-              <div mat-card-avatar class="game-card-header-image"></div>
+              <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': gameData.selectedCharacter.collectionLogoUrl}"></div>
               <mat-card-title class="game-card-title">Random Quest </mat-card-title>
               <mat-card-subtitle class="game-card-subtitle">Progress in your story with the right choice. -- {{gameData.gameStatus}}</mat-card-subtitle>
             </mat-card-header>
@@ -86,7 +86,7 @@
         <mat-divider vertical="true"></mat-divider>
         <div class="expandable-r">
             <div class="actions-display" [@panelStateR]="panelStateR">
-                <app-side-bar [width]="'100%'" [config]="actionsBarConfig" (onSelect)="onMenuSelect($event)"></app-side-bar>
+                <app-side-bar #sideBar [width]="'100%'" [config]="actionsBarConfig" (onSelect)="onMenuSelect($event)"></app-side-bar>
             </div>
             <div class="btn-slot">
                 <button mat-stroked-button class="expand-btn" (click)="onOpenBtnClick('right')">

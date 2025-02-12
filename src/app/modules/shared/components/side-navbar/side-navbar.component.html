@@ -2,5 +2,5 @@
     <div *ngIf="withLogo" class="logo">
         <app-logo></app-logo>
     </div>
-    <app-tree-menu class="tree-menu" [items]="config" (onSelect)="onMenuSelect($event)"></app-tree-menu>
+    <app-tree-menu #treemenu class="tree-menu" [items]="config" (onSelect)="onMenuSelect($event)"></app-tree-menu>
 </div>

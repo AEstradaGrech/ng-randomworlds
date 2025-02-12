@@ -27,7 +27,7 @@ export interface QuestCharacter{
 }
 export interface QuestInitRequest{
     username:string,
-    charTokenId: number,
+    charTokenId: string,
     charCollectionAddress:string,
     character:QuestCharacter,
     isRandomCharacter:boolean,
@@ -38,10 +38,12 @@ export interface QuestInitRequest{
 export interface RandomQuestDto{
     id:string,
     username:string,
-    charname:string,
-    maxBlocks:number,
-    userPreferences:string,
+    charTokenId:string,
+    charCollectionAddress:string,
+    character:string,
+    preferences:string,
     intro:string | null
+    maxBlocks:number,
     status:string,
     blocks:QuestBlockDto[]
 }

@@ -20,7 +20,7 @@ export class SmartContractsService {
   public factory:any;
   public collections: CatalogueCollection[] = [];
   public connectedAccount!:string;
-  private _baseUrl:string = environment.baseUrl;
+  private _baseUrl:string = 'http://localhost:9000/randomworlds'
   constructor(@Inject(DOCUMENT) private document: Document, private http:HttpClient) { 
     console.log('-- smarts constructor --');
     this.web3 = Web3Provider(this.document);

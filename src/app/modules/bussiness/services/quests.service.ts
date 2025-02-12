@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { filter, Observable } from 'rxjs';
 import { QuestBlockDto, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
 import { CollectionResponse, SortedFilter } from '../../shared/models/common-interfaces';
-
+import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class QuestsService {
 
+  // private _baseUrl:string = `${environment.baseUrl}/random-quest`
   private _baseUrl:string = 'http://localhost:9000/randomworlds/random-quest'
   constructor(private http: HttpClient) { }
 

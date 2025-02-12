@@ -7,6 +7,7 @@ import { GameData, QueryCondition, SortedFilter } from 'src/app/modules/shared/m
 import { Router } from '@angular/router'
 import { QuestsService } from '../../services/quests.service';
 import { QuestBlockDto, QuestCharacter, QuestInitRequest, QuestPreferences, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
+import { SideNavbarComponent } from 'src/app/modules/shared/components/side-navbar/side-navbar.component';
 @Component({
   selector: 'app-quest-view',
   templateUrl: './quest-view.component.html',
@@ -43,13 +44,14 @@ export class QuestViewComponent implements OnInit {
   selectedChoice!:string | null;
   endgameIcon:string = "mood"
   storyText:string = "";
+  charImageUrl:string = '';
   private _snackBar = inject(MatSnackBar);
   private _router:Router = inject(Router);
   private _service: QuestsService = inject(QuestsService);
   @ViewChild('scenebox') scenebox!:ElementRef;
-
+  @ViewChild('sideBar') sideBar!:SideNavbarComponent;
   get hasGameOngoing():boolean{
-    return this.gameData && this.gameData.gameSessionId !== '';
+    return this.gameData && this.gameData.gameSessionId !== '' && !this.hasFinishedQuest;
   }
   get hasFinishedQuest():boolean{
     return this.gameData && (this.gameData.gameStatus !== 'READY' && this.gameData.gameStatus !== 'INITIALIZING' && this.gameData.gameStatus !== 'ONGOING');
@@ -58,6 +60,9 @@ export class QuestViewComponent implements OnInit {
     return this.endgameIcon;
   }
   ngOnInit(): void {
+    
+    this.sceneText = '';
+    this.storyText = '';
     let gameData = this._getGameData();
     if(gameData){
       if(gameData.gameType !== 'quest'){
@@ -65,11 +70,14 @@ export class QuestViewComponent implements OnInit {
         return;
       }
       this.gameData = gameData;
+      this.gameData.gameSessionId = '';
+      this.charImageUrl = `url(${this.gameData.selectedCharacter?.imageUrl ?? ''}`;
       console.log('-- quest game data --', this.gameData);
       //this.gameData.gameSessionId = '678d58f9ee4c85d5ff9f6c2f';
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
     if(this.hasGameOngoing){
+      console.log('-- HAS GAME ONGOIN --')
       this.isLoading = true;
       this._service.getById(this.gameData.gameSessionId).subscribe(res => {
         this.isLoading = false;
@@ -82,6 +90,10 @@ export class QuestViewComponent implements OnInit {
         this.gameData.gameStatus = this.currentQuest.status;
         this.gameData.currentBlock = this.currentQuest.blocks.length;
       })
+    }
+    else {
+      this._switchMenu('Intro');
+      this.sideBar.setMenuEnabled('Intro');
     }
   }
  
@@ -117,19 +129,20 @@ export class QuestViewComponent implements OnInit {
           }
           else{
             if(!this.currentBlock) return;
+            this._addSceneMenuOption();
             this._updateCurrentQuest();
             this.btnTxt = 'PLAY AGAIN';
             this.currentQuest.blocks.push(this.currentBlock);
             this.currentBlock = null;
             switch(this.gameData.gameStatus){
               case('COMPLETED'):
-                this._snackBar.open("QUEST FINISHED!", undefined, { duration: 3000,panelClass: ['snack-success'], verticalPosition: 'bottom'});
+                this._snackBar.open("QUEST FINISHED!", undefined, { duration: 3500,panelClass: ['snack-success'], verticalPosition: 'bottom'});
               break;
               case('FAILED'):
-                this._snackBar.open("GAME OVER", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+                this._snackBar.open("GAME OVER", undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
               break;
               case('UNCERTAIN'):
-                this._snackBar.open("TO BE CONTINUED...", undefined, { duration: 3000,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+                this._snackBar.open("TO BE CONTINUED...", undefined, { duration: 3500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
               break;
               default:
                 break;
@@ -220,7 +233,10 @@ export class QuestViewComponent implements OnInit {
   }
   public onMenuSelect(event:TreeMenuItem){
     console.log('-- questview - on menu click --', event)
-    switch(event.name){
+    this._switchMenu(event.name);
+  }
+  private _switchMenu(name:string){
+    switch(name){
       case('Preferences'):
       if(this.gameData && this.gameData.userPreferences)
         this.sceneText = this._formatUserPreferences(this.gameData.userPreferences);
@@ -236,7 +252,7 @@ export class QuestViewComponent implements OnInit {
       this.sceneText = this.storyText;
       break;
       default: 
-        let split = event.name.split(' ');
+        let split = name.split(' ');
         if(split.length > 1){
           if(this.currentBlock && parseInt(split[1].trim()) === this.currentBlock.id){
             this.sceneText = this.currentBlock.scene;
@@ -306,7 +322,7 @@ export class QuestViewComponent implements OnInit {
       let req:QuestInitRequest = {
         username:this.gameData.username,
         charCollectionAddress:this.gameData.selectedCharacter.tokenAddress,
-        charTokenId:this.gameData.selectedCharacter.id,
+        charTokenId:`${this.gameData.selectedCharacter.id}`,
         character:this.gameData.character,
         preferences:this.gameData.userPreferences,
         intro:this.gameData.intro,
@@ -333,13 +349,15 @@ export class QuestViewComponent implements OnInit {
   }
   private _completeInitialization(req:QuestInitRequest){
     let conditions:QueryCondition[] = []
-    const vars = Object.keys(req)
+    const vars = Object.keys(req);
     vars.forEach((v:string) => {
       switch(v){
-        case("username"):
         case("charTokenId"):
+          conditions.push({field:v, value:req[v] as any});
+          break;
+        case("username"):
         case("charCollectionAddress"):
-          conditions.push({field:v, value:req[v]})
+          conditions.push({field:v, value:req[v]} as any)
         break;
         default: break;
       }
@@ -353,6 +371,7 @@ export class QuestViewComponent implements OnInit {
       is_descending:true
     }
     this._service.sortedQuery(filter).subscribe(res => {
+      console.log('-- on sorted query -- response', res);
       if(res.data.length > 0){
         this.currentQuest = res.data[0];
         this.gameData.gameSessionId = this.currentQuest.id;

@@ -66,9 +66,9 @@ export class CharacterSelectionComponent implements OnInit {
             console.log('-- on col wallet resp --', walletNFTs)
             walletNFTs.forEach(nft => {
               this._smartContractsService.getCharacterMetadata(nft.metadataUrl).then(meta => {
-                this.assets.push({...nft, metadata: meta});
-                this.assets.push({...nft, metadata: meta});
-                this.assets.push({...nft, metadata: meta});
+                this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
+                this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
+                this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
               })
             })
           }) 
