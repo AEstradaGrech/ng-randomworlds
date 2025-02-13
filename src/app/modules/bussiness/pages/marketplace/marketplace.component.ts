@@ -1,8 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { CatalogueCollection, CatalogueModel, CollectionSummary, ModelInfo, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
-import web3, { eth } from 'web3';
-import Web3Provider from 'src/app/core/scripts/web3';
+import { CatalogueModel, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
+import web3 from 'web3';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import { MatRadioChange } from '@angular/material/radio';
@@ -60,17 +59,29 @@ export class MarketplaceComponent implements OnInit{
     console.log('--selected token--', this.selectedToken);
     let connectedAccounts = await this._smartContractsService.getConnectedAccounts();
     console.log('-- ether mint from account --', connectedAccounts[0]);
-    this.loading = true;
+    this.loading = true;  
     if(this.selectedToken !== 'ETH'){
       let tokenDetails = this._paymentTokens.get(this.selectedToken);
       console.log('--payment token details--', tokenDetails);
       if(tokenDetails){
-        let price = this._convertToWei(model.price * tokenDetails.multiplier, tokenDetails.decimals);
-        console.log('wei price', price);
-        if(await this._smartContractsService.mintCharacter(model.contractAddress, this.selectedToken, price, model.fileName, connectedAccounts[0])){
-          this._snackBar.open("Thanks for buying!", undefined, { duration: 2500,panelClass: ['snack-success'], verticalPosition: 'bottom'})
+        let ragWeiPrice = 450000000000000 * tokenDetails.multiplier;
+        console.log(`WEI - ${ragWeiPrice}`);
+        //console.log(`${this.selectedToken} - ${price}`);
+
+        // if(await this._smartContractsService.mintCharacter(model.contractAddress, this.selectedToken, price, model.fileName, connectedAccounts[0])){
+        //   this._snackBar.open("Thanks for buying!", undefined, { duration: 2500,panelClass: ['snack-success'], verticalPosition: 'bottom'})
+        // }
+        try{
+          await this._smartContractsService.getCoinContract(this.selectedToken).methods.approve('0xee6870759cbDdFb12EE3A4547C35FFB667717df4',ragWeiPrice).send({from:'0xee6870759cbDdFb12EE3A4547C35FFB667717df4'})
+          await this._smartContractsService.getRagCharsCollectionContract().methods.customTokenMint('0xee6870759cbDdFb12EE3A4547C35FFB667717df4', 'JuniorRagi', this.selectedToken).send({from:'0xee6870759cbDdFb12EE3A4547C35FFB667717df4' ,gas:'7000000'})
+          // if(await this._smartContractsService.mintRagChar(this.selectedToken, price, 'JuniorRagi')){
+          //   this._snackBar.open("Thanks for buying!", undefined, { duration: 2500,panelClass: ['snack-success'], verticalPosition: 'bottom'})
+          // }
+          // else this._snackBar.open("An error has occured while minting the NFT, try again later...", undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
+        }catch(error){
+          console.log(error)
         }
-        else this._snackBar.open("An error has occured while minting the NFT, try again later...", undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
+        
       }
       else this._snackBar.open(`No token details found for token ${this.selectedToken}`, undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
     }
