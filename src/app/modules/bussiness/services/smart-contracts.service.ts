@@ -7,6 +7,7 @@ import Crap from 'src/app/core/scripts/crapCoin'
 import Web3 from 'web3';
 import Factory from 'src/app/core/scripts/immutableFactory'
 import Collection from 'src/app/core/scripts/immutableCollection'
+import RagCharsCollection from 'src/app/core/scripts/ragCharsCollection'
 import Decrypter from 'src/app/core/scripts/profileDecrypt'
 import { firstValueFrom, Observable } from 'rxjs';
 import { CatalogueCollection, CatalogueModel, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
@@ -43,6 +44,9 @@ export class SmartContractsService {
   
   public getCollectionContract(address:string) : any{
     return Collection(this.web3, address);
+  }
+  public getRagCharsCollectionContract() :any {
+    return RagCharsCollection(this.web3, '0xA43DaCA8B909AB78367b3F1814A1080D92e05510');
   }
   public getCoinContract(symbol:string) : any {
     switch(symbol){
@@ -183,8 +187,29 @@ export class SmartContractsService {
         let accounts = await this.getConnectedAccounts();
         console.log('price', price);
         console.log('account', accounts[0]);
+        console.log('pay params: ', contractAddress, paymentToken, model, collectorAddress);
         await tokenContract.methods.approve(accounts[0], price).send({from:accounts[0]});
         await this.getCollectionContract(contractAddress).methods.customTokenMint(collectorAddress, model, paymentToken).send({from:accounts[0],gas:'7000000'})
+        return true;
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
+    return false;
+  }
+  
+  public async mintRagChar(paymentToken:string, price:string, model:string) : Promise<boolean>{
+    let tokenContract = this.getCoinContract(paymentToken);
+    if(tokenContract){
+      try{
+        let accounts = await this.getConnectedAccounts();
+        console.log('price', price);
+        console.log('account', accounts[0]);
+        console.log('pay params: ', paymentToken, model);
+        
+        await tokenContract.methods.approve(accounts[0], price).send({from:accounts[0]});
+        await this.getRagCharsCollectionContract().methods.customTokenMint(accounts[0], model, paymentToken).send({from:accounts[0],gas:'7000000'})
         return true;
       }
       catch(error){
