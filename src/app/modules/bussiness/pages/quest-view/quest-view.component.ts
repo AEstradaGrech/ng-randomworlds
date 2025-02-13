@@ -72,7 +72,7 @@ export class QuestViewComponent implements OnInit {
       this.gameData.gameSessionId = '';
       this.charImageUrl = `url(${this.gameData.selectedCharacter?.imageUrl ?? ''}`;
       console.log('-- quest game data --', this.gameData);
-      this.gameData.gameSessionId = '67acf23348238093113686c2';
+      this.gameData.gameSessionId = '67adf7534d878f51f077963e';
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
     if(this.hasGameOngoing){
@@ -256,30 +256,33 @@ export class QuestViewComponent implements OnInit {
   }
   private _handleQuestEnd(){
     if(!this.currentBlock) return;
-          this._addSceneMenuOption(this.currentBlock?.id);
-          this._updateCurrentQuest();
-          this.btnTxt = 'PLAY AGAIN';
-          this.currentQuest.blocks.push(this.currentBlock);
-          this.currentBlock = null;
-          switch(this.gameData.gameStatus){
-            case('COMPLETED'):
-              this._snackBar.open("QUEST FINISHED!", undefined, { duration: 3500,panelClass: ['snack-success'], verticalPosition: 'bottom'});
-            break;
-            case('FAILED'):
-              this._snackBar.open("GAME OVER", undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-            break;
-            case('UNCERTAIN'):
-              this._snackBar.open("TO BE CONTINUED...", undefined, { duration: 3500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
-            break;
-            default:
-              break;
-          }
-          this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
-            this.currentQuest = res;
-            this.isLoading=false; 
-            this._snackBar.open("The current QUEST has ended. Mint it if you wish and play again!", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-            this._updateCurrentQuest();
-          })
+    this.gameData.currentBlock++;
+    this.currentBlock.id = this.gameData.currentBlock;
+    this.currentChoices = [];
+    this._addSceneMenuOption(this.currentBlock.id);
+    this._updateCurrentQuest();
+    this.btnTxt = 'PLAY AGAIN';
+    this.currentQuest.blocks.push(this.currentBlock);
+    this.currentBlock = null;
+    switch(this.gameData.gameStatus){
+      case('COMPLETED'):
+        this._snackBar.open("QUEST FINISHED!", undefined, { duration: 3500,panelClass: ['snack-success'], verticalPosition: 'bottom'});
+      break;
+      case('FAILED'):
+        this._snackBar.open("GAME OVER", undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+      break;
+      case('UNCERTAIN'):
+        this._snackBar.open("TO BE CONTINUED...", undefined, { duration: 3500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+      break;
+      default:
+        break;
+    }
+    this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
+      this.currentQuest = res;
+      this.isLoading=false; 
+      this._snackBar.open("The current QUEST has ended. Mint it if you wish and play again!", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+      this._updateCurrentQuest();
+    })
   }
   private _handleQuest(){ 
     this.currentBlock = null;
