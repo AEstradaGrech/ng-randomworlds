@@ -188,7 +188,7 @@ export class SmartContractsService {
         console.log('price', price);
         console.log('account', accounts[0]);
         console.log('pay params: ', contractAddress, paymentToken, model, collectorAddress);
-        await tokenContract.methods.approve(accounts[0], price).send({from:accounts[0]});
+        await tokenContract.methods.approve(contractAddress, price).send({from:accounts[0]});
         await this.getCollectionContract(contractAddress).methods.customTokenMint(collectorAddress, model, paymentToken).send({from:accounts[0],gas:'7000000'})
         return true;
       }

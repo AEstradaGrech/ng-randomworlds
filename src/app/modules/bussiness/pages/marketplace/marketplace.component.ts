@@ -67,14 +67,14 @@ export class MarketplaceComponent implements OnInit{
         let ragWeiPrice = 450000000000000 * tokenDetails.multiplier;
         console.log(`WEI - ${ragWeiPrice}`);
         //console.log(`${this.selectedToken} - ${price}`);
+        let weiPrice = parseInt(this._convertToWei(model.price, tokenDetails.decimals));
 
-        // if(await this._smartContractsService.mintCharacter(model.contractAddress, this.selectedToken, price, model.fileName, connectedAccounts[0])){
-        //   this._snackBar.open("Thanks for buying!", undefined, { duration: 2500,panelClass: ['snack-success'], verticalPosition: 'bottom'})
-        // }
         try{
-          await this._smartContractsService.getCoinContract(this.selectedToken).methods.approve('0xee6870759cbDdFb12EE3A4547C35FFB667717df4',ragWeiPrice).send({from:'0xee6870759cbDdFb12EE3A4547C35FFB667717df4'})
-          await this._smartContractsService.getRagCharsCollectionContract().methods.customTokenMint('0xee6870759cbDdFb12EE3A4547C35FFB667717df4', 'JuniorRagi', this.selectedToken).send({from:'0xee6870759cbDdFb12EE3A4547C35FFB667717df4' ,gas:'7000000'})
-          // if(await this._smartContractsService.mintRagChar(this.selectedToken, price, 'JuniorRagi')){
+          // await this._smartContractsService.getCoinContract(this.selectedToken).methods.approve('0xA43DaCA8B909AB78367b3F1814A1080D92e05510',ragWeiPrice).send({from:'0xee6870759cbDdFb12EE3A4547C35FFB667717df4'})
+          // await this._smartContractsService.getRagCharsCollectionContract().methods.customTokenMint('0xee6870759cbDdFb12EE3A4547C35FFB667717df4', 'JuniorRagi', this.selectedToken).send({from:'0xee6870759cbDdFb12EE3A4547C35FFB667717df4' ,gas:'7000000'})
+          await this._smartContractsService.getCoinContract(this.selectedToken).methods.approve(model.contractAddress, weiPrice * tokenDetails.multiplier).send({from:'0xee6870759cbDdFb12EE3A4547C35FFB667717df4'})
+          await this._smartContractsService.getCollectionContract(model.contractAddress).methods.customTokenMint('0xee6870759cbDdFb12EE3A4547C35FFB667717df4', model.fileName, this.selectedToken).send({from:'0xee6870759cbDdFb12EE3A4547C35FFB667717df4',gas:'7000000'})
+          // if(await this._smartContractsService.mintCharacter(model.contractAddress, this.selectedToken, `${weiPrice * tokenDetails.multiplier}`, model.fileName, connectedAccounts[0])){
           //   this._snackBar.open("Thanks for buying!", undefined, { duration: 2500,panelClass: ['snack-success'], verticalPosition: 'bottom'})
           // }
           // else this._snackBar.open("An error has occured while minting the NFT, try again later...", undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
