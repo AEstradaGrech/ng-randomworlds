@@ -4,6 +4,6 @@ const web3 = (document:Document)=>{
     let window:any = document.defaultView;
     if (window && window.ethereum) 
         return new Web3(window.ethereum);
-    return undefined;
+    return undefined; // Todo Truffle HDwallet provider
 }
 export default web3

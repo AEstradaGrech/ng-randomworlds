@@ -22,6 +22,7 @@ export class MarketplaceComponent implements OnInit{
   public selectedPrice:string = '--'
   private _paymentTokens: Map<string,TokenDetails> = new Map<string, TokenDetails>();
   ngOnInit(): void {
+  
     this._smartContractsService.collections.forEach(item => {
       this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
         console.log('summary', summary);

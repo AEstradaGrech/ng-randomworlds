@@ -263,7 +263,9 @@ export class SmartContractsService {
       return asset;
     })
   }
-
+  public decodeHexString(value: string) : string {
+    return this.web3.utils.hexToAscii(value);
+  }
   public getMockedNFTs(): CharacterProfileMock[]{
     return [
       {
