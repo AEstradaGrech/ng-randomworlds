@@ -1,5 +1,5 @@
 import { CharacterProfileMock, QuestCharacter, QuestPreferences } from "src/app/core/interfaces/business/prompting.interface"
-import { AssetModel } from "src/app/core/interfaces/business/smart-contract.interface"
+import { AssetModel, WalletNFT } from "src/app/core/interfaces/business/smart-contract.interface"
 
 export interface QueryFilter{
     conditions: QueryCondition[],
