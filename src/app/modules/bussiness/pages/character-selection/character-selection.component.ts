@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ViewChild, Inject, ElementRef } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -8,6 +8,7 @@ import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dia
 import web3 from 'src/app/core/scripts/web3';
 import { GameData, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router';
+import { Wallet } from 'web3';
 
 @Component({
   selector: 'app-character-selection',
@@ -64,13 +65,11 @@ export class CharacterSelectionComponent implements OnInit {
           this.collections.push(assetsSummary);
           this._smartContractsService.getAccountCollectionNFTs(item.contractAddress).then(walletNFTs => {
             console.log('-- on col wallet resp --', walletNFTs)
-            // walletNFTs.forEach(nft => {
-            //   this._smartContractsService.getCharacterMetadata(nft.metadataEndpoint).then(meta => {
-            //     this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
-            //     this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
-            //     this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
-            //   })
-            // })
+            walletNFTs.forEach((nft:WalletNFT) => {
+              let asset:AssetModel = {...nft, metadata: nft.metadata, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
+              this.assets.push(asset);
+            })
+            console.log('-- on assets --', this.assets);
           }) 
         })
       })
@@ -79,10 +78,10 @@ export class CharacterSelectionComponent implements OnInit {
   public onViewCollectionClick(address:string){
     window.open(`https://sepolia.etherscan.io/token/${address}`, "_blank");
   }
-  public onViewOnOpenSeaClick(model:AssetModel){
+  public onViewOnOpenSeaClick(model:WalletNFT){
     window.open(`https://testnets.opensea.io/assets/sepolia/${model.contractAddress}/${model.tokenId}`, "_blank");
   }
-  public async onViewClick(model:AssetModel){
+  public async onViewClick(model:WalletNFT){
     console.log('-- on view click',model);
     let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
     if(collection){
@@ -163,7 +162,7 @@ export class CharacterSelectionComponent implements OnInit {
     this.sidenav.close();
   }
 
-  getModelCollectionLogoUrl(model:AssetModel){
+  getModelCollectionLogoUrl(model:WalletNFT){
     let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0];
     if(collection){
       return `url(${collection.logoImage}`;
