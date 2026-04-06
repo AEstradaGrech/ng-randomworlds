@@ -64,7 +64,7 @@ export class WorldGeneratorComponent implements OnInit{
 
   public selectedCharacter!: AssetModel;
   public metadata!: CharacterMetadata;
-  public imageUrl: string = '';
+  public image: string = '';
   constructor() {}
 
   ngOnInit(): void {
@@ -83,7 +83,7 @@ export class WorldGeneratorComponent implements OnInit{
     this._gameData = gameData;
     if(this._gameData.selectedCharacter){
       this.selectedCharacter = this._gameData.selectedCharacter;
-      this.imageUrl = `url(${this.selectedCharacter.imageUrl})`
+      this.image = `url(${this.selectedCharacter.image})`
       if(this.selectedCharacter.metadata){
         this.metadata = this.selectedCharacter.metadata;
       }

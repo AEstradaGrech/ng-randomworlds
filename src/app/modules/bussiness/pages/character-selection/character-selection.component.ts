@@ -64,13 +64,13 @@ export class CharacterSelectionComponent implements OnInit {
           this.collections.push(assetsSummary);
           this._smartContractsService.getAccountCollectionNFTs(item.contractAddress).then(walletNFTs => {
             console.log('-- on col wallet resp --', walletNFTs)
-            walletNFTs.forEach(nft => {
-              this._smartContractsService.getCharacterMetadata(nft.metadataUrl).then(meta => {
-                this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
-                this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
-                this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
-              })
-            })
+            // walletNFTs.forEach(nft => {
+            //   this._smartContractsService.getCharacterMetadata(nft.metadataEndpoint).then(meta => {
+            //     this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
+            //     this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
+            //     this.assets.push({...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`});
+            //   })
+            // })
           }) 
         })
       })
@@ -80,13 +80,13 @@ export class CharacterSelectionComponent implements OnInit {
     window.open(`https://sepolia.etherscan.io/token/${address}`, "_blank");
   }
   public onViewOnOpenSeaClick(model:AssetModel){
-    window.open(`https://testnets.opensea.io/assets/sepolia/${model.tokenAddress}/${model.id}`, "_blank");
+    window.open(`https://testnets.opensea.io/assets/sepolia/${model.contractAddress}/${model.tokenId}`, "_blank");
   }
   public async onViewClick(model:AssetModel){
     console.log('-- on view click',model);
-    let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.tokenAddress.toLowerCase())[0]
+    let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
     if(collection){
-      let fileName = model.imageUrl.split('/').slice(-1)[0].replace('.png','');
+      let fileName = model.image.split('/').slice(-1)[0].replace('.png','');
       let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.contractAddress);
       let catModel:CatalogueModel = {
         collectionDescription: collection.description,
@@ -100,11 +100,11 @@ export class CharacterSelectionComponent implements OnInit {
         available:modelInfo.available,
         mints:modelInfo.mints,
         maxMints:modelInfo.maxMints,
-        metadataUrl: model.metadataUrl,
-        description:model.description,
+        metadataUrl: model.metadataEndpoint,
+        description:model.metadata.description,
         price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
-        name:model.name,
-        imageUrl:model.imageUrl,
+        name:model.metadata.name,
+        imageUrl:model.image,
         collectionUrl: collection.logoImage
       }
       let cfg = new MatDialogConfig();
@@ -164,7 +164,7 @@ export class CharacterSelectionComponent implements OnInit {
   }
 
   getModelCollectionLogoUrl(model:AssetModel){
-    let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.tokenAddress.toLowerCase())[0];
+    let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0];
     if(collection){
       return `url(${collection.logoImage}`;
     }

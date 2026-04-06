@@ -21,20 +21,20 @@ export class CharDetailDialogComponent implements OnInit{
   public ambiences: string = "";
   public moods: string = "";
   ngOnInit(): void {
-    this._contractsService.getMetadata(this.data.model).then(res => {
-      this.metadata = res;
-      console.log('-- on get metadata --', this.metadata);
-      for(let i=0; i<this.metadata.profile.ambiences.length; i++){
-        this.ambiences += this.metadata.profile.ambiences[i];
-        if(i !== this.metadata.profile.ambiences.length - 1)
-          this.ambiences += ', ';
-      }
-      for(let i=0; i<this.metadata.profile.moods.length; i++){
-        this.moods += this.metadata.profile.moods[i];
-        if(i !== this.metadata.profile.moods.length - 1)
-          this.moods += ', ';
-      }
-    })
+    // this._contractsService.getMetadata(this.data.model).then(res => {
+    //   this.metadata = res;
+    //   console.log('-- on get metadata --', this.metadata);
+    //   for(let i=0; i<this.metadata.profile.ambiences.length; i++){
+    //     this.ambiences += this.metadata.profile.ambiences[i];
+    //     if(i !== this.metadata.profile.ambiences.length - 1)
+    //       this.ambiences += ', ';
+    //   }
+    //   for(let i=0; i<this.metadata.profile.moods.length; i++){
+    //     this.moods += this.metadata.profile.moods[i];
+    //     if(i !== this.metadata.profile.moods.length - 1)
+    //       this.moods += ', ';
+    //   }
+    // })
   }
   public onClose(){
     this._dialog.close();
