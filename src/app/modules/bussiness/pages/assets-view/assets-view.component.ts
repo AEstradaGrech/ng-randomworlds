@@ -63,13 +63,13 @@ export class AssetsViewComponent implements OnInit {
           }
           this._smartContractsService.getAccountCollectionNFTs(assetsSummary.contractAddress).then(walletNFTs => {
             console.log('-- on col wallet resp --', walletNFTs)
-            walletNFTs.forEach(nft => {
-              this._smartContractsService.getCharacterMetadata(nft.metadataUrl).then(meta => {
-                let asset:AssetModel = {...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
-                collection.assets.push(asset);
-                console.log('-- current collection -- ', this.currentCollection)
-              })
-            })
+            // walletNFTs.forEach(nft => {
+            //   this._smartContractsService.getCharacterMetadata(nft.metadataEndpoint).then(meta => {
+            //     let asset:AssetModel = {...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
+            //     collection.assets.push(asset);
+            //     console.log('-- current collection -- ', this.currentCollection)
+            //   })
+            // })
           })
         })
         this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
@@ -100,15 +100,15 @@ export class AssetsViewComponent implements OnInit {
           }
           this._smartContractsService.getAccountCollectionNFTs(item.contractAddress).then(walletNFTs => {
             console.log('-- on col wallet resp --', walletNFTs)
-            walletNFTs.forEach(nft => {
-              this._smartContractsService.getCharacterMetadata(nft.metadataUrl).then(meta => {
-                let asset:AssetModel = {...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
-                collection.assets.push(asset);
-                collection.assets.push(asset);
-                collection.assets.push(asset);
-                console.log('-- current collection -- ', this.currentCollection)
-              })
-            })
+            // walletNFTs.forEach(nft => {
+            //   this._smartContractsService.getCharacterMetadata(nft.metadataEndpoint).then(meta => {
+            //     let asset:AssetModel = {...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
+            //     collection.assets.push(asset);
+            //     collection.assets.push(asset);
+            //     collection.assets.push(asset);
+            //     console.log('-- current collection -- ', this.currentCollection)
+            //   })
+            // })
             
           })
         })
@@ -120,13 +120,13 @@ export class AssetsViewComponent implements OnInit {
     window.open(`https://sepolia.etherscan.io/token/${address}`, "_blank");
   }
   public onViewOnOpenSeaClick(model:AssetModel){
-    window.open(`https://testnets.opensea.io/assets/sepolia/${model.tokenAddress}/${model.id}`, "_blank");
+    window.open(`https://testnets.opensea.io/assets/sepolia/${model.contractAddress}/${model.tokenId}`, "_blank");
   }
   public async onViewClick(model:AssetModel){
     console.log('-- on view click',model);
-    let collection = this.collections.filter(x => x.summary.contractAddress.toLowerCase() === model.tokenAddress.toLowerCase())[0]
+    let collection = this.collections.filter(x => x.summary.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
     if(collection){
-      let fileName = model.imageUrl.split('/').slice(-1)[0].replace('.png','');
+      let fileName = model.image.split('/').slice(-1)[0].replace('.png','');
       let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.summary.contractAddress);
       let catModel:CatalogueModel = {
         collectionDescription: collection.summary.description,
@@ -140,11 +140,11 @@ export class AssetsViewComponent implements OnInit {
         available:modelInfo.available,
         mints:modelInfo.mints,
         maxMints:modelInfo.maxMints,
-        metadataUrl: model.metadataUrl,
-        description:model.description,
+        metadataUrl: model.metadataEndpoint,
+        description:model.metadata.description,
         price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
-        name:model.name,
-        imageUrl:model.imageUrl,
+        name:model.metadata.name,
+        imageUrl:model.image,
         collectionUrl: collection.summary.logoImage
       }
       let cfg = new MatDialogConfig();

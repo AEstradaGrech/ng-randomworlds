@@ -33,17 +33,25 @@ export interface CollectionSummary {
     gateway:string,
     owner: string
 }
-export interface WalletNFT{
-    id:number,
-    contractType:string,
-    collectionName:string,
-    tokenAddress:string,
-    symbol:string,
-    owner:string,
-    name: string,
+export interface CharacterMetadata{
+    name:string,
     description:string,
-    imageUrl:string //TODO: metadata.external_link (actual 'endpoint')
-    metadataUrl: string //"token_uri": "ipfs://QmUV8P9e47Zo43dEk3HyeMXHRCGfcH5VXeBxEGC9JM8zQP/Kazimir_Koldun.json". replace(ipfs://) 
+    rarity:string,
+    image:string,
+    profile: CharacterProfile
+}
+
+export interface WalletNFT{
+    tokenId:number,
+    tokenType:string,
+    contractAddress:string,
+    ownerAddress:string,
+    collection:string,
+    symbol:string,
+    image: string,
+    metadataEndpoint: string,
+    imageEndpoint: string,
+    metadata: CharacterMetadata
     /*
     "rarity_label": null,
     "normalized_metadata": {
@@ -87,13 +95,7 @@ export interface CatalogueModel extends ModelInfo{
     metadataUrl: string,
     paymentTokens:string[]
 }
-export interface CharacterMetadata{
-    name:string,
-    description:string,
-    rarity:string,
-    image:string,
-    profile: CharacterProfile
-}
+
 export interface CharacterProfile {
     name: string,
     age: string,

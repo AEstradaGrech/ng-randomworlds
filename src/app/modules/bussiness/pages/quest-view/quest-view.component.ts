@@ -70,7 +70,7 @@ export class QuestViewComponent implements OnInit {
       }
       this.gameData = gameData;
       this.gameData.gameSessionId = '';
-      this.charImageUrl = `url(${this.gameData.selectedCharacter?.imageUrl ?? ''}`;
+      this.charImageUrl = `url(${this.gameData.selectedCharacter?.image ?? ''}`;
       console.log('-- quest game data --', this.gameData);
       this.gameData.gameSessionId = '67adf7534d878f51f077963e';
     }  
@@ -309,8 +309,8 @@ export class QuestViewComponent implements OnInit {
     if(this.gameData.character && this.gameData.userPreferences && this.gameData.selectedCharacter){
       let req:QuestInitRequest = {
         username:this.gameData.username,
-        charCollectionAddress:this.gameData.selectedCharacter.tokenAddress,
-        charTokenId:`${this.gameData.selectedCharacter.id}`,
+        charCollectionAddress:this.gameData.selectedCharacter.contractAddress,
+        charTokenId:`${this.gameData.selectedCharacter.tokenId}`,
         character:this.gameData.character,
         preferences:this.gameData.userPreferences,
         intro:this.gameData.intro,
