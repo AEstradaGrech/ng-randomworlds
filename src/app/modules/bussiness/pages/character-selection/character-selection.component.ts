@@ -81,7 +81,7 @@ export class CharacterSelectionComponent implements OnInit {
   public onViewOnOpenSeaClick(model:WalletNFT){
     window.open(`https://testnets.opensea.io/assets/sepolia/${model.contractAddress}/${model.tokenId}`, "_blank");
   }
-  public async onViewClick(model:WalletNFT){
+  public async onViewClick(model:AssetModel){
     console.log('-- on view click',model);
     let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
     if(collection){

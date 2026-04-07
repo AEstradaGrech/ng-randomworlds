@@ -12,10 +12,13 @@ import { SideNavbarComponent } from './components/side-navbar/side-navbar.compon
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SearchInputComponent } from './components/search-input/search-input.component';
 import { NanToNumPipe } from './pipes/nan-to-num.pipe';
+import { NftCardComponent } from './components/nft-card/nft-card.component';
+import { NftVisorComponent } from './components/nft-visor/nft-visor.component';
+import { RoundedButtonComponent } from './components/rounded-button/rounded-button.component';
 
 @NgModule({
     //components, directives, and pipes that belong exclusively to this particular module
-    declarations:[TreeMenuComponent, AppLogoComponent, GenericButtonComponent, TabsNavBarComponent, HeaderNavbarComponent, SideNavbarComponent, SearchInputComponent],
+    declarations:[TreeMenuComponent, AppLogoComponent, GenericButtonComponent, TabsNavBarComponent, HeaderNavbarComponent, SideNavbarComponent, SearchInputComponent, NftCardComponent, NftVisorComponent, RoundedButtonComponent],
     imports:[
         CommonModule,
         FormsModule, 
@@ -37,7 +40,10 @@ import { NanToNumPipe } from './pipes/nan-to-num.pipe';
         HeaderNavbarComponent, 
         SideNavbarComponent,
         MatSnackBarModule,
-        SearchInputComponent
+        SearchInputComponent,
+        NftCardComponent,
+        NftVisorComponent,
+        RoundedButtonComponent
     ],
     //A provider is an instruction to the Dependency Injection system on how to obtain a value for a dependency.
     providers:[]
