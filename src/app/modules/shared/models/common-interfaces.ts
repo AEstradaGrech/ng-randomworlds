@@ -48,3 +48,18 @@ export interface ScrollState{
     direction: string,
     isScrolling:boolean
 }
+
+export interface RoundedButtonConfig {
+    id?:string,
+    color: string,
+    hoverColor: string,
+    borderColor: string,
+    iconName: string,
+    iconColor?: string,
+    withSpinner: boolean,
+}
+
+export interface NftCardClickAction{
+    name: string,
+    asset: WalletNFT
+}

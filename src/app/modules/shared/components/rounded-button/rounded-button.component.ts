@@ -6,10 +6,8 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@
   styleUrl: './rounded-button.component.scss'
 })
 export class RoundedButtonComponent implements AfterViewInit {
-  ngAfterViewInit(): void {
-    if(!this.iconColor)
-      this.iconColor = this.hoverColor;
-  }
+
+  @Input() id: string | undefined = undefined;
   @Input() iconName: string = 'keyboard_return';
   @Input() iconColor!: string;
   @Input() withSpinner: boolean = false;
@@ -17,10 +15,17 @@ export class RoundedButtonComponent implements AfterViewInit {
   @Input() hoverColor: string = 'var(--primary-btn-hover)';
   @Input() backgroundColor: string = 'var(--primary-btn-color)';
   @Input() borderColor: string = 'var(--primary-btn-border)';
-  @Output() onClickEvent: EventEmitter<void> = new EventEmitter<void>();
+  @Output() onClickEvent: EventEmitter<string> = new EventEmitter<string>();
+
+  ngAfterViewInit(): void {
+    if(this.id === undefined || this.id === '')
+      this.id = this.iconName;
+    if(!this.iconColor || this.iconColor === '')
+      this.iconColor = this.hoverColor;
+  }
 
   public onClick(): void {
     if(!this.disabled)
-      this.onClickEvent.emit();
+      this.onClickEvent.emit(this.id);
   }
 }

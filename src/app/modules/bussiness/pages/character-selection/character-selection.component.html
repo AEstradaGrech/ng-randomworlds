@@ -14,55 +14,13 @@
     </div>
   <div #nftsContainer class="img-container shadow" [ngClass]="{'jc-center': assets.length <= 4}">
       @for(model of assets; track model){
-          <mat-card class="game-card" appearance="outlined">
-              <mat-card-header class="card-header">
-                  <div style="display: flex; align-items: center; justify-items: flex-start;">
-                      <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': getModelCollectionLogoUrl(model)}"></div>
-                  </div>
-                  <div style="display: flexbox; align-items: center;">
-                      <mat-card-title class="game-card-title">{{model.metadata.name}}</mat-card-title>
-                      <mat-card-subtitle class="game-card-subtitle">{{model.metadata.description}}</mat-card-subtitle>
-                  </div>
-              </mat-card-header>
-              <div class="card-body">
-                  <img mat-card-image class="game-card-image" [src]="model.image" alt="Character NFT image">
-              </div>
-              <mat-card-actions class="game-card-actions">
-                   <app-rounded-button 
-                        [iconName]="'visibility'"
-                        [withSpinner]="true"
-                        [disabled]="loading"
-                        (onClick)="onViewClick(model)"
-                        >
-                    </app-rounded-button>
-                  <app-rounded-button 
-                        [iconName]="'skip_previous'"
-                        [withSpinner]="true"
-                        [disabled]="loading"
-                        [hoverColor]="'var(--secondary-btn-hover)'"
-                        [borderColor]="'var(--secondary-btn-border)'"
-                        (onClick)="onViewClick(model)"
-                        >
-                    </app-rounded-button>
-                    <app-rounded-button 
-                        [iconName]="'person'"
-                        [withSpinner]="true"
-                        [disabled]="loading"
-                        [hoverColor]="'red'"
-                        [borderColor]="'red'"
-                        (onClick)="onViewClick(model)"
-                        >
-                    </app-rounded-button>
-               <button class="view-btn" (click)="onSelectClick(model)">
-                  <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                  aria-hidden="false" 
-                  aria-label="Example power icon"
-                  fontIcon="check"
-                  ></mat-icon>
-               </button>
-              </mat-card-actions>
-          </mat-card>
-      }
+        <app-nft-card 
+            [model]="model" 
+            [cardButtons]="nftCardButtonsConfig"
+            [disabled]="loading" 
+            (onCardButtonClick)="onCardButtonClicked($event)">
+        </app-nft-card>
+    }
   </div>
     <div style="display:flex; align-items: center;">
         <div *ngIf="assets.length >= 4" style="display: flex; align-items: center; margin:15px 5px 0px 0px">

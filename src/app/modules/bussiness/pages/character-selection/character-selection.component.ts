@@ -6,7 +6,7 @@ import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import web3 from 'src/app/core/scripts/web3';
-import { GameData, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
+import { GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router';
 import { Wallet } from 'web3';
 
@@ -21,6 +21,23 @@ export class CharacterSelectionComponent implements OnInit {
   public assets: AssetModel[] = [];
   public collections:AssetsCollectionSummary[]=[];
   public loading:boolean = false;
+  public nftCardButtonsConfig: RoundedButtonConfig[] = [
+    {
+      iconName: 'visibility',
+      color: 'var(--primary-btn-color)',
+      hoverColor: 'var(--primary-btn-hover)',
+      borderColor: 'var(--primary-btn-border)',
+      withSpinner: false
+    },
+    {
+      id: 'select',
+      iconName: 'check',
+      color: 'var(--primary-btn-color)',
+      hoverColor: 'var(--primary-btn-hover)',
+      borderColor: 'var(--primary-btn-border)',
+      withSpinner: true
+    }
+  ];
   private _dialog:MatDialog = inject(MatDialog);
   private _router:Router = inject(Router);
   private _slideScrollState: ScrollState = {
@@ -112,6 +129,10 @@ export class CharacterSelectionComponent implements OnInit {
       cfg.width = '1100px';
       this._dialog.open(CharDetailDialogComponent, cfg);
     }
+  }
+
+  public onCardButtonClicked(event:NftCardClickAction){
+    console.log('-- char selection >> card btn clicked --', event)
   }
   public onSelectClick(model:AssetModel){
     console.log('-- on sell click --', model);
