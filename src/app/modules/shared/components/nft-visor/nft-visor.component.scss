@@ -1,0 +1,21 @@
+
+.img-container{
+    width: 90%;
+    height: 100%;
+    margin: 15px 15px 15px 15px;
+    border-radius: 15px;
+    min-height: 87.5vh;
+    max-height: 100vh;
+    align-items: center;
+    // overflow-y: hidden;
+    // white-space: nowrap;
+    // .game-card {
+    //     display: inline-block;
+    // }
+    display: flex !important;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    .game-card {
+        flex: 0 0 auto;
+    }
+}
