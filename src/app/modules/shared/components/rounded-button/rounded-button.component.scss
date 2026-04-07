@@ -1,0 +1,31 @@
+.rounded-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 30px;
+    width: 40px;
+    height: 40px;
+    margin: 0px 5px 5px 5px;
+    background-color: var(--btn-color);
+    border-color: var(--btn-border-color);
+    &:hover{
+      background-color: var(--btn-hover) !important;
+      .btn-icon{
+        color: var(--btn-color) !important;
+      }
+    }
+    
+}
+.btn-icon{
+    margin-top: 6px; font-size: 20px !important;
+    color: var(--icon-color);
+    
+}
+.btn-disabled{
+    //width:10%;
+    background-color: #757575 !important;
+}
+
+// .submit-btn:hover{
+//   background-color: var(--submit-btn-hover) !important;
+// }

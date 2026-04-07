@@ -1,0 +1,19 @@
+
+<button class="rounded-btn" 
+    (click)="onClick()" 
+    [style.--btn-color]="backgroundColor" 
+    [style.--btn-hover]="hoverColor"
+    [style.--btn-border-color]="borderColor"
+    [ngClass]="{'btn-disabled': disabled}">
+    @if(disabled && withSpinner){
+        <mat-spinner diameter="30"></mat-spinner>
+    }
+    @else{
+        <mat-icon class="btn-icon"
+            [style.--icon-color]="iconColor"
+            aria-hidden="false" 
+            aria-label="rounded_button"
+            fontIcon="{{iconName}}">
+        </mat-icon>
+    }
+</button>

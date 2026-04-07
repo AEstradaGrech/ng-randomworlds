@@ -1,0 +1,30 @@
+<mat-card class="game-card" appearance="outlined">
+    <mat-card-header class="card-header">
+        <div style="display: flex; align-items: center; justify-items: flex-start;">
+            <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': getCollectionLogo()}"></div>
+        </div>
+        <div style="display: flexbox; align-items: center;">
+            <mat-card-title class="game-card-title">{{model.metadata.name}}</mat-card-title>
+            <mat-card-subtitle class="game-card-subtitle">{{model.metadata.description}}</mat-card-subtitle>
+        </div>
+    </mat-card-header>
+    <div class="card-body">
+        <img mat-card-image class="game-card-image" [src]="model.image" alt="Character NFT image">
+    </div>
+    <mat-card-actions class="game-card-actions"> <!--A: project btns - B: btnConfig & app-rounded btn-->
+        <button class="view-btn" (click)="onViewClick()">
+            <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+            aria-hidden="false" 
+            aria-label="Example power icon"
+            fontIcon="visibility"
+            ></mat-icon>
+        </button>
+        <button class="view-btn" (click)="onSelectClick()">
+            <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+            aria-hidden="false" 
+            aria-label="Example power icon"
+            fontIcon="check"
+            ></mat-icon>
+        </button>
+    </mat-card-actions>
+</mat-card>
