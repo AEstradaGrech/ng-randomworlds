@@ -63,53 +63,10 @@ export class AssetsViewComponent implements OnInit {
           }
           this._smartContractsService.getAccountCollectionNFTs(assetsSummary.contractAddress).then(walletNFTs => {
             console.log('-- on col wallet resp --', walletNFTs)
-            // walletNFTs.forEach(nft => {
-            //   this._smartContractsService.getCharacterMetadata(nft.metadataEndpoint).then(meta => {
-            //     let asset:AssetModel = {...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
-            //     collection.assets.push(asset);
-            //     console.log('-- current collection -- ', this.currentCollection)
-            //   })
-            // })
-          })
-        })
-        this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
-          let mockname = `${summary.collectionName}-mock-1`;
-          let mockAddress = item.contractAddress.replace('c70','x00');
-          let assetsSummary:AssetsCollectionSummary ={
-            contractAddress: mockAddress,
-            name: mockname,
-            tokenName: summary.name,
-            symbol: item.symbol,
-            description: item.description,
-            isFree: item.isFree,
-            isLimited: item.isLimited,
-            isOutOfStock: summary.isOutOfStock,
-            models: summary.models,
-            mints: summary.totalMints,
-            maxMints: summary.maxMints,
-            modelsCid: summary.modelsCid,
-            metaCid: summary.metaCid,
-            logoImage: item.logoImage
-          }
-          console.log('mock summary', summary);
-          let collection:AssetsCollection = {summary:assetsSummary, assets:[]};
-          this.collections.push(collection);
-          if(!this.currentCollection){
-            this.currentCollection = this.collections[0];
-            this.currentCollectionLogoUrl = `url(${this.currentCollection.summary.logoImage}`;
-          }
-          this._smartContractsService.getAccountCollectionNFTs(item.contractAddress).then(walletNFTs => {
-            console.log('-- on col wallet resp --', walletNFTs)
-            // walletNFTs.forEach(nft => {
-            //   this._smartContractsService.getCharacterMetadata(nft.metadataEndpoint).then(meta => {
-            //     let asset:AssetModel = {...nft, metadata: meta, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
-            //     collection.assets.push(asset);
-            //     collection.assets.push(asset);
-            //     collection.assets.push(asset);
-            //     console.log('-- current collection -- ', this.currentCollection)
-            //   })
-            // })
-            
+            collection.assets = walletNFTs.map((nft:any) => {
+              let asset:AssetModel = {...nft, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
+              return asset;
+            });
           })
         })
       })
