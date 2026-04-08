@@ -10,6 +10,7 @@ import { GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from '
 import { Router } from '@angular/router';
 import { Wallet } from 'web3';
 import { EAppButtons } from 'src/app/modules/shared/models/common-enums';
+import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
 
 @Component({
   selector: 'app-character-selection',
@@ -24,24 +25,7 @@ export class CharacterSelectionComponent implements OnInit {
   public assets: AssetModel[] = [];
   public collections:AssetsCollectionSummary[]=[];
   public loading:boolean = false;
-  public nftCardButtonsConfig: RoundedButtonConfig[] = [
-    {
-      id: EAppButtons.VIEW,
-      iconName: 'visibility',
-      color: 'var(--primary-btn-color)',
-      hoverColor: 'var(--primary-btn-hover)',
-      borderColor: 'var(--primary-btn-border)',
-      withSpinner: false
-    },
-    {
-      id: EAppButtons.SELECT,
-      iconName: 'check',
-      color: 'var(--primary-btn-color)',
-      hoverColor: 'var(--primary-btn-hover)',
-      borderColor: 'var(--primary-btn-border)',
-      withSpinner: true
-    }
-  ];
+  public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   private _dialog:MatDialog = inject(MatDialog);
   private _router:Router = inject(Router);
   private _slideScrollState: ScrollState = {

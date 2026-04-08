@@ -4,14 +4,4 @@
     [disabled]="loading" 
     (onCardButtonClick)="onCardButtonClicked($event)"
     [projectedButtonsTemplate]="sellButton">
-    <ng-template #sellButton>  
-        <app-rounded-button 
-                    [id]="'sell'"
-                    [iconName]="'payment'"
-                    [hoverColor]="'var(--secondary-btn-hover)'"
-                    [borderColor]="'var(--secondary-btn-border)'"
-                    [disabled]="loading"
-                    >
-        </app-rounded-button>
-    </ng-template>
 </app-nft-visor>
