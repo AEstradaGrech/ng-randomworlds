@@ -14,6 +14,7 @@ import { CharDetailDialogComponent } from './pages/char-detail-dialog/char-detai
 import { NanToNumPipe } from '../shared/pipes/nan-to-num.pipe';
 import { ValueToNanCasePipe } from '../shared/pipes/val-to-nan.pipe';
 import { AssetsViewComponent } from './pages/assets-view/assets-view.component';
+import { CharacterCreatorDialogComponent } from './pages/assets-view/components/character-creator-dialog/character-creator-dialog.component';
 
 
 
@@ -28,7 +29,8 @@ import { AssetsViewComponent } from './pages/assets-view/assets-view.component';
         CharDetailDialogComponent,
         NanToNumPipe,
         ValueToNanCasePipe,
-        AssetsViewComponent
+        AssetsViewComponent,
+        CharacterCreatorDialogComponent
     ],
     imports:[
         CommonModule,

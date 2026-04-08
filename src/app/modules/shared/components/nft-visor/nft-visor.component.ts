@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, TemplateRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, TemplateRef, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { AssetModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { NftCardClickAction, RoundedButtonConfig, ScrollState } from '../../models/common-interfaces';
 
@@ -7,16 +7,18 @@ import { NftCardClickAction, RoundedButtonConfig, ScrollState } from '../../mode
   templateUrl: './nft-visor.component.html',
   styleUrl: './nft-visor.component.scss'
 })
-export class NftVisorComponent {
+export class NftVisorComponent implements OnInit, OnChanges{
+
   @Input() assets: AssetModel[] = [];
   @Input() nftCardButtonsConfig: RoundedButtonConfig[] = [];
   @Input() disabled: boolean = false;
   @Input() projectedButtonsTemplate!: TemplateRef<any>;
   @Input() skipButtonsPosition:string = 'center';
+  @Input() visualization: string = 'row'; // | grid;
   @Output() onCardButtonClick: EventEmitter<NftCardClickAction> = new EventEmitter<NftCardClickAction>();
 
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
-  
+  public viewType: string = 'wrap';
   private _slideScrollState: ScrollState = {
       step: 100,
       mult: 1,
@@ -30,9 +32,20 @@ export class NftVisorComponent {
       isScrolling:false
     }
   
-    public onCardButtonClicked(event:NftCardClickAction){
-      this.onCardButtonClick.emit(event);
+  ngOnInit(): void {
+    this.viewType = this.visualization === 'row' ? 'nowrap' : 'wrap';
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['visualization']){
+      this.viewType = this.visualization === 'row' ? 'nowrap' : 'wrap';
+      console.log('-- current view type --', this.viewType);
     }
+  }
+  
+  public onCardButtonClicked(event:NftCardClickAction){
+      this.onCardButtonClick.emit(event);
+  }
   public onSlideViewClick(direction: string){
     if(this._slideScrollState.isScrolling) return;
     this._clickScrollState.direction = direction;

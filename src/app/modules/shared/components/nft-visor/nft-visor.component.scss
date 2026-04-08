@@ -7,8 +7,10 @@
     max-height: 100vh;
     align-items: center;
     display: flex !important;
-    flex-wrap: nowrap;
+    flex-wrap: var(--view-type);
     overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
 }
 .card-container{
     display: flex !important;

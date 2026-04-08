@@ -35,6 +35,7 @@ export class AssetsViewComponent implements OnInit {
   }
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
+  public visorType:string = 'row';
   constructor(@Inject(DOCUMENT) private document:Document){}
   ngOnInit(): void {
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
@@ -75,6 +76,9 @@ export class AssetsViewComponent implements OnInit {
     })
   }
   
+  public onChangeVisualization(){
+    this.visorType = this.visorType === 'row' ? 'grid' : 'row';
+  }
   public onViewCollectionClick(address:string){
     window.open(`https://sepolia.etherscan.io/token/${address}`, "_blank");
   }

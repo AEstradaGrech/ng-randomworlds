@@ -21,7 +21,7 @@
             <ng-content select=".lower-buttons-l"></ng-content>
         </div>
     </div>
-  <div #nftsContainer class="img-container shadow" [ngClass]="{'jc-center': assets.length <= 4}">
+  <div #nftsContainer class="img-container shadow" [style.--view-type]="viewType">
       @for(model of assets; track model){
         <app-nft-card 
             [model]="model" 
