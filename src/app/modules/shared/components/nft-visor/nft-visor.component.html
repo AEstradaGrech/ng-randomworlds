@@ -1,6 +1,9 @@
 <div class="card-container">
-    <div style="display:flex; align-items: center;">
-        <div *ngIf="assets.length >= 4" style="display: flex; justify-content: center; align-items: center;margin:15px 0px 0px 5px">
+    <div style="display:grid; align-items: center;">
+        <div class="skip-buttons-wrapper skip-btn-margin-l" [style.--skip-btns-position]="'flex-start'">
+            <ng-content select=".upper-buttons-l"></ng-content>
+        </div>
+        <div *ngIf="assets.length >= 4" class="skip-buttons-wrapper skip-btn-margin-l" [style.--skip-btns-position]="skipButtonsPosition">
             <app-rounded-button 
                 [id]="'skip_btn_left'"
                 [iconName]="'skip_previous'"
@@ -13,6 +16,9 @@
                 (onMousedownEvent)="onSlideViewPress($event)"
                 (onMouseupEvent)="onSlideViewRelease()">
             </app-rounded-button>
+        </div>
+        <div class="skip-buttons-wrapper skip-btn-margin-l" [style.--skip-btns-position]="'flex-end'">
+            <ng-content select=".lower-buttons-l"></ng-content>
         </div>
     </div>
   <div #nftsContainer class="img-container shadow" [ngClass]="{'jc-center': assets.length <= 4}">
@@ -28,20 +34,26 @@
         </app-nft-card>
       }
   </div>
-    <div style="display:flex; align-items: center;">
-        <div *ngIf="assets.length >= 4" style="display: flex; align-items: center; margin:15px 5px 0px 0px">
-        <app-rounded-button 
-            [id]="'skip_btn_right'"
-            [iconName]="'skip_next'"
-            [iconColor]="'var(--primary-btn-hover)'"
-            [backgroundColor]="'var(--primary-btn-color)'"
-            [hoverColor]="'var(--primary-btn-hover)'"
-            [borderColor]="'var(--primary-btn-border)'"
-            [disabled]="assets.length <= 4"
-            (onClickEvent)="onSlideViewClick('right')"
-            (onMousedonwEvent)="onSlideViewPress('right')"
-            (onMouseupEvent)="onSlideViewRelease()">
-            </app-rounded-button>
+    <div style="display:grid; align-items: center;">
+        <div class="skip-buttons-wrapper skip-btn-margin-r" [style.--skip-btns-position]="'flex-start'">
+            <ng-content select=".upper-buttons-r"></ng-content>
+        </div>
+        <div *ngIf="assets.length >= 4" class="skip-buttons-wrapper skip-btn-margin-r" [style.--skip-btns-position]="skipButtonsPosition">
+            <app-rounded-button 
+                [id]="'skip_btn_right'"
+                [iconName]="'skip_next'"
+                [iconColor]="'var(--primary-btn-hover)'"
+                [backgroundColor]="'var(--primary-btn-color)'"
+                [hoverColor]="'var(--primary-btn-hover)'"
+                [borderColor]="'var(--primary-btn-border)'"
+                [disabled]="assets.length <= 4"
+                (onClickEvent)="onSlideViewClick('right')"
+                (onMousedonwEvent)="onSlideViewPress('right')"
+                (onMouseupEvent)="onSlideViewRelease()">
+                </app-rounded-button>
+        </div>
+        <div class="skip-buttons-wrapper skip-btn-margin-r" [style.--skip-btns-position]="'flex-end'">
+            <ng-content select=".lower-buttons-r"></ng-content>
         </div>
     </div>
 </div>

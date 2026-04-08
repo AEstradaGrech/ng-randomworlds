@@ -1,5 +1,5 @@
 .img-container{
-    width: 90%;
+    width: 100%;
     height: 100%;
     margin: 15px 15px 15px 15px;
     border-radius: 15px;
@@ -8,14 +8,30 @@
     align-items: center;
     display: flex !important;
     flex-wrap: nowrap;
-    overflow-x: auto;
+    overflow-x: hidden;
 }
 .card-container{
     display: flex !important;
     justify-content: center;
+    width: 100%;
 }
 
-
+.skip-buttons-wrapper{
+    display: flex; 
+    align-self: var(--skip-btns-position);
+    justify-content: center; 
+    align-items: center;
+    margin-top:15px;
+    margin-bottom:15px;
+}
+.skip-btn-margin-l{
+    margin-left:15px;
+    margin-right : 5px;
+}
+.skip-btn-margin-r{
+    margin-left:5px;
+    margin-right : 15px;
+}
 .card-body{
     display: flex;
     justify-content: center;
