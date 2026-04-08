@@ -69,6 +69,15 @@
                     </mat-card>
                 </mat-menu>
              </ng-template>
+             <ng-container class="upper-buttons-l">
+                <app-rounded-button [id]="'view-cols'"
+                                [iconName]="'skip_next'"
+                                [hoverColor]="'var(--terciary-btn-hover)'"
+                                [borderColor]="'var(--terciary-btn-border)'"
+                                [disabled]="loading"
+                                (onClickEvent)="sidenav.open()">
+                </app-rounded-button>
+             </ng-container>
             </app-nft-visor>
         </mat-sidenav-content>
     </mat-sidenav-container>

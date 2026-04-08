@@ -12,6 +12,7 @@ export class NftVisorComponent {
   @Input() nftCardButtonsConfig: RoundedButtonConfig[] = [];
   @Input() disabled: boolean = false;
   @Input() projectedButtonsTemplate!: TemplateRef<any>;
+  @Input() skipButtonsPosition:string = 'center';
   @Output() onCardButtonClick: EventEmitter<NftCardClickAction> = new EventEmitter<NftCardClickAction>();
 
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;

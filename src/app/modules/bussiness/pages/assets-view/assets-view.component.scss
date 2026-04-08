@@ -1,78 +1,5 @@
 
-.img-container{
-    width: 90%;
-    height: 100%;
-    margin: 15px 15px 15px 15px;
-    border-radius: 15px;
-    min-height: 87.5vh;
-    max-height: 100vh;
-    align-items: center;
-    // overflow-y: hidden;
-    // white-space: nowrap;
-    // .game-card {
-    //     display: inline-block;
-    // }
-    display: flex !important;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    .game-card {
-        flex: 0 0 auto;
-    }
-}
-.card-container{
-    display: flex !important;
-    justify-content: center;
-}
 
-.game-card {
-    width: 23%; //45% x 2 nfts //if NFTs = 1 [NgClass] --> justify-content:center en parent (desactivado por scrollbox)
-    height: 80vh;
-    margin: 10px 10px 5px 10px;
-    border-radius: 15px !important;
-  }
-.game-card-header-image{
-    background-size: cover;
-    margin-right: 16px;
-    margin-bottom: 20px !important;
-  }
-.game-card-image{
-    border-radius: 15px !important;
-    margin: 10px 15px 5px 15px;
-    height: 98%;
-    width: 88%
-  }
-.game-card-content{
-    color:#6b6b6c;
-    font-size:13px;
-}
-
-.game-card-actions{
-    justify-content: center;
-    align-items: center;
-}
-
-.game-card-title{
-    color:#99c531;
-}
-.game-card-subtitle{
-    font-style: oblique;
-    color: #c3c3c5;
-    font-weight: 300;
-}
-.game-card-actions{
-    justify-content: center;
-    align-items: center;
-    height: 7%;
-}
-
-.game-card-title{
-    color:#99c531;
-}
-.game-card-subtitle{
-    font-style: oblique;
-    color: #c3c3c5;
-    font-weight: 300;
-}
 .collection-card-title{
     color:#99c531;
     font-size: 16px;
@@ -99,15 +26,6 @@
     display:flex;
     flex-direction: column;
 }
-.card-body{
-    display: flex;
-    justify-content: center;
-    height: 81%;
-}
-.card-header{
-    height: 12%;
-
-}
 
 .sidenav-div{
     .mat-drawer-container{
@@ -121,23 +39,6 @@
     right: 0;
   }
 
-.view-btn{
-    margin:0px 10px 0px 10px;
-    border-radius: 100px;
-    background-color: #ffffff;
-    border-color: rgb(175 239 24) !important;
-}
-
-.view-btn:hover{
-    border: transparent;
-    border-radius: 100px;
-    padding:3px 7px 3px 7px;
-    background-color: #99c531;
-    color: #ffffff;
-    .mat-icon{
-        color: #ffffff !important;
-    }
-}
 .view-cols-btn{
     height: 5%;
     margin:0px 10px 0px 10px;
@@ -241,64 +142,10 @@
     }
 }
 
-.disabled-btn{
-    margin:0px 10px 0px 10px;
-    color: rgb(219, 219, 219) !important;
-    border-radius: 100px;
-    background-color: #ffffff;
-    border-color: rgb(219, 219, 219) !important;
-}
-
-.disabled-btn:hover{
-    background-color: #ffffff !important;
-    border-color: rgb(219, 219, 219) !important;
-    border-radius: 100px;
-    
-    .disabled-icon{
-        background-color: #ffffff !important;
-        color: rgb(219, 219, 219) !important;
-    }
-}
-.disabled-icon{
-    background-color: #ffffff;
-    color: rgb(219, 219, 219) !important;
-}
 .invisible-btn{
     margin:0px 10px 0px 10px;
     color: transparent !important;
     border-radius: 100px;
     background-color: transparent;
     border-color: transparent !important;
-}
-
-.skip-l-btn{
-    height: 5%;
-    margin:0px 10px 0px 10px;
-    border-radius: 100px;
-    background-color: #ffffff;
-    border-color: rgb(175 239 24);
-}
-
-.skip-l-btn:hover{
-    border-radius: 100px;
-    background-color: #99c531;
-    color: #ffffff;
-    .mat-icon{
-        color:#ffffff !important;
-    }
-}
-.skip-r-btn{
-    margin:0px 10px 0px 10px;
-    border-radius: 100px;
-    background-color: #ffffff;
-    border-color: rgb(175 239 24);
-}
-
-.skip-r-btn:hover{
-    border-radius: 100px;
-    background-color: #99c531;
-    color: #ffffff;
-    .mat-icon{
-        color:#ffffff !important;
-    }
 }
