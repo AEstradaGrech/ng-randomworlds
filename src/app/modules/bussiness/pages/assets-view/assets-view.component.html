@@ -42,7 +42,6 @@
         </mat-sidenav>
         <mat-sidenav-content>
             <app-nft-visor
-                [visualization]="visorType" 
                 [assets]=currentCollection.assets 
                 [nftCardButtonsConfig]="nftCardButtonsConfig"
                 [disabled]="loading" 
@@ -79,14 +78,6 @@
                         [borderColor]="'var(--terciary-btn-border)'"
                         [disabled]="loading"
                         (onClickEvent)="sidenav.open()">
-                    </app-rounded-button>
-                    <app-rounded-button 
-                        [id]="'view-cols'"
-                        [iconName]="'select_all'"
-                        [hoverColor]="'var(--terciary-btn-hover)'"
-                        [borderColor]="'var(--terciary-btn-border)'"
-                        [disabled]="loading"
-                        (onClickEvent)="onChangeVisualization()">
                     </app-rounded-button>
                 </div>
              </ng-container>

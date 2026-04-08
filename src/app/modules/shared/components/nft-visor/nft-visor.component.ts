@@ -33,16 +33,23 @@ export class NftVisorComponent implements OnInit, OnChanges{
     }
   
   ngOnInit(): void {
-    this.viewType = this.visualization === 'row' ? 'nowrap' : 'wrap';
+    this.onChangeVisualization();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['visualization']){
-      this.viewType = this.visualization === 'row' ? 'nowrap' : 'wrap';
+      this.onChangeVisualization();
       console.log('-- current view type --', this.viewType);
     }
   }
-  
+  public onChangeVisualization(){
+    console.log('-- on change visualization --');
+    this.viewType = this.visualization === 'row' ? 'nowrap' : 'wrap';
+  }
+  public switchVisualization(){
+    this.visualization = this.visualization === 'row' ? 'grid' : 'row';
+    this.onChangeVisualization();
+  }
   public onCardButtonClicked(event:NftCardClickAction){
       this.onCardButtonClick.emit(event);
   }
