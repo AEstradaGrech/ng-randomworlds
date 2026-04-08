@@ -41,7 +41,8 @@
                   </mat-accordion>
         </mat-sidenav>
         <mat-sidenav-content>
-            <app-nft-visor 
+            <app-nft-visor
+                [visualization]="visorType" 
                 [assets]=currentCollection.assets 
                 [nftCardButtonsConfig]="nftCardButtonsConfig"
                 [disabled]="loading" 
@@ -70,13 +71,24 @@
                 </mat-menu>
              </ng-template>
              <ng-container class="upper-buttons-l">
-                <app-rounded-button [id]="'view-cols'"
-                                [iconName]="'skip_next'"
-                                [hoverColor]="'var(--terciary-btn-hover)'"
-                                [borderColor]="'var(--terciary-btn-border)'"
-                                [disabled]="loading"
-                                (onClickEvent)="sidenav.open()">
-                </app-rounded-button>
+                <div style="display: grid">
+                    <app-rounded-button 
+                        [id]="'view-cols'"
+                        [iconName]="'skip_next'"
+                        [hoverColor]="'var(--terciary-btn-hover)'"
+                        [borderColor]="'var(--terciary-btn-border)'"
+                        [disabled]="loading"
+                        (onClickEvent)="sidenav.open()">
+                    </app-rounded-button>
+                    <app-rounded-button 
+                        [id]="'view-cols'"
+                        [iconName]="'select_all'"
+                        [hoverColor]="'var(--terciary-btn-hover)'"
+                        [borderColor]="'var(--terciary-btn-border)'"
+                        [disabled]="loading"
+                        (onClickEvent)="onChangeVisualization()">
+                    </app-rounded-button>
+                </div>
              </ng-container>
             </app-nft-visor>
         </mat-sidenav-content>
