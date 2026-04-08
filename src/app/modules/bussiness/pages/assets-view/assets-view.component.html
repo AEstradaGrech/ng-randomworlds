@@ -41,112 +41,58 @@
                   </mat-accordion>
         </mat-sidenav>
         <mat-sidenav-content>
-            <div class="card-container">
-                <div class="btns-col-l">
-                    <div style="height: 15%;">
-                        <p style="display: flex; justify-content: center; align-items: center; margin:15px 0px 15px 0px">
-                            <button class="view-cols-btn" (click)="sidenav.open()">
-                                <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                                aria-hidden="false" 
-                                aria-label="Collections sidenav view"
-                                fontIcon="keyboard_arrow_right"
-                                ></mat-icon>
-                            </button>
-                        </p>
-                    </div>
-                    <div style="display: flex;height: 64%;align-items: center;">
-                        <p style="display: flex; justify-content: center; align-items: center; margin:15px 0px 15px 0px">
-                            @if(currentCollection.assets.length > 4){
-                                <button class="skip-l-btn" (click)="onSlideViewClick('left')" [ngClass]="{'disabled-btn': currentCollection.assets.length <= 4 }" [disabled]="currentCollection.assets.length <= 4" 
-                                (mousedown)="onSlideViewPress('left')" (mouseup)="onSlideViewRelease()">
-                                <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                                    [ngClass]="{'disabled-icon': currentCollection.assets.length <= 4 }"
-                                    aria-hidden="false" 
-                                    aria-label="Collections sidenav view"
-                                    fontIcon="skip_previous"
-                                ></mat-icon>
-                            </button>
-                            }@else{
-                                <button class="invisible-btn" disabled></button>
-                            }
-                        </p>
-                    </div>
-                </div>
-                <div #nftsContainer class="img-container shadow" [ngClass]="{'jc-center': currentCollection.assets.length <= 4}">
-                    @for(model of currentCollection.assets; track model){
-                        <mat-card class="game-card" appearance="outlined">
-                            <mat-card-header class="card-header">
-                                <div style="display: flex; align-items: center; justify-items: flex-start;">
-                                    <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': model.collectionLogoUrl}"></div>
-                                </div>
-                                <div style="display: flexbox; align-items: center;">
-                                    <mat-card-title class="game-card-title">{{model.metadata.name}}</mat-card-title>
-                                    <mat-card-subtitle class="game-card-subtitle">{{model.metadata.description}}</mat-card-subtitle>
-                                </div>
-                            </mat-card-header>
-                            <div class="card-body">
-                                <img mat-card-image class="game-card-image" [src]="model.image" alt="Character NFT image">
-                            </div>
-                            <mat-card-actions class="game-card-actions">
-                                <button class="view-btn" (click)="onViewOnOpenSeaClick(model)">
-                                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                                    aria-hidden="false" 
-                                    aria-label="Example power icon"
-                                    fontIcon="content_paste"
-                                    ></mat-icon>
-                                 </button>
-                                 <button class="view-btn" (click)="onViewClick(model)">
-                                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                                    aria-hidden="false" 
-                                    aria-label="Example power icon"
-                                    fontIcon="visibility"
-                                    ></mat-icon>
-                                 </button>
-                                <button [disabled]="loading" class="buy-btn" [matMenuTriggerFor]="payMenu" (click)="onSellClick(model)">
-                                    <mat-icon *ngIf="!loading" style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
-                                    aria-hidden="false" 
-                                    aria-label="Example power icon"
-                                    fontIcon="payment"
-                                    ></mat-icon>
-                                    <div *ngIf="loading" style="margin: 6px 2px;">
-                                        <mat-spinner diameter="20"></mat-spinner>
-                                    </div>
-                                </button>
-                            <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
-                              <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
-                                  <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
-                                    <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
-                                    <mat-card-subtitle class="collection-card-subtitle">{{model.symbol}}</mat-card-subtitle>
-                                  </mat-card-header>
-                                  <mat-card-content class="payment-card-content">
-                                   
-                                  </mat-card-content>
-                                  <mat-card-actions style="display: flex; justify-content: center;">
-                                    <button mat-stroked-button class="pay-btn" (click)="onSellClick(model)">SELL</button>
-                                  </mat-card-actions>
-                                </mat-card>
-                          </mat-menu>
-                            </mat-card-actions>
-                        </mat-card>
-                    }
-                </div>
-                <div  style="display: flex; align-items: center; margin:15px 5px 0px 0px">
-                    @if(currentCollection.assets.length > 4){
-                        <button class="skip-r-btn" (click)="onSlideViewClick('right')"
-                            (mousedown)="onSlideViewPress('right')" (mouseup)="onSlideViewRelease()">
-                            <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                                aria-hidden="false" 
-                                aria-label="Collections sidenav view"
-                                fontIcon="skip_next"
-                            ></mat-icon>
-                        </button>
-                    }
-                    @else{
-                        <button class="invisible-btn" disabled></button>
-                    }
-                </div>
-            </div>
+            <app-nft-visor 
+                [assets]=currentCollection.assets 
+                [nftCardButtonsConfig]="nftCardButtonsConfig"
+                [disabled]="loading" 
+                (onCardButtonClick)="onCardButtonClicked($event)"
+                [projectedButtonsTemplate]="sellButton">
+                <ng-template #sellButton let-model="model">  
+                    <app-rounded-button [matMenuTriggerFor]="payMenu"
+                                [id]="'sell'"
+                                [iconName]="'payment'"
+                                [hoverColor]="'var(--secondary-btn-hover)'"
+                                [borderColor]="'var(--secondary-btn-border)'"
+                                [disabled]="loading"
+                                >
+                    </app-rounded-button>
+                <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
+                    <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
+                        <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                            <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
+                            <mat-card-subtitle class="collection-card-subtitle">{{model.collection}}</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-content class="payment-card-content"></mat-card-content>
+                        <mat-card-actions style="display: flex; justify-content: center;">
+                            <button mat-stroked-button class="pay-btn" (click)="onSellClick(model)">SELL</button>
+                        </mat-card-actions>
+                    </mat-card>
+                </mat-menu>
+             </ng-template>
+            </app-nft-visor>
         </mat-sidenav-content>
     </mat-sidenav-container>
   </div>
   
+<!-- <ng-template #sellButton>  
+        <app-rounded-button [matMenuTriggerFor]="payMenu"
+                    [id]="'sell'"
+                    [iconName]="'payment'"
+                    [hoverColor]="'var(--secondary-btn-hover)'"
+                    [borderColor]="'var(--secondary-btn-border)'"
+                    [disabled]="loading"
+                    >
+        </app-rounded-button>
+        <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
+            <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
+                <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                    <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
+                    <mat-card-subtitle class="collection-card-subtitle">{{model.symbol}}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="payment-card-content"></mat-card-content>
+                <mat-card-actions style="display: flex; justify-content: center;">
+                    <button mat-stroked-button class="pay-btn" (click)="onSellClick(model)">SELL</button>
+                </mat-card-actions>
+            </mat-card>
+        </mat-menu>
+    </ng-template> -->

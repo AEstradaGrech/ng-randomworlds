@@ -6,7 +6,8 @@ import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import web3 from 'src/app/core/scripts/web3';
-import { ScrollState } from 'src/app/modules/shared/models/common-interfaces';
+import { NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
+import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
 @Component({
   selector: 'app-assets-view',
   templateUrl: './assets-view.component.html',
@@ -14,6 +15,7 @@ import { ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 })
 export class AssetsViewComponent implements OnInit {
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
+  public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   public collections: AssetsCollection[] = []
   public currentCollection!: AssetsCollection;
   public currentCollectionLogoUrl: any;
@@ -148,10 +150,22 @@ export class AssetsViewComponent implements OnInit {
       setTimeout(() => {this._scrollVisor()}, 50);
     }
   }
-  closeSidenav() {
+  public closeSidenav() {
     this.sidenav.close();
   }
-  selectCollection(collection: AssetsCollection) {
+  public selectCollection(collection: AssetsCollection) {
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
   }
+  public onCardButtonClicked(event:NftCardClickAction){
+      console.log('-- char selection >> card btn clicked --', event)
+      switch(event.name){
+        case('view'):
+          this.onViewClick(event.asset);
+        break;
+        case('select'):
+          //this.onSelectClick(event.asset);
+        break;
+        default: break;
+      }
+    }
 }
