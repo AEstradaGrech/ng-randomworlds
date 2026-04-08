@@ -2,6 +2,16 @@
     <div style="display:grid; align-items: center;">
         <div class="skip-buttons-wrapper skip-btn-margin-l" [style.--skip-btns-position]="'flex-start'">
             <ng-content select=".upper-buttons-l"></ng-content>
+            <div style="margin-top: 5px">
+                <app-rounded-button
+                    [id]="'view-type'"
+                    [iconName]="'select_all'"
+                    [hoverColor]="'var(--terciary-btn-hover)'"
+                    [borderColor]="'var(--terciary-btn-border)'"
+                    [disabled]="disabled"
+                    (onClickEvent)="switchVisualization()">
+                </app-rounded-button>
+            </div>
         </div>
         <div *ngIf="assets.length >= 4" class="skip-buttons-wrapper skip-btn-margin-l" [style.--skip-btns-position]="skipButtonsPosition">
             <app-rounded-button 
