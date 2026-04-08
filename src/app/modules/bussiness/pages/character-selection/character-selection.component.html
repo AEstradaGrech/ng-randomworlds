@@ -1,38 +1,17 @@
-<div class="card-container">
-    <div style="display:flex; align-items: center;">
-        <div *ngIf="assets.length >= 4" style="display: flex; justify-content: center; align-items: center;margin:15px 0px 0px 5px">
-            <button class="skip-l-btn" (click)="onSlideViewClick('left')" [ngClass]="{'disabled-btn': assets.length <= 4 }" [disabled]="assets.length <= 4" 
-                (mousedown)="onSlideViewPress('left')" (mouseup)="onSlideViewRelease()">
-                <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                    [ngClass]="{'disabled-icon': assets.length <= 4 }"
-                    aria-hidden="false" 
-                    aria-label="Collections sidenav view"
-                    fontIcon="skip_previous"
-                ></mat-icon>
-            </button>
-        </div>
-    </div>
-  <div #nftsContainer class="img-container shadow" [ngClass]="{'jc-center': assets.length <= 4}">
-      @for(model of assets; track model){
-        <app-nft-card 
-            [model]="model" 
-            [cardButtons]="nftCardButtonsConfig"
-            [disabled]="loading" 
-            (onCardButtonClick)="onCardButtonClicked($event)">
-        </app-nft-card>
-    }
-  </div>
-    <div style="display:flex; align-items: center;">
-        <div *ngIf="assets.length >= 4" style="display: flex; align-items: center; margin:15px 5px 0px 0px">
-        <button class="skip-r-btn" (click)="onSlideViewClick('right')" [ngClass]="{'disabled-btn': assets.length <= 4 }" [disabled]="assets.length <= 4"
-            (mousedown)="onSlideViewPress('right')" (mouseup)="onSlideViewRelease()">
-            <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-            [ngClass]="{'disabled-icon': assets.length <= 4 }"
-                aria-hidden="false" 
-                aria-label="Collections sidenav view"
-                fontIcon="skip_next"
-            ></mat-icon>
-        </button>
-        </div>
-    </div>
-</div>
+<app-nft-visor 
+    [assets]=assets 
+    [nftCardButtonsConfig]="nftCardButtonsConfig"
+    [disabled]="loading" 
+    (onCardButtonClick)="onCardButtonClicked($event)"
+    [projectedButtonsTemplate]="sellButton">
+    <ng-template #sellButton>  
+        <app-rounded-button 
+                    [id]="'sell'"
+                    [iconName]="'payment'"
+                    [hoverColor]="'var(--secondary-btn-hover)'"
+                    [borderColor]="'var(--secondary-btn-border)'"
+                    [disabled]="loading"
+                    >
+        </app-rounded-button>
+    </ng-template>
+</app-nft-visor>

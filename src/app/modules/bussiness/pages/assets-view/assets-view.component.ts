@@ -97,7 +97,7 @@ export class AssetsViewComponent implements OnInit {
         available:modelInfo.available,
         mints:modelInfo.mints,
         maxMints:modelInfo.maxMints,
-        metadataUrl: model.metadataEndpoint,
+        metadata: model.metadata,
         description:model.metadata.description,
         price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
         name:model.metadata.name,

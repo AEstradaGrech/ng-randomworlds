@@ -16,6 +16,8 @@ export class RoundedButtonComponent implements AfterViewInit {
   @Input() backgroundColor: string = 'var(--primary-btn-color)';
   @Input() borderColor: string = 'var(--primary-btn-border)';
   @Output() onClickEvent: EventEmitter<string> = new EventEmitter<string>();
+  @Output() onMousedownEvent: EventEmitter<string> = new EventEmitter<string>();
+  @Output() onMouseupEvent: EventEmitter<string> = new EventEmitter<string>();
 
   ngAfterViewInit(): void {
     if(this.id === undefined || this.id === '')
@@ -27,5 +29,11 @@ export class RoundedButtonComponent implements AfterViewInit {
   public onClick(): void {
     if(!this.disabled)
       this.onClickEvent.emit(this.id);
+  }
+  public onMousedown(): void {
+    this.onMousedownEvent.emit(this.id);
+  }
+  public onMouseup(): void {
+    this.onMouseupEvent.emit(this.id);
   }
 }

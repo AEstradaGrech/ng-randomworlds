@@ -1,14 +1,14 @@
   <div class="sidenav-div">
     <mat-sidenav-container class="sidenav-container" (backdropClick)="closeSidenav()">
         <mat-sidenav #sidenav (keydown.escape)="closeSidenav()" disableClose class="sidenav">
-                <p style="display: flex; align-items: center; justify-content:center; margin:15px 25px 15px 0px">
+                <div style="display: flex; align-items: center; justify-content:center; margin:15px 25px 15px 0px">
                     <button class="close-sidenav-btn" (click)="closeSidenav()">
                         <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
                             aria-hidden="false" 
                             aria-label="Collections sidenav view"
                             fontIcon="keyboard_arrow_left"></mat-icon>
                     </button>
-                </p>
+                </div>
                 <mat-accordion class="example-headers-align">
                     @for(collection of collections; track collection){
                         <mat-expansion-panel  [expanded]="currentCollection.summary.contractAddress === collection.summary.contractAddress" (opened)="selectCollection(collection)" hideToggle>
@@ -130,7 +130,7 @@
                         </mat-card>
                     }
                 </div>
-                <p  style="display: flex; align-items: center; margin:15px 5px 0px 0px">
+                <div  style="display: flex; align-items: center; margin:15px 5px 0px 0px">
                     @if(currentCollection.assets.length > 4){
                         <button class="skip-r-btn" (click)="onSlideViewClick('right')"
                             (mousedown)="onSlideViewPress('right')" (mouseup)="onSlideViewRelease()">
@@ -144,7 +144,7 @@
                     @else{
                         <button class="invisible-btn" disabled></button>
                     }
-                </p>
+                </div>
             </div>
         </mat-sidenav-content>
     </mat-sidenav-container>
