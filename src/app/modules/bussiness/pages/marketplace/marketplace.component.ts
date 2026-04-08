@@ -109,7 +109,7 @@ export class MarketplaceComponent implements OnInit{
         let catalogueModel: CatalogueModel = {
           ...modelInfo,
           imageUrl: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
-          metadataUrl:`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`,
+          metadata: undefined,//`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`,
           collectionSymbol: summary.symbol,
           logoUrl: `url(${summary.logoImage})`,
           collectionUrl: summary.logoImage,

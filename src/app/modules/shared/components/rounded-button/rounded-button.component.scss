@@ -21,10 +21,31 @@
     color: var(--icon-color);
     
 }
-.btn-disabled{
-    //width:10%;
-    background-color: #757575 !important;
+
+.disabled-btn{
+    margin:0px 10px 0px 10px;
+    color: rgb(219, 219, 219) !important;
+    border-radius: 100px;
+    background-color: #ffffff;
+    border-color: rgb(219, 219, 219) !important;
 }
+
+.disabled-btn:hover{
+    background-color: #ffffff !important;
+    border-color: rgb(219, 219, 219) !important;
+    border-radius: 100px;
+    
+    .disabled-icon{
+        background-color: #ffffff !important;
+        color: rgb(219, 219, 219) !important;
+    }
+}
+
+.disabled-icon{
+    background-color: #ffffff;
+    color: rgb(219, 219, 219) !important;
+}
+
 
 // .submit-btn:hover{
 //   background-color: var(--submit-btn-hover) !important;

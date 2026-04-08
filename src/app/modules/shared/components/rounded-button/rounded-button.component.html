@@ -1,10 +1,12 @@
 
 <button class="rounded-btn" 
-    (click)="onClick()" 
+    (click)="onClick()"
+    (mousedown)="onMousedown()",
+    (mouseup)="onMouseup()", 
     [style.--btn-color]="backgroundColor" 
     [style.--btn-hover]="hoverColor"
     [style.--btn-border-color]="borderColor"
-    [ngClass]="{'btn-disabled': disabled}">
+    [ngClass]="{'disabled-btn': disabled}">
     @if(disabled && withSpinner){
         <mat-spinner diameter="30"></mat-spinner>
     }

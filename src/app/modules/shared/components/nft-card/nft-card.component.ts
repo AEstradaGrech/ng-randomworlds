@@ -28,10 +28,4 @@ export class NftCardComponent implements OnInit {
     console.log('-- clicked button ID --', event)
     this.onCardButtonClick.emit({name:event, asset: this.model});
   }
-  onViewClick(){
-
-  }
-  onSelectClick(){
-
-  }
 }

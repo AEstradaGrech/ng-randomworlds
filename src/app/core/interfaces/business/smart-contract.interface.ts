@@ -91,7 +91,7 @@ export interface CatalogueModel extends ModelInfo{
     logoUrl: string,
     collectionUrl:string,
     imageUrl: string,
-    metadataUrl: string,
+    metadata?: CharacterMetadata,
     paymentTokens:string[]
 }
 

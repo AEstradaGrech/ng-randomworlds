@@ -61,5 +61,5 @@ export interface RoundedButtonConfig {
 
 export interface NftCardClickAction{
     name: string,
-    asset: WalletNFT
+    asset: AssetModel
 }

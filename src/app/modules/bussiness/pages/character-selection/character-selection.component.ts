@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild, Inject, ElementRef } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -9,6 +9,7 @@ import web3 from 'src/app/core/scripts/web3';
 import { GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router';
 import { Wallet } from 'web3';
+import { EAppButtons } from 'src/app/modules/shared/models/common-enums';
 
 @Component({
   selector: 'app-character-selection',
@@ -17,12 +18,15 @@ import { Wallet } from 'web3';
 })
 export class CharacterSelectionComponent implements OnInit {
   
+  @ViewChild('sellButton') sellButton!: TemplateRef<any>;
+  
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   public assets: AssetModel[] = [];
   public collections:AssetsCollectionSummary[]=[];
   public loading:boolean = false;
   public nftCardButtonsConfig: RoundedButtonConfig[] = [
     {
+      id: EAppButtons.VIEW,
       iconName: 'visibility',
       color: 'var(--primary-btn-color)',
       hoverColor: 'var(--primary-btn-hover)',
@@ -30,7 +34,7 @@ export class CharacterSelectionComponent implements OnInit {
       withSpinner: false
     },
     {
-      id: 'select',
+      id: EAppButtons.SELECT,
       iconName: 'check',
       color: 'var(--primary-btn-color)',
       hoverColor: 'var(--primary-btn-hover)',
@@ -53,7 +57,6 @@ export class CharacterSelectionComponent implements OnInit {
     isScrolling:false
   }
 
-  @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
 
   constructor(@Inject(DOCUMENT) private document:Document){}
@@ -116,7 +119,7 @@ export class CharacterSelectionComponent implements OnInit {
         available:modelInfo.available,
         mints:modelInfo.mints,
         maxMints:modelInfo.maxMints,
-        metadataUrl: model.metadataEndpoint,
+        metadata: model.metadata,
         description:model.metadata.description,
         price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
         name:model.metadata.name,
@@ -133,9 +136,18 @@ export class CharacterSelectionComponent implements OnInit {
 
   public onCardButtonClicked(event:NftCardClickAction){
     console.log('-- char selection >> card btn clicked --', event)
+    switch(event.name){
+      case('view'):
+        this.onViewClick(event.asset);
+      break;
+      case('select'):
+        this.onSelectClick(event.asset);
+      break;
+      default: break;
+    }
   }
   public onSelectClick(model:AssetModel){
-    console.log('-- on sell click --', model);
+    console.log('-- on select click --', model);
     let data = localStorage.getItem('game-data');
     if(data){
       let gameData:GameData = JSON.parse(data);
@@ -144,50 +156,5 @@ export class CharacterSelectionComponent implements OnInit {
       this._router.navigateByUrl('randomworlds/world/generator')
     }
 
-  }
-  public onSlideViewClick(direction: string){
-    if(this._slideScrollState.isScrolling) return;
-    this._clickScrollState.direction = direction;
-    this._clickScrollState.isScrolling = true;
-    let currentScroll = this.nftsContainer.nativeElement.scrollLeft;
-    let dirMult:number = this._clickScrollState.direction === 'right' ? 1 : -1;
-    this.nftsContainer.nativeElement.scrollTo({
-      left: currentScroll + this._clickScrollState.step * this._clickScrollState.mult * dirMult,
-      behavior: 'smooth'
-    })
-  }
-  public onSlideViewPress(direction: string){
-    setTimeout(() => {
-      if(this._clickScrollState.isScrolling) return;
-      this._slideScrollState.direction = direction;
-      this._slideScrollState.isScrolling = true;
-      this._scrollVisor();
-    }, 90);
-  }
-  public onSlideViewRelease(){
-    setTimeout(()=> {
-      this._slideScrollState.direction = '';
-      this._slideScrollState.isScrolling = false;
-      this._clickScrollState.direction = '';
-      this._clickScrollState.isScrolling = false;
-    }, 75);
-  }
-  private _scrollVisor(){
-    if(this._slideScrollState.isScrolling && this._slideScrollState.direction){
-      let dirMult:number = this._slideScrollState.direction === 'right' ? 1 : -1;
-      this.nftsContainer.nativeElement.scrollLeft += this._slideScrollState.step * this._slideScrollState.mult * dirMult;
-      setTimeout(() => {this._scrollVisor()}, 50);
-    }
-  }
-  closeSidenav() {
-    this.sidenav.close();
-  }
-
-  getModelCollectionLogoUrl(model:WalletNFT){
-    let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0];
-    if(collection){
-      return `url(${collection.logoImage}`;
-    }
-    else return `url(assets/images/ng-app-logo.png)` //default logo
   }
 }
