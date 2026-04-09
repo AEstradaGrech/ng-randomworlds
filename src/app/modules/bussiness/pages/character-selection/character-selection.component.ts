@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { Wallet } from 'web3';
 import { EAppButtons } from 'src/app/modules/shared/models/common-enums';
 import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
+import { NotificationService } from 'src/app/modules/shared/services/notification.service';
 
 @Component({
   selector: 'app-character-selection',
@@ -28,21 +29,10 @@ export class CharacterSelectionComponent implements OnInit {
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   private _dialog:MatDialog = inject(MatDialog);
   private _router:Router = inject(Router);
-  private _slideScrollState: ScrollState = {
-    step: 100,
-    mult: 1,
-    direction:'',
-    isScrolling:false
-  }
-  private _clickScrollState: ScrollState = {
-    step: 100,
-    mult: 10,
-    direction:'',
-    isScrolling:false
-  }
+
 
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
-
+  private _notificationService: NotificationService = inject(NotificationService);
   constructor(@Inject(DOCUMENT) private document:Document){}
 
   ngOnInit(): void {
@@ -73,7 +63,6 @@ export class CharacterSelectionComponent implements OnInit {
               let asset:AssetModel = {...nft, metadata: nft.metadata, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
               this.assets.push(asset);
             })
-            console.log('-- on assets --', this.assets);
           }) 
         })
       })
@@ -139,6 +128,6 @@ export class CharacterSelectionComponent implements OnInit {
       localStorage.setItem('game-data', JSON.stringify(gameData));
       this._router.navigateByUrl('randomworlds/world/generator')
     }
-
+    else this._notificationService.push('No Game Data has been found in memory, go back to the home page')
   }
 }

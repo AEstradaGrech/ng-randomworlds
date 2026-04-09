@@ -15,10 +15,11 @@ import { NanToNumPipe } from './pipes/nan-to-num.pipe';
 import { NftCardComponent } from './components/nft-card/nft-card.component';
 import { NftVisorComponent } from './components/nft-visor/nft-visor.component';
 import { RoundedButtonComponent } from './components/rounded-button/rounded-button.component';
+import { NotificationsComponent } from './components/notification/notification.component';
 
 @NgModule({
     //components, directives, and pipes that belong exclusively to this particular module
-    declarations:[TreeMenuComponent, AppLogoComponent, GenericButtonComponent, TabsNavBarComponent, HeaderNavbarComponent, SideNavbarComponent, SearchInputComponent, NftCardComponent, NftVisorComponent, RoundedButtonComponent],
+    declarations:[TreeMenuComponent, AppLogoComponent, GenericButtonComponent, TabsNavBarComponent, HeaderNavbarComponent, SideNavbarComponent, SearchInputComponent, NftCardComponent, NftVisorComponent, RoundedButtonComponent, NotificationsComponent],
     imports:[
         CommonModule,
         FormsModule, 

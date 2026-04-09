@@ -11,11 +11,17 @@
         <mat-spinner diameter="30"></mat-spinner>
     }
     @else{
-        <mat-icon class="btn-icon"
-            [style.--icon-color]="iconColor"
-            aria-hidden="false" 
-            aria-label="rounded_button"
-            fontIcon="{{iconName}}">
-        </mat-icon>
+        @if(iconName) {
+            <mat-icon class="btn-icon"
+                [style.--icon-color]="iconColor"
+                aria-hidden="false" 
+                aria-label="rounded_button"
+                fontIcon="{{iconName}}">
+            </mat-icon>
+        } @else {
+            <img class="btn-icon custom-icon" 
+                 [src]="bgImageIcon.replace('url(', '').replace(')', '')" 
+                 alt="custom icon">
+        }
     }
 </button>

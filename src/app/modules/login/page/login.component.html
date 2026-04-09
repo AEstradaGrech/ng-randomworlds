@@ -1,32 +1,18 @@
 <div class="w-100 h-100 jc-center ai-center">
     <div class="box-login flex">
         <div class="h-100 flex-2 flex column jc-center ai-center bg-img"></div>
-        <div class="flex-1 flex column jc-end padding-30">
-            <form  [formGroup]="loginForm">
-            
-                <mat-form-field class="w-100">
-                    <mat-label>User</mat-label>
-                    <input matInput type="text" formControlName="userId">
-                    <mat-error *ngIf="getError('userId', 'required')"> Username or Email is required</mat-error>
-                    <mat-error *ngIf="getError('userId', 'maxlenght')"> Username / Email must be less than 30 characters</mat-error>
-                </mat-form-field>
-                <mat-form-field class="w-100">
-                    <mat-label>Password</mat-label>
-                    <input matInput type="text" formControlName="password">
-                    <mat-error *ngIf="getError('password', 'required')"> Password is required</mat-error>
-                    <mat-error *ngIf="getError('password', 'maxlenght')"> Password must be less than 30 characters</mat-error>
-                </mat-form-field>
-                <div class="red" [hidden]="!error">{{error}}</div>
-                <app-generic-button style="padding: 3px 0px 45px 0px;"
-                    [text]="'login'" 
-                    [color]="'primary'"
-                    [loading]="working" 
-                    (onClick)="onSubmit()">
-                </app-generic-button>
-                
-            </form>
-            <button class="metamask-btn" (click)="onMetamaskLogin()">
-            </button>
+        <div class="flex-0 flex column jc-start padding-30">
+            <app-rounded-button 
+                        [id]="'mm-login'"
+                        [iconName]=""
+                        [bgImageIcon]="'url(assets/images/MetamaskIconBrown.png)'"
+                        [backgroundColor]="'#8b986c'"
+                        [hoverColor]="'var(--primary-btn-hover)'"
+                        [borderColor]="'var(--primary-btn-border)'"
+                        [disabled]="working"
+                        (onClickEvent)="onMetamaskLogin()"
+                        >
+                    </app-rounded-button>
         </div>
         
     </div>
