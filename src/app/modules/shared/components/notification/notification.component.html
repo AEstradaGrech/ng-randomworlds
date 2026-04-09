@@ -1,0 +1,7 @@
+<div *ngFor="let message of messages" class="custom-snack-bar d-flex flex-column align-items-center">
+    <mat-icon>error</mat-icon>
+    <span class="message-container">{{ message }}</span>
+    <button mat-icon-button (click)="removeMessage(message)" color="accent">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>

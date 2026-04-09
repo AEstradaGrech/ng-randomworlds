@@ -8,7 +8,8 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@
 export class RoundedButtonComponent implements AfterViewInit {
 
   @Input() id: string | undefined = undefined;
-  @Input() iconName: string = 'keyboard_return';
+  @Input() iconName: string = '';
+  @Input() bgImageIcon:string = 'url(assets/images/MetamaskIconBrown.png)'
   @Input() iconColor!: string;
   @Input() withSpinner: boolean = false;
   @Input() disabled: boolean = false;

@@ -6,8 +6,10 @@ import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import web3 from 'src/app/core/scripts/web3';
-import { NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
+import { GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
+import { Router } from '@angular/router';
+import { NotificationService } from 'src/app/modules/shared/services/notification.service';
 @Component({
   selector: 'app-assets-view',
   templateUrl: './assets-view.component.html',
@@ -21,6 +23,8 @@ export class AssetsViewComponent implements OnInit {
   public currentCollectionLogoUrl: any;
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
+  private _router:Router = inject(Router);
+  private _notificationService: NotificationService = inject(NotificationService);
   private _slideScrollState: ScrollState = {
     step: 100,
     mult: 1,
@@ -74,6 +78,7 @@ export class AssetsViewComponent implements OnInit {
         })
       })
     })
+    this._notificationService.setup('center', 'bottom', 3000)
   }
   
   public onChangeVisualization(){
@@ -167,7 +172,16 @@ export class AssetsViewComponent implements OnInit {
           this.onViewClick(event.asset);
         break;
         case('select'):
-          //this.onSelectClick(event.asset);
+          console.log('-- on select click --', event.asset);
+          let data = localStorage.getItem('game-data');
+          if(data){
+            let gameData:GameData = JSON.parse(data);
+            gameData.selectedCharacter = event.asset;
+            localStorage.setItem('game-data', JSON.stringify(gameData));
+            this._notificationService.push(`Selected Character: ${event.asset.metadata.name}`);
+            //this._router.navigateByUrl('randomworlds/world/generator')
+          }
+          else this._notificationService.push('No Game Data has been found in memory, go back to the home page')
         break;
         default: break;
       }
