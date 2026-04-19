@@ -3,13 +3,13 @@
     height: 100%;
     margin: 15px 15px 15px 15px;
     border-radius: 15px;
-    min-height: 87.5vh;
+    min-height: 90vh;
     max-height: 91vh;
     align-items: center;
     display: flex !important;
     flex-wrap: var(--view-type);
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: var(--vertival-scroll);
     scrollbar-width: none;
 }
 .card-container{

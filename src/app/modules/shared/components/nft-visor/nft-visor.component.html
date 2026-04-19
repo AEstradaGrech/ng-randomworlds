@@ -1,5 +1,5 @@
 <div class="card-container">
-    <div style="display:block; align-items: center;">
+    <div style="display:block; align-items: center; max-height: 87vh;">
         <div class="skip-buttons-wrapper skip-btn-margin-l" [style.--skip-btns-position]="'flex-start'">
             <div class="btns-grid-cell" [style.--content-position]="'flex-start'">
                 <ng-content select=".upper-buttons-l"></ng-content>
@@ -26,7 +26,7 @@
                 [borderColor]="'var(--primary-btn-border)'"
                 [disabled]="assets.length <= 4"
                 (onClickEvent)="onSlideViewClick('left')"
-                (onMousedownEvent)="onSlideViewPress($event)"
+                (onMousedownEvent)="onSlideViewPress('left')"
                 (onMouseupEvent)="onSlideViewRelease()">
             </app-rounded-button>
             </div>
@@ -37,7 +37,7 @@
             </div>
         </div>
     </div>
-  <div #nftsContainer class="img-container shadow" [style.--view-type]="viewType">
+  <div #nftsContainer class="img-container shadow" [style.--view-type]="viewType" [style.--vertical-scroll]="screenScroll">
       @for(model of assets; track model){
         <app-nft-card 
             [model]="model" 
@@ -50,7 +50,7 @@
         </app-nft-card>
       }
   </div>
-    <div style="display:block; align-items: center;">
+    <div style="display:block; align-items: center; max-height: 87vh;">
         <div class="skip-buttons-wrapper skip-btn-margin-r" [style.--skip-btns-position]="'flex-start'">
             <div class="btns-grid-cell" [style.--content-position]="'flex-start'">
                 <ng-content select=".upper-buttons-r"></ng-content>
@@ -67,7 +67,7 @@
                     [borderColor]="'var(--primary-btn-border)'"
                     [disabled]="assets.length <= 4"
                     (onClickEvent)="onSlideViewClick('right')"
-                    (onMousedonwEvent)="onSlideViewPress('right')"
+                    (onMousedownEvent)="onSlideViewPress('right')"
                     (onMouseupEvent)="onSlideViewRelease()">
                 </app-rounded-button>
             </div>
