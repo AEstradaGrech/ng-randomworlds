@@ -16,10 +16,11 @@ import { NftCardComponent } from './components/nft-card/nft-card.component';
 import { NftVisorComponent } from './components/nft-visor/nft-visor.component';
 import { RoundedButtonComponent } from './components/rounded-button/rounded-button.component';
 import { NotificationsComponent } from './components/notification/notification.component';
+import { DragAndDropComponent } from './components/drag-and-drop/drag-and-drop.component';
 
 @NgModule({
     //components, directives, and pipes that belong exclusively to this particular module
-    declarations:[TreeMenuComponent, AppLogoComponent, GenericButtonComponent, TabsNavBarComponent, HeaderNavbarComponent, SideNavbarComponent, SearchInputComponent, NftCardComponent, NftVisorComponent, RoundedButtonComponent, NotificationsComponent],
+    declarations:[TreeMenuComponent, AppLogoComponent, GenericButtonComponent, TabsNavBarComponent, HeaderNavbarComponent, SideNavbarComponent, SearchInputComponent, NftCardComponent, NftVisorComponent, RoundedButtonComponent, NotificationsComponent, DragAndDropComponent],
     imports:[
         CommonModule,
         FormsModule, 
@@ -44,7 +45,8 @@ import { NotificationsComponent } from './components/notification/notification.c
         SearchInputComponent,
         NftCardComponent,
         NftVisorComponent,
-        RoundedButtonComponent
+        RoundedButtonComponent,
+        DragAndDropComponent
     ],
     //A provider is an instruction to the Dependency Injection system on how to obtain a value for a dependency.
     providers:[]
