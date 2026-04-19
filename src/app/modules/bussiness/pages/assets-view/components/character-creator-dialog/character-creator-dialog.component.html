@@ -1,40 +1,12 @@
-<!-- <div class="dnd-container">
-  <h2>Available</h2>
-  <div
-    cdkDropList
-    #availableList="cdkDropList"
-    [cdkDropListData]="availableAmbiences"
-    [cdkDropListConnectedTo]="[selectedList]"
-    class="dnd-list"
-    (cdkDropListDropped)="drop($event)"
-  >
-    @for (item of availableAmbiences; track item) {
-      <div class="dnd-option-box" cdkDrag>{{ item }}</div>
-    }
-  </div>
-</div>
-<div class="dnd-container">
-  <h2>Selected</h2>
-  <div
-    cdkDropList
-    #selectedList="cdkDropList"
-    [cdkDropListData]="selectedAmbiences"
-    [cdkDropListConnectedTo]="[availableList]"
-    class="dnd-list"
-    (cdkDropListDropped)="drop($event)"
-  >
-    @for (item of selectedAmbiences; track item) {
-      <div class="dnd-option-box" cdkDrag>{{ item }}</div>
-    }
-  </div>
-</div> -->
-<app-drag-and-drop [style.display]="'contents'"
-  [boxOneTitle]="'Box A'",
-  [boxTwoTitle]="'Box B'",
-  [boxOneItems]="availableAmbiences"
-  [boxTwoItems]="selectedAmbiences"
-  [textColor]="'greenyellow'"
-  [itemBgColor]="'yellow'"
-  >
-
-</app-drag-and-drop>
+<mat-dialog-content>
+    <app-drag-and-drop 
+      [boxOneTitle]="'Available Ambiences'",
+      [boxTwoTitle]="'Selected Ambiences'",
+      [boxOneItems]="availableAmbiences"
+      [boxTwoItems]="selectedAmbiences"
+      [textColor]="'var(--primary-btn-hover)'">
+    </app-drag-and-drop>
+  </mat-dialog-content>
+  <mat-dialog-actions align="center">
+    <button  mat-button mat-dialog-close>Close</button>
+  </mat-dialog-actions>
