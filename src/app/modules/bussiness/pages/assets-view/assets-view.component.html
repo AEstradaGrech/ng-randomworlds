@@ -42,7 +42,7 @@
         </mat-sidenav>
         <mat-sidenav-content>
             <app-nft-visor
-                [assets]=currentCollection.assets 
+                [assets]=collectionAssets 
                 [nftCardButtonsConfig]="nftCardButtonsConfig"
                 [disabled]="loading" 
                 (onCardButtonClick)="onCardButtonClicked($event)"

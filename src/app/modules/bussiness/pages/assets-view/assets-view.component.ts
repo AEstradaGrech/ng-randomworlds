@@ -37,6 +37,11 @@ export class AssetsViewComponent implements OnInit {
     direction:'',
     isScrolling:false
   }
+
+  public get collectionAssets(): AssetModel[]{
+    return this.currentCollection ? this.currentCollection.assets : [];
+  }
+
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
   public visorType:string = 'row';
