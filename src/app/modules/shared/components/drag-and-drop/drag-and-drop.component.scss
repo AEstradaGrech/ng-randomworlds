@@ -1,3 +1,7 @@
+:host{
+  display:flex;
+  width:100%;
+}
 .dnd-container {
   width: 100%;
   max-width: 100vw;
@@ -27,7 +31,7 @@ h2 {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   box-sizing: border-box;
   cursor: move;
   background: var(--item-bg-color);
