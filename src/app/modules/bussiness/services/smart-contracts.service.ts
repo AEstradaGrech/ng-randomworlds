@@ -19,8 +19,13 @@ export class SmartContractsService {
   public web3!:any;
   public factory:any;
   public collections: CatalogueCollection[] = [];
-  public connectedAccount!:string;
+  private _connectedAccount!:string;
   private _baseUrl:string = 'http://localhost:9000/randomworlds'
+
+  public get connectedWallet(): string | null{
+    return this._connectedAccount;
+  }
+
   constructor(@Inject(DOCUMENT) private document: Document, private http:HttpClient) { 
     console.log('-- smarts constructor --');
     this.web3 = Web3Provider(this.document);
@@ -31,8 +36,8 @@ export class SmartContractsService {
         console.log('-- no accounts connected with MetaMask browser extension --');
         return;
       }
-      this.connectedAccount = res[0];
-      console.log('-- smart contracts service :: connected account', this.connectedAccount);
+      this._connectedAccount = res[0];
+      console.log('-- smart contracts service :: connected account', this._connectedAccount);
     })
     this.getCollectionsCatalogue().then(res => {
       console.log('--contract address--',this.factory._address)

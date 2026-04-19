@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef } from '@angular/core';
+import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, AfterViewInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -10,12 +10,15 @@ import { GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from '
 import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
 import { Router } from '@angular/router';
 import { NotificationService } from 'src/app/modules/shared/services/notification.service';
+import { CharacterCreatorDialogComponent } from './components/character-creator-dialog/character-creator-dialog.component';
+import { BaseComponent } from 'src/app/modules/shared/components/base.component';
+import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 @Component({
   selector: 'app-assets-view',
   templateUrl: './assets-view.component.html',
   styleUrl: './assets-view.component.scss'
 })
-export class AssetsViewComponent implements OnInit {
+export class AssetsViewComponent extends BaseComponent implements OnInit, AfterViewInit {
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   public collections: AssetsCollection[] = []
@@ -24,7 +27,7 @@ export class AssetsViewComponent implements OnInit {
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
   private _router:Router = inject(Router);
-  private _notificationService: NotificationService = inject(NotificationService);
+  
   private _slideScrollState: ScrollState = {
     step: 100,
     mult: 1,
@@ -45,7 +48,8 @@ export class AssetsViewComponent implements OnInit {
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
   public visorType:string = 'row';
-  constructor(@Inject(DOCUMENT) private document:Document){}
+  constructor(@Inject(DOCUMENT) private document:Document) { super();}
+  
   ngOnInit(): void {
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
       cat.forEach(item => {
@@ -83,9 +87,16 @@ export class AssetsViewComponent implements OnInit {
         })
       })
     })
-    this._notificationService.setup('center', 'bottom', 3000)
+    this._notificationsService.setup('center', 'bottom', 3000)
   }
   
+  ngAfterViewInit(): void {
+    let wallet = this._smartContractsService.connectedWallet;
+    this._notificationsService.openSnack(
+      wallet ? ESnackAlertType.WARN : ESnackAlertType.ERROR, 
+      wallet ? `Connected Wallet Address: ${this._smartContractsService.connectedWallet}` : 'No Wallet connected!');
+  }
+
   public onChangeVisualization(){
     this.visorType = this.visorType === 'row' ? 'grid' : 'row';
   }
@@ -171,24 +182,32 @@ export class AssetsViewComponent implements OnInit {
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
   }
   public onCardButtonClicked(event:NftCardClickAction){
-      console.log('-- char selection >> card btn clicked --', event)
-      switch(event.name){
-        case('view'):
-          this.onViewClick(event.asset);
-        break;
-        case('select'):
-          console.log('-- on select click --', event.asset);
-          let data = localStorage.getItem('game-data');
-          if(data){
-            let gameData:GameData = JSON.parse(data);
-            gameData.selectedCharacter = event.asset;
-            localStorage.setItem('game-data', JSON.stringify(gameData));
-            this._notificationService.push(`Selected Character: ${event.asset.metadata.name}`);
-            //this._router.navigateByUrl('randomworlds/world/generator')
-          }
-          else this._notificationService.push('No Game Data has been found in memory, go back to the home page')
-        break;
-        default: break;
-      }
+    console.log('-- char selection >> card btn clicked --', event)
+    switch(event.name){
+      case('view'):
+        this.onViewClick(event.asset);
+      break;
+      case('select'):
+        console.log('-- on select click --', event.asset);
+        let data = localStorage.getItem('game-data');
+        if(data){
+          let gameData:GameData = JSON.parse(data);
+          gameData.selectedCharacter = event.asset;
+          localStorage.setItem('game-data', JSON.stringify(gameData));
+          this._notificationsService.push(`Selected Character: ${event.asset.metadata.name}`);
+          //this._router.navigateByUrl('randomworlds/world/generator')
+        }
+        else this._notificationsService.push('No Game Data has been found in memory, go back to the home page')
+      break;
+      default: break;
     }
+  }
+  public onCreateCharacterClick(){
+    console.log('-- on create character click --');
+    this._dialog.open(CharacterCreatorDialogComponent, { data: {connectedWallet: this._smartContractsService.connectedWallet }})
+      .afterClosed()
+      .subscribe(result => {
+        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created")
+    })
+  }
 }

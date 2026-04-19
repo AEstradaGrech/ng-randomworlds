@@ -246,6 +246,11 @@ h2 {
   --mdc-snackbar-supporting-text-font-weight:bold;
   margin:0px 0px 15px 0px !important;
 }
+.snack-error{
+  --mdc-snackbar-container-color: #c02600 !important;
+  --mdc-snackbar-supporting-text-color: #c2bebe;
+  margin:0px 0px 15px 0px !important;
+}
 .snack-success-login{
   --mdc-snackbar-container-color: #ffffff  !important;
   --mdc-snackbar-supporting-text-color: #4cb804;

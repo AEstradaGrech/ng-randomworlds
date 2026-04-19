@@ -1,0 +1,44 @@
+<div class="dnd-container">
+  <div class="title-box">
+    <h2 [style.color]="textColor" [style.margin]="'0px'">{{boxOneTitle}}</h2>
+  </div>
+  <div
+    cdkDropList
+    #boxOneList="cdkDropList"
+    [cdkDropListData]="boxOneItems"
+    [cdkDropListConnectedTo]="[boxTwoList]"
+    class="dnd-list"
+    [style.--item-bg-color]="itemBgColor"
+    (cdkDropListDropped)="drop($event)"
+  >
+    @for (item of boxOneItems; track item) {
+      <div class="dnd-option-box" cdkDrag
+        [style.--text-color]="textColor"
+        [style.--item-bg-color]="itemBgColor">
+        {{ item }}
+      </div>
+    }
+  </div>
+</div>
+<div class="dnd-container">
+  <div class="title-box">
+    <h2 [style.color]="textColor" [style.margin]="'0px'">{{boxTwoTitle}}</h2>
+  </div>
+  <div
+    cdkDropList
+    #boxTwoList="cdkDropList"
+    [cdkDropListData]="boxTwoItems"
+    [cdkDropListConnectedTo]="[boxOneList]"
+    class="dnd-list"
+    [style.--item-bg-color]="itemBgColor"
+    (cdkDropListDropped)="drop($event)"
+  >
+    @for (item of boxTwoItems; track item) {
+      <div class="dnd-option-box" cdkDrag 
+        [style.--text-color]="textColor"
+        [style.--item-bg-color]="itemBgColor">
+        {{ item }}
+      </div>
+    }
+  </div>
+</div>
