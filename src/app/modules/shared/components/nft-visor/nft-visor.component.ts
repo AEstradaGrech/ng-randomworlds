@@ -19,6 +19,7 @@ export class NftVisorComponent implements OnInit, OnChanges{
 
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
   public viewType: string = 'wrap';
+  public screenScroll: string = 'auto';
   private _slideScrollState: ScrollState = {
       step: 100,
       mult: 1,
@@ -39,12 +40,12 @@ export class NftVisorComponent implements OnInit, OnChanges{
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['visualization']){
       this.onChangeVisualization();
-      console.log('-- current view type --', this.viewType);
     }
   }
   public onChangeVisualization(){
     console.log('-- on change visualization --');
     this.viewType = this.visualization === 'row' ? 'nowrap' : 'wrap';
+    this.screenScroll = this.visualization === 'row' ? 'hidden' : 'auto';
   }
   public switchVisualization(){
     this.visualization = this.visualization === 'row' ? 'grid' : 'row';
