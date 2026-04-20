@@ -1,6 +1,9 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatRadioChange } from '@angular/material/radio';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { map } from 'rxjs/operators';
 import { ImagesService } from 'src/app/modules/bussiness/services/images.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -22,6 +25,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   selectedMoods:string[] = [];
   private _connectedWallet!: string;
   private _imagesService: ImagesService = inject(ImagesService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _form!: FormGroup;
+  isRandomGenre: boolean = false;
+  showSettings: boolean = true;
   ngOnInit(): void {
     this._connectedWallet = this.data.connectedWallet;
     if(!this._connectedWallet){
@@ -31,11 +38,16 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       console.log('-- on ambiences response --', res);
       this.availableAmbiences = res.data.map((item:SystemMessageDto) => item.description);
       console.log('-- mapped ambiences --', this.availableAmbiences);
-    })
-    this._imagesService.getAmbiences().subscribe(res => {
+    });
+    this._imagesService.getMoods().subscribe(res => {
       console.log('-- on moods response --', res);
       this.availableMoods = res.data.map((item:SystemMessageDto) => item.description);
       console.log('-- mapped moods --', this.availableMoods);
+    });
+    this._formBuilder.group({
+      name: new FormControl(''),
+      age: new FormControl(''),
+      genre: new FormControl(false)
     })
   }
 
@@ -50,5 +62,19 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
         event.currentIndex,
       );
     }
+  }
+
+  onShowSettings(){
+    this.showSettings = true;
+  }
+  onHideSettings(){
+    this.showSettings = false;
+  }
+  onCharacterGenreToggle(event: MatSlideToggleChange){
+
+  }
+
+  onRandomGenreCharacter(event: MatRadioChange){
+    this.isRandomGenre = event.value;
   }
 }

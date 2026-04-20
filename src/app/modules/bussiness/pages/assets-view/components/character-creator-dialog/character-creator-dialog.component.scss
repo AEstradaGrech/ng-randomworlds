@@ -20,3 +20,38 @@
   min-width:100%;
   min-height:100%;
 }
+
+.char-tab-container{
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+.image-container{
+  margin: 15px 15px 15px 15px;
+  border-radius: 15px;
+  display: flex;
+}
+.char-image{
+  border-radius: 15px;
+}
+.inputs-container{
+  display: block;
+  width:100%;
+  flex-direction: column;
+}
+.first-traits-row{
+  display: flex;
+  width: 100%;
+}
+.second-traits-row{
+  display: flex;
+  width: 100%;
+}
+.toggles-box{
+  display:block;
+  width:40%;
+}
+.displayed-panel{
+  height: 100%;
+  margin: 5px 5px 5px 5px;
+}
