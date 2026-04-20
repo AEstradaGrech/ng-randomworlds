@@ -3,6 +3,11 @@
   width:100%;
   
 }
+.box-title-text{
+  margin: 7px;
+  font-weight:500;
+  color: var(--text-color);
+}
 .boxes-container{
   display:contents;
   overflow: auto;

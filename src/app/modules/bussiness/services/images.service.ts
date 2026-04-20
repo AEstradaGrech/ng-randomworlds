@@ -29,7 +29,7 @@ export class ImagesService {
     return this.http.post<CollectionResponse<SystemMessageDto>>(`${this._mgmtUrl}/query`, filter ?? { conditions: [{field:'tag', value:'ambience'}]});
   }
   
-  getMoods(filter: QueryFilter | null) : Observable<CollectionResponse<SystemMessageDto>>{
+  getMoods(filter: QueryFilter | null = null) : Observable<CollectionResponse<SystemMessageDto>>{
     return this.http.post<CollectionResponse<SystemMessageDto>>(`${this._mgmtUrl}/query`, filter ?? { conditions: [{field:'tag', value:'mood'}]});
   }
 }

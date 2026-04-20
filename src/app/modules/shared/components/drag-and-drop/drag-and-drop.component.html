@@ -1,6 +1,6 @@
 <div class="dnd-container">
   <div class="title-box">
-    <h2 [style.color]="textColor" [style.margin]="'0px'">{{boxOneTitle}}</h2>
+    <span class="box-title-text" [style.--text-color]="textColor">{{boxOneTitle}}</span>
   </div>
   <div
     cdkDropList
@@ -22,7 +22,7 @@
 </div>
 <div class="dnd-container">
   <div class="title-box">
-    <h2 [style.color]="textColor" [style.margin]="'0px'">{{boxTwoTitle}}</h2>
+    <span class="box-title-text" [style.--text-color]="textColor">{{boxTwoTitle}}</span>
   </div>
   <div
     cdkDropList

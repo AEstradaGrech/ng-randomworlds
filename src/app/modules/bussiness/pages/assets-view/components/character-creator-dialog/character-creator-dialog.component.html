@@ -2,8 +2,8 @@
   <mat-tab-group class="dialog-tabs">
   <mat-tab label="Ambiences">
   <app-drag-and-drop 
-      [boxOneTitle]="'Available Ambiences'",
-      [boxTwoTitle]="'Selected Ambiences'",
+      [boxOneTitle]="'Available'",
+      [boxTwoTitle]="'Selected'",
       [boxOneItems]="availableAmbiences"
       [boxTwoItems]="selectedAmbiences"
       [textColor]="'var(--primary-btn-hover)'">
@@ -11,28 +11,45 @@
   </mat-tab>
   <mat-tab label="Moods"> 
   <app-drag-and-drop 
-      [boxOneTitle]="'Available Ambiences'",
-      [boxTwoTitle]="'Selected Ambiences'",
-      [boxOneItems]="availableAmbiences"
-      [boxTwoItems]="selectedAmbiences"
+      [boxOneTitle]="'Available'",
+      [boxTwoTitle]="'Selected'",
+      [boxOneItems]="availableMoods"
+      [boxTwoItems]="selectedMoods"
       [textColor]="'var(--primary-btn-hover)'">
     </app-drag-and-drop>  
   </mat-tab>
-  <mat-tab label="Image"> 
-    <div class="tab-screen">
-
+  <mat-tab label="Character"> 
+  <div class="char-tab-container">
+    <div class="image-container">
+      <img class="char-image" src="assets/images/UnknownChar.png" alt="UnknownCharacter">
+    </div>
+    <div class="inputs-container">
+      <mat-accordion>
+        <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" (opened)="onShowSettings()" (closed)="onHideSettings()" [expanded]="showSettings">
+          <mat-expansion-panel-header>Character Traits</mat-expansion-panel-header>
+            <div class="first-traits-row">
+              <mat-form-field>
+                <label>Name</label>
+                <input matInput type="text">
+              </mat-form-field>
+              <div class="toggles-box">
+                <mat-slide-toggle class="form-control" (change)="onCharacterGenreToggle($event)">Female Character</mat-slide-toggle>
+                <mat-radio-button class="token-selector" (change)="onRandomGenreCharacter($event)">Random Genre</mat-radio-button>
+              </div>
+            </div>
+            <div class="second-traits-row">
+              <mat-form-field>
+                <label>Age</label>
+                <input matInput type="text">
+              </mat-form-field>
+            </div>
+        </mat-expansion-panel>
+      </mat-accordion>
     </div>  
+  </div>
   </mat-tab>
 </mat-tab-group>
   </mat-dialog-content>
   <mat-dialog-actions align="center">
     <button  mat-button mat-dialog-close>Close</button>
   </mat-dialog-actions>
-
-   <!-- <app-drag-and-drop 
-      [boxOneTitle]="'Available Ambiences'",
-      [boxTwoTitle]="'Selected Ambiences'",
-      [boxOneItems]="availableAmbiences"
-      [boxTwoItems]="selectedAmbiences"
-      [textColor]="'var(--primary-btn-hover)'">
-    </app-drag-and-drop>   -->
