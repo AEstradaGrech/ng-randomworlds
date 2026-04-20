@@ -22,7 +22,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
-
+import {MatTabsModule} from '@angular/material/tabs';
 @NgModule({
 declarations:[],
 imports:[
@@ -40,7 +40,8 @@ imports:[
     MatSlideToggleModule,
     MatMenuModule, 
     CdkDrag,
-    CdkDropList
+    CdkDropList,
+    MatTabsModule
 ],
 exports:[
     MatListModule,
@@ -68,7 +69,8 @@ exports:[
     MatRadioModule,
     MatSidenavModule,
     CdkDrag,
-    CdkDropList
+    CdkDropList,
+    MatTabsModule
 ],
 providers:[]
 })

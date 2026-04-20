@@ -1,12 +1,38 @@
-<mat-dialog-content>
-    <app-drag-and-drop 
+<mat-dialog-content class="tabs-dialog-content">
+  <mat-tab-group class="dialog-tabs">
+  <mat-tab label="Ambiences">
+  <app-drag-and-drop 
       [boxOneTitle]="'Available Ambiences'",
       [boxTwoTitle]="'Selected Ambiences'",
       [boxOneItems]="availableAmbiences"
       [boxTwoItems]="selectedAmbiences"
       [textColor]="'var(--primary-btn-hover)'">
-    </app-drag-and-drop>
+    </app-drag-and-drop>  
+  </mat-tab>
+  <mat-tab label="Moods"> 
+  <app-drag-and-drop 
+      [boxOneTitle]="'Available Ambiences'",
+      [boxTwoTitle]="'Selected Ambiences'",
+      [boxOneItems]="availableAmbiences"
+      [boxTwoItems]="selectedAmbiences"
+      [textColor]="'var(--primary-btn-hover)'">
+    </app-drag-and-drop>  
+  </mat-tab>
+  <mat-tab label="Image"> 
+    <div class="tab-screen">
+
+    </div>  
+  </mat-tab>
+</mat-tab-group>
   </mat-dialog-content>
   <mat-dialog-actions align="center">
     <button  mat-button mat-dialog-close>Close</button>
   </mat-dialog-actions>
+
+   <!-- <app-drag-and-drop 
+      [boxOneTitle]="'Available Ambiences'",
+      [boxTwoTitle]="'Selected Ambiences'",
+      [boxOneItems]="availableAmbiences"
+      [boxTwoItems]="selectedAmbiences"
+      [textColor]="'var(--primary-btn-hover)'">
+    </app-drag-and-drop>   -->
