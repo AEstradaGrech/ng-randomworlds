@@ -1,5 +1,6 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Component, inject, OnInit } from '@angular/core';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatRadioChange } from '@angular/material/radio';
@@ -19,9 +20,13 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
 
   data = inject(MAT_DIALOG_DATA);
   
-  availableAmbiences:string[] = ['Test 1','Test 2', 'Test 3'];
+  @ViewChild('ambienceInput') ambienceInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('moodInput') moodInput!: ElementRef<HTMLInputElement>;
+
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  availableAmbiences:string[] = [];
   selectedAmbiences:string[] = [];
-  availableMoods:string[] = ['Test 1','Test 2', 'Test 3'];
+  availableMoods:string[] = [];
   selectedMoods:string[] = [];
   private _connectedWallet!: string;
   private _imagesService: ImagesService = inject(ImagesService);
@@ -73,7 +78,18 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   onCharacterGenreToggle(event: MatSlideToggleChange){
 
   }
-
+  removeAmbience(item:string){
+    if(this.selectedAmbiences.includes(item))
+      this.selectedAmbiences = this.selectedAmbiences.filter(x => x !== item);
+    if(!this.availableAmbiences.includes(item))
+      this.availableAmbiences.push(item);
+  }
+  removeMood(item: string){
+    if(this.selectedMoods.includes(item))
+      this.selectedMoods = this.selectedMoods.filter(x => x !== item);
+    if(!this.availableMoods.includes(item))
+      this.availableMoods.push(item);
+  }
   onRandomGenreCharacter(event: MatRadioChange){
     this.isRandomGenre = event.value;
   }

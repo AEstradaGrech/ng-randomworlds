@@ -43,9 +43,70 @@
                 <input matInput type="text">
               </mat-form-field>
             </div>
+            <div class="third-traits-row">
+              <mat-form-field class="chips-control">
+                <mat-label>Ambiences</mat-label>
+                <mat-chip-grid #ambiencesChipGrid aria-label="Ambiences">
+                  @for (item of selectedAmbiences; track item) {
+                    <mat-chip-row (removed)="removeAmbience(item)">
+                      {{item}}
+                      <button matChipRemove aria-label="'removeAmbience ' + item">
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-chip-row>
+                  }
+                </mat-chip-grid>
+                <input placeholder="Selected Ambiences" #ambienceInput
+                  [matChipInputFor]="ambiencesChipGrid"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"/>
+              </mat-form-field>
+              <mat-form-field class="chips-control">
+                <mat-label>Moods</mat-label>
+                <mat-chip-grid #moodsChipGrid aria-label="Moods">
+                  @for (item of selectedMoods; track item) {
+                    <mat-chip-row (removed)="removeMood(item)">
+                      {{item}}
+                      <button matChipRemove aria-label="'removeMoov ' + item">
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-chip-row>
+                  }
+                </mat-chip-grid>
+                <input placeholder="Selected Moods" #moodInput
+                  [matChipInputFor]="moodsChipGrid"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"/>
+              </mat-form-field>
+            </div>
+            <mat-expansion-panel style="margin-top: 3px; width: 100%;" 
+              [disabled]="true" 
+              [hideToggle]="true" 
+              [expanded]="true" 
+              [style.background-color]="'white'">
+              <mat-expansion-panel-header class="prompt-expansion-panel-header">
+                  <mat-panel-description >
+                    Preferences                  
+                  </mat-panel-description>
+              </mat-expansion-panel-header>
+              <mat-form-field class="chat-screen" 
+                [style.font-size]="'16px'" 
+                [style.--chatbox-color]="'rgb(0 0 0 / 68%)'">
+                  <!-- <mat-label *ngIf="label !== ''" [style.color]="fontColor"></mat-label> -->
+                  <textarea #chatbox
+                    class="preferences-textarea"
+                    [style.color]="'#3dd73d'"
+                    matInput
+                    cdkTextareaAutosize
+                    #autosize="cdkTextareaAutosize"
+                    [readonly]="false"
+                    [disabled]="false"
+                    [style.margin-top]="'10px'">
+                  </textarea>
+              </mat-form-field>
+            </mat-expansion-panel>
         </mat-expansion-panel>
       </mat-accordion>
-    </div>  
+    <textarea readonly *ngIf="!showSettings" class="text-area"></textarea>  
+    </div>
   </div>
   </mat-tab>
 </mat-tab-group>
