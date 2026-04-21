@@ -21,29 +21,30 @@
   <mat-tab label="Character"> 
   <div class="char-tab-container">
     <div class="image-container">
-      <img class="char-image" src="assets/images/UnknownChar.png" alt="UnknownCharacter">
+      <img class="char-image" [src]="charImageUrl" alt="UnknownCharacter">
     </div>
     <div class="inputs-container">
       <mat-accordion>
-        <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" (opened)="onShowSettings()" (closed)="onHideSettings()" [expanded]="showSettings">
+          
+            <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" (opened)="onShowSettings()" (closed)="onHideSettings()" [expanded]="showSettings">
           <mat-expansion-panel-header>Character Traits</mat-expansion-panel-header>
-            <div class="first-traits-row">
-              <mat-form-field>
+            <div class="form-row first-traits-row">
+              <mat-form-field formControlName="name">
                 <label>Name</label>
                 <input matInput type="text">
               </mat-form-field>
               <div class="toggles-box">
-                <mat-slide-toggle class="form-control" (change)="onCharacterGenreToggle($event)">Female Character</mat-slide-toggle>
-                <mat-radio-button class="token-selector" (change)="onRandomGenreCharacter($event)">Random Genre</mat-radio-button>
+                <mat-slide-toggle class="char-genre-toggle" [disabled]="isRandomGenre" (change)="onCharacterGenreToggle($event)">Female Character</mat-slide-toggle>
+                <mat-radio-button class="random-char-btn" [checked]="isRandomGenre"  (click)="onRandomGenreCharacter($event)">Random Genre</mat-radio-button>
               </div>
             </div>
-            <div class="second-traits-row">
+            <div class="form-row second-traits-row">
               <mat-form-field>
                 <label>Age</label>
                 <input matInput type="text">
               </mat-form-field>
             </div>
-            <div class="third-traits-row">
+            <div class="form-row third-traits-row">
               <mat-form-field class="chips-control">
                 <mat-label>Ambiences</mat-label>
                 <mat-chip-grid #ambiencesChipGrid aria-label="Ambiences">
@@ -104,6 +105,8 @@
               </mat-form-field>
             </mat-expansion-panel>
         </mat-expansion-panel>
+   
+          
       </mat-accordion>
     <textarea readonly *ngIf="!showSettings" class="text-area"></textarea>  
     </div>

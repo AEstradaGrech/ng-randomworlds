@@ -28,13 +28,26 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   selectedAmbiences:string[] = [];
   availableMoods:string[] = [];
   selectedMoods:string[] = [];
+  isFemaleChar: boolean = false;
+  isRandomGenre: boolean = false;
+  showSettings: boolean = true;
+  form!: FormGroup;
+
+  readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
+  readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
+  readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
+
   private _connectedWallet!: string;
   private _imagesService: ImagesService = inject(ImagesService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _form!: FormGroup;
-  isRandomGenre: boolean = false;
-  showSettings: boolean = true;
+  private _currentImageUrl:string = '';
+  
+  public get charImageUrl(): string{
+    return this._currentImageUrl;
+  }
+
   ngOnInit(): void {
+    this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
     this._connectedWallet = this.data.connectedWallet;
     if(!this._connectedWallet){
       this._notificationsService.openSnack(ESnackAlertType.WARN, "No connected wallet found, mint service unavailable");
@@ -49,10 +62,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       this.availableMoods = res.data.map((item:SystemMessageDto) => item.description);
       console.log('-- mapped moods --', this.availableMoods);
     });
-    this._formBuilder.group({
+    this.form = this._formBuilder.group({
       name: new FormControl(''),
       age: new FormControl(''),
-      genre: new FormControl(false)
+      isFemaleChar: new FormControl(this.isFemaleChar)
     })
   }
 
@@ -76,7 +89,16 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     this.showSettings = false;
   }
   onCharacterGenreToggle(event: MatSlideToggleChange){
-
+    console.log('-- on toggle change --');
+    this.isFemaleChar = event.checked;
+    this.form.get('isFemaleChar')?.setValue(this.isFemaleChar);
+    this._updateImageUrl(this.form.get('isFemaleChar')?.value);
+  }
+  onRandomGenreCharacter(event: MouseEvent){
+    console.log('-- on random btn --', event);
+    this.isRandomGenre = !this.isRandomGenre;
+    this.form.get('isFemaleChar')?.setValue(this.isRandomGenre ? undefined : this.isFemaleChar);
+    this._updateImageUrl(this.form.get('isFemaleChar')?.value);
   }
   removeAmbience(item:string){
     if(this.selectedAmbiences.includes(item))
@@ -90,7 +112,13 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     if(!this.availableMoods.includes(item))
       this.availableMoods.push(item);
   }
-  onRandomGenreCharacter(event: MatRadioChange){
-    this.isRandomGenre = event.value;
+
+  private _updateImageUrl(isFemaleChar: boolean | undefined){
+    if(isFemaleChar === undefined){
+      this._currentImageUrl = this.UNKNOWN_CHAR_IMG;
+    }
+    else{
+      this._currentImageUrl = isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
+    }
   }
 }

@@ -38,7 +38,7 @@
   display: block;
   width:100%;
   flex-direction: column;
-  padding: 15px 5px 15px 5px;
+  margin: 15px 5px 0px 5px;
 }
 .first-traits-row{
   display: flex;
@@ -48,15 +48,32 @@
   display: flex;
   width: 100%;
 }
+.third-traits-row{
+  display: flex;
+}
 .toggles-box{
-  display:block;
-  width:40%;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0px 15px 0px 30px;
+  width:50%;
+
+}
+.char-genre-toggle{
+  padding-left: 10px;
+  margin-bottom: 3px;
+}
+.random-char-btn{
+  margin-top:3px;
 }
 .displayed-panel{
   height: 100%;
   margin: 5px 5px 5px 5px;
 }
-
+.form-row{
+  margin: 7px 3px 7px 0px;
+}
 .text-area{
   width: 100%;
   height: 90%;
