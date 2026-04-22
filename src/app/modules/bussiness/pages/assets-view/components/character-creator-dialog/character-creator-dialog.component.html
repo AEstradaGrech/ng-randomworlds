@@ -1,3 +1,7 @@
+<mat-dialog-content class="header-titles">
+   <h2 [style.margin]="'0px 0px 10px'">Create and mint your own Character</h2>
+   <h3 [style.font-style]="'italic'">Select at least one Ambience and one Mood, add optional traits and generate your image</h3>
+</mat-dialog-content>
 <mat-dialog-content class="tabs-dialog-content">
   <mat-tab-group class="dialog-tabs">
   <mat-tab label="Ambiences">
@@ -26,26 +30,32 @@
     <div class="inputs-container">
       <mat-accordion>
           
-            <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" (opened)="onShowSettings()" (closed)="onHideSettings()" [expanded]="showSettings">
+        <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" (opened)="onShowSettings()" (closed)="onHideSettings()" [expanded]="showSettings">
           <mat-expansion-panel-header>Character Traits</mat-expansion-panel-header>
             <div class="form-row first-traits-row">
-              <mat-form-field formControlName="name">
+              <mat-form-field class="form-control" formControlName="name">
                 <label>Name</label>
                 <input matInput type="text">
               </mat-form-field>
               <div class="toggles-box">
                 <mat-slide-toggle class="char-genre-toggle" [disabled]="isRandomGenre" (change)="onCharacterGenreToggle($event)">Female Character</mat-slide-toggle>
-                <mat-radio-button class="random-char-btn" [checked]="isRandomGenre"  (click)="onRandomGenreCharacter($event)">Random Genre</mat-radio-button>
+                <mat-radio-button class="random-char-btn" 
+                  [style.--mdc-radio-selected-icon-color]="'var(--primary-btn-hover)'"
+                  [style.--mdc-radio-selected-hover-icon-color]="'orange'"
+                  [checked]="isRandomGenre"  
+                  (click)="onRandomGenreCharacter($event)">
+                    Random Genre
+                </mat-radio-button>
               </div>
             </div>
             <div class="form-row second-traits-row">
-              <mat-form-field>
+              <mat-form-field class="form-control">
                 <label>Age</label>
                 <input matInput type="text">
               </mat-form-field>
             </div>
             <div class="form-row third-traits-row">
-              <mat-form-field class="chips-control">
+              <mat-form-field class="chips-control form-control">
                 <mat-label>Ambiences</mat-label>
                 <mat-chip-grid #ambiencesChipGrid aria-label="Ambiences">
                   @for (item of selectedAmbiences; track item) {
@@ -61,7 +71,7 @@
                   [matChipInputFor]="ambiencesChipGrid"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"/>
               </mat-form-field>
-              <mat-form-field class="chips-control">
+              <mat-form-field class="chips-control form-control">
                 <mat-label>Moods</mat-label>
                 <mat-chip-grid #moodsChipGrid aria-label="Moods">
                   @for (item of selectedMoods; track item) {
@@ -86,6 +96,32 @@
               <mat-expansion-panel-header class="prompt-expansion-panel-header">
                   <mat-panel-description >
                     Preferences                  
+                  </mat-panel-description>
+              </mat-expansion-panel-header>
+              <mat-form-field class="chat-screen" 
+                [style.font-size]="'16px'" 
+                [style.--chatbox-color]="'rgb(0 0 0 / 68%)'">
+                  <!-- <mat-label *ngIf="label !== ''" [style.color]="fontColor"></mat-label> -->
+                  <textarea #chatbox
+                    class="preferences-textarea"
+                    [style.color]="'#3dd73d'"
+                    matInput
+                    cdkTextareaAutosize
+                    #autosize="cdkTextareaAutosize"
+                    [readonly]="false"
+                    [disabled]="false"
+                    [style.margin-top]="'10px'">
+                  </textarea>
+              </mat-form-field>
+            </mat-expansion-panel>
+            <mat-expansion-panel style="margin-top: 3px; width: 100%;" 
+              [disabled]="true" 
+              [hideToggle]="true" 
+              [expanded]="true" 
+              [style.background-color]="'white'">
+              <mat-expansion-panel-header class="prompt-expansion-panel-header">
+                  <mat-panel-description >
+                    Constraints                  
                   </mat-panel-description>
               </mat-expansion-panel-header>
               <mat-form-field class="chat-screen" 
