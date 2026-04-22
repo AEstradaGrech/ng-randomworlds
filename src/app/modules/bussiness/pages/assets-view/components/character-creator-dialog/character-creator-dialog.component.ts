@@ -5,6 +5,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { map } from 'rxjs/operators';
 import { ImagesService } from 'src/app/modules/bussiness/services/images.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -67,6 +68,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       age: new FormControl(''),
       isFemaleChar: new FormControl(this.isFemaleChar)
     })
+    this._displayTabChangeAlerts("Ambiences");
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -87,6 +89,13 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   }
   onHideSettings(){
     this.showSettings = false;
+  }
+  onTabChange(event: MatTabChangeEvent){
+    console.log('-- on tab change --', event.tab.textLabel);
+    this._displayTabChangeAlerts(event.tab.textLabel);
+  }
+  onGenerateProfileClick(){
+
   }
   onCharacterGenreToggle(event: MatSlideToggleChange){
     console.log('-- on toggle change --');
@@ -119,6 +128,23 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     }
     else{
       this._currentImageUrl = isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
+    }
+  }
+
+  private _displayTabChangeAlerts(tabLabel: string){
+    switch(tabLabel){
+      case("Ambiences"):
+        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Select at least one AMBIENCE style and up to five (counting up the MOODS too)');  
+      break;
+      case("Moods"):
+        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Select at least one MOOD style and up to five (counting up the AMBIENCES too)');
+        break;
+      case("Character"):
+        if(this.selectedAmbiences.length == 0 && this.selectedMoods.length == 0){
+          this._notificationsService.openSnack(ESnackAlertType.WARN, 'No character styles selected. Select at least one AMBIENCE and one MOOD');
+        }
+        break;
+      default: break;
     }
   }
 }

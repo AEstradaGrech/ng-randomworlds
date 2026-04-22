@@ -3,7 +3,7 @@
    <h3 [style.font-style]="'italic'">Select at least one Ambience and one Mood, add optional traits and generate your image</h3>
 </mat-dialog-content>
 <mat-dialog-content class="tabs-dialog-content">
-  <mat-tab-group class="dialog-tabs">
+  <mat-tab-group class="dialog-tabs" (selectedTabChange)="onTabChange($event)">
   <mat-tab label="Ambiences">
   <app-drag-and-drop 
       [boxOneTitle]="'Available'",
@@ -31,7 +31,29 @@
       <mat-accordion>
           
         <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" (opened)="onShowSettings()" (closed)="onHideSettings()" [expanded]="showSettings">
-          <mat-expansion-panel-header>Character Traits</mat-expansion-panel-header>
+          <mat-expansion-panel-header>
+            <mat-panel-description>
+              Character Traits
+            </mat-panel-description>
+            <app-rounded-button 
+              [id]="'generate_image'"
+              [iconName]="'person'"
+              [size]="'35px'"
+              [hoverColor]="'var(--terciary-btn-hover)'"
+              [borderColor]="'var(--terciary-btn-border)'"
+              [disabled]="false"
+              (onClickEvent)="onGenerateProfileClick()">
+            </app-rounded-button>
+            <app-rounded-button 
+              [id]="'generate_profile'"
+              [iconName]="'person'"
+              [size]="'35px'"
+              [hoverColor]="'var(--primary-btn-hover)'"
+              [borderColor]="'var(--primary-btn-border)'"
+              [disabled]="false"
+              (onClickEvent)="onGenerateProfileClick()">
+            </app-rounded-button>
+          </mat-expansion-panel-header>
             <div class="form-row first-traits-row">
               <mat-form-field class="form-control" formControlName="name">
                 <label>Name</label>

@@ -16,10 +16,20 @@ export class RoundedButtonComponent implements AfterViewInit {
   @Input() hoverColor: string = 'var(--primary-btn-hover)';
   @Input() backgroundColor: string = 'var(--primary-btn-color)';
   @Input() borderColor: string = 'var(--primary-btn-border)';
+  @Input() size: string = '40px';
+  @Input() margin: string = '5px';
   @Output() onClickEvent: EventEmitter<string> = new EventEmitter<string>();
   @Output() onMousedownEvent: EventEmitter<string> = new EventEmitter<string>();
   @Output() onMouseupEvent: EventEmitter<string> = new EventEmitter<string>();
 
+  public get iconSize() : string{
+    let pixelSize: string = '20px';
+    if(this.size.includes('px')){
+      let value = parseFloat(this.size.split('px')[0]) * 0.5;
+      pixelSize = `${value}px`;
+    }
+    return pixelSize;
+  }
   ngAfterViewInit(): void {
     if(this.id === undefined || this.id === '')
       this.id = this.iconName;
