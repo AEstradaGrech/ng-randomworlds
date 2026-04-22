@@ -3,16 +3,20 @@
     (click)="onClick()"
     (mousedown)="onMousedown()",
     (mouseup)="onMouseup()", 
+    [style.padding]="'0px'"
+    [style.--btn-margin]="margin" 
+    [style.--btn-size]="size"
     [style.--btn-color]="backgroundColor" 
     [style.--btn-hover]="hoverColor"
     [style.--btn-border-color]="borderColor"
-    [ngClass]="{'disabled-btn': disabled}">
+    [ngClass]="{'disabled-btn': disabled }">
     @if(disabled && withSpinner){
-        <mat-spinner diameter="30"></mat-spinner>
+        <mat-spinner diameter="20"></mat-spinner>
     }
     @else{
         @if(iconName) {
             <mat-icon class="btn-icon"
+                [style.--icon-size]="iconSize"
                 [style.--icon-color]="iconColor"
                 aria-hidden="false" 
                 aria-label="rounded_button"
