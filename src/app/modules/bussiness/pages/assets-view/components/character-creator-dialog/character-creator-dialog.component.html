@@ -35,18 +35,22 @@
             <mat-panel-description>
               Character Traits
             </mat-panel-description>
-            <app-rounded-button 
+            <app-rounded-button
+              matTooltip="Generate Image from the currently displayed Profile"
+              [matTooltipPosition]="'above'" 
               [id]="'generate_image'"
               [iconName]="'person'"
               [size]="'35px'"
               [hoverColor]="'var(--terciary-btn-hover)'"
               [borderColor]="'var(--terciary-btn-border)'"
-              [disabled]="false"
+              [disabled]="!currentProfile"
               (onClickEvent)="onGenerateProfileClick()">
             </app-rounded-button>
-            <app-rounded-button 
+            <app-rounded-button
+              matTooltip="Generate Profile"
+              [matTooltipPosition]="'above'"
               [id]="'generate_profile'"
-              [iconName]="'person'"
+              [iconName]="'receipt'"
               [size]="'35px'"
               [hoverColor]="'var(--primary-btn-hover)'"
               [borderColor]="'var(--primary-btn-border)'"

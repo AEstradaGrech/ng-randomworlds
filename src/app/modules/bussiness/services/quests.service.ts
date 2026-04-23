@@ -1,9 +1,10 @@
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { filter, Observable } from 'rxjs';
-import { QuestBlockDto, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
+import { CreateCharacterRequest, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
 import { CollectionResponse, SortedFilter } from '../../shared/models/common-interfaces';
 import { environment } from 'src/environments/environment';
+import { CharacterProfileDto } from '../../shared/models/mgmt-interfaces';
 @Injectable({
   providedIn: 'root'
 })
@@ -57,5 +58,9 @@ export class QuestsService {
   public generateIntro(req:QuestIntroRequest) : Observable<QuestIntroResponse>{
     console.log('generate intro')
     return this.http.post<QuestIntroResponse>(`${this._baseUrl}/intro`, req)
+  }
+
+  public generateCharacterProfile(req: CreateCharacterRequest): Observable<QuestCharacter>{
+    return this.http.post<QuestCharacter>(`${this._baseUrl}/character`, req);
   }
 }
