@@ -20,12 +20,14 @@
                 [style.--icon-color]="iconColor"
                 aria-hidden="false" 
                 aria-label="rounded_button"
-                fontIcon="{{iconName}}">
+                fontIcon="{{iconName}}"
+                [ngClass]="{'disabled-icon': disabled }">
             </mat-icon>
         } @else {
-            <img class="btn-icon custom-icon" 
-                 [src]="bgImageIcon.replace('url(', '').replace(')', '')" 
-                 alt="custom icon">
+            <img class="custom-icon"
+                [style.--img-icon-size]="size" 
+                [src]="bgImageIcon.replace('url(', '').replace(')', '')" 
+                alt="custom icon">
         }
     }
 </button>

@@ -7,7 +7,9 @@ import { MatRadioChange } from '@angular/material/radio';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { map } from 'rxjs/operators';
+import { CreateCharacterRequest, QuestCharacter } from 'src/app/core/interfaces/business/prompting.interface';
 import { ImagesService } from 'src/app/modules/bussiness/services/images.service';
+import { QuestsService } from 'src/app/modules/bussiness/services/quests.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { SystemMessageDto } from 'src/app/modules/shared/models/mgmt-interfaces';
@@ -33,16 +35,17 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   isRandomGenre: boolean = false;
   showSettings: boolean = true;
   form!: FormGroup;
-
+  currentProfile!: any;
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
   readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
 
   private _connectedWallet!: string;
   private _imagesService: ImagesService = inject(ImagesService);
+  private _charactersService: QuestsService = inject(QuestsService); // TODO: CharactersService
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _currentImageUrl:string = '';
-  
+  private _generatedProfiles: QuestCharacter[] = [];
   public get charImageUrl(): string{
     return this._currentImageUrl;
   }
@@ -95,7 +98,25 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     this._displayTabChangeAlerts(event.tab.textLabel);
   }
   onGenerateProfileClick(){
-
+    console.log('-- on generate character profile --');
+    if(this.selectedAmbiences.length === 0 && this.selectedMoods.length === 0){
+      this._notificationsService.openSnack(ESnackAlertType.ERROR, "Cannot create a character profile without at least one selected AMBIENCE and/or MOOD");
+      return;
+    }
+    let req: CreateCharacterRequest = {
+      name: this.form.get('name')?.value,
+      age: this.form.get('age')?.value,
+      ambiences: this.selectedAmbiences,
+      moods: this.selectedMoods,
+      preferences: '',
+      constraints: ''
+    }
+    this._charactersService.generateCharacterProfile(req).subscribe(res => {
+      console.log('-- on char profile response --', res);
+      this._generatedProfiles.push(res);
+      this.showSettings = false;
+      // this._processGeneratedProfile(res) <-- convierte a texto y pinta en textarea [currentProfile]
+    });
   }
   onCharacterGenreToggle(event: MatSlideToggleChange){
     console.log('-- on toggle change --');

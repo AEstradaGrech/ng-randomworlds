@@ -1,3 +1,11 @@
+export interface CreateCharacterRequest{
+    name: string | null,
+    age: string | null,
+    ambiences: string[],
+    moods: string [],
+    preferences: string | null,
+    constraints: string | null
+}
 export interface QuestIntroRequest {
     character: QuestCharacter | null,
     preferences: QuestPreferences,

@@ -23,6 +23,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatTooltipModule} from '@angular/material/tooltip';
 @NgModule({
 declarations:[],
 imports:[
@@ -41,7 +42,8 @@ imports:[
     MatMenuModule, 
     CdkDrag,
     CdkDropList,
-    MatTabsModule
+    MatTabsModule,
+    MatTooltipModule
 ],
 exports:[
     MatListModule,
@@ -70,7 +72,8 @@ exports:[
     MatSidenavModule,
     CdkDrag,
     CdkDropList,
-    MatTabsModule
+    MatTabsModule,
+    MatTooltipModule
 ],
 providers:[]
 })
