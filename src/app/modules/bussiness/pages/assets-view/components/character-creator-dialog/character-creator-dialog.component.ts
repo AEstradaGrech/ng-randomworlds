@@ -27,6 +27,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   @ViewChild('moodInput') moodInput!: ElementRef<HTMLInputElement>;
   @ViewChild('suggestbox') suggestbox!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('constraintsbox') constraintsbox!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('displaybox') displaybox!: ElementRef<HTMLTextAreaElement>;
   
   separatorKeysCodes: number[] = [ENTER, COMMA];
   availableAmbiences:string[] = [];
@@ -118,7 +119,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       console.log('-- on char profile response --', res);
       this._generatedProfiles.push(res);
       this.showSettings = false;
-      // this._processGeneratedProfile(res) <-- convierte a texto y pinta en textarea [currentProfile]
+      this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
     });
   }
   onCharacterGenreToggle(event: MatSlideToggleChange){
@@ -170,5 +171,13 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
         break;
       default: break;
     }
+  }
+
+  private _renderCharacterProfile(profile: QuestCharacter){
+    let text = ''
+    Object.keys(profile).forEach((k:any) => {
+      text += `\n${k}: ${Object(profile)[k]}`;
+    })
+    return text.trim()
   }
 }
