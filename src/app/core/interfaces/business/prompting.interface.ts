@@ -3,8 +3,8 @@ export interface CreateCharacterRequest{
     age: string | null,
     ambiences: string[],
     moods: string [],
-    preferences: string | null,
-    constraints: string | null
+    suggestions: string | null,
+    constraints: string []
 }
 export interface QuestIntroRequest {
     character: QuestCharacter | null,
