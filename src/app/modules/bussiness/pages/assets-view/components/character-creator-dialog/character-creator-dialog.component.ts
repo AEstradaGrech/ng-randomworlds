@@ -25,7 +25,9 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   
   @ViewChild('ambienceInput') ambienceInput!: ElementRef<HTMLInputElement>;
   @ViewChild('moodInput') moodInput!: ElementRef<HTMLInputElement>;
-
+  @ViewChild('suggestbox') suggestbox!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('constraintsbox') constraintsbox!: ElementRef<HTMLTextAreaElement>;
+  
   separatorKeysCodes: number[] = [ENTER, COMMA];
   availableAmbiences:string[] = [];
   selectedAmbiences:string[] = [];
@@ -108,9 +110,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       age: this.form.get('age')?.value,
       ambiences: this.selectedAmbiences,
       moods: this.selectedMoods,
-      preferences: '',
-      constraints: ''
+      suggestions: this.suggestbox.nativeElement.value.trim(),
+      constraints: this.constraintsbox.nativeElement.value.trim().length > 0 ? [this.constraintsbox.nativeElement.value] : []
     }
+    console.log('on generate profile click', req);
     this._charactersService.generateCharacterProfile(req).subscribe(res => {
       console.log('-- on char profile response --', res);
       this._generatedProfiles.push(res);
