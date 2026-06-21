@@ -3,6 +3,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabChangeEvent } from '@angular/material/tabs';
@@ -28,6 +29,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   @ViewChild('suggestbox') suggestbox!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('constraintsbox') constraintsbox!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('displaybox') displaybox!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('imagepromptbox') imagepromptbox!: ElementRef<HTMLTextAreaElement>;
   
   separatorKeysCodes: number[] = [ENTER, COMMA];
   availableAmbiences:string[] = [];
@@ -50,7 +52,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _charactersService: QuestsService = inject(QuestsService); // TODO: CharactersService
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _currentImageUrl:string = '';
-  private _generatedProfiles: RandomWorldsCharacter[] = [];
+  generatedProfiles: RandomWorldsCharacter[] = [];
   
   public get charImageUrl(): string{
     return this._currentImageUrl;
@@ -123,10 +125,12 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       let profile: RandomWorldsCharacter = res;
       profile.moods = this.selectedMoods;
       profile.ambiences = this.selectedAmbiences;
-      this._generatedProfiles.push(profile);
+      this.generatedProfiles.push(profile);
       this.currentProfile = profile;
       this.showSettings = false;
       this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
+      this.imagePrompts.push(res.iconicMoment);
+      this.imagepromptbox.nativeElement.value = res.iconicMoment;
     });
   }
 
@@ -134,7 +138,6 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     console.log('-- on generate image --', this.currentProfile);
     this._charactersService.generateCharacterImage(this.currentProfile).subscribe(res => {
       console.log('-- on image prompt generated --', res);
-      this.displaybox.nativeElement.value += `\n\n- IMAGE PROMPT: ${res.content}`;
       this.imagePrompts.push(res.content);
     });
   }
@@ -162,7 +165,23 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     if(!this.availableMoods.includes(item))
       this.availableMoods.push(item);
   }
+  onImagePromptPageChange(event:PageEvent){
+    console.log('-- on image prompt page --', event);
+    if(event.pageIndex > this.imagePrompts.length) return;
+    let prompt = this.imagePrompts[event.pageIndex];
+    this.imagepromptbox.nativeElement.value = prompt;
+  }
+  onProfilePageChange(event:PageEvent){
+    console.log('-- on profile page --',event);
+    if(event.pageIndex > this.generatedProfiles.length) return;
+    let profile = this.generatedProfiles[event.pageIndex];
+    this._renderCharacterProfile(profile);
+    // if(this.generatedProfiles.length <= event.pageIndex){
+    //   let profile = this.generatedProfiles[event.pageIndex];
 
+    // }
+    
+  }
   private _updateImageUrl(isFemaleChar: boolean | undefined){
     if(isFemaleChar === undefined){
       this._currentImageUrl = this.UNKNOWN_CHAR_IMG;
