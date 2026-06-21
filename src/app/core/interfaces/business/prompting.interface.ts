@@ -1,3 +1,8 @@
+export interface ChatMessage{
+    role:string,
+    content:string
+}
+
 export interface CreateCharacterRequest{
     name: string | null,
     age: string | null,
@@ -32,6 +37,10 @@ export interface QuestCharacter{
     motivations: string,
     iconicMoment: string,
     comment:string
+}
+export interface RandomWorldsCharacter extends QuestCharacter{
+    moods?: string[],
+    ambiences?: string[]
 }
 export interface QuestInitRequest{
     username:string,
