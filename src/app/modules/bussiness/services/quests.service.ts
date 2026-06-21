@@ -1,7 +1,7 @@
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { filter, Observable } from 'rxjs';
-import { CreateCharacterRequest, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
+import { ChatMessage as ChatMessageDto, CreateCharacterRequest, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, RandomWorldsCharacter, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
 import { CollectionResponse, SortedFilter } from '../../shared/models/common-interfaces';
 import { environment } from 'src/environments/environment';
 import { CharacterProfileDto } from '../../shared/models/mgmt-interfaces';
@@ -62,5 +62,9 @@ export class QuestsService {
 
   public generateCharacterProfile(req: CreateCharacterRequest): Observable<QuestCharacter>{
     return this.http.post<QuestCharacter>(`${this._baseUrl}/character`, req);
+  }
+
+  public generateCharacterImage(req: RandomWorldsCharacter): Observable<ChatMessageDto>{
+    return this.http.post<ChatMessageDto>(`${this._baseUrl}/characters/image/enhanced-generate`, req);
   }
 }

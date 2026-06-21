@@ -7,7 +7,7 @@ import { MatRadioChange } from '@angular/material/radio';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { map } from 'rxjs/operators';
-import { CreateCharacterRequest, QuestCharacter } from 'src/app/core/interfaces/business/prompting.interface';
+import { CreateCharacterRequest, QuestCharacter, RandomWorldsCharacter } from 'src/app/core/interfaces/business/prompting.interface';
 import { ImagesService } from 'src/app/modules/bussiness/services/images.service';
 import { QuestsService } from 'src/app/modules/bussiness/services/quests.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -38,7 +38,9 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   isRandomGenre: boolean = false;
   showSettings: boolean = true;
   form!: FormGroup;
-  currentProfile!: any;
+  currentProfile!: RandomWorldsCharacter;
+  imagePrompts: string[] = [];
+
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
   readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
@@ -48,7 +50,8 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _charactersService: QuestsService = inject(QuestsService); // TODO: CharactersService
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _currentImageUrl:string = '';
-  private _generatedProfiles: QuestCharacter[] = [];
+  private _generatedProfiles: RandomWorldsCharacter[] = [];
+  
   public get charImageUrl(): string{
     return this._currentImageUrl;
   }
@@ -117,9 +120,22 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     console.log('on generate profile click', req);
     this._charactersService.generateCharacterProfile(req).subscribe(res => {
       console.log('-- on char profile response --', res);
-      this._generatedProfiles.push(res);
+      let profile: RandomWorldsCharacter = res;
+      profile.moods = this.selectedMoods;
+      profile.ambiences = this.selectedAmbiences;
+      this._generatedProfiles.push(profile);
+      this.currentProfile = profile;
       this.showSettings = false;
       this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
+    });
+  }
+
+  onGenerateImageClick(){
+    console.log('-- on generate image --', this.currentProfile);
+    this._charactersService.generateCharacterImage(this.currentProfile).subscribe(res => {
+      console.log('-- on image prompt generated --', res);
+      this.displaybox.nativeElement.value += `\n\n- IMAGE PROMPT: ${res.content}`;
+      this.imagePrompts.push(res.content);
     });
   }
   onCharacterGenreToggle(event: MatSlideToggleChange){
