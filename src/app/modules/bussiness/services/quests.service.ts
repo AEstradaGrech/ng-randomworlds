@@ -11,7 +11,8 @@ import { CharacterProfileDto } from '../../shared/models/mgmt-interfaces';
 export class QuestsService {
 
   // private _baseUrl:string = `${environment.baseUrl}/random-quest`
-  private _baseUrl:string = 'http://localhost:9000/randomworlds/random-quest'
+  private _baseUrl:string = 'http://localhost:9000/randomworlds/random-quest';
+  private _charsUrl:string = 'http://localhost:9000/randomworlds/characters';
   constructor(private http: HttpClient) { }
 
   public initQuestStream(req:QuestInitRequest):Observable<any>{
@@ -64,7 +65,7 @@ export class QuestsService {
     return this.http.post<QuestCharacter>(`${this._baseUrl}/character`, req);
   }
 
-  public generateCharacterImage(req: RandomWorldsCharacter): Observable<ChatMessageDto>{
-    return this.http.post<ChatMessageDto>(`${this._baseUrl}/characters/image/enhanced-generate`, req);
+  public generateCharacterImagePrompt(req: RandomWorldsCharacter): Observable<ChatMessageDto>{
+    return this.http.post<ChatMessageDto>(`${this._charsUrl}/image/enhanced-generate`, req);
   }
 }

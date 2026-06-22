@@ -29,8 +29,7 @@
     </div>
     <div class="inputs-container">
       <mat-accordion>
-          
-        <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" (opened)="onShowSettings()" (closed)="onHideSettings()" [expanded]="showSettings">
+        <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" (opened)="onShowSettings()" (closed)="onHideSettings()" [expanded]="showSettings && !isLoading" [disabled]="isLoading">
           <mat-expansion-panel-header>
             <mat-panel-description>
               Character Traits
@@ -43,7 +42,8 @@
               [size]="'35px'"
               [hoverColor]="'var(--terciary-btn-hover)'"
               [borderColor]="'var(--terciary-btn-border)'"
-              [disabled]="!currentProfile"
+              [disabled]="!currentProfile || isLoading"
+              [withSpinner]="isLoading"
               (click)="$event.stopPropagation();onGenerateImageClick()">
             </app-rounded-button>
             <app-rounded-button
@@ -54,7 +54,8 @@
               [size]="'35px'"
               [hoverColor]="'var(--primary-btn-hover)'"
               [borderColor]="'var(--primary-btn-border)'"
-              [disabled]="false"
+              [disabled]="isLoading"
+              [withSpinner]="true"
               (click)="$event.stopPropagation();onGenerateProfileClick()">
             </app-rounded-button>
           </mat-expansion-panel-header>
@@ -176,7 +177,7 @@
             <textarea #imagepromptbox readonly  class="text-area"></textarea> 
           </div>
           <div style="width: 100%; height: 10%;">
-          <mat-paginator 
+          <mat-paginator #imagepromptPaginator
             [length]="imagePrompts.length" 
             [pageSize]="1"
             [hidePageSize]="true"
@@ -189,7 +190,7 @@
             <textarea #displaybox readonly class="text-area"></textarea>  
           </div>
           <div style="width: 100%; height: 10%;">
-          <mat-paginator 
+          <mat-paginator #charsPaginator
             [length]="generatedProfiles.length" 
             [pageSize]="1"
             [hidePageSize]="true"

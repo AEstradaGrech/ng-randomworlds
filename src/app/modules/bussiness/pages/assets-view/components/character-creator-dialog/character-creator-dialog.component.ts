@@ -3,7 +3,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabChangeEvent } from '@angular/material/tabs';
@@ -30,7 +30,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   @ViewChild('constraintsbox') constraintsbox!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('displaybox') displaybox!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('imagepromptbox') imagepromptbox!: ElementRef<HTMLTextAreaElement>;
-  
+  @ViewChild(MatPaginator) charsPaginator!: MatPaginator;
+  @ViewChild(MatPaginator) imagepromptPaginator!: MatPaginator;
+
+  isLoading: boolean = false;
   separatorKeysCodes: number[] = [ENTER, COMMA];
   availableAmbiences:string[] = [];
   selectedAmbiences:string[] = [];
@@ -120,25 +123,35 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       constraints: this.constraintsbox.nativeElement.value.trim().length > 0 ? [this.constraintsbox.nativeElement.value] : []
     }
     console.log('on generate profile click', req);
+    this.isLoading = true;
     this._charactersService.generateCharacterProfile(req).subscribe(res => {
       console.log('-- on char profile response --', res);
+      if(this.showSettings)
+        this.showSettings = false;
       let profile: RandomWorldsCharacter = res;
       profile.moods = this.selectedMoods;
       profile.ambiences = this.selectedAmbiences;
       this.generatedProfiles.push(profile);
       this.currentProfile = profile;
-      this.showSettings = false;
+      this.charsPaginator.pageIndex = this.generatedProfiles.length -1;
       this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
+      
       this.imagePrompts.push(res.iconicMoment);
       this.imagepromptbox.nativeElement.value = res.iconicMoment;
+      this.imagepromptPaginator.pageIndex = this.imagePrompts.length -1;
+      this.isLoading = false;
     });
   }
 
   onGenerateImageClick(){
     console.log('-- on generate image --', this.currentProfile);
-    this._charactersService.generateCharacterImage(this.currentProfile).subscribe(res => {
+    this.isLoading = true;
+    this._charactersService.generateCharacterImagePrompt(this.currentProfile).subscribe(res => {
       console.log('-- on image prompt generated --', res);
       this.imagePrompts.push(res.content);
+      this.imagepromptbox.nativeElement.value = res.content;
+      this.imagepromptPaginator.pageIndex = this.imagePrompts.length -1;
+      this.isLoading = false;
     });
   }
   onCharacterGenreToggle(event: MatSlideToggleChange){
@@ -167,15 +180,17 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   }
   onImagePromptPageChange(event:PageEvent){
     console.log('-- on image prompt page --', event);
-    if(event.pageIndex > this.imagePrompts.length) return;
+    if(event.pageIndex >= this.generatedProfiles.length) return;
     let prompt = this.imagePrompts[event.pageIndex];
+   
     this.imagepromptbox.nativeElement.value = prompt;
   }
   onProfilePageChange(event:PageEvent){
     console.log('-- on profile page --',event);
-    if(event.pageIndex > this.generatedProfiles.length) return;
+    if(event.pageIndex >= this.generatedProfiles.length) return;
     let profile = this.generatedProfiles[event.pageIndex];
-    this._renderCharacterProfile(profile);
+   
+    this.displaybox.nativeElement.value = this._renderCharacterProfile(profile);
     // if(this.generatedProfiles.length <= event.pageIndex){
     //   let profile = this.generatedProfiles[event.pageIndex];
 
