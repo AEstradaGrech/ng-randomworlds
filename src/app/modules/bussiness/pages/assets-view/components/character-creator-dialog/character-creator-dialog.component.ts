@@ -66,6 +66,8 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   
   charsProfilePage = computed(() => Math.max(this.generatedProfiles().length -1, 0));
   imagePromptsPage = computed(() => Math.max(this.imagePrompts().length -1, 0));
+  characterPrompts: Map<RandomWorldsCharacter, string[]> = new Map<RandomWorldsCharacter, string[]>();
+
   ngOnInit(): void {
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
     this._connectedWallet = this.data.connectedWallet;
@@ -137,28 +139,21 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       
       this._updateProfiles(res);
       
-      if(res.iconicMoment)
-        this._updateImagePrompts(res.iconicMoment);
-
       this.isLoading = false;
     });
   }
-  private _updateImagePrompts(prompt: string){
-        this.imagePrompts.update(v => [...v, prompt]);
-        //this.cd.detectChanges();
-        //this.imagepromptPaginator.lastPage();
-        this.imagepromptbox.nativeElement.value = prompt;
-  }
+
   private _updateProfiles(res: QuestCharacter){
     let profile: RandomWorldsCharacter = res;
-      profile.moods = this.selectedMoods;
-      profile.ambiences = this.selectedAmbiences;
-      this.generatedProfiles.update(v => [...v, profile]);
-      this.currentProfile.set(profile);
-      //this.cd.detectChanges()
-      //this.charsPaginator.lastPage();
-      //this.charsPaginator.pageIndex = this.generatedProfiles.length -1;
-      this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
+    profile.moods = this.selectedMoods;
+    profile.ambiences = this.selectedAmbiences;
+    this.generatedProfiles.update(v => [...v, profile]);
+    this.currentProfile.set(profile);
+    this.characterPrompts.set(profile, res.iconicMoment ? [...this.characterPrompts.get(profile) ?? [], profile.iconicMoment] : []);
+    this.imagePrompts.set(this.characterPrompts.get(profile) ?? []);
+    if(res.iconicMoment)
+      this.imagepromptbox.nativeElement.value = res.iconicMoment;
+    this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
   }
 
   onGenerateImageClick(){
@@ -169,7 +164,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     if(profile){
       this._charactersService.generateCharacterImagePrompt(profile).subscribe(res => {
         console.log('-- on image prompt generated --', res);
-        this._updateImagePrompts(res.content);
+        this.characterPrompts.get(profile)?.push(res.content);
+        console.log(this.characterPrompts.get(profile));
+        this.imagePrompts.update(v => [...this.characterPrompts.get(profile) ?? []]);
+        this.imagepromptbox.nativeElement.value = res.content;
         this.isLoading = false;
       });
     }
@@ -200,17 +198,23 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   }
   onImagePromptPageChange(event:PageEvent){
     console.log('-- on image prompt page --', event);
-    if(event.pageIndex >= this.generatedProfiles.length) return;
+    if(event.pageIndex >= this.imagePrompts().length) return;
     let prompt = this.imagePrompts()[event.pageIndex];
    
     this.imagepromptbox.nativeElement.value = prompt;
   }
   onProfilePageChange(event:PageEvent){
     console.log('-- on profile page --',event);
-    if(event.pageIndex >= this.generatedProfiles.length) return;
+    if(event.pageIndex >= this.generatedProfiles().length) return;
     let profile = this.generatedProfiles()[event.pageIndex];
-   
-    this.displaybox.nativeElement.value = this._renderCharacterProfile(profile);
+    if(profile) {
+      this.currentProfile.set(profile);
+      this.imagePrompts.set(this.characterPrompts.get(profile) ?? []);
+      this.imagepromptPaginator.firstPage();
+      this.imagepromptbox.nativeElement.value = this.imagePrompts()[0];
+      this.displaybox.nativeElement.value = this._renderCharacterProfile(profile);
+    }
+    
     // if(this.generatedProfiles.length <= event.pageIndex){
     //   let profile = this.generatedProfiles[event.pageIndex];
 
