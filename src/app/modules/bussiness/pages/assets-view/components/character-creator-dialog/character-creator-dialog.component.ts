@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, inject, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -14,14 +14,14 @@ import { QuestsService } from 'src/app/modules/bussiness/services/quests.service
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { SystemMessageDto } from 'src/app/modules/shared/models/mgmt-interfaces';
-
+import { signal, effect } from '@angular/core';
 @Component({
   selector: 'app-character-creator-dialog',
   templateUrl: './character-creator-dialog.component.html',
   styleUrl: './character-creator-dialog.component.scss'
 })
 export class CharacterCreatorDialogComponent extends BaseComponent implements OnInit {
-  
+
   data = inject(MAT_DIALOG_DATA);
   
   @ViewChild('ambienceInput') ambienceInput!: ElementRef<HTMLInputElement>;
@@ -45,9 +45,11 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   isRandomGenre: boolean = false;
   showSettings: boolean = true;
   form!: FormGroup;
-  currentProfile!: RandomWorldsCharacter;
-  imagePrompts: string[] = [];
-
+  currentProfile = signal<RandomWorldsCharacter | null>(null);
+  imagePrompts = signal<string[]>([]);
+  
+  generatedProfiles = signal<RandomWorldsCharacter[]>([]);
+  
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
   readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
@@ -57,12 +59,13 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _charactersService: QuestsService = inject(QuestsService); // TODO: CharactersService
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _currentImageUrl:string = '';
-  generatedProfiles: RandomWorldsCharacter[] = [];
-  
+
   public get charImageUrl(): string{
     return this._currentImageUrl;
   }
-
+  
+  charsProfilePage = computed(() => Math.max(this.generatedProfiles().length -1, 0));
+  imagePromptsPage = computed(() => Math.max(this.imagePrompts().length -1, 0));
   ngOnInit(): void {
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
     this._connectedWallet = this.data.connectedWallet;
@@ -86,7 +89,8 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     })
     this._displayTabChangeAlerts("Ambiences");
   }
-
+  
+  
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -140,19 +144,19 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     });
   }
   private _updateImagePrompts(prompt: string){
-        this.imagePrompts = [...this.imagePrompts, prompt];
-        this.cd.detectChanges();
-        this.imagepromptPaginator.lastPage();
+        this.imagePrompts.update(v => [...v, prompt]);
+        //this.cd.detectChanges();
+        //this.imagepromptPaginator.lastPage();
         this.imagepromptbox.nativeElement.value = prompt;
   }
   private _updateProfiles(res: QuestCharacter){
     let profile: RandomWorldsCharacter = res;
       profile.moods = this.selectedMoods;
       profile.ambiences = this.selectedAmbiences;
-    this.generatedProfiles = [...this.generatedProfiles, profile];
-      this.currentProfile = profile;
-      this.cd.detectChanges()
-      this.charsPaginator.lastPage();
+      this.generatedProfiles.update(v => [...v, profile]);
+      this.currentProfile.set(profile);
+      //this.cd.detectChanges()
+      //this.charsPaginator.lastPage();
       //this.charsPaginator.pageIndex = this.generatedProfiles.length -1;
       this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
   }
@@ -160,11 +164,15 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   onGenerateImageClick(){
     console.log('-- on generate image --', this.currentProfile);
     this.isLoading = true;
-    this._charactersService.generateCharacterImagePrompt(this.currentProfile).subscribe(res => {
-      console.log('-- on image prompt generated --', res);
-      this._updateImagePrompts(res.content);
-      this.isLoading = false;
-    });
+    let profile:RandomWorldsCharacter|null = this.currentProfile();
+
+    if(profile){
+      this._charactersService.generateCharacterImagePrompt(profile).subscribe(res => {
+        console.log('-- on image prompt generated --', res);
+        this._updateImagePrompts(res.content);
+        this.isLoading = false;
+      });
+    }
   }
   onCharacterGenreToggle(event: MatSlideToggleChange){
     console.log('-- on toggle change --');
@@ -193,14 +201,14 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   onImagePromptPageChange(event:PageEvent){
     console.log('-- on image prompt page --', event);
     if(event.pageIndex >= this.generatedProfiles.length) return;
-    let prompt = this.imagePrompts[event.pageIndex];
+    let prompt = this.imagePrompts()[event.pageIndex];
    
     this.imagepromptbox.nativeElement.value = prompt;
   }
   onProfilePageChange(event:PageEvent){
     console.log('-- on profile page --',event);
     if(event.pageIndex >= this.generatedProfiles.length) return;
-    let profile = this.generatedProfiles[event.pageIndex];
+    let profile = this.generatedProfiles()[event.pageIndex];
    
     this.displaybox.nativeElement.value = this._renderCharacterProfile(profile);
     // if(this.generatedProfiles.length <= event.pageIndex){
