@@ -178,8 +178,9 @@
           </div>
           <div style="width: 100%; height: 10%;">
           <mat-paginator #imagepromptPaginator
-            [length]="imagePrompts.length" 
+            [length]="imagePrompts().length" 
             [pageSize]="1"
+            [pageIndex]="imagePromptsPage()"
             [hidePageSize]="true"
             (page)="onImagePromptPageChange($event)"
             showFirstLastButtons></mat-paginator> 
@@ -191,8 +192,9 @@
           </div>
           <div style="width: 100%; height: 10%;">
           <mat-paginator #charsPaginator
-            [length]="generatedProfiles.length" 
+            [length]="generatedProfiles().length" 
             [pageSize]="1"
+            [pageIndex]="charsProfilePage()"
             [hidePageSize]="true"
             (page)="onProfilePageChange($event)"
             showFirstLastButtons></mat-paginator>
