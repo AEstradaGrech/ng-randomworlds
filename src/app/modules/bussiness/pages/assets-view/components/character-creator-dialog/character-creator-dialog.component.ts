@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -21,7 +21,7 @@ import { SystemMessageDto } from 'src/app/modules/shared/models/mgmt-interfaces'
   styleUrl: './character-creator-dialog.component.scss'
 })
 export class CharacterCreatorDialogComponent extends BaseComponent implements OnInit {
-
+  
   data = inject(MAT_DIALOG_DATA);
   
   @ViewChild('ambienceInput') ambienceInput!: ElementRef<HTMLInputElement>;
@@ -30,8 +30,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   @ViewChild('constraintsbox') constraintsbox!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('displaybox') displaybox!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('imagepromptbox') imagepromptbox!: ElementRef<HTMLTextAreaElement>;
-  @ViewChild(MatPaginator) charsPaginator!: MatPaginator;
-  @ViewChild(MatPaginator) imagepromptPaginator!: MatPaginator;
+  @ViewChild('charsPaginator') charsPaginator!: MatPaginator;
+  @ViewChild('imagepromptPaginator') imagepromptPaginator!: MatPaginator;
+
+  cd:ChangeDetectorRef = inject(ChangeDetectorRef);
 
   isLoading: boolean = false;
   separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -128,19 +130,31 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       console.log('-- on char profile response --', res);
       if(this.showSettings)
         this.showSettings = false;
-      let profile: RandomWorldsCharacter = res;
-      profile.moods = this.selectedMoods;
-      profile.ambiences = this.selectedAmbiences;
-      this.generatedProfiles.push(profile);
-      this.currentProfile = profile;
-      this.charsPaginator.pageIndex = this.generatedProfiles.length -1;
-      this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
       
-      this.imagePrompts.push(res.iconicMoment);
-      this.imagepromptbox.nativeElement.value = res.iconicMoment;
-      this.imagepromptPaginator.pageIndex = this.imagePrompts.length -1;
+      this._updateProfiles(res);
+      
+      if(res.iconicMoment)
+        this._updateImagePrompts(res.iconicMoment);
+
       this.isLoading = false;
     });
+  }
+  private _updateImagePrompts(prompt: string){
+        this.imagePrompts = [...this.imagePrompts, prompt];
+        this.cd.detectChanges();
+        this.imagepromptPaginator.lastPage();
+        this.imagepromptbox.nativeElement.value = prompt;
+  }
+  private _updateProfiles(res: QuestCharacter){
+    let profile: RandomWorldsCharacter = res;
+      profile.moods = this.selectedMoods;
+      profile.ambiences = this.selectedAmbiences;
+    this.generatedProfiles = [...this.generatedProfiles, profile];
+      this.currentProfile = profile;
+      this.cd.detectChanges()
+      this.charsPaginator.lastPage();
+      //this.charsPaginator.pageIndex = this.generatedProfiles.length -1;
+      this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
   }
 
   onGenerateImageClick(){
@@ -148,9 +162,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     this.isLoading = true;
     this._charactersService.generateCharacterImagePrompt(this.currentProfile).subscribe(res => {
       console.log('-- on image prompt generated --', res);
-      this.imagePrompts.push(res.content);
-      this.imagepromptbox.nativeElement.value = res.content;
-      this.imagepromptPaginator.pageIndex = this.imagePrompts.length -1;
+      this._updateImagePrompts(res.content);
       this.isLoading = false;
     });
   }
