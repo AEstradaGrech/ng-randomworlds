@@ -42,7 +42,7 @@
               [size]="'35px'"
               [hoverColor]="'var(--terciary-btn-hover)'"
               [borderColor]="'var(--terciary-btn-border)'"
-              [disabled]="!currentProfile || isLoading"
+              [disabled]="!currentProfile() || isLoading"
               [withSpinner]="isLoading"
               (click)="$event.stopPropagation();onGenerateImageClick()">
             </app-rounded-button>
