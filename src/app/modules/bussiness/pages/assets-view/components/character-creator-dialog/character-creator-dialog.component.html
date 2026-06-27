@@ -26,16 +26,58 @@
   <div class="char-tab-container">
     <div class="image-container">
       <img class="char-image" [src]="charImageUrl" alt="UnknownCharacter">
+      <div style="display: flex; justify-content: center; align-items: center;">
+<app-rounded-button *ngIf="profileImagesCount() > 0"
+        style="margin-right:13px"
+        [id]="'skip_img_l'"
+        [iconName]="'keyboard_arrow_left'"
+        [size]="'35px'"
+        [hoverColor]="'var(--terciary-btn-hover)'"
+        [borderColor]="'var(--terciary-btn-border)'"
+        
+        [withSpinner]="isLoading && isGeneratingImage"
+        (click)="$event.stopPropagation();onGenerateImageClick()">
+      </app-rounded-button>
+      <app-rounded-button
+          style="margin-right:13px"
+          matTooltip="Mint the current image & profile"
+          [matTooltipPosition]="'above'" 
+          [id]="'mint_nft'"
+          [iconName]="'payment'"
+          [size]="'35px'"
+          [hoverColor]="'var(--terciary-btn-hover)'"
+          [borderColor]="'var(--terciary-btn-border)'"
+          [disabled]="profileImagesCount() == 0"
+          [withSpinner]="isLoading && isGeneratingImage"
+          (click)="$event.stopPropagation();onGenerateImageClick()">
+        </app-rounded-button>
+        <app-rounded-button *ngIf="profileImagesCount() > 0"
+          style="margin-right:13px"
+          [id]="'skip_img_r'"
+          [iconName]="'keyboard_arrow_right'"
+          [size]="'35px'"
+          [hoverColor]="'var(--terciary-btn-hover)'"
+          [borderColor]="'var(--terciary-btn-border)'"
+          [withSpinner]="isLoading && isGeneratingImage"
+          (click)="$event.stopPropagation();onGenerateImageClick()">
+        </app-rounded-button>
+      </div>
     </div>
     <div class="inputs-container">
       <mat-accordion>
-        <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" (afterCollapse)="onSettingsHidden()" (opened)="onShowSettings()" (closed)="onHideSettings()" [expanded]="showSettings && !isLoading" [disabled]="isLoading">
+        <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" 
+          (afterCollapse)="onSettingsHidden()" 
+          (opened)="onShowSettings()" 
+          (closed)="onHideSettings()" 
+          [expanded]="showSettings && !isLoading" 
+          [disabled]="isLoading">
           <mat-expansion-panel-header>
             <mat-panel-description>
               Character Traits
             </mat-panel-description>
             <app-rounded-button
-              matTooltip="Generate Image from the currently displayed Profile"
+              style="margin-right:13px"
+              matTooltip="Generate Image from the currently displayed Image Prompt"
               [matTooltipPosition]="'above'" 
               [id]="'generate_image'"
               [iconName]="'person'"
@@ -43,18 +85,30 @@
               [hoverColor]="'var(--terciary-btn-hover)'"
               [borderColor]="'var(--terciary-btn-border)'"
               [disabled]="!currentProfile() || isLoading"
-              [withSpinner]="isLoading"
+              [withSpinner]="isLoading && isGeneratingImage"
               (click)="$event.stopPropagation();onGenerateImageClick()">
             </app-rounded-button>
             <app-rounded-button
-              matTooltip="Generate Profile"
+              matTooltip="Enhance Image prompt from the currently displayed Profile"
+              [matTooltipPosition]="'above'" 
+              [id]="'generate_image'"
+              [iconName]="'edit'"
+              [size]="'35px'"
+              [hoverColor]="'var(--terciary-btn-hover)'"
+              [borderColor]="'var(--terciary-btn-border)'"
+              [disabled]="!currentProfile() || isLoading"
+              [withSpinner]="isLoading && isEnhancing"
+              (click)="$event.stopPropagation();onEnhanceImagePromptClick()">
+            </app-rounded-button>
+            <app-rounded-button
+              matTooltip="Generate Character Profile"
               [matTooltipPosition]="'above'"
               [id]="'generate_profile'"
               [iconName]="'receipt'"
               [size]="'35px'"
               [hoverColor]="'var(--primary-btn-hover)'"
               [borderColor]="'var(--primary-btn-border)'"
-              [disabled]="isLoading"
+              [disabled]="isLoading && !isEnhancing && !isGeneratingImage"
               [withSpinner]="true"
               (click)="$event.stopPropagation();onGenerateProfileClick()">
             </app-rounded-button>
