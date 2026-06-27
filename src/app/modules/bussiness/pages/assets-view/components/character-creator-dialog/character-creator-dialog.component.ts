@@ -15,6 +15,7 @@ import { BaseComponent } from 'src/app/modules/shared/components/base.component'
 import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { SystemMessageDto } from 'src/app/modules/shared/models/mgmt-interfaces';
 import { signal, effect } from '@angular/core';
+import { GenerateImageRequest, GenerateImageResponse, ProviderSettingsDto } from 'src/app/modules/shared/models/images.interfaces';
 @Component({
   selector: 'app-character-creator-dialog',
   templateUrl: './character-creator-dialog.component.html',
@@ -33,9 +34,9 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   @ViewChild('charsPaginator') charsPaginator!: MatPaginator;
   @ViewChild('imagepromptPaginator') imagepromptPaginator!: MatPaginator;
 
-  cd:ChangeDetectorRef = inject(ChangeDetectorRef);
-
   isLoading: boolean = false;
+  isEnhancing: boolean = false;
+  isGeneratingImage: boolean = false;
   separatorKeysCodes: number[] = [ENTER, COMMA];
   availableAmbiences:string[] = [];
   selectedAmbiences:string[] = [];
@@ -47,8 +48,9 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   form!: FormGroup;
   currentProfile = signal<RandomWorldsCharacter | null>(null);
   imagePrompts = signal<string[]>([]);
-  
   generatedProfiles = signal<RandomWorldsCharacter[]>([]);
+  generatedImages = signal<GenerateImageResponse[]>([]);
+  diffusionSettings!: ProviderSettingsDto;
   
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
@@ -66,7 +68,15 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   
   charsProfilePage = computed(() => Math.max(this.generatedProfiles().length -1, 0));
   imagePromptsPage = computed(() => Math.max(this.imagePrompts().length -1, 0));
+  profileImagesCount = computed(() => {
+    let profile: RandomWorldsCharacter | null = this.currentProfile();
+    if(profile){
+      return this.characterImages.has(profile) ? this.characterImages.get(profile)?.length : 0;
+    }
+    else return 0;
+  });
   characterPrompts: Map<RandomWorldsCharacter, string[]> = new Map<RandomWorldsCharacter, string[]>();
+  characterImages: Map<RandomWorldsCharacter, string[]> = new Map<RandomWorldsCharacter, string[]>();
 
   ngOnInit(): void {
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
@@ -88,6 +98,13 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       name: new FormControl(''),
       age: new FormControl(''),
       isFemaleChar: new FormControl(this.isFemaleChar)
+    })
+    this._imagesService.getProviderSettings().subscribe(res => {
+      if(res){
+        this.diffusionSettings = res;
+        this._notificationsService.openSnack(ESnackAlertType.WARN, `Diffusion Settings: ${this.diffusionSettings.current_integration_settings.name}/${this.diffusionSettings.current_integration_settings.current_model}`, false, 3000);
+      }
+      else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'DIFFUSION API SERVICE NOT AVAILABLE', false, 3000);
     })
     this._displayTabChangeAlerts("Ambiences");
   }
@@ -158,9 +175,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     this._renderCurrentProfile();
   }
 
-  onGenerateImageClick(){
-    console.log('-- on generate image --', this.currentProfile);
+  onEnhanceImagePromptClick(){
+    console.log('-- on enhance image --', this.currentProfile());
     this.isLoading = true;
+    this.isEnhancing = true;
     let profile:RandomWorldsCharacter|null = this.currentProfile();
 
     if(profile){
@@ -171,9 +189,36 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
         this.imagePrompts.update(v => [...this.characterPrompts.get(profile) ?? []]);
         this.imagepromptbox.nativeElement.value = res.content;
         this.isLoading = false;
+        this.isEnhancing = false;
       });
     }
   }
+
+  onGenerateImageClick(){
+    console.log('-- on generate image --', this.currentProfile);
+    this.isLoading = true;
+    this.isEnhancing = true;
+    let req: GenerateImageRequest = {
+      name:'',
+      diffuser_name: '',
+      tag: '',
+      prompt:this.imagepromptbox.nativeElement.value,
+      height: 800,
+      width: 500,
+      guidance: 7.5,
+      num_gen: 1,
+      inference_steps: 10,
+      seed: null,
+      db_save: false,
+      file_save: false,
+      cache_diffusion_pipe: true
+    }
+    this._imagesService.generate(this.diffusionSettings.current_integration_settings.name, req).subscribe(res => {
+      console.log('-- on generated image --', res);
+
+    })
+  }
+
   onCharacterGenreToggle(event: MatSlideToggleChange){
     console.log('-- on toggle change --');
     this.isFemaleChar = event.checked;
