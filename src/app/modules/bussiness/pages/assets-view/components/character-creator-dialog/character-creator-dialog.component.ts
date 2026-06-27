@@ -59,7 +59,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _charactersService: QuestsService = inject(QuestsService); // TODO: CharactersService
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _currentImageUrl:string = '';
-
+  private _currentProfileIdx:number = 0;
   public get charImageUrl(): string{
     return this._currentImageUrl;
   }
@@ -122,6 +122,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       this._notificationsService.openSnack(ESnackAlertType.ERROR, "Cannot create a character profile without at least one selected AMBIENCE and/or MOOD");
       return;
     }
+    
     let req: CreateCharacterRequest = {
       name: this.form.get('name')?.value,
       age: this.form.get('age')?.value,
@@ -130,6 +131,9 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       suggestions: this.suggestbox.nativeElement.value.trim(),
       constraints: this.constraintsbox.nativeElement.value.trim().length > 0 ? [this.constraintsbox.nativeElement.value] : []
     }
+
+    if(!this.isRandomGenre)
+      req.constraints.push(this.form.get('isFemaleChar')?.value ? 'The generated character MUST be a female' : 'The generated character MUST be a male');
     console.log('on generate profile click', req);
     this.isLoading = true;
     this._charactersService.generateCharacterProfile(req).subscribe(res => {
@@ -149,11 +153,9 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     profile.ambiences = this.selectedAmbiences;
     this.generatedProfiles.update(v => [...v, profile]);
     this.currentProfile.set(profile);
-    this.characterPrompts.set(profile, res.iconicMoment ? [...this.characterPrompts.get(profile) ?? [], profile.iconicMoment] : []);
-    this.imagePrompts.set(this.characterPrompts.get(profile) ?? []);
-    if(res.iconicMoment)
-      this.imagepromptbox.nativeElement.value = res.iconicMoment;
-    this.displaybox.nativeElement.value = this._renderCharacterProfile(res);
+    this._currentProfileIdx = this.charsProfilePage();
+    this.characterPrompts.set(profile, profile.iconicMoment ? [...this.characterPrompts.get(profile) ?? [], profile.iconicMoment] : []);
+    this._renderCurrentProfile();
   }
 
   onGenerateImageClick(){
@@ -207,12 +209,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     console.log('-- on profile page --',event);
     if(event.pageIndex >= this.generatedProfiles().length) return;
     let profile = this.generatedProfiles()[event.pageIndex];
+    this._currentProfileIdx = event.pageIndex;
     if(profile) {
       this.currentProfile.set(profile);
-      this.imagePrompts.set(this.characterPrompts.get(profile) ?? []);
-      this.imagepromptPaginator.firstPage();
-      this.imagepromptbox.nativeElement.value = this.imagePrompts()[0];
-      this.displaybox.nativeElement.value = this._renderCharacterProfile(profile);
+      this._renderCurrentProfile();
     }
     
     // if(this.generatedProfiles.length <= event.pageIndex){
@@ -220,6 +220,19 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
 
     // }
     
+  }
+  public onSettingsHidden() {
+    this._renderCurrentProfile();
+  }
+  private _renderCurrentProfile(){
+    let profile = this.currentProfile();
+    if(profile){
+      this.imagePrompts.set(this.characterPrompts.get(profile) ?? []);
+      this.imagepromptPaginator.firstPage();
+      this.imagepromptbox.nativeElement.value = this.imagePrompts()[0];
+      this.displaybox.nativeElement.value = this._renderCharacterProfile(profile);
+      this.charsPaginator.pageIndex = this._currentProfileIdx;
+    } 
   }
   private _updateImageUrl(isFemaleChar: boolean | undefined){
     if(isFemaleChar === undefined){
@@ -247,7 +260,8 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     }
   }
 
-  private _renderCharacterProfile(profile: QuestCharacter){
+  private _renderCharacterProfile(profile: RandomWorldsCharacter | null){
+    if(!profile) return '';
     let text = ''
     Object.keys(profile).forEach((k:any) => {
       text += `\n${k}: ${Object(profile)[k]}`;
