@@ -17,12 +17,12 @@ export class ImagesService {
 
   constructor(private _http:HttpClient) { }
 
-  generate(integration:string, req: GenerateImageRequest) : Observable<GenerateImageResponse>{
+  generate(integration:string, req: GenerateImageRequest) : Observable<GenerateImageResponse[]>{
     switch(integration){
       case("stablediffusion"):
-        return this._http.post<GenerateImageResponse>(`${this._baseUrl}/stablediffusion/prompt/generate`, req)
+        return this._http.post<GenerateImageResponse[]>(`${this._baseUrl}/stablediffusion/prompt/generate`, req)
       case("flux"):
-        return this._http.post<GenerateImageResponse>(`${this._baseUrl}/flux/prompt/generate`, req)
+        return this._http.post<GenerateImageResponse[]>(`${this._baseUrl}/flux/prompt/generate`, req)
       default: return of()
     }
   }
