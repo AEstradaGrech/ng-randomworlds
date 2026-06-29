@@ -2,13 +2,13 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, inject, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { map } from 'rxjs/operators';
-import { CreateCharacterRequest, QuestCharacter, RandomWorldsCharacter } from 'src/app/core/interfaces/business/prompting.interface';
+import { CreateCharacterRequest, MintCharacterRequest, QuestCharacter, RandomWorldsCharacter, TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { ImagesService } from 'src/app/modules/bussiness/services/images.service';
 import { QuestsService } from 'src/app/modules/bussiness/services/quests.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -18,6 +18,8 @@ import { signal, effect } from '@angular/core';
 import { GenerateImageRequest, GenerateImageResponse, ProviderSettingsDto } from 'src/app/modules/shared/models/images.interfaces';
 import { url } from 'inspector';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MgmtService } from 'src/app/modules/bussiness/services/mgmt.service';
+import { SmartContractsService } from 'src/app/modules/bussiness/services/smart-contracts.service';
 @Component({
   selector: 'app-character-creator-dialog',
   templateUrl: './character-creator-dialog.component.html',
@@ -60,8 +62,11 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
 
   private _connectedWallet!: string;
+  private _dialogRef: MatDialogRef<CharacterCreatorDialogComponent> = inject(MatDialogRef<CharacterCreatorDialogComponent>);
+  private _mgmtService: MgmtService = inject(MgmtService);
   private _imagesService: ImagesService = inject(ImagesService);
   private _charactersService: QuestsService = inject(QuestsService); // TODO: CharactersService
+  private _web3Service: SmartContractsService = inject(SmartContractsService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _sanitizer: DomSanitizer = inject(DomSanitizer);
   private _currentImageUrl:string = '';
@@ -94,6 +99,11 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   characterImages: Map<RandomWorldsCharacter, GenerateImageResponse[]> = new Map<RandomWorldsCharacter, GenerateImageResponse[]>();
 
   ngOnInit(): void {
+    let wallet = this._web3Service.connectedWallet;
+    if(!wallet){
+      this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No wallet connected', true);
+      this._dialogRef.close();
+    }
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
     this._connectedWallet = this.data.connectedWallet;
     if(!this._connectedWallet){
@@ -324,6 +334,20 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
 
   public onMintNFT(){
     console.log("-- todo --");
+    //TODO: _smartContractsService.approveCustomMint().subscribe(res => then ticket)
+    let wallet:string | null = this._web3Service.connectedWallet;
+    let profile: RandomWorldsCharacter | null = this.currentProfile();
+    let image: GenerateImageResponse | null = this.currentImage();
+    if(wallet && profile && image){
+      let ticket: MintCharacterRequest = {
+        character: profile,
+        base64: image.base64
+      }
+      this._mgmtService.mintCustomCharacter(wallet, 'TODO', ticket).subscribe(res => {
+        console.log('-- on IPFS upload --', res);
+      });
+    }
+    
   }
 
   public onSettingsHidden() {
