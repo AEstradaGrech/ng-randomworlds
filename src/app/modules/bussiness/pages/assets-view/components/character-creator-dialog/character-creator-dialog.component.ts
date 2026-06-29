@@ -16,6 +16,8 @@ import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { SystemMessageDto } from 'src/app/modules/shared/models/mgmt-interfaces';
 import { signal, effect } from '@angular/core';
 import { GenerateImageRequest, GenerateImageResponse, ProviderSettingsDto } from 'src/app/modules/shared/models/images.interfaces';
+import { url } from 'inspector';
+import { DomSanitizer } from '@angular/platform-browser';
 @Component({
   selector: 'app-character-creator-dialog',
   templateUrl: './character-creator-dialog.component.html',
@@ -49,7 +51,8 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   currentProfile = signal<RandomWorldsCharacter | null>(null);
   imagePrompts = signal<string[]>([]);
   generatedProfiles = signal<RandomWorldsCharacter[]>([]);
-  generatedImages = signal<GenerateImageResponse[]>([]);
+  currentImage = signal<GenerateImageResponse | null>(null);
+
   diffusionSettings!: ProviderSettingsDto;
   
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
@@ -60,23 +63,35 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _imagesService: ImagesService = inject(ImagesService);
   private _charactersService: QuestsService = inject(QuestsService); // TODO: CharactersService
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _sanitizer: DomSanitizer = inject(DomSanitizer);
   private _currentImageUrl:string = '';
   private _currentProfileIdx:number = 0;
   public get charImageUrl(): string{
     return this._currentImageUrl;
   }
   
+  imageUrl = computed(() => {
+    console.log('-on image computed --');
+    let currentImg: GenerateImageResponse | null = this.currentImage();
+    if(currentImg){
+      let b64:string = currentImg.base64;
+      return this._sanitizer.bypassSecurityTrustResourceUrl(`data:image/png;base64,${b64}`);
+    }
+    else {
+      return this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
+    }
+  });
   charsProfilePage = computed(() => Math.max(this.generatedProfiles().length -1, 0));
   imagePromptsPage = computed(() => Math.max(this.imagePrompts().length -1, 0));
   profileImagesCount = computed(() => {
     let profile: RandomWorldsCharacter | null = this.currentProfile();
-    if(profile){
+    if(profile && this.currentImage()){
       return this.characterImages.has(profile) ? this.characterImages.get(profile)?.length : 0;
     }
     else return 0;
   });
   characterPrompts: Map<RandomWorldsCharacter, string[]> = new Map<RandomWorldsCharacter, string[]>();
-  characterImages: Map<RandomWorldsCharacter, string[]> = new Map<RandomWorldsCharacter, string[]>();
+  characterImages: Map<RandomWorldsCharacter, GenerateImageResponse[]> = new Map<RandomWorldsCharacter, GenerateImageResponse[]>();
 
   ngOnInit(): void {
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
@@ -197,26 +212,41 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   onGenerateImageClick(){
     console.log('-- on generate image --', this.currentProfile);
     this.isLoading = true;
-    this.isEnhancing = true;
-    let req: GenerateImageRequest = {
-      name:'',
-      diffuser_name: '',
-      tag: '',
-      prompt:this.imagepromptbox.nativeElement.value,
-      height: 800,
-      width: 500,
-      guidance: 7.5,
-      num_gen: 1,
-      inference_steps: 10,
-      seed: null,
-      db_save: false,
-      file_save: false,
-      cache_diffusion_pipe: true
-    }
-    this._imagesService.generate(this.diffusionSettings.current_integration_settings.name, req).subscribe(res => {
-      console.log('-- on generated image --', res);
+    this.isGeneratingImage = true;
+    let profile: RandomWorldsCharacter | null = this.currentProfile();
+    if(profile){
+      let req: GenerateImageRequest = {
+        name:'chartest',
+        diffuser_name: this.diffusionSettings.current_integration_settings.current_model ?? '',
+        tag: '',
+        prompt: `Hand draw illustration. ${profile.ambiences}, ${profile.moods}. Image Description: ${this.imagepromptbox.nativeElement.value}`,
+        height: 800,
+        width: 512,
+        guidance: 5.5,
+        num_gen: 1,
+        inference_steps: 3,
+        seed: null,
+        db_save: false,
+        file_save: true,
+        cache_diffusion_pipe: true
+      }
+      this._imagesService.generate(this.diffusionSettings.current_integration_settings.name, req).subscribe(res => {
+        console.log('-- on generated image --', res);
+        this.isGeneratingImage = false;
+        this.isLoading = false;
+        if(res.length > 0){
+          let profile: RandomWorldsCharacter | null = this.currentProfile();
+          if(profile){
+            this.currentImage.set(res[0]);
+            if(this.characterImages.has(profile))
+              this.characterImages.get(profile)?.push(res[0]);
 
-    })
+            else this.characterImages.set(profile,res);
+          }
+        }
+        else this._notificationsService.openSnack(ESnackAlertType.ERROR, "An error has occured while generating the NFT image");
+      })
+    }
   }
 
   onCharacterGenreToggle(event: MatSlideToggleChange){
@@ -266,6 +296,36 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     // }
     
   }
+
+  public onSkipImage(dir:string){
+    let profile:RandomWorldsCharacter | null = this.currentProfile();
+    let currentImage: GenerateImageResponse | null = this.currentImage();
+    if(profile){
+      let profileImages: GenerateImageResponse[] = this.characterImages.get(profile) ?? [];
+      if(profileImages.length == 0) return;
+      if(!currentImage){
+        this.currentImage.set(profileImages[0]);
+        return;
+      }
+      let idx = profileImages.indexOf(currentImage);
+      switch(dir){
+        case('left'):
+          if(idx > 0)
+            this.currentImage.set(profileImages[idx -1]);
+          break;
+        case('right'):
+            if(idx + 1 < profileImages.length)
+              this.currentImage.set(profileImages[idx +1]);
+          break;
+        default:break;
+      }
+    }
+  }
+
+  public onMintNFT(){
+    console.log("-- todo --");
+  }
+
   public onSettingsHidden() {
     this._renderCurrentProfile();
   }

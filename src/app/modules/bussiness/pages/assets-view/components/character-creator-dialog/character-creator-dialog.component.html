@@ -25,20 +25,25 @@
   <mat-tab label="Character"> 
   <div class="char-tab-container">
     <div class="image-container">
-      <img class="char-image" [src]="charImageUrl" alt="UnknownCharacter">
+      @if(profileImagesCount() > 0 && currentImage()){
+        <img class="char-image" [src]="imageUrl()" alt="UnknownCharacter">
+      }
+      @else{
+        <img class="char-image" [src]="charImageUrl" alt="UnknownCharacter">
+      }
       <div style="display: flex; justify-content: center; align-items: center;">
-<app-rounded-button *ngIf="profileImagesCount() > 0"
-        style="margin-right:13px"
-        [id]="'skip_img_l'"
-        [iconName]="'keyboard_arrow_left'"
-        [size]="'35px'"
-        [hoverColor]="'var(--terciary-btn-hover)'"
-        [borderColor]="'var(--terciary-btn-border)'"
-        
-        [withSpinner]="isLoading && isGeneratingImage"
-        (click)="$event.stopPropagation();onGenerateImageClick()">
-      </app-rounded-button>
-      <app-rounded-button
+        <app-rounded-button *ngIf="profileImagesCount() > 0"
+          style="margin-right:13px"
+          [id]="'skip_img_l'"
+          [iconName]="'keyboard_arrow_left'"
+          [size]="'35px'"
+          [hoverColor]="'var(--terciary-btn-hover)'"
+          [borderColor]="'var(--terciary-btn-border)'"
+          
+          [withSpinner]="isLoading && isGeneratingImage"
+          (click)="$event.stopPropagation();onSkipImage('left')">
+        </app-rounded-button>
+        <app-rounded-button
           style="margin-right:13px"
           matTooltip="Mint the current image & profile"
           [matTooltipPosition]="'above'" 
@@ -49,7 +54,7 @@
           [borderColor]="'var(--terciary-btn-border)'"
           [disabled]="profileImagesCount() == 0"
           [withSpinner]="isLoading && isGeneratingImage"
-          (click)="$event.stopPropagation();onGenerateImageClick()">
+          (click)="$event.stopPropagation();onMintNFT()">
         </app-rounded-button>
         <app-rounded-button *ngIf="profileImagesCount() > 0"
           style="margin-right:13px"
@@ -59,7 +64,7 @@
           [hoverColor]="'var(--terciary-btn-hover)'"
           [borderColor]="'var(--terciary-btn-border)'"
           [withSpinner]="isLoading && isGeneratingImage"
-          (click)="$event.stopPropagation();onGenerateImageClick()">
+          (click)="$event.stopPropagation();onSkipImage('right')">
         </app-rounded-button>
       </div>
     </div>
