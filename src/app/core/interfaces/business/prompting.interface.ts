@@ -42,6 +42,25 @@ export interface RandomWorldsCharacter extends QuestCharacter{
     moods?: string[],
     ambiences?: string[]
 }
+
+export interface MintCharacterRequest {
+    character: RandomWorldsCharacter,
+    base64: string
+}
+
+export interface TicketDto{
+    id?:string,
+    wallet:string,
+    contractAddress:string,
+    createDate:Date,
+    redeemDate?:Date, 
+    isRedeemed: boolean,
+    tokenType:string,
+    base64: string,
+    character:RandomWorldsCharacter,
+    imageCid?: string,
+    metaCid?: string
+}
 export interface QuestInitRequest{
     username:string,
     charTokenId: string,
