@@ -4,264 +4,268 @@
 </mat-dialog-content>
 <mat-dialog-content class="tabs-dialog-content">
   <mat-tab-group class="dialog-tabs" (selectedTabChange)="onTabChange($event)">
-  <mat-tab label="Ambiences">
-  <app-drag-and-drop 
-      [boxOneTitle]="'Available'",
-      [boxTwoTitle]="'Selected'",
-      [boxOneItems]="availableAmbiences"
-      [boxTwoItems]="selectedAmbiences"
-      [textColor]="'var(--primary-btn-hover)'">
-    </app-drag-and-drop>  
-  </mat-tab>
-  <mat-tab label="Moods"> 
-  <app-drag-and-drop 
-      [boxOneTitle]="'Available'",
-      [boxTwoTitle]="'Selected'",
-      [boxOneItems]="availableMoods"
-      [boxTwoItems]="selectedMoods"
-      [textColor]="'var(--primary-btn-hover)'">
-    </app-drag-and-drop>  
-  </mat-tab>
-  <mat-tab label="Character"> 
-  <div class="char-tab-container">
-    <div class="image-container">
-      @if(profileImagesCount() > 0 && currentImage()){
-        <img class="char-image" [src]="imageUrl()" alt="UnknownCharacter">
-      }
-      @else{
-        <img class="char-image" [src]="charImageUrl" alt="UnknownCharacter">
-      }
-      <div style="display: flex; justify-content: center; align-items: center;">
-        <app-rounded-button *ngIf="profileImagesCount() > 0"
-          style="margin-right:13px"
-          [id]="'skip_img_l'"
-          [iconName]="'keyboard_arrow_left'"
-          [size]="'35px'"
-          [hoverColor]="'var(--terciary-btn-hover)'"
-          [borderColor]="'var(--terciary-btn-border)'"
-          
-          [withSpinner]="isLoading && isGeneratingImage"
-          (click)="$event.stopPropagation();onSkipImage('left')">
-        </app-rounded-button>
-        <app-rounded-button
-          style="margin-right:13px"
-          matTooltip="Mint the current image & profile"
-          [matTooltipPosition]="'above'" 
-          [id]="'mint_nft'"
-          [iconName]="'payment'"
-          [size]="'35px'"
-          [hoverColor]="'var(--terciary-btn-hover)'"
-          [borderColor]="'var(--terciary-btn-border)'"
-          [disabled]="profileImagesCount() == 0"
-          [withSpinner]="isLoading && isGeneratingImage"
-          (click)="$event.stopPropagation();onMintNFT()">
-        </app-rounded-button>
-        <app-rounded-button *ngIf="profileImagesCount() > 0"
-          style="margin-right:13px"
-          [id]="'skip_img_r'"
-          [iconName]="'keyboard_arrow_right'"
-          [size]="'35px'"
-          [hoverColor]="'var(--terciary-btn-hover)'"
-          [borderColor]="'var(--terciary-btn-border)'"
-          [withSpinner]="isLoading && isGeneratingImage"
-          (click)="$event.stopPropagation();onSkipImage('right')">
-        </app-rounded-button>
+    <mat-tab label="Ambiences">
+      <div class="dragdrop-container">
+        <app-drag-and-drop 
+          [boxOneTitle]="'Available'",
+          [boxTwoTitle]="'Selected'",
+          [boxOneItems]="availableAmbiences"
+          [boxTwoItems]="selectedAmbiences"
+          [textColor]="'var(--primary-btn-hover)'">
+        </app-drag-and-drop> 
+      </div> 
+    </mat-tab>
+    <mat-tab label="Moods">
+      <div class="dragdrop-container">
+          <app-drag-and-drop 
+          [boxOneTitle]="'Available'",
+          [boxTwoTitle]="'Selected'",
+          [boxOneItems]="availableMoods"
+          [boxTwoItems]="selectedMoods"
+          [textColor]="'var(--primary-btn-hover)'">
+        </app-drag-and-drop>  
+      </div> 
+    </mat-tab>
+    <mat-tab label="Character"> 
+      <div class="char-tab-container">
+      <div class="image-container">
+        @if(profileImagesCount() > 0 && currentImage()){
+          <img class="char-image" [src]="imageUrl()" alt="UnknownCharacter">
+        }
+        @else{
+          <img class="char-image" [src]="charImageUrl" alt="UnknownCharacter">
+        }
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <app-rounded-button *ngIf="profileImagesCount() > 0"
+            style="margin-right:13px"
+            [id]="'skip_img_l'"
+            [iconName]="'keyboard_arrow_left'"
+            [size]="'35px'"
+            [hoverColor]="'var(--terciary-btn-hover)'"
+            [borderColor]="'var(--terciary-btn-border)'"
+            
+            [withSpinner]="isLoading && isGeneratingImage"
+            (click)="$event.stopPropagation();onSkipImage('left')">
+          </app-rounded-button>
+          <app-rounded-button
+            style="margin-right:13px"
+            matTooltip="Mint the current image & profile"
+            [matTooltipPosition]="'above'" 
+            [id]="'mint_nft'"
+            [iconName]="'payment'"
+            [size]="'35px'"
+            [hoverColor]="'var(--terciary-btn-hover)'"
+            [borderColor]="'var(--terciary-btn-border)'"
+            [disabled]="profileImagesCount() == 0"
+            [withSpinner]="isLoading && isGeneratingImage"
+            (click)="$event.stopPropagation();onMintNFT()">
+          </app-rounded-button>
+          <app-rounded-button *ngIf="profileImagesCount() > 0"
+            style="margin-right:13px"
+            [id]="'skip_img_r'"
+            [iconName]="'keyboard_arrow_right'"
+            [size]="'35px'"
+            [hoverColor]="'var(--terciary-btn-hover)'"
+            [borderColor]="'var(--terciary-btn-border)'"
+            [withSpinner]="isLoading && isGeneratingImage"
+            (click)="$event.stopPropagation();onSkipImage('right')">
+          </app-rounded-button>
+        </div>
+      </div>
+      <div class="inputs-container">
+        <mat-accordion>
+          <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" 
+            (afterCollapse)="onSettingsHidden()" 
+            (opened)="onShowSettings()" 
+            (closed)="onHideSettings()" 
+            [expanded]="showSettings && !isLoading" 
+            [disabled]="isLoading">
+            <mat-expansion-panel-header>
+              <mat-panel-description>
+                Character Traits
+              </mat-panel-description>
+              <app-rounded-button
+                style="margin-right:13px"
+                matTooltip="Generate Image from the currently displayed Image Prompt"
+                [matTooltipPosition]="'above'" 
+                [id]="'generate_image'"
+                [iconName]="'person'"
+                [size]="'35px'"
+                [hoverColor]="'var(--terciary-btn-hover)'"
+                [borderColor]="'var(--terciary-btn-border)'"
+                [disabled]="!currentProfile() || isLoading"
+                [withSpinner]="isLoading && isGeneratingImage"
+                (click)="$event.stopPropagation();onGenerateImageClick()">
+              </app-rounded-button>
+              <app-rounded-button
+                matTooltip="Enhance Image prompt from the currently displayed Profile"
+                [matTooltipPosition]="'above'" 
+                [id]="'generate_image'"
+                [iconName]="'edit'"
+                [size]="'35px'"
+                [hoverColor]="'var(--terciary-btn-hover)'"
+                [borderColor]="'var(--terciary-btn-border)'"
+                [disabled]="!currentProfile() || isLoading"
+                [withSpinner]="isLoading && isEnhancing"
+                (click)="$event.stopPropagation();onEnhanceImagePromptClick()">
+              </app-rounded-button>
+              <app-rounded-button
+                matTooltip="Generate Character Profile"
+                [matTooltipPosition]="'above'"
+                [id]="'generate_profile'"
+                [iconName]="'receipt'"
+                [size]="'35px'"
+                [hoverColor]="'var(--primary-btn-hover)'"
+                [borderColor]="'var(--primary-btn-border)'"
+                [disabled]="isLoading && !isEnhancing && !isGeneratingImage"
+                [withSpinner]="true"
+                (click)="$event.stopPropagation();onGenerateProfileClick()">
+              </app-rounded-button>
+            </mat-expansion-panel-header>
+              <div class="form-row first-traits-row">
+                <mat-form-field class="form-control" formControlName="name">
+                  <label>Name</label>
+                  <input matInput type="text">
+                </mat-form-field>
+                <div class="toggles-box">
+                  <mat-slide-toggle class="char-genre-toggle" [disabled]="isRandomGenre" (change)="onCharacterGenreToggle($event)">Female Character</mat-slide-toggle>
+                  <mat-radio-button class="random-char-btn" 
+                    [style.--mdc-radio-selected-icon-color]="'var(--primary-btn-hover)'"
+                    [style.--mdc-radio-selected-hover-icon-color]="'orange'"
+                    [checked]="isRandomGenre"  
+                    (click)="onRandomGenreCharacter($event)">
+                      Random Genre
+                  </mat-radio-button>
+                </div>
+              </div>
+              <div class="form-row second-traits-row">
+                <mat-form-field class="form-control">
+                  <label>Age</label>
+                  <input matInput type="text">
+                </mat-form-field>
+              </div>
+              <div class="form-row third-traits-row">
+                <mat-form-field class="chips-control form-control">
+                  <mat-label>Ambiences</mat-label>
+                  <mat-chip-grid #ambiencesChipGrid aria-label="Ambiences">
+                    @for (item of selectedAmbiences; track item) {
+                      <mat-chip-row (removed)="removeAmbience(item)">
+                        {{item}}
+                        <button matChipRemove aria-label="'removeAmbience ' + item">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                    }
+                  </mat-chip-grid>
+                  <input placeholder="Selected Ambiences" #ambienceInput
+                    [matChipInputFor]="ambiencesChipGrid"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"/>
+                </mat-form-field>
+                <mat-form-field class="chips-control form-control">
+                  <mat-label>Moods</mat-label>
+                  <mat-chip-grid #moodsChipGrid aria-label="Moods">
+                    @for (item of selectedMoods; track item) {
+                      <mat-chip-row (removed)="removeMood(item)">
+                        {{item}}
+                        <button matChipRemove aria-label="'removeMoov ' + item">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                    }
+                  </mat-chip-grid>
+                  <input placeholder="Selected Moods" #moodInput
+                    [matChipInputFor]="moodsChipGrid"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"/>
+                </mat-form-field>
+              </div>
+              <mat-expansion-panel style="margin-top: 3px; width: 100%;" 
+                [disabled]="true" 
+                [hideToggle]="true" 
+                [expanded]="true" 
+                [style.background-color]="'white'">
+                <mat-expansion-panel-header class="prompt-expansion-panel-header">
+                    <mat-panel-description >
+                      Preferences                  
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <mat-form-field class="chat-screen" 
+                  [style.font-size]="'16px'" 
+                  [style.--chatbox-color]="'rgb(0 0 0 / 68%)'">
+                    <!-- <mat-label *ngIf="label !== ''" [style.color]="fontColor"></mat-label> -->
+                    <textarea #suggestbox
+                      class="preferences-textarea"
+                      [style.color]="'#3dd73d'"
+                      matInput
+                      cdkTextareaAutosize
+                      #autosize="cdkTextareaAutosize"
+                      [readonly]="false"
+                      [disabled]="false"
+                      [style.margin-top]="'10px'">
+                    </textarea>
+                </mat-form-field>
+              </mat-expansion-panel>
+              <mat-expansion-panel style="margin-top: 3px; width: 100%;" 
+                [disabled]="true" 
+                [hideToggle]="true" 
+                [expanded]="true" 
+                [style.background-color]="'white'">
+                <mat-expansion-panel-header class="prompt-expansion-panel-header">
+                    <mat-panel-description >
+                      Constraints                  
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <mat-form-field class="chat-screen" 
+                  [style.font-size]="'16px'" 
+                  [style.--chatbox-color]="'rgb(0 0 0 / 68%)'">
+                    <!-- <mat-label *ngIf="label !== ''" [style.color]="fontColor"></mat-label> -->
+                    <textarea #constraintsbox
+                      class="preferences-textarea"
+                      [style.color]="'#3dd73d'"
+                      matInput
+                      cdkTextareaAutosize
+                      #autosize="cdkTextareaAutosize"
+                      [readonly]="false"
+                      [disabled]="false"
+                      [style.margin-top]="'10px'">
+                    </textarea>
+                </mat-form-field>
+              </mat-expansion-panel>
+          </mat-expansion-panel>
+    
+            
+        </mat-accordion>
+        <ng-container style="display: block;" *ngIf="!showSettings">
+          <div style="height: 25%; display: block; margin-top:7px;">
+            <div style="width: 100%; height: 65%;">
+              <textarea #imagepromptbox readonly  class="text-area"></textarea> 
+            </div>
+            <div style="width: 100%; height: 10%;">
+            <mat-paginator #imagepromptPaginator
+              [length]="imagePrompts().length" 
+              [pageSize]="1"
+              [pageIndex]="imagePromptsPage()"
+              [hidePageSize]="true"
+              (page)="onImagePromptPageChange($event)"
+              showFirstLastButtons></mat-paginator> 
+            </div>
+          </div>
+          <div style="height: 65%;">
+            <div style="width: 100%; height: 90%;">
+              <textarea #displaybox readonly class="text-area"></textarea>  
+            </div>
+            <div style="width: 100%; height: 10%;">
+            <mat-paginator #charsPaginator
+              [length]="generatedProfiles().length" 
+              [pageSize]="1"
+              [pageIndex]="charsProfilePage()"
+              [hidePageSize]="true"
+              (page)="onProfilePageChange($event)"
+              showFirstLastButtons></mat-paginator>
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
-    <div class="inputs-container">
-      <mat-accordion>
-        <mat-expansion-panel [ngClass]="{ 'displayed-panel' : showSettings === true}" 
-          (afterCollapse)="onSettingsHidden()" 
-          (opened)="onShowSettings()" 
-          (closed)="onHideSettings()" 
-          [expanded]="showSettings && !isLoading" 
-          [disabled]="isLoading">
-          <mat-expansion-panel-header>
-            <mat-panel-description>
-              Character Traits
-            </mat-panel-description>
-            <app-rounded-button
-              style="margin-right:13px"
-              matTooltip="Generate Image from the currently displayed Image Prompt"
-              [matTooltipPosition]="'above'" 
-              [id]="'generate_image'"
-              [iconName]="'person'"
-              [size]="'35px'"
-              [hoverColor]="'var(--terciary-btn-hover)'"
-              [borderColor]="'var(--terciary-btn-border)'"
-              [disabled]="!currentProfile() || isLoading"
-              [withSpinner]="isLoading && isGeneratingImage"
-              (click)="$event.stopPropagation();onGenerateImageClick()">
-            </app-rounded-button>
-            <app-rounded-button
-              matTooltip="Enhance Image prompt from the currently displayed Profile"
-              [matTooltipPosition]="'above'" 
-              [id]="'generate_image'"
-              [iconName]="'edit'"
-              [size]="'35px'"
-              [hoverColor]="'var(--terciary-btn-hover)'"
-              [borderColor]="'var(--terciary-btn-border)'"
-              [disabled]="!currentProfile() || isLoading"
-              [withSpinner]="isLoading && isEnhancing"
-              (click)="$event.stopPropagation();onEnhanceImagePromptClick()">
-            </app-rounded-button>
-            <app-rounded-button
-              matTooltip="Generate Character Profile"
-              [matTooltipPosition]="'above'"
-              [id]="'generate_profile'"
-              [iconName]="'receipt'"
-              [size]="'35px'"
-              [hoverColor]="'var(--primary-btn-hover)'"
-              [borderColor]="'var(--primary-btn-border)'"
-              [disabled]="isLoading && !isEnhancing && !isGeneratingImage"
-              [withSpinner]="true"
-              (click)="$event.stopPropagation();onGenerateProfileClick()">
-            </app-rounded-button>
-          </mat-expansion-panel-header>
-            <div class="form-row first-traits-row">
-              <mat-form-field class="form-control" formControlName="name">
-                <label>Name</label>
-                <input matInput type="text">
-              </mat-form-field>
-              <div class="toggles-box">
-                <mat-slide-toggle class="char-genre-toggle" [disabled]="isRandomGenre" (change)="onCharacterGenreToggle($event)">Female Character</mat-slide-toggle>
-                <mat-radio-button class="random-char-btn" 
-                  [style.--mdc-radio-selected-icon-color]="'var(--primary-btn-hover)'"
-                  [style.--mdc-radio-selected-hover-icon-color]="'orange'"
-                  [checked]="isRandomGenre"  
-                  (click)="onRandomGenreCharacter($event)">
-                    Random Genre
-                </mat-radio-button>
-              </div>
-            </div>
-            <div class="form-row second-traits-row">
-              <mat-form-field class="form-control">
-                <label>Age</label>
-                <input matInput type="text">
-              </mat-form-field>
-            </div>
-            <div class="form-row third-traits-row">
-              <mat-form-field class="chips-control form-control">
-                <mat-label>Ambiences</mat-label>
-                <mat-chip-grid #ambiencesChipGrid aria-label="Ambiences">
-                  @for (item of selectedAmbiences; track item) {
-                    <mat-chip-row (removed)="removeAmbience(item)">
-                      {{item}}
-                      <button matChipRemove aria-label="'removeAmbience ' + item">
-                        <mat-icon>cancel</mat-icon>
-                      </button>
-                    </mat-chip-row>
-                  }
-                </mat-chip-grid>
-                <input placeholder="Selected Ambiences" #ambienceInput
-                  [matChipInputFor]="ambiencesChipGrid"
-                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"/>
-              </mat-form-field>
-              <mat-form-field class="chips-control form-control">
-                <mat-label>Moods</mat-label>
-                <mat-chip-grid #moodsChipGrid aria-label="Moods">
-                  @for (item of selectedMoods; track item) {
-                    <mat-chip-row (removed)="removeMood(item)">
-                      {{item}}
-                      <button matChipRemove aria-label="'removeMoov ' + item">
-                        <mat-icon>cancel</mat-icon>
-                      </button>
-                    </mat-chip-row>
-                  }
-                </mat-chip-grid>
-                <input placeholder="Selected Moods" #moodInput
-                  [matChipInputFor]="moodsChipGrid"
-                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"/>
-              </mat-form-field>
-            </div>
-            <mat-expansion-panel style="margin-top: 3px; width: 100%;" 
-              [disabled]="true" 
-              [hideToggle]="true" 
-              [expanded]="true" 
-              [style.background-color]="'white'">
-              <mat-expansion-panel-header class="prompt-expansion-panel-header">
-                  <mat-panel-description >
-                    Preferences                  
-                  </mat-panel-description>
-              </mat-expansion-panel-header>
-              <mat-form-field class="chat-screen" 
-                [style.font-size]="'16px'" 
-                [style.--chatbox-color]="'rgb(0 0 0 / 68%)'">
-                  <!-- <mat-label *ngIf="label !== ''" [style.color]="fontColor"></mat-label> -->
-                  <textarea #suggestbox
-                    class="preferences-textarea"
-                    [style.color]="'#3dd73d'"
-                    matInput
-                    cdkTextareaAutosize
-                    #autosize="cdkTextareaAutosize"
-                    [readonly]="false"
-                    [disabled]="false"
-                    [style.margin-top]="'10px'">
-                  </textarea>
-              </mat-form-field>
-            </mat-expansion-panel>
-            <mat-expansion-panel style="margin-top: 3px; width: 100%;" 
-              [disabled]="true" 
-              [hideToggle]="true" 
-              [expanded]="true" 
-              [style.background-color]="'white'">
-              <mat-expansion-panel-header class="prompt-expansion-panel-header">
-                  <mat-panel-description >
-                    Constraints                  
-                  </mat-panel-description>
-              </mat-expansion-panel-header>
-              <mat-form-field class="chat-screen" 
-                [style.font-size]="'16px'" 
-                [style.--chatbox-color]="'rgb(0 0 0 / 68%)'">
-                  <!-- <mat-label *ngIf="label !== ''" [style.color]="fontColor"></mat-label> -->
-                  <textarea #constraintsbox
-                    class="preferences-textarea"
-                    [style.color]="'#3dd73d'"
-                    matInput
-                    cdkTextareaAutosize
-                    #autosize="cdkTextareaAutosize"
-                    [readonly]="false"
-                    [disabled]="false"
-                    [style.margin-top]="'10px'">
-                  </textarea>
-              </mat-form-field>
-            </mat-expansion-panel>
-        </mat-expansion-panel>
-   
-          
-      </mat-accordion>
-      <ng-container style="display: block;" *ngIf="!showSettings">
-        <div style="height: 25%; display: block; margin-top:7px;">
-          <div style="width: 100%; height: 65%;">
-            <textarea #imagepromptbox readonly  class="text-area"></textarea> 
-          </div>
-          <div style="width: 100%; height: 10%;">
-          <mat-paginator #imagepromptPaginator
-            [length]="imagePrompts().length" 
-            [pageSize]="1"
-            [pageIndex]="imagePromptsPage()"
-            [hidePageSize]="true"
-            (page)="onImagePromptPageChange($event)"
-            showFirstLastButtons></mat-paginator> 
-          </div>
-        </div>
-        <div style="height: 65%;">
-          <div style="width: 100%; height: 90%;">
-            <textarea #displaybox readonly class="text-area"></textarea>  
-          </div>
-          <div style="width: 100%; height: 10%;">
-          <mat-paginator #charsPaginator
-            [length]="generatedProfiles().length" 
-            [pageSize]="1"
-            [pageIndex]="charsProfilePage()"
-            [hidePageSize]="true"
-            (page)="onProfilePageChange($event)"
-            showFirstLastButtons></mat-paginator>
-          </div>
-        </div>
-      </ng-container>
-    </div>
-  </div>
   </mat-tab>
 </mat-tab-group>
   </mat-dialog-content>

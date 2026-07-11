@@ -1,7 +1,129 @@
+/* ------------------------------------------------------------------ *
+ * The whole dialog is a fixed-size box (77vh tall). We lay it out as a
+ * vertical flex column so the three stacked areas share that height
+ * predictably:
+ *   header (auto) + tabs area (takes the rest) + actions (auto)
+ * ------------------------------------------------------------------ */
 :host{
-  display:block;
+  display: flex;
+  flex-direction: column;
   width: 45vw;
   height: 77vh;
+  overflow: hidden;            /* nothing should ever spill past the dialog */
+}
+
+.header-titles{
+  flex: 0 0 auto;              /* natural height, never grows/shrinks */
+  padding: 5px 0px 10px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--primary-btn-hover);
+}
+
+/* This is the area that must absorb all the leftover vertical space. */
+.tabs-dialog-content{
+  flex: 1 1 auto;
+  min-height: 0;              /* KEY: allow this flex child to shrink below content size */
+  display: flex;
+  min-width: 100%;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  margin: 5px 0px 5px 0px;
+}
+
+mat-dialog-actions{
+  flex: 0 0 auto;             /* the Close button row keeps its natural height */
+}
+
+/* ------------------------------------------------------------------ *
+ * Make the height flow down through the Material tab internals.
+ * mat-tab-group doesn't stretch its body to full height by default,
+ * so we help it. (MDC class names, Angular Material 17.)
+ * ------------------------------------------------------------------ */
+.dialog-tabs{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+::ng-deep .dialog-tabs .mat-mdc-tab-body-wrapper{
+  flex: 1 1 auto;
+  min-height: 0;
+}
+::ng-deep .dialog-tabs .mat-mdc-tab-body.mat-mdc-tab-body-active{
+  height: 100%;
+}
+::ng-deep .dialog-tabs .mat-mdc-tab-body-content{
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;          /* the left image column never scrolls */
+  display: flex;
+  flex-direction: column;
+}
+
+.dragdrop-container
+{
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    overflow-y: auto;
+}
+/* ------------------------------------------------------------------ *
+ * Character tab: left = image + buttons, right = settings/inputs.
+ * ------------------------------------------------------------------ */
+.char-tab-container{
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;             /* allow the row to constrain its children's height */
+}
+
+/* LEFT column: a vertical stack of [image | buttons] whose WIDTH is
+ * derived from the image's height, so it stays snug like a portrait. */
+.image-container{
+  flex: 0 0 auto;            /* width follows the image, don't grow */
+  min-height: 0;             /* KEY: let the image shrink to fit */
+  margin: 15px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The image takes all the vertical space left after the buttons row,
+ * then object-fit keeps its aspect ratio inside that box. Because the
+ * height is now bounded by the dialog, the natural 800px never leaks. */
+.char-image{
+  flex: 1 1 auto;
+  min-height: 0;             /* KEY: without this the 800px image refuses to shrink */
+  width: auto;               /* width is derived from the flexed height + aspect ratio */
+  max-width: 100%;
+  object-fit: contain;       /* scale down to fit, preserve aspect ratio */
+  border-radius: 15px;
+}
+
+/* The buttons row under the image keeps its natural height. */
+.image-container > div{
+  flex: 0 0 auto;
+  margin-top: 8px;
+}
+
+/* RIGHT column: the settings/inputs. Takes the remaining width and may
+ * scroll INTERNALLY (that's expected) without pushing the dialog. */
+.inputs-container{
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 15px 5px 0px 5px;
+  overflow-y: auto;
 }
 
 .form-control{
@@ -10,48 +132,6 @@
 .tab-screen{
   min-height: 100px;
   height: 100%;
-}
-.header-titles{
-  padding: 5px 0px 10px 0px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: var(--primary-btn-hover);
-}
-.tabs-dialog-content{
-  display:flex;
-  min-width: 100%;
-  height:100%;
-  overflow:hidden;
-  padding: 0px 5px 0px 5px;
-  margin: 5px 0px 5px 0px;
-}
-
-.dialog-tabs{
-  min-width:100%;
-  min-height:100%;
-}
-
-.char-tab-container{
-  display: flex;
-  width: 100%;
-  height: 100%;
-}
-.image-container{
-  margin: 15px 15px 15px 15px;
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-}
-.char-image{
-  border-radius: 15px;
-}
-.inputs-container{
-  display: block;
-  width:100%;
-  flex-direction: column;
-  margin: 15px 5px 0px 5px;
 }
 .first-traits-row{
   display: flex;
