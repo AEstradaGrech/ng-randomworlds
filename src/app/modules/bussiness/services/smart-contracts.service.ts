@@ -173,11 +173,22 @@ export class SmartContractsService {
       return dto;
     })
   }
+
+  //etherPurchaseCustomCharacter(contractAddress: string, collectorAddress: string) : Promise<boolean>{} <- on confirmation
   public async etherMintCharacter(contractAddress:string, model: string, price:number, collectorAddress: string) : Promise<boolean>{
     try{
       let accounts = await this.getConnectedAccounts();
-      await this.getCollectionContract(contractAddress).methods.etherMint(collectorAddress, model).send({from: accounts[0], value: Web3.utils.toWei(price, 'ether')});
-      return true;
+      await this.getCollectionContract(contractAddress).methods.etherMint(collectorAddress, model)
+        .send({from: accounts[0], value: Web3.utils.toWei(price, 'ether')})
+        .on('receipt', (receipt:any) => {
+          console.log('-- on etherMint receipt --', receipt);
+          // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
+        })
+        .on('error', (error:any, receipt:any) => {
+          console.log('-- on ether collection mint error --', error, receipt);
+          throw new Error(`${error}`);
+	      });
+        return true;
     }
     catch(error){
       console.log('-- ether mint error --',error)

@@ -392,8 +392,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _renderCharacterProfile(profile: RandomWorldsCharacter | null){
     if(!profile) return '';
     let text = ''
+    let exclusions: string[] = ['id', '_id']
     Object.keys(profile).forEach((k:any) => {
-      text += `\n${k}: ${Object(profile)[k]}`;
+      if(!exclusions.includes(k))
+        text += `\n${k}: ${Object(profile)[k]}`;
     })
     return text.trim()
   }
