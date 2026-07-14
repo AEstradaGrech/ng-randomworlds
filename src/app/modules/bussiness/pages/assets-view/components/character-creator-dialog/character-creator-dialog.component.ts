@@ -20,6 +20,7 @@ import { url } from 'inspector';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MgmtService } from 'src/app/modules/bussiness/services/mgmt.service';
 import { SmartContractsService } from 'src/app/modules/bussiness/services/smart-contracts.service';
+import { CustomCharsCatalogue } from 'src/app/core/interfaces/business/smart-contract.interface';
 @Component({
   selector: 'app-character-creator-dialog',
   templateUrl: './character-creator-dialog.component.html',
@@ -54,9 +55,11 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   imagePrompts = signal<string[]>([]);
   generatedProfiles = signal<RandomWorldsCharacter[]>([]);
   currentImage = signal<GenerateImageResponse | null>(null);
-
+  availableTokens: string[] = ['KAKA', 'CRAP'];
   diffusionSettings!: ProviderSettingsDto;
   
+  selectedCurrency: string = 'ETH';
+
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
   readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
@@ -71,6 +74,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _sanitizer: DomSanitizer = inject(DomSanitizer);
   private _currentImageUrl:string = '';
   private _currentProfileIdx:number = 0;
+  private _charsContractInfo!: CustomCharsCatalogue; 
   public get charImageUrl(): string{
     return this._currentImageUrl;
   }
@@ -104,6 +108,15 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No wallet connected', true);
       this._dialogRef.close();
     }
+    this._web3Service.getCustomCharsCatalogue().then(cats => {
+      if(cats.length == 0) {
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No Immutable Characters Contract deployed. Cannot mint NFT', true, 5000);
+        this._dialogRef.close();
+      }
+      this._charsContractInfo = cats.slice(-1)[0];
+      this._notificationsService.openSnack(ESnackAlertType.SUCCESS, `Current Characters contract: ${this._charsContractInfo.name}`, true, 5000);
+    });
+
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
     this._connectedWallet = this.data.connectedWallet;
     if(!this._connectedWallet){
@@ -146,6 +159,18 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
         event.currentIndex,
       );
     }
+  }
+
+  onSelectedTokenChange(event: string){
+    this.selectedCurrency = event;
+  }
+
+  onSelectedTokenPay(event: string){
+    //this._smartContractsService.getShitCoin(paymentTokens[this.selectedCurrency].contractAddress).methods
+    //  .approve(this.currentContractAddress)
+    //this._smartContractsService.getCustomCharactersContract(this.currentContractAddress).methods
+    //    .customTokenMint(this.selectedCurrency)
+    
   }
 
   onShowSettings(){
@@ -335,18 +360,22 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   public onMintNFT(){
     console.log("-- todo --");
     //TODO: _smartContractsService.approveCustomMint().subscribe(res => then ticket)
-    let wallet:string | null = this._web3Service.connectedWallet;
-    let profile: RandomWorldsCharacter | null = this.currentProfile();
-    let image: GenerateImageResponse | null = this.currentImage();
-    if(wallet && profile && image){
-      let ticket: MintCharacterRequest = {
-        character: profile,
-        base64: image.base64
-      }
-      this._mgmtService.mintCustomCharacter(wallet, 'TODO', ticket).subscribe(res => {
-        console.log('-- on IPFS upload --', res);
-      });
-    }
+
+    // this._smartcontractsService.onReceipt.subscribe(receipt => { // generate NFT});
+    // await this._smartContractsService.etherPurchase()
+
+    // let wallet:string | null = this._web3Service.connectedWallet;
+    // let profile: RandomWorldsCharacter | null = this.currentProfile();
+    // let image: GenerateImageResponse | null = this.currentImage();
+    // if(wallet && profile && image){
+    //   let ticket: MintCharacterRequest = {
+    //     character: profile,
+    //     base64: image.base64
+    //   }
+    //   this._mgmtService.mintCustomCharacter(wallet, 'TODO', ticket).subscribe(res => {
+    //     console.log('-- on IPFS upload --', res);
+    //   });
+    // }
     
   }
 

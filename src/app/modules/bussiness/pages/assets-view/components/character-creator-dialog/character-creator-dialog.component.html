@@ -47,7 +47,7 @@
             [withSpinner]="isLoading && isGeneratingImage"
             (click)="$event.stopPropagation();onSkipImage('left')">
           </app-rounded-button>
-          <app-rounded-button
+          <app-rounded-button [matMenuTriggerFor]="payMenu"
             style="margin-right:13px"
             matTooltip="Mint the current image & profile"
             [matTooltipPosition]="'above'" 
@@ -56,10 +56,23 @@
             [size]="'35px'"
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
+            
+            [withSpinner]="isLoading && isGeneratingImage">
+            
+            <!--
             [disabled]="profileImagesCount() == 0"
-            [withSpinner]="isLoading && isGeneratingImage"
-            (click)="$event.stopPropagation();onMintNFT()">
+            (click)="$event.stopPropagation();onMintNFT()"-->
           </app-rounded-button>
+          <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
+            <app-token-selector-matmenu 
+            [buttonText]="'MINT'"
+            [title]="selectedCurrency"
+            [paymentTokens]="availableTokens"
+            (onTokenChanged)="onSelectedTokenChange($event)",
+            (onTokenSelected)="onSelectedTokenPay($event)"
+            >
+            </app-token-selector-matmenu>
+          </mat-menu>
           <app-rounded-button *ngIf="profileImagesCount() > 0"
             style="margin-right:13px"
             [id]="'skip_img_r'"

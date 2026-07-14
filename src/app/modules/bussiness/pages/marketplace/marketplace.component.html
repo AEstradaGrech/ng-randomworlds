@@ -1,79 +1,79 @@
 <div class="card-container">
     <div class="img-container shadow">
         @for(model of modelsCatalogue; track model){
-            <mat-card class="game-card" appearance="outlined">
-                <mat-card-header class="card-header">
-                    <div style="display: flex; align-items: center; justify-items: flex-start;">
-                        <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': model.logoUrl}"></div>
-                    </div>
-                    <div style="display: flexbox; align-items: center;">
-                        <mat-card-title class="game-card-title" [ngClass]="{'sold-color': !model.available}" >{{model.name}}</mat-card-title>
-                        <mat-card-subtitle class="game-card-subtitle">{{model.description}} - {{model.price}} (ETH)</mat-card-subtitle>
-                    </div>
-                </mat-card-header>
-                <div class="card-body">
-                    <img mat-card-image class="game-card-image" [src]="model.imageUrl" alt="Character NFT image">
-                </div>
-                <mat-card-actions class="game-card-actions">
-                  <button class="col-details-btn" [matMenuTriggerFor]="colMenu" >
-                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                    aria-hidden="false" 
-                    aria-label="Example power icon"
-                    fontIcon="assignment"
-                    ></mat-icon>
-                 </button>
-                 <button class="view-btn" (click)="onCharSelect(model)">
-                    <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                    aria-hidden="false" 
-                    aria-label="Example power icon"
-                    fontIcon="visibility"
-                    ></mat-icon>
-                 </button>
-                 <button [disabled]="loading" class="buy-btn" [matMenuTriggerFor]="payMenu" (click)="onBuyClick(model)">
-                    <mat-icon *ngIf="!loading" style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
-                    aria-hidden="false" 
-                    aria-label="Example power icon"
-                    fontIcon="shopping_cart"
-                    ></mat-icon>
-                    <div *ngIf="loading" style="margin: 6px 2px;">
-                      <mat-spinner diameter="20"></mat-spinner>
-                    </div>
-                 </button>
-                 <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
-                    <mat-card class="collection-card" appearance="outlined">
-                        <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
-                          <mat-card-title class="collection-card-title">{{model.collectionName}} ({{model.collectionSymbol}})</mat-card-title>
-                          <mat-card-subtitle class="collection-card-subtitle">{{model.contractAddress}}</mat-card-subtitle>
-                        </mat-card-header>
-                        <img mat-card-image [src]="model.collectionUrl" alt="Photo of a Shiba Inu">
-                        <mat-card-content class="collection-card-content">
-                          <p>
-                            {{model.collectionDescription}}
-                          </p>
-                        </mat-card-content>
-                      </mat-card>
+          <mat-card class="game-card" appearance="outlined">
+              <mat-card-header class="card-header">
+                  <div style="display: flex; align-items: center; justify-items: flex-start;">
+                      <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': model.logoUrl}"></div>
+                  </div>
+                  <div style="display: flexbox; align-items: center;">
+                      <mat-card-title class="game-card-title" [ngClass]="{'sold-color': !model.available}" >{{model.name}}</mat-card-title>
+                      <mat-card-subtitle class="game-card-subtitle">{{model.description}} - {{model.price}} (ETH)</mat-card-subtitle>
+                  </div>
+              </mat-card-header>
+              <div class="card-body">
+                  <img mat-card-image class="game-card-image" [src]="model.imageUrl" alt="Character NFT image">
+              </div>
+              <mat-card-actions class="game-card-actions">
+                <button class="col-details-btn" [matMenuTriggerFor]="colMenu" >
+                  <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                  aria-hidden="false" 
+                  aria-label="Example power icon"
+                  fontIcon="assignment"
+                  ></mat-icon>
+                </button>
+                <button class="view-btn" (click)="onCharSelect(model)">
+                  <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                  aria-hidden="false" 
+                  aria-label="Example power icon"
+                  fontIcon="visibility"
+                  ></mat-icon>
+                </button>
+                <button [disabled]="loading" class="buy-btn" [matMenuTriggerFor]="payMenu" (click)="onBuyClick(model)">
+                  <mat-icon *ngIf="!loading" style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
+                  aria-hidden="false" 
+                  aria-label="Example power icon"
+                  fontIcon="shopping_cart"
+                  ></mat-icon>
+                  <div *ngIf="loading" style="margin: 6px 2px;">
+                    <mat-spinner diameter="20"></mat-spinner>
+                  </div>
+                </button>
+                <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
+                  <mat-card class="collection-card" appearance="outlined">
+                      <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                        <mat-card-title class="collection-card-title">{{model.collectionName}} ({{model.collectionSymbol}})</mat-card-title>
+                        <mat-card-subtitle class="collection-card-subtitle">{{model.contractAddress}}</mat-card-subtitle>
+                      </mat-card-header>
+                      <img mat-card-image [src]="model.collectionUrl" alt="Photo of a Shiba Inu">
+                      <mat-card-content class="collection-card-content">
+                        <p>
+                          {{model.collectionDescription}}
+                        </p>
+                      </mat-card-content>
+                    </mat-card>
                 </mat-menu>
                 <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
                   <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
-                      <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
-                        <mat-card-title class="collection-card-title">{{selectedToken}} - {{selectedPrice}}</mat-card-title>
-                        <mat-card-subtitle class="collection-card-subtitle">{{model.collectionName}}</mat-card-subtitle>
-                      </mat-card-header>
-                      <mat-card-content class="payment-card-content">
-                        <label style="font-weight: 400;">Payment Token</label>
-                        <mat-radio-group class="tokens-radio-group" [(ngModel)]="selectedToken" (click)="$event.stopPropagation()">
-                          @for(paymentToken of model.paymentTokens; track paymentToken){
-                            <mat-radio-button class="token-selector" [value]="paymentToken" (change)="onTokenSelect($event, model)">{{paymentToken}}</mat-radio-button>
-                          }
-                        </mat-radio-group>
-                      </mat-card-content>
-                      <mat-card-actions style="display: flex; justify-content: center;">
-                        <button mat-stroked-button class="pay-btn" (click)="onPayClick(model)">BUY</button>
-                      </mat-card-actions>
-                    </mat-card>
+                    <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                      <mat-card-title class="collection-card-title">{{selectedToken}} - {{selectedPrice}}</mat-card-title>
+                      <mat-card-subtitle class="collection-card-subtitle">{{model.collectionName}}</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content class="payment-card-content">
+                      <label style="font-weight: 400;">Payment Token</label>
+                      <mat-radio-group class="tokens-radio-group" [(ngModel)]="selectedToken" (click)="$event.stopPropagation()">
+                        @for(paymentToken of model.paymentTokens; track paymentToken){
+                          <mat-radio-button class="token-selector" [value]="paymentToken" (change)="onTokenSelect($event, model)">{{paymentToken}}</mat-radio-button>
+                        }
+                      </mat-radio-group>
+                    </mat-card-content>
+                    <mat-card-actions style="display: flex; justify-content: center;">
+                      <button mat-stroked-button class="pay-btn" (click)="onPayClick(model)">BUY</button>
+                    </mat-card-actions>
+                  </mat-card>
               </mat-menu>
-                </mat-card-actions>
-            </mat-card>
+            </mat-card-actions>
+        </mat-card>
         }
     </div>
 </div>
