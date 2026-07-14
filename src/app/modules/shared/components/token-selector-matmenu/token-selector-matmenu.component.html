@@ -1,0 +1,17 @@
+<mat-card style="margin: 0px 5px" appearance="outlined">
+    <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+        <mat-card-title class="collection-card-title">{{title}}</mat-card-title>
+        <mat-card-subtitle class="collection-card-subtitle">{{subtitle}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="payment-card-content">
+        <label style="font-weight: 400;">{{label}}</label>
+        <mat-radio-group class="tokens-radio-group" [(ngModel)]="selectedToken" (click)="$event.stopPropagation()">
+        @for(paymentToken of paymentTokens; track paymentToken){
+            <mat-radio-button class="token-selector" [value]="paymentToken" (change)="onTokenChange($event)">{{paymentToken}}</mat-radio-button>
+        }
+        </mat-radio-group>
+    </mat-card-content>
+    <mat-card-actions style="display: flex; justify-content: center;">
+        <button mat-stroked-button class="pay-btn" [disabled]="!selectedToken || selectedToken === ''" (click)="onSelectTokenClick()">{{buttonText}}</button>
+    </mat-card-actions>
+</mat-card>

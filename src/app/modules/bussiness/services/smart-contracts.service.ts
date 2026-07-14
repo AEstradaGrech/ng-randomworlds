@@ -1,15 +1,17 @@
 import { Inject, Injectable } from '@angular/core';
 import { CharacterProfileMock } from 'src/app/core/interfaces/business/prompting.interface';
 import { DOCUMENT } from '@angular/common';
-import Web3Provider from 'src/app/core/scripts/web3'
-import Kaka from 'src/app/core/scripts/kakaCoin'
-import Crap from 'src/app/core/scripts/crapCoin'
+import Web3Provider from 'src/app/core/scripts/web3';
+import Kaka from 'src/app/core/scripts/kakaCoin';
+import Crap from 'src/app/core/scripts/crapCoin';
 import Web3 from 'web3';
-import Factory from 'src/app/core/scripts/immutableFactory'
-import Collection from 'src/app/core/scripts/immutableCollection'
-import RagCharsCollection from 'src/app/core/scripts/ragCharsCollection'
+import Factory from 'src/app/core/scripts/immutableFactory';
+import Collection from 'src/app/core/scripts/immutableCollection';
+import RagCharsCollection from 'src/app/core/scripts/ragCharsCollection';
+import CustomChars from 'src/app/core/scripts/customCharacters';
+import CustomCharsFactory from 'src/app/core/scripts/customCharsFactory';
 import { firstValueFrom, Observable } from 'rxjs';
-import { CatalogueCollection, CatalogueModel, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { CatalogueCollection, CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 @Injectable({
@@ -46,6 +48,14 @@ export class SmartContractsService {
     })
   }
   
+  public getCustomCharactersFactory(): any{
+    return CustomCharsFactory(this.web3);
+  }
+
+  public getCustomCharactersContract(address: string) : any{
+    return CustomChars(this.web3, address);
+  }
+
   public getCollectionContract(address:string) : any{
     return Collection(this.web3, address);
   }
@@ -68,6 +78,19 @@ export class SmartContractsService {
   public async getCollectionsCatalogue(): Promise<any[]>{
     return await this.factory.methods.getCatalogue().call();
   }
+  public async getCustomCharsCatalogue() : Promise<CustomCharsCatalogue[]>{
+    let cats = await this.getCustomCharactersFactory().methods.getCatalogue().call();
+    return cats.map((cat:any) => {
+      let dto: CustomCharsCatalogue = {
+        contractAddress: cat.contractAddress,
+        name: cat.name,
+        symbol: cat.symbol,
+        weiMintPrice: cat.weiMintPrice
+      };
+      return dto;
+    })
+  }
+
   public async getCollectionSummary(address: string): Promise<CollectionSummary>{
     let data = await this.getCollectionContract(address).methods.getContractSummary().call();
     let summary:CollectionSummary = {

@@ -56,39 +56,39 @@
                                 [disabled]="loading"
                                 >
                     </app-rounded-button>
-                <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
-                    <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
-                        <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
-                            <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
-                            <mat-card-subtitle class="collection-card-subtitle">{{model.collection}}</mat-card-subtitle>
-                        </mat-card-header>
-                        <mat-card-content class="payment-card-content"></mat-card-content>
-                        <mat-card-actions style="display: flex; justify-content: center;">
-                            <button mat-stroked-button class="pay-btn" (click)="onSellClick(model)">SELL</button>
-                        </mat-card-actions>
-                    </mat-card>
-                </mat-menu>
-             </ng-template>
-             <ng-container class="upper-buttons-l">
-                <div style="display: grid">
-                    <app-rounded-button 
-                        [id]="'view-cols'"
-                        [iconName]="'skip_next'"
-                        [hoverColor]="'var(--terciary-btn-hover)'"
-                        [borderColor]="'var(--terciary-btn-border)'"
-                        [disabled]="loading"
-                        (onClickEvent)="sidenav.open()">
-                    </app-rounded-button>
-                    <app-rounded-button 
-                        [id]="'view-cols'"
-                        [iconName]="'android'"
-                        [hoverColor]="'var(--terciary-btn-hover)'"
-                        [borderColor]="'var(--terciary-btn-border)'"
-                        [disabled]="loading"
-                        (onClickEvent)="onCreateCharacterClick()">
-                    </app-rounded-button>
-                </div>
-             </ng-container>
+                    <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
+                        <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
+                            <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                                <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
+                                <mat-card-subtitle class="collection-card-subtitle">{{model.collection}}</mat-card-subtitle>
+                            </mat-card-header>
+                            <mat-card-content class="payment-card-content"></mat-card-content>
+                            <mat-card-actions style="display: flex; justify-content: center;">
+                                <button mat-stroked-button class="pay-btn" (click)="onSellClick(model)">SELL</button>
+                            </mat-card-actions>
+                        </mat-card>
+                    </mat-menu>
+                </ng-template>
+                <ng-container class="upper-buttons-l">
+                    <div style="display: grid">
+                        <app-rounded-button 
+                            [id]="'view-cols'"
+                            [iconName]="'skip_next'"
+                            [hoverColor]="'var(--terciary-btn-hover)'"
+                            [borderColor]="'var(--terciary-btn-border)'"
+                            [disabled]="loading"
+                            (onClickEvent)="sidenav.open()">
+                        </app-rounded-button>
+                        <app-rounded-button 
+                            [id]="'view-cols'"
+                            [iconName]="'android'"
+                            [hoverColor]="'var(--terciary-btn-hover)'"
+                            [borderColor]="'var(--terciary-btn-border)'"
+                            [disabled]="loading"
+                            (onClickEvent)="onCreateCharacterClick()">
+                        </app-rounded-button>
+                    </div>
+                </ng-container>
             </app-nft-visor>
         </mat-sidenav-content>
     </mat-sidenav-container>

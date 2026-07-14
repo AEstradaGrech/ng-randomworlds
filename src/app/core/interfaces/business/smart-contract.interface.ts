@@ -113,3 +113,10 @@ export interface TokenDetails{
     multiplier:number,
     decimals:number
 }
+
+export interface CustomCharsCatalogue{
+    contractAddress: string,
+    name: string,
+    symbol: string,
+    weiMintPrice: number
+}
