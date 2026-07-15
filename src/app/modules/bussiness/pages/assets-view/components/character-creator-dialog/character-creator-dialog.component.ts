@@ -1,26 +1,25 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, inject, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, signal, computed, ElementRef, EventEmitter, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabChangeEvent } from '@angular/material/tabs';
-import { map } from 'rxjs/operators';
-import { CreateCharacterRequest, MintCharacterRequest, QuestCharacter, RandomWorldsCharacter, TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
+import { CreateCharacterRequest, QuestCharacter, RandomWorldsCharacter } from 'src/app/core/interfaces/business/prompting.interface';
 import { ImagesService } from 'src/app/modules/bussiness/services/images.service';
 import { QuestsService } from 'src/app/modules/bussiness/services/quests.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { SystemMessageDto } from 'src/app/modules/shared/models/mgmt-interfaces';
-import { signal, effect } from '@angular/core';
 import { GenerateImageRequest, GenerateImageResponse, ProviderSettingsDto } from 'src/app/modules/shared/models/images.interfaces';
-import { url } from 'inspector';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MgmtService } from 'src/app/modules/bussiness/services/mgmt.service';
 import { SmartContractsService } from 'src/app/modules/bussiness/services/smart-contracts.service';
-import { CustomCharsCatalogue } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { CustomCharsCatalogue, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
+import web3 from 'web3';
+
 @Component({
   selector: 'app-character-creator-dialog',
   templateUrl: './character-creator-dialog.component.html',
@@ -55,10 +54,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   imagePrompts = signal<string[]>([]);
   generatedProfiles = signal<RandomWorldsCharacter[]>([]);
   currentImage = signal<GenerateImageResponse | null>(null);
-  availableTokens: string[] = ['KAKA', 'CRAP'];
+  availableTokens: string[] = [];
   diffusionSettings!: ProviderSettingsDto;
   
-  selectedCurrency: string = 'ETH';
+  selectedCurrency = signal<string>('');
 
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
@@ -74,11 +73,30 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _sanitizer: DomSanitizer = inject(DomSanitizer);
   private _currentImageUrl:string = '';
   private _currentProfileIdx:number = 0;
-  private _charsContractInfo!: CustomCharsCatalogue; 
+  private _charsContractInfo!: CustomCharsCatalogue;
+  private _paymentTokens: Map<string, TokenDetails> = new Map<string, TokenDetails>();
+  private onContractLoaded: EventEmitter<string> = new EventEmitter<string>();
   public get charImageUrl(): string{
     return this._currentImageUrl;
   }
   
+  private getDefaultCurrencyTitle() : string {
+    return this._charsContractInfo === undefined ? 'ETH' :
+      `ETH - ${web3.utils.fromWei(this._charsContractInfo.weiMintPrice, 'ether')}`;
+  }
+
+  tokenSelectorTitle = computed(() => {
+    let currentToken: string = this.selectedCurrency();
+    if(currentToken !== 'ETH') {
+      if(currentToken && currentToken.length > 0 && this._paymentTokens.has(currentToken)){
+        let details:TokenDetails | undefined = this._paymentTokens.get(currentToken);
+        return details ? `${currentToken} - ${web3.utils.fromWei(parseInt(`${this._charsContractInfo.weiMintPrice}`) * parseInt(`${details.multiplier}`), 'ether')}` : '';
+      }
+      else return this.getDefaultCurrencyTitle();
+    }
+    else return this.getDefaultCurrencyTitle();
+  });
+
   imageUrl = computed(() => {
     console.log('-on image computed --');
     let currentImg: GenerateImageResponse | null = this.currentImage();
@@ -103,6 +121,12 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   characterImages: Map<RandomWorldsCharacter, GenerateImageResponse[]> = new Map<RandomWorldsCharacter, GenerateImageResponse[]>();
 
   ngOnInit(): void {
+    this.onContractLoaded.subscribe((contractAddress:string) => {
+      this._web3Service.getEnabledTokens(contractAddress, false).then(response => {
+        this.availableTokens = response;
+        response.forEach(token => this._cachePaymentTokenDetails(contractAddress, token));
+      });
+    });
     let wallet = this._web3Service.connectedWallet;
     if(!wallet){
       this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No wallet connected', true);
@@ -115,6 +139,8 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       }
       this._charsContractInfo = cats.slice(-1)[0];
       this._notificationsService.openSnack(ESnackAlertType.SUCCESS, `Current Characters contract: ${this._charsContractInfo.name}`, true, 5000);
+      this.selectedCurrency.update(v => 'ETH');
+      this.onContractLoaded.emit(this._charsContractInfo.contractAddress);
     });
 
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
@@ -160,9 +186,10 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       );
     }
   }
-
+  //selectedCurrency = signal<string>
+  // tabTitle=computed => currency - value
   onSelectedTokenChange(event: string){
-    this.selectedCurrency = event;
+    this.selectedCurrency.update(v => event);
   }
 
   onSelectedTokenPay(event: string){
@@ -392,6 +419,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
       this.charsPaginator.pageIndex = this._currentProfileIdx;
     } 
   }
+
   private _updateImageUrl(isFemaleChar: boolean | undefined){
     if(isFemaleChar === undefined){
       this._currentImageUrl = this.UNKNOWN_CHAR_IMG;
@@ -427,5 +455,11 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
         text += `\n${k}: ${Object(profile)[k]}`;
     })
     return text.trim()
+  }
+
+   private _cachePaymentTokenDetails(collectionAddress: string, tokenSymbol: string){
+    this._web3Service.getTokenDetails(collectionAddress, tokenSymbol, false).then(details => {
+      this._paymentTokens.set(tokenSymbol, details);
+    })
   }
 }

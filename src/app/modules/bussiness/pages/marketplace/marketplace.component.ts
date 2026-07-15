@@ -26,10 +26,10 @@ export class MarketplaceComponent implements OnInit{
     this._smartContractsService.collections.forEach(item => {
       this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
         console.log('summary', summary);
-        this._smartContractsService.getEnabledTokens(item.contractAddress).then(response => {
+        this._smartContractsService.getEnabledTokens(item.contractAddress, true).then(response => {
           response.forEach(token => this._cachePaymentTokenDetails(item.contractAddress, token));
           this._setupCatalogueModels({...item, ...summary, enabledTokens:response});
-        })
+        });
       })
     })
   }
@@ -91,7 +91,7 @@ export class MarketplaceComponent implements OnInit{
     this.loading = false;
   }
   private _cachePaymentTokenDetails(collectionAddress: string, tokenSymbol: string){
-    this._smartContractsService.getTokenDetails(collectionAddress, tokenSymbol).then(details => {
+    this._smartContractsService.getTokenDetails(collectionAddress, tokenSymbol, true).then(details => {
       this._paymentTokens.set(tokenSymbol, details);
     })
   }

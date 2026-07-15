@@ -111,18 +111,25 @@ export class SmartContractsService {
     }
     return summary;
   }
-  public async getEnabledTokens(collectionAddress:string) : Promise<string[]>{
-    return this.getCollectionContract(collectionAddress).methods.getEnabledTokens().call();
+
+  public async getEnabledTokens(collectionAddress:string, isCollectionContract: boolean) : Promise<string[]>{
+    return isCollectionContract ?
+      this.getCollectionContract(collectionAddress).methods.getEnabledTokens().call() :
+      this.getCustomCharactersContract(collectionAddress).methods.enabledTokens().call();
   }
-  public async getTokenDetails(collectionAddress:string, tokenSymbol: string): Promise<TokenDetails>{
-    let details = await this.getCollectionContract(collectionAddress).methods.paymentTokens(tokenSymbol).call();
-    let dto:TokenDetails = {
+
+  public async getTokenDetails(collectionAddress:string, tokenSymbol: string, isCollectionContract: boolean): Promise<TokenDetails>{
+    let details = isCollectionContract ?
+      await this.getCollectionContract(collectionAddress).methods.paymentTokens(tokenSymbol).call() :
+      await this.getCustomCharactersContract(collectionAddress).methods.paymentTokens(tokenSymbol).call();
+      let dto:TokenDetails = {
       tokenContract:details.tokenContract,
       multiplier: parseInt(details.multiplier),
       decimals: parseInt(details.decimals)
     };
     return dto;
   }
+  
   public async getModelInfo(model:string, address:string): Promise<ModelInfo>{
     let data = await this.getCollectionContract(address).methods.modelInfo(model).call();
     let info: ModelInfo = {
