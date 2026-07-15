@@ -29,6 +29,7 @@ export class TokenSelectorMatmenuComponent implements OnChanges{
 
   onTokenChange(event: MatRadioChange){
     this.selectedToken = event.value;
+    this.onTokenChanged.emit(this.selectedToken);
   }
   onSelectTokenClick(){
     this.onTokenSelected.emit(this.selectedToken);
