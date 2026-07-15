@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { CharacterProfileMock } from 'src/app/core/interfaces/business/prompting.interface';
 import { DOCUMENT } from '@angular/common';
 import Web3Provider from 'src/app/core/scripts/web3';
@@ -21,6 +21,8 @@ export class SmartContractsService {
   public web3!:any;
   public factory:any;
   public collections: CatalogueCollection[] = [];
+  public onTransactionReceipt: EventEmitter<any> = new EventEmitter<any>();
+  public onTransactionError: EventEmitter<any> = new EventEmitter<any>();
   private _connectedAccount!:string;
   private _baseUrl:string = 'http://localhost:9000/randomworlds'
 
@@ -85,7 +87,7 @@ export class SmartContractsService {
         contractAddress: cat.contractAddress,
         name: cat.name,
         symbol: cat.symbol,
-        weiMintPrice: cat.weiMintPrice
+        weiMintPrice: BigInt(cat.weiMintPrice)
       };
       return dto;
     })
@@ -129,7 +131,7 @@ export class SmartContractsService {
     };
     return dto;
   }
-  
+
   public async getModelInfo(model:string, address:string): Promise<ModelInfo>{
     let data = await this.getCollectionContract(address).methods.modelInfo(model).call();
     let info: ModelInfo = {
@@ -212,10 +214,12 @@ export class SmartContractsService {
         .send({from: accounts[0], value: Web3.utils.toWei(price, 'ether')})
         .on('receipt', (receipt:any) => {
           console.log('-- on etherMint receipt --', receipt);
+          this.onTransactionReceipt.emit(receipt);
           // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
         })
         .on('error', (error:any, receipt:any) => {
           console.log('-- on ether collection mint error --', error, receipt);
+          this.onTransactionError.emit({ error: error, receipt: receipt});
           throw new Error(`${error}`);
 	      });
         return true;
@@ -244,6 +248,56 @@ export class SmartContractsService {
     return false;
   }
   
+  public async etherMintCustomCharacter(contractAddress:string, price:number) : Promise<boolean>{
+    try{
+      let accounts = await this.getConnectedAccounts();
+      await this.getCustomCharactersContract(contractAddress).methods.etherPurchase()
+        .send({from: this.connectedWallet, value: Web3.utils.toWei(price, 'ether')})
+        .on('receipt', (receipt:any) => {
+          console.log('-- on etherMint receipt --', receipt);
+          this.onTransactionReceipt.emit(receipt);
+          // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
+        })
+        .on('error', (error:any, receipt:any) => {
+          console.log('-- on ether collection mint error --', error, receipt);
+          this.onTransactionError.emit({ error: error, receipt: receipt});
+          throw new Error(`${error}`);
+	      });
+        return true;
+    }
+    catch(error){
+      console.log('-- ether mint error --',error)
+      return false;
+    }
+  }
+  public async mintCustomCharacter(contractAddress:string, paymentToken:string, price:string) : Promise<boolean>{
+    let tokenContract = this.getCoinContract(paymentToken);
+    if(tokenContract){
+      try{
+        console.log('price', price);
+        console.log('pay params: ', contractAddress, paymentToken, this.connectedWallet);
+        await this.getCustomCharactersContract(contractAddress).methods
+          .customTokenPurchase(paymentToken)
+          .send({from:this.connectedWallet, gas:'7000000'})
+          .on('receipt', (receipt:any) => {
+            console.log('-- on etherMint receipt --', receipt);
+            this.onTransactionReceipt.emit(receipt);
+            // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
+          })
+          .on('error', (error:any, receipt:any) => {
+            console.log('-- on ether collection mint error --', error, receipt);
+            this.onTransactionError.emit({ error: error, receipt: receipt});
+            throw new Error(`${error}`);
+          });
+        return true;
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
+    return false;
+  }
+
   public async mintRagChar(paymentToken:string, price:string, model:string) : Promise<boolean>{
     let tokenContract = this.getCoinContract(paymentToken);
     if(tokenContract){

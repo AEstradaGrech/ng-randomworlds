@@ -73,7 +73,7 @@ export class MarketplaceComponent implements OnInit{
           
           await this._smartContractsService.getCollectionContract(model.contractAddress).methods
             .customTokenMint(this._smartContractsService.connectedWallet, model.fileName, this.selectedToken)
-            .send({from:'0xee6870759cbDdFb12EE3A4547C35FFB667717df4',gas:'7000000'});
+            .send({from:this._smartContractsService.connectedWallet, gas:'7000000'});
         }catch(error){
           console.log(error)
         }
