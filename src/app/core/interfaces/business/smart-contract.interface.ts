@@ -118,5 +118,6 @@ export interface CustomCharsCatalogue{
     contractAddress: string,
     name: string,
     symbol: string,
-    weiMintPrice: number
+    // uint256: never a JS number. 1 ETH = 1e18 wei, already past MAX_SAFE_INTEGER.
+    weiMintPrice: bigint
 }

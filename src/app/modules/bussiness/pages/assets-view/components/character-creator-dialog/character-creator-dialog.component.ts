@@ -76,11 +76,36 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _charsContractInfo!: CustomCharsCatalogue;
   private _paymentTokens: Map<string, TokenDetails> = new Map<string, TokenDetails>();
   private onContractLoaded: EventEmitter<string> = new EventEmitter<string>();
+  private onTicketPurchased: EventEmitter<any> = new EventEmitter<any>();
+
   public get charImageUrl(): string{
     return this._currentImageUrl;
   }
-  
-  private getDefaultCurrencyTitle() : string {
+
+  /**
+   * Human-readable price of one mint, denominated in `multiplier` units per ETH.
+   * The exchange ratio is dimensionless, so it applies in wei-space and stays
+   * exact (BigInt throughout, no float). Pass multiplier 1 for plain ETH.
+   */
+  private _displayPrice(weiMintPrice: bigint, multiplier: number): string {
+    return web3.utils.fromWei(weiMintPrice * BigInt(multiplier), 'ether');
+  }
+
+  /** The same price as an integer in the token's own base units, for the contract.
+   * 
+   * The one-line takeaway: decimals answers "where is the decimal point in this token's integers?" — nothing more. 
+   * It's a per-currency rendering convention, it never touches the chain's math, 
+   * and it never participates in an exchange between two different currencies
+   * 
+   * Real tokens genuinely differ, which is why you must read decimals from the contract and never assume 18:
+   *   -- USDC / USDT	6	it's cents-ish money --
+   * Assume 18 for USDC and you're off by 10¹² — you'd approve a millionth of a cent, or a trillion dollars.:
+   */
+  private _baseUnits(weiMintPrice: bigint, details: TokenDetails): string {
+    return web3.utils.toWei(this._displayPrice(weiMintPrice, details.multiplier), details.decimals);
+  }
+
+private getDefaultCurrencyTitle() : string {
     return this._charsContractInfo === undefined ? 'ETH' :
       `ETH - ${web3.utils.fromWei(this._charsContractInfo.weiMintPrice, 'ether')}`;
   }
@@ -90,7 +115,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     if(currentToken !== 'ETH') {
       if(currentToken && currentToken.length > 0 && this._paymentTokens.has(currentToken)){
         let details:TokenDetails | undefined = this._paymentTokens.get(currentToken);
-        return details ? `${currentToken} - ${web3.utils.fromWei(parseInt(`${this._charsContractInfo.weiMintPrice}`) * parseInt(`${details.multiplier}`), 'ether')}` : '';
+        return details ? `${currentToken} - ${this._displayPrice(this._charsContractInfo.weiMintPrice, details.multiplier)}` : '';
       }
       else return this.getDefaultCurrencyTitle();
     }
@@ -127,6 +152,21 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
         response.forEach(token => this._cachePaymentTokenDetails(contractAddress, token));
       });
     });
+    this.onTicketPurchased.subscribe((receipt: any) => {
+      // let wallet:string | null = this._web3Service.connectedWallet;
+      // let profile: RandomWorldsCharacter | null = this.currentProfile();
+      // let image: GenerateImageResponse | null = this.currentImage();
+      // if(wallet && profile && image){
+      //   let ticket: MintCharacterRequest = {
+      //     character: profile,
+      //     base64: image.base64
+      //   }
+      //   this._mgmtService.mintCustomCharacter(wallet, receipt['TxHash'], ticket).subscribe(res => {
+      //      this.onTokenUploaded.emit() <- this._web3Service.getCustomCharactersContract(this._info.address).redeemNFT()
+      //   });
+      // }
+    });
+
     let wallet = this._web3Service.connectedWallet;
     if(!wallet){
       this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No wallet connected', true);
@@ -137,10 +177,11 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
         this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No Immutable Characters Contract deployed. Cannot mint NFT', true, 5000);
         this._dialogRef.close();
       }
-      this._charsContractInfo = cats.slice(-1)[0];
-      this._notificationsService.openSnack(ESnackAlertType.SUCCESS, `Current Characters contract: ${this._charsContractInfo.name}`, true, 5000);
+      const contract: CustomCharsCatalogue = cats.slice(-1)[0];
+      this._charsContractInfo = contract;
+      this._notificationsService.openSnack(ESnackAlertType.SUCCESS, `Current Characters contract: ${contract.name}`, true, 5000);
       this.selectedCurrency.update(v => 'ETH');
-      this.onContractLoaded.emit(this._charsContractInfo.contractAddress);
+      this.onContractLoaded.emit(contract.contractAddress);
     });
 
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
@@ -192,8 +233,53 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
     this.selectedCurrency.update(v => event);
   }
 
-  onSelectedTokenPay(event: string){
-    //this._smartContractsService.getShitCoin(paymentTokens[this.selectedCurrency].contractAddress).methods
+  async onSelectedTokenPay(event: string){
+    if(event !== this.selectedCurrency()){
+      this._notificationsService.openSnack(ESnackAlertType.ERROR, 'The selected currency does not match the input currency', true)
+      return;
+    }
+    const contract: CustomCharsCatalogue | null = this._charsContractInfo;
+    if(!contract) return;
+
+    if(this.selectedCurrency() !== 'ETH') {
+      const tokenDetails: TokenDetails | undefined = this._paymentTokens.get(this.selectedCurrency());
+      // Never fall through to the ETH branch when the token details are missing:
+      // that would charge the user in ETH for a purchase they made in tokens.
+      if(!tokenDetails){
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, `No token details loaded yet for ${this.selectedCurrency()}, try again in a moment`, true);
+        return;
+      }
+      // The contract wants an integer in the token's own base units - a
+      // different number from the one we render in the title.
+      const amount: string = this._baseUnits(contract.weiMintPrice, tokenDetails);
+      await this._web3Service.getCoinContract(this.selectedCurrency()).methods
+        .approve(contract.contractAddress, amount)
+        .send({from: this._web3Service.connectedWallet})
+        .on('receipt', (receipt:any) => {
+            console.log('-- on etherMint receipt --', receipt);
+            this.onTicketPurchased.emit(receipt)
+          })
+          .on('error', (error:any, receipt:any) => {
+            console.log('-- on ether collection mint error --', error, receipt);
+            this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
+          });
+    }
+    else{
+      // Paying in ETH: weiMintPrice is already in wei, which is exactly what
+      // `value` wants. No conversion at all.
+      await this._web3Service.getCustomCharactersContract(contract.contractAddress).methods
+        .etherPurchase()
+        .send({from: this._web3Service.connectedWallet, value: contract.weiMintPrice})
+        .on('receipt', (receipt:any) => {
+            console.log('-- on etherMint receipt --', receipt);
+            this.onTicketPurchased.emit(receipt)
+          })
+          .on('error', (error:any, receipt:any) => {
+            console.log('-- on ether collection mint error --', error, receipt);
+            this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
+          });
+    } 
+      //this._smartContractsService.getShitCoin(paymentTokens[this.selectedCurrency].contractAddress).methods
     //  .approve(this.currentContractAddress)
     //this._smartContractsService.getCustomCharactersContract(this.currentContractAddress).methods
     //    .customTokenMint(this.selectedCurrency)
@@ -459,6 +545,8 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
 
    private _cachePaymentTokenDetails(collectionAddress: string, tokenSymbol: string){
     this._web3Service.getTokenDetails(collectionAddress, tokenSymbol, false).then(details => {
+      // Replace the Map, don't mutate it: map.set() in place changes no reference,
+      // so the signal would see no change and dependents would never re-run.
       this._paymentTokens.set(tokenSymbol, details);
     })
   }
