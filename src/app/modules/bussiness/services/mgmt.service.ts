@@ -11,7 +11,7 @@ export class MgmtService {
   private _baseUrl:string = 'http://localhost:9000/randomworlds';
   private _http:HttpClient = inject(HttpClient);
 
-  public mintCustomCharacter(wallet:string, contract:string, req: MintCharacterRequest) : Observable<TicketDto>{
+  public uploadCustomCharacter(wallet:string, contract:string, req: MintCharacterRequest) : Observable<TicketDto>{
     return this._http.post<TicketDto>(`${this._baseUrl}/blockchain/customchar/ipfs/upload/${wallet}/${contract}`,req);
   }
 }

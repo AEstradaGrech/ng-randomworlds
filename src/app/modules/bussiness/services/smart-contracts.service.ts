@@ -21,8 +21,8 @@ export class SmartContractsService {
   public web3!:any;
   public factory:any;
   public collections: CatalogueCollection[] = [];
-  public onTransactionReceipt: EventEmitter<any> = new EventEmitter<any>();
-  public onTransactionError: EventEmitter<any> = new EventEmitter<any>();
+  public onPaymentReceipt: EventEmitter<any> = new EventEmitter<any>();
+  public onPaymentError: EventEmitter<any> = new EventEmitter<any>();
   private _connectedAccount!:string;
   private _baseUrl:string = 'http://localhost:9000/randomworlds'
 
@@ -214,12 +214,12 @@ export class SmartContractsService {
         .send({from: accounts[0], value: Web3.utils.toWei(price, 'ether')})
         .on('receipt', (receipt:any) => {
           console.log('-- on etherMint receipt --', receipt);
-          this.onTransactionReceipt.emit(receipt);
+          this.onPaymentReceipt.emit(receipt);
           // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
         })
         .on('error', (error:any, receipt:any) => {
           console.log('-- on ether collection mint error --', error, receipt);
-          this.onTransactionError.emit({ error: error, receipt: receipt});
+          this.onPaymentError.emit({ error: error, receipt: receipt});
           throw new Error(`${error}`);
 	      });
         return true;
@@ -255,12 +255,12 @@ export class SmartContractsService {
         .send({from: this.connectedWallet, value: Web3.utils.toWei(price, 'ether')})
         .on('receipt', (receipt:any) => {
           console.log('-- on etherMint receipt --', receipt);
-          this.onTransactionReceipt.emit(receipt);
+          this.onPaymentReceipt.emit(receipt);
           // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
         })
         .on('error', (error:any, receipt:any) => {
           console.log('-- on ether collection mint error --', error, receipt);
-          this.onTransactionError.emit({ error: error, receipt: receipt});
+          this.onPaymentError.emit({ error: error, receipt: receipt});
           throw new Error(`${error}`);
 	      });
         return true;
@@ -270,29 +270,29 @@ export class SmartContractsService {
       return false;
     }
   }
-  public async mintCustomCharacter(contractAddress:string, paymentToken:string, price:string) : Promise<boolean>{
+  public async mintCustomCharacter(contractAddress:string, paymentToken:string) : Promise<boolean>{
     let tokenContract = this.getCoinContract(paymentToken);
     if(tokenContract){
       try{
-        console.log('price', price);
         console.log('pay params: ', contractAddress, paymentToken, this.connectedWallet);
         await this.getCustomCharactersContract(contractAddress).methods
           .customTokenPurchase(paymentToken)
           .send({from:this.connectedWallet, gas:'7000000'})
           .on('receipt', (receipt:any) => {
             console.log('-- on etherMint receipt --', receipt);
-            this.onTransactionReceipt.emit(receipt);
+            this.onPaymentReceipt.emit(receipt);
             // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
           })
           .on('error', (error:any, receipt:any) => {
             console.log('-- on ether collection mint error --', error, receipt);
-            this.onTransactionError.emit({ error: error, receipt: receipt});
+            this.onPaymentError.emit({ error: error, receipt: receipt});
             throw new Error(`${error}`);
           });
         return true;
       }
       catch(error){
         console.log(error);
+        return false;
       }
     }
     return false;
@@ -342,6 +342,9 @@ export class SmartContractsService {
     return this.web3.utils.hexToAscii(value);
   }
 
+  public redeemCustomCharNFT(contract:string, metaUri: string){
+    return this.getCustomCharactersContract(contract).methods.redeemNFT(metaUri).send({from: this.connectedWallet })
+  }
   // private _mapWalletNFT(item:any): WalletNFT{
   //   let asset: WalletNFT = item;
   //   console.log('-- mapping wallet nft --', asset);

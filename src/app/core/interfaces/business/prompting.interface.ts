@@ -44,12 +44,18 @@ export interface RandomWorldsCharacter extends QuestCharacter{
 }
 
 export interface MintCharacterRequest {
+    currency: string,
+    price: string,
+    txHash: string,
     character: RandomWorldsCharacter,
     base64: string
 }
 
 export interface TicketDto{
     id?:string,
+    txHash?: string,
+    currency: string,
+    price: string,
     wallet:string,
     contractAddress:string,
     createDate:Date,
@@ -59,7 +65,8 @@ export interface TicketDto{
     base64: string,
     character:RandomWorldsCharacter,
     imageCid?: string,
-    metaCid?: string
+    metaCid?: string,
+    metaUri?: string
 }
 export interface QuestInitRequest{
     username:string,

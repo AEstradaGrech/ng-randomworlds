@@ -7,7 +7,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabChangeEvent } from '@angular/material/tabs';
-import { CreateCharacterRequest, QuestCharacter, RandomWorldsCharacter } from 'src/app/core/interfaces/business/prompting.interface';
+import { CreateCharacterRequest, MintCharacterRequest, QuestCharacter, RandomWorldsCharacter, TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { ImagesService } from 'src/app/modules/bussiness/services/images.service';
 import { QuestsService } from 'src/app/modules/bussiness/services/quests.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -76,6 +76,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _charsContractInfo!: CustomCharsCatalogue;
   private _paymentTokens: Map<string, TokenDetails> = new Map<string, TokenDetails>();
   private onContractLoaded: EventEmitter<string> = new EventEmitter<string>();
+  private onTokenUploaded: EventEmitter<TicketDto> = new EventEmitter<TicketDto>();
   private onTicketPurchased: EventEmitter<any> = new EventEmitter<any>();
 
   public get charImageUrl(): string{
@@ -152,19 +153,39 @@ private getDefaultCurrencyTitle() : string {
         response.forEach(token => this._cachePaymentTokenDetails(contractAddress, token));
       });
     });
-    this.onTicketPurchased.subscribe((receipt: any) => {
-      // let wallet:string | null = this._web3Service.connectedWallet;
-      // let profile: RandomWorldsCharacter | null = this.currentProfile();
-      // let image: GenerateImageResponse | null = this.currentImage();
-      // if(wallet && profile && image){
-      //   let ticket: MintCharacterRequest = {
-      //     character: profile,
-      //     base64: image.base64
-      //   }
-      //   this._mgmtService.mintCustomCharacter(wallet, receipt['TxHash'], ticket).subscribe(res => {
-      //      this.onTokenUploaded.emit() <- this._web3Service.getCustomCharactersContract(this._info.address).redeemNFT()
-      //   });
-      // }
+    this.onTicketPurchased.subscribe((data: any) => {
+      console.log('purchase transaction', data.receipt.transactionHash);
+      let wallet:string | null = data.receipt.from;
+      let profile: RandomWorldsCharacter | null = this.currentProfile();
+      let image: GenerateImageResponse | null = this.currentImage();
+      if(wallet && profile && image){
+        let ticket: MintCharacterRequest = {
+          txHash: data.receipt.transactionHash,
+          currency: data.currency,
+          price: web3.utils.fromWei(data.price, 'ether'),
+          character: profile,
+          base64: image.base64
+        }
+        this._mgmtService.uploadCustomCharacter(wallet, this._charsContractInfo.contractAddress, ticket)
+          .subscribe(res => {
+            console.log('-- on character IPFS upload completed --', res);
+            this.onTokenUploaded.emit(res);
+        });
+      }
+      else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while gathering wallet | profile | image values, try again')
+    });
+
+    this.onTokenUploaded.subscribe(ticket => {
+      if(ticket.metaUri){
+        console.log('redeeming ticket w/metaUri: ', ticket.metaUri);
+        this._web3Service.redeemCustomCharNFT(this._charsContractInfo.contractAddress, ticket.metaUri)
+          .on('receipt', (receipt:any) => {
+            console.log('-- on etherMint receipt --', receipt);
+          })
+          .on('error', (error:any, receipt:any) => {
+            console.log('-- on ether collection mint error --', error, receipt); 
+          });
+      }
     });
 
     let wallet = this._web3Service.connectedWallet;
@@ -257,7 +278,7 @@ private getDefaultCurrencyTitle() : string {
         .send({from: this._web3Service.connectedWallet})
         .on('receipt', (receipt:any) => {
             console.log('-- on etherMint receipt --', receipt);
-            this.onTicketPurchased.emit(receipt)
+            this.onTicketPurchased.emit({ currency: this.selectedCurrency(), price: amount, receipt: receipt });
           })
           .on('error', (error:any, receipt:any) => {
             console.log('-- on ether collection mint error --', error, receipt);
@@ -272,7 +293,7 @@ private getDefaultCurrencyTitle() : string {
         .send({from: this._web3Service.connectedWallet, value: contract.weiMintPrice})
         .on('receipt', (receipt:any) => {
             console.log('-- on etherMint receipt --', receipt);
-            this.onTicketPurchased.emit(receipt)
+            this.onTicketPurchased.emit({ currency: this.selectedCurrency(), price: contract.weiMintPrice, receipt: receipt })
           })
           .on('error', (error:any, receipt:any) => {
             console.log('-- on ether collection mint error --', error, receipt);
