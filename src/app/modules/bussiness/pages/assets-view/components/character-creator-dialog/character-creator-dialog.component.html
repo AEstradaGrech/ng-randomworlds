@@ -43,7 +43,7 @@
             [size]="'35px'"
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
-            [withSpinner]="isLoading && isGeneratingImage"
+            [disabled]="isMinting"
             (click)="$event.stopPropagation();onSkipImage('left')">
           </app-rounded-button>
           <app-rounded-button [matMenuTriggerFor]="payMenu"
@@ -55,11 +55,7 @@
             [size]="'35px'"
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
-            [withSpinner]="isLoading && isGeneratingImage">
-            
-            <!--
-            [disabled]="profileImagesCount() == 0"
-            (click)="$event.stopPropagation();onMintNFT()"-->
+            [disabled]="profileImagesCount() == 0 || isMinting">
           </app-rounded-button>
           <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
             <app-token-selector-matmenu 
@@ -78,7 +74,7 @@
             [size]="'35px'"
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
-            [withSpinner]="isLoading && isGeneratingImage"
+            [disabled]="isMinting"
             (click)="$event.stopPropagation();onSkipImage('right')">
           </app-rounded-button>
         </div>
