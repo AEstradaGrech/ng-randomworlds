@@ -307,11 +307,6 @@ private getDefaultCurrencyTitle() : string {
             this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
           });
     } 
-      //this._smartContractsService.getShitCoin(paymentTokens[this.selectedCurrency].contractAddress).methods
-    //  .approve(this.currentContractAddress)
-    //this._smartContractsService.getCustomCharactersContract(this.currentContractAddress).methods
-    //    .customTokenMint(this.selectedCurrency)
-    
   }
 
   onShowSettings(){
@@ -465,12 +460,6 @@ private getDefaultCurrencyTitle() : string {
       this.currentProfile.set(profile);
       this._renderCurrentProfile();
     }
-    
-    // if(this.generatedProfiles.length <= event.pageIndex){
-    //   let profile = this.generatedProfiles[event.pageIndex];
-
-    // }
-    
   }
 
   public onSkipImage(dir:string){

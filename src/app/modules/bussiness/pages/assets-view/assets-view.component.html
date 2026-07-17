@@ -10,33 +10,33 @@
                     </button>
                 </div>
                 <mat-accordion class="example-headers-align">
+                    @if(customCharsCollection) {
+                        <ng-container *ngTemplateOutlet="collectionsInfo; context:{
+                            expanded: true,
+                            name: customCharsCollection.name,
+                            token: null,
+                            symbol: customCharsCollection.symbol,
+                            address: customCharsCollection.contractAddress,
+                            description: 'Collection of minted custom characters',
+                            total: -1,
+                            image: defaultLogoUrl,
+                            open: selectCollection(null)
+                          }">
+                        </ng-container>
+                    }
                     @for(collection of collections; track collection){
-                        <mat-expansion-panel  [expanded]="currentCollection.summary.contractAddress === collection.summary.contractAddress" (opened)="selectCollection(collection)" hideToggle>
-                            <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
-                              <div style="display: block; width: 80%; margin: 15px 10px 5px 15px">
-                                  <mat-panel-title class="col-title"> {{collection.summary.name}} </mat-panel-title>
-                                  <mat-panel-description class="col-subtitle">
-                                      <p style="margin: 0 0 5px !important;">{{collection.summary.symbol}} - {{collection.summary.tokenName}}</p>
-                                      <p style="margin: 0 0 5px !important;">{{collection.summary.contractAddress}}</p>
-                                      <p style="margin: 0 0 5px !important;">Total assets: {{collection.assets.length}}</p>
-                                  </mat-panel-description>
-                              </div>
-                              <img style="width: 25%; margin: 5px 5px 5px 5px; padding-top: 5px; padding-bottom: 5px; border-radius: 15px !important;" [src]="currentCollection.summary.logoImage" alt="Photo of a Shiba Inu">
-                            </mat-expansion-panel-header>
-                            <div style="display: flex;">
-                              <div style="width: 75%;">
-                                  <p style="color: #99c531; padding-top: 15px;">{{collection.summary.description}}</p>
-                              </div>
-                              <div class="col-sel-div">
-                                  <button class="col-sel-btn" (click)="onViewCollectionClick(collection.summary.contractAddress)">
-                                      <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                                          aria-hidden="false" 
-                                          aria-label="Collections sidenav view"
-                                          fontIcon="content_paste"></mat-icon>
-                                  </button>
-                              </div>
-                            </div>
-                          </mat-expansion-panel>
+                        <ng-container *ngTemplateOutlet="collectionsInfo; context:{
+                        expanded: currentCollection.summary.contractAddress === collection.summary.contractAddress,
+                        name: collection.summary.name,
+                        token: collection.summary.tokenName,
+                        symbol: collection.summary.symbol,
+                        address: collection.summary.contractAddress,
+                        description: collection.summary.description,
+                        total: collection.assets.length,
+                        image: currentCollection.summary.logoImage,
+                        open: selectCollection(collection)
+                        }">
+                        </ng-container>
                     }
                   </mat-accordion>
         </mat-sidenav>
@@ -93,26 +93,35 @@
         </mat-sidenav-content>
     </mat-sidenav-container>
   </div>
-  
-<!-- <ng-template #sellButton>  
-        <app-rounded-button [matMenuTriggerFor]="payMenu"
-                    [id]="'sell'"
-                    [iconName]="'payment'"
-                    [hoverColor]="'var(--secondary-btn-hover)'"
-                    [borderColor]="'var(--secondary-btn-border)'"
-                    [disabled]="loading"
-                    >
-        </app-rounded-button>
-        <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
-            <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
-                <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
-                    <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
-                    <mat-card-subtitle class="collection-card-subtitle">{{model.symbol}}</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content class="payment-card-content"></mat-card-content>
-                <mat-card-actions style="display: flex; justify-content: center;">
-                    <button mat-stroked-button class="pay-btn" (click)="onSellClick(model)">SELL</button>
-                </mat-card-actions>
-            </mat-card>
-        </mat-menu>
-    </ng-template> -->
+  <ng-template #collectionsInfo let-expanded="expanded" let-name="name" let-symbol="symbol" let-token="token", let-address="address", let-description="description" let-total="total" let-image="image" let-open="open">
+    <mat-expansion-panel style="margin: 7px 0px 7px 0px;"  [expanded]="expanded" (opened)="open" hideToggle>
+        <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
+            <div style="display: block; width: 80%; margin: 15px 10px 5px 15px">
+                <mat-panel-title class="col-title"> {{name}} </mat-panel-title>
+                <mat-panel-description class="col-subtitle">
+                    <p *ngIf="token !== null" style="margin: 0 0 5px !important;">{{symbol}} - {{token}}</p>
+                    <p style="margin: 0 0 5px !important;">{{symbol}}</p>
+                    <p style="margin: 0 0 5px !important;">{{address}}</p>
+                    <p *ngIf="total > 0" style="margin: 0 0 5px !important;">Total assets: {{total}}</p>
+                </mat-panel-description>
+            </div>
+            <img style="width: 25%; margin: 5px 5px 5px 5px; padding-top: 5px; padding-bottom: 5px; border-radius: 15px !important;" [src]="image" alt="Collection logo">
+        </mat-expansion-panel-header>
+        <div style="display: flex;">
+            <div style="width: 75%;">
+                <p style="color: #99c531; padding-top: 15px;">{{description}}</p>
+            </div>
+            <div class="col-sel-div">
+                <app-rounded-button 
+                    style="margin-left:9px"
+                    [id]="'view_collection'"
+                    [iconName]="'content_paste'"
+                    [size]="'35px'"
+                    [hoverColor]="'var(--terciary-btn-hover)'"
+                    [borderColor]="'var(--terciary-btn-border)'"
+                    (click)="onViewCollectionClick(address)">
+                </app-rounded-button>
+            </div>
+        </div>
+        </mat-expansion-panel>
+  </ng-template>

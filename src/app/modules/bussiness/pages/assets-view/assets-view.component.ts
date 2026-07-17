@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, AfterViewInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -23,10 +23,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   public collections: AssetsCollection[] = []
   public currentCollection!: AssetsCollection;
+  public customCharsCollection!: CustomCharsCollection;
   public currentCollectionLogoUrl: any;
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
-  private _router:Router = inject(Router);
   
   private _slideScrollState: ScrollState = {
     step: 100,
@@ -45,6 +45,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     return this.currentCollection ? this.currentCollection.assets : [];
   }
 
+  public defaultLogoUrl:string = 'assets/images/MetamaskIconBrown.png';
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
   public visorType:string = 'row';
@@ -86,7 +87,19 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
           })
         })
       })
-    })
+    });
+    this._smartContractsService.getCustomCharsCatalogue().then(cats => {
+      if(cats.length > 0) {
+        this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
+        // this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress).then(walletNFTs => {
+        //     console.log('-- on col wallet resp --', walletNFTs)
+        //     this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
+        //       let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
+        //       return asset;
+        //     });
+        //   })
+      }
+    });
     this._notificationsService.setup('center', 'bottom', 3000)
   }
   
@@ -179,6 +192,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     this.sidenav.close();
   }
   public selectCollection(collection: AssetsCollection) {
+    if(!collection) return;
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
   }
   public onCardButtonClicked(event:NftCardClickAction){
@@ -207,7 +221,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     this._dialog.open(CharacterCreatorDialogComponent, { data: {connectedWallet: this._smartContractsService.connectedWallet }})
       .afterClosed()
       .subscribe(result => {
-        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created")
+        if(result){
+          this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created");
+          //refresh NFTs
+        }
     })
   }
 }

@@ -121,3 +121,7 @@ export interface CustomCharsCatalogue{
     // uint256: never a JS number. 1 ETH = 1e18 wei, already past MAX_SAFE_INTEGER.
     weiMintPrice: bigint
 }
+
+export interface CustomCharsCollection extends CustomCharsCatalogue{
+    assets: AssetModel[]
+}
