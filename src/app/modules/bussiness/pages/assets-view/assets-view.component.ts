@@ -42,7 +42,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   }
 
   public get collectionAssets(): AssetModel[]{
-    return this.currentCollection ? this.currentCollection.assets : [];
+    return this.currentCollection ? 
+      this.customCharsCollection && this.customCharsCollection.assets ? 
+      [...this.currentCollection.assets, ...this.customCharsCollection.assets] : 
+      this.currentCollection.assets : [];
   }
 
   public defaultLogoUrl:string = 'assets/images/MetamaskIconBrown.png';
@@ -91,13 +94,13 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     this._smartContractsService.getCustomCharsCatalogue().then(cats => {
       if(cats.length > 0) {
         this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
-        // this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress).then(walletNFTs => {
-        //     console.log('-- on col wallet resp --', walletNFTs)
-        //     this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
-        //       let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
-        //       return asset;
-        //     });
-        //   })
+        this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress).then(walletNFTs => {
+            console.log('-- on col wallet resp --', walletNFTs)
+            this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
+              let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
+              return asset;
+            });
+          })
       }
     });
     this._notificationsService.setup('center', 'bottom', 3000)
