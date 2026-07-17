@@ -270,7 +270,11 @@ export class SmartContractsService {
       return false;
     }
   }
-  public async mintCustomCharacter(contractAddress:string, paymentToken:string) : Promise<boolean>{
+
+  public mintCustomCharacter(contractAddress: string, paymentToken: string){
+    return this.getCustomCharactersContract(contractAddress).methods.customTokenPurchase(paymentToken).send({from: this.connectedWallet})
+  }
+  public async mintCustomCharacterAsync(contractAddress:string, paymentToken:string) : Promise<boolean>{
     let tokenContract = this.getCoinContract(paymentToken);
     if(tokenContract){
       try{
@@ -343,7 +347,7 @@ export class SmartContractsService {
   }
 
   public redeemCustomCharNFT(contract:string, metaUri: string){
-    return this.getCustomCharactersContract(contract).methods.redeemNFT(metaUri).send({from: this.connectedWallet })
+    return this.getCustomCharactersContract(contract).methods.redeemNFT(metaUri).send({from: this.connectedWallet, gas:'7000000' })
   }
   // private _mapWalletNFT(item:any): WalletNFT{
   //   let asset: WalletNFT = item;

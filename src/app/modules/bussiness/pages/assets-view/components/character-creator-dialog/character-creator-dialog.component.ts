@@ -278,7 +278,14 @@ private getDefaultCurrencyTitle() : string {
         .send({from: this._web3Service.connectedWallet})
         .on('receipt', (receipt:any) => {
             console.log('-- on etherMint receipt --', receipt);
-            this.onTicketPurchased.emit({ currency: this.selectedCurrency(), price: amount, receipt: receipt });
+            this._web3Service.mintCustomCharacter(this._charsContractInfo.contractAddress, this.selectedCurrency())
+            .on('receipt', (pur_receipt: any) => {
+              this.onTicketPurchased.emit({ currency: this.selectedCurrency(), price: amount, receipt: pur_receipt });
+            })
+            .on('error', (error:any, pur_receipt:any) => {
+              console.log('-- on ether collection mint error --', error, pur_receipt);
+              this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
+          });
           })
           .on('error', (error:any, receipt:any) => {
             console.log('-- on ether collection mint error --', error, receipt);
