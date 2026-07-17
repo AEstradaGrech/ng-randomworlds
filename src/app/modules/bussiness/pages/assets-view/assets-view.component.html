@@ -20,7 +20,7 @@
                             description: 'Collection of minted custom characters',
                             total: -1,
                             image: defaultLogoUrl,
-                            open: selectCollection(null)
+                            open: selectCustomCharsCollection()
                           }">
                         </ng-container>
                     }
@@ -42,7 +42,7 @@
         </mat-sidenav>
         <mat-sidenav-content>
             <app-nft-visor
-                [assets]=collectionAssets 
+                [assets]=displayedAssets 
                 [nftCardButtonsConfig]="nftCardButtonsConfig"
                 [disabled]="loading" 
                 (onCardButtonClick)="onCardButtonClicked($event)"

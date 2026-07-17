@@ -27,7 +27,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public currentCollectionLogoUrl: any;
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
-  
+  public displayedAssets: AssetModel[] =[];
   private _slideScrollState: ScrollState = {
     step: 100,
     mult: 1,
@@ -94,18 +94,25 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     this._smartContractsService.getCustomCharsCatalogue().then(cats => {
       if(cats.length > 0) {
         this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
-        this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress).then(walletNFTs => {
-            console.log('-- on col wallet resp --', walletNFTs)
-            this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
-              let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
-              return asset;
-            });
-          })
+        this._getCustomCharacters();
       }
     });
     this._notificationsService.setup('center', 'bottom', 3000)
   }
   
+  private _getCustomCharacters(){
+    if(this.customCharsCollection){
+      this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress)
+        .then(walletNFTs => {
+          console.log('-- on col wallet resp --', walletNFTs)
+          this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
+            let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
+            return asset;
+          });
+        })
+    }
+  }
+
   ngAfterViewInit(): void {
     let wallet = this._smartContractsService.connectedWallet;
     this._notificationsService.openSnack(
@@ -194,9 +201,14 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public closeSidenav() {
     this.sidenav.close();
   }
+  public selectCustomCharsCollection(){
+    if(this.customCharsCollection)
+      this.displayedAssets = this.customCharsCollection.assets;
+  }
   public selectCollection(collection: AssetsCollection) {
     if(!collection) return;
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
+    this.displayedAssets = this.currentCollection.assets;
   }
   public onCardButtonClicked(event:NftCardClickAction){
     console.log('-- char selection >> card btn clicked --', event)
@@ -226,6 +238,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       .subscribe(result => {
         if(result){
           this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created");
+          this._getCustomCharacters();
           //refresh NFTs
         }
     })

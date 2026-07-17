@@ -19,6 +19,7 @@ import { MgmtService } from 'src/app/modules/bussiness/services/mgmt.service';
 import { SmartContractsService } from 'src/app/modules/bussiness/services/smart-contracts.service';
 import { CustomCharsCatalogue, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-character-creator-dialog',
@@ -56,7 +57,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   currentImage = signal<GenerateImageResponse | null>(null);
   availableTokens: string[] = [];
   diffusionSettings!: ProviderSettingsDto;
-  
+  isMinting: boolean = false;
   selectedCurrency = signal<string>('');
 
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
@@ -167,12 +168,23 @@ private getDefaultCurrencyTitle() : string {
           base64: image.base64
         }
         this._mgmtService.uploadCustomCharacter(wallet, this._charsContractInfo.contractAddress, ticket)
-          .subscribe(res => {
+          .pipe(catchError(e => {
+            this.isLoading = false; 
+            this.isMinting = false;
+            return of(e);
+          }))
+          .subscribe((res: TicketDto | Error) => {
             console.log('-- on character IPFS upload completed --', res);
-            this.onTokenUploaded.emit(res);
+            if(res as unknown as TicketDto !== undefined)
+              this.onTokenUploaded.emit(res as unknown as TicketDto);
+            else this._notificationsService.openSnack(ESnackAlertType.ERROR, `${(res as unknown as Error).message}`, true);
         });
       }
-      else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while gathering wallet | profile | image values, try again')
+      else {
+        this.isLoading = false;
+        this.isMinting = false;
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while gathering wallet | profile | image values, try again');
+      }
     });
 
     this.onTokenUploaded.subscribe(ticket => {
@@ -181,9 +193,14 @@ private getDefaultCurrencyTitle() : string {
         this._web3Service.redeemCustomCharNFT(this._charsContractInfo.contractAddress, ticket.metaUri)
           .on('receipt', (receipt:any) => {
             console.log('-- on etherMint receipt --', receipt);
+              this.isLoading = false;
+              this.isMinting = false;
+              this._dialogRef.close(ticket);
           })
           .on('error', (error:any, receipt:any) => {
             console.log('-- on ether collection mint error --', error, receipt); 
+            this.isLoading = false;
+            this.isMinting = false;
           });
       }
     });
@@ -270,6 +287,8 @@ private getDefaultCurrencyTitle() : string {
         this._notificationsService.openSnack(ESnackAlertType.ERROR, `No token details loaded yet for ${this.selectedCurrency()}, try again in a moment`, true);
         return;
       }
+      this.isLoading = true;
+      this.isMinting = true;
       // The contract wants an integer in the token's own base units - a
       // different number from the one we render in the title.
       const amount: string = this._baseUnits(contract.weiMintPrice, tokenDetails);
@@ -285,14 +304,20 @@ private getDefaultCurrencyTitle() : string {
             .on('error', (error:any, pur_receipt:any) => {
               console.log('-- on ether collection mint error --', error, pur_receipt);
               this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
+              this.isLoading = false;
+              this.isMinting = false;
           });
           })
           .on('error', (error:any, receipt:any) => {
             console.log('-- on ether collection mint error --', error, receipt);
             this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
+            this.isLoading = false;
+            this.isMinting = false;
           });
     }
     else{
+      this.isLoading = true;
+      this.isMinting = true;
       // Paying in ETH: weiMintPrice is already in wei, which is exactly what
       // `value` wants. No conversion at all.
       await this._web3Service.getCustomCharactersContract(contract.contractAddress).methods
@@ -305,6 +330,8 @@ private getDefaultCurrencyTitle() : string {
           .on('error', (error:any, receipt:any) => {
             console.log('-- on ether collection mint error --', error, receipt);
             this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
+            this.isLoading = false;
+            this.isMinting = false;
           });
     } 
   }
