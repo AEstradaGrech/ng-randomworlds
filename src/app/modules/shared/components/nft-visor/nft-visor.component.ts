@@ -16,7 +16,7 @@ export class NftVisorComponent implements OnInit, OnChanges{
   @Input() skipButtonsPosition:string = 'center';
   @Input() visualization: string = 'row'; // | grid;
   @Output() onCardButtonClick: EventEmitter<NftCardClickAction> = new EventEmitter<NftCardClickAction>();
-
+  @Output() onVisualizationChange: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
   public viewType: string = 'wrap';
   public screenScroll: string = 'auto';
@@ -46,6 +46,7 @@ export class NftVisorComponent implements OnInit, OnChanges{
     console.log('-- on change visualization --');
     this.viewType = this.visualization === 'row' ? 'nowrap' : 'wrap';
     this.screenScroll = this.visualization === 'row' ? 'hidden' : 'auto';
+    this.onVisualizationChange.emit(this.visualization);
   }
   public switchVisualization(){
     this.visualization = this.visualization === 'row' ? 'grid' : 'row';

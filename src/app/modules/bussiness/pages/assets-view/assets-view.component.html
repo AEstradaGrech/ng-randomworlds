@@ -12,7 +12,7 @@
                 <mat-accordion class="example-headers-align">
                     @if(customCharsCollection) {
                         <ng-container *ngTemplateOutlet="collectionsInfo; context:{
-                            expanded: true,
+                            expanded: selectedContractAddress() === customCharsCollection.contractAddress,
                             name: customCharsCollection.name,
                             token: null,
                             symbol: customCharsCollection.symbol,
@@ -27,7 +27,7 @@
                     }
                     @for(collection of collections; track collection){
                         <ng-container *ngTemplateOutlet="collectionsInfo; context:{
-                        expanded: currentCollection?.summary?.contractAddress === collection.summary.contractAddress,
+                        expanded: selectedContractAddress() === collection.summary.contractAddress,
                         name: collection.summary.name,
                         token: collection.summary.tokenName,
                         symbol: collection.summary.symbol,
@@ -48,6 +48,7 @@
                 [nftCardButtonsConfig]="nftCardButtonsConfig"
                 [disabled]="loading" 
                 (onCardButtonClick)="onCardButtonClicked($event)"
+                (onVisualizationChange)="onVisorTypeChange($event)"
                 [projectedButtonsTemplate]="sellButton">
                 <ng-template #sellButton let-model="model">  
                     <app-rounded-button [matMenuTriggerFor]="payMenu"
