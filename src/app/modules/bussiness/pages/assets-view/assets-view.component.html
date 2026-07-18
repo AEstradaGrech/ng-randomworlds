@@ -20,21 +20,23 @@
                             description: 'Collection of minted custom characters',
                             total: -1,
                             image: defaultLogoUrl,
-                            open: selectCustomCharsCollection()
+                            item: customCharsCollection,
+                            open: selectCustomCharsCollection
                           }">
                         </ng-container>
                     }
                     @for(collection of collections; track collection){
                         <ng-container *ngTemplateOutlet="collectionsInfo; context:{
-                        expanded: currentCollection.summary.contractAddress === collection.summary.contractAddress,
+                        expanded: currentCollection?.summary?.contractAddress === collection.summary.contractAddress,
                         name: collection.summary.name,
                         token: collection.summary.tokenName,
                         symbol: collection.summary.symbol,
                         address: collection.summary.contractAddress,
                         description: collection.summary.description,
                         total: collection.assets.length,
-                        image: currentCollection.summary.logoImage,
-                        open: selectCollection(collection)
+                        image: collection.summary.logoImage,
+                        item: collection,
+                        open: selectCollection
                         }">
                         </ng-container>
                     }
@@ -42,7 +44,7 @@
         </mat-sidenav>
         <mat-sidenav-content>
             <app-nft-visor
-                [assets]=displayedAssets 
+                [assets]=displayedAssets()
                 [nftCardButtonsConfig]="nftCardButtonsConfig"
                 [disabled]="loading" 
                 (onCardButtonClick)="onCardButtonClicked($event)"
@@ -93,8 +95,8 @@
         </mat-sidenav-content>
     </mat-sidenav-container>
   </div>
-  <ng-template #collectionsInfo let-expanded="expanded" let-name="name" let-symbol="symbol" let-token="token", let-address="address", let-description="description" let-total="total" let-image="image" let-open="open">
-    <mat-expansion-panel style="margin: 7px 0px 7px 0px;"  [expanded]="expanded" (opened)="open" hideToggle>
+  <ng-template #collectionsInfo let-expanded="expanded" let-name="name" let-symbol="symbol" let-token="token" let-address="address" let-description="description" let-total="total" let-image="image" let-item="item" let-open="open">
+    <mat-expansion-panel style="margin: 7px 0px 7px 0px;"  [expanded]="expanded" (opened)="open(item)" hideToggle>
         <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
             <div style="display: block; width: 80%; margin: 15px 10px 5px 15px">
                 <mat-panel-title class="col-title"> {{name}} </mat-panel-title>
