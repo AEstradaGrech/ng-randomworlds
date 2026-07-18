@@ -96,7 +96,7 @@ export class CharacterSelectionComponent implements OnInit {
         description:model.metadata.description,
         price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
         name:model.metadata.name,
-        imageUrl:model.image,
+        imageEndpoint:model.image,
         collectionUrl: collection.logoImage
       }
       let cfg = new MatDialogConfig();

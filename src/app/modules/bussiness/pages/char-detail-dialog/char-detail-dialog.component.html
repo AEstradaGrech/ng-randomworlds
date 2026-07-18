@@ -17,13 +17,13 @@
                 <div *ngIf="data.showContractData" class="header-contract-data">
                   <p class="contract-data-row">Rarity: {{tokenRarity}}</p>
                   <p class="contract-data-row">Price: {{data.model.price}} ETH</p>
-                  <p class="contract-data-row">Mints: {{data.model.mints | nanToNum}} of {{data.model.maxMints}}</p>
+                  <p *ngIf="data.model.mints" class="contract-data-row">Mints: {{data.model.mints | nanToNum}} of {{data.model.maxMints}}</p>
                 </div>
     
               </mat-card-header>
               <mat-divider vertical="false"></mat-divider>
             <div class="card-body">
-                <img mat-card-image class="game-card-image" [src]="data.model.imageUrl" alt="Photo of a RandomWorlds character">
+                <img mat-card-image class="game-card-image" [src]="data.model.imageEndpoint" alt="Photo of a RandomWorlds character">
                 <mat-card-content class="game-card-content">
                   <p>
                     Appereance:<br> "{{metadata.profile.appereance}}""
