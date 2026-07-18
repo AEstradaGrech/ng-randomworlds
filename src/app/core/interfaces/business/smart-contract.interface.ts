@@ -36,9 +36,9 @@ export interface CollectionSummary {
 export interface CharacterMetadata{
     name:string,
     description:string,
-    rarity:string,
     image:string,
-    profile: CharacterProfile
+    profile: CharacterProfile,
+    attributes: any[]
 }
 
 export interface WalletNFT{

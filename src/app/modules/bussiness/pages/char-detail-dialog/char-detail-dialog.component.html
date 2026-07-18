@@ -4,7 +4,7 @@
         <mat-card class="game-card" appearance="outlined" *ngIf="metadata">
             <mat-card-header style="justify-content: space-evenly; padding-top: 0px !important;">
               <div class="header-titles">
-                <mat-card-title class="game-card-title">"{{data.modelname}} - {{metadata.rarity ?? ''}}"</mat-card-title>
+                <mat-card-title class="game-card-title">"{{data.model.name}}"</mat-card-title>
                 <mat-card-subtitle class="game-card-subtitle">Age: "{{metadata.profile.age}}"</mat-card-subtitle>
               </div>
               <mat-divider vertical="true"></mat-divider>
@@ -15,8 +15,9 @@
            
                 <mat-divider *ngIf="data.showContractData" vertical="true"></mat-divider>
                 <div *ngIf="data.showContractData" class="header-contract-data">
-                  <p>Price: {{data.model.price}} ETH</p>
-                  <p>Mints: {{data.model.mints | nanToNum}} of {{data.model.maxMints}}</p>
+                  <p class="contract-data-row">Rarity: {{tokenRarity}}</p>
+                  <p class="contract-data-row">Price: {{data.model.price}} ETH</p>
+                  <p class="contract-data-row">Mints: {{data.model.mints | nanToNum}} of {{data.model.maxMints}}</p>
                 </div>
     
               </mat-card-header>

@@ -138,35 +138,42 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   }
   public async onViewClick(model:AssetModel){
     console.log('-- on view click',model);
-    let collection = this.collections.filter(x => x.summary.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
-    if(collection){
-      let fileName = model.image.split('/').slice(-1)[0].replace('.png','');
-      let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.summary.contractAddress);
-      let catModel:CatalogueModel = {
-        collectionDescription: collection.summary.description,
-        collectionName:collection.summary.name,
-        collectionSymbol: collection.summary.symbol,
-        contractAddress: collection.summary.contractAddress,
-        logoUrl:collection.summary.logoImage,
-        paymentTokens:[],
-        fileName:modelInfo.fileName,
-        fileExtension:modelInfo.fileExtension,
-        available:modelInfo.available,
-        mints:modelInfo.mints,
-        maxMints:modelInfo.maxMints,
-        metadata: model.metadata,
-        description:model.metadata.description,
-        price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
-        name:model.metadata.name,
-        imageUrl:model.image,
-        collectionUrl: collection.summary.logoImage
-      }
-      let cfg = new MatDialogConfig();
-      cfg.data = {model:catModel, showContractData:true};
+    let cfg = new MatDialogConfig();
+      
       cfg.height = '90vh';
       cfg.width = '1100px';
-      this._dialog.open(CharDetailDialogComponent, cfg);
+    if(this.customCharsCollection && this.selectedContractAddress() === this.customCharsCollection.contractAddress)
+    {
+
     }
+    else{
+      let collection = this.collections.filter(x => x.summary.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
+      if(collection){
+        let fileName = model.image.split('/').slice(-1)[0].replace('.png','');
+        let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.summary.contractAddress);
+        let catModel:CatalogueModel = {
+          collectionDescription: collection.summary.description,
+          collectionName:collection.summary.name,
+          collectionSymbol: collection.summary.symbol,
+          contractAddress: collection.summary.contractAddress,
+          logoUrl:collection.summary.logoImage,
+          paymentTokens:[],
+          fileName:modelInfo.fileName,
+          fileExtension:modelInfo.fileExtension,
+          available:modelInfo.available,
+          mints:modelInfo.mints,
+          maxMints:modelInfo.maxMints,
+          metadata: model.metadata,
+          description:model.metadata.description,
+          price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
+          name:model.metadata.name,
+          imageUrl:model.image,
+          collectionUrl: collection.summary.logoImage
+        }
+        cfg.data = {model:catModel, showContractData:true};
+      }
+    }
+    this._dialog.open(CharDetailDialogComponent, cfg);
   }
   public onSellClick(model:AssetModel){
     console.log('-- on sell click --', model)
