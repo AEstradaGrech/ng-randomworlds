@@ -25,9 +25,6 @@ export class CharDetailDialogComponent implements OnInit{
     console.log('-- on char detail dialog init --');
     this.metadata = this.data.model.metadata;
     if(this.metadata){
-      // let rarityAtt = this.metadata.attributes.find(x => x['trait_type'].toLowerCase() === 'rarity');
-      // if(rarityAtt)
-      //   this.tokenRarity = rarityAtt.value;
       for(let i=0; i<this.metadata.profile.ambiences.length; i++){
         this.ambiences += this.metadata.profile.ambiences[i];
         if(i !== this.metadata.profile.ambiences.length - 1)
@@ -39,21 +36,6 @@ export class CharDetailDialogComponent implements OnInit{
           this.moods += ', ';
       }
     }
-    
-    // this._contractsService.getMetadata(this.data.model).then(res => {
-    //   this.metadata = res;
-    //   console.log('-- on get metadata --', this.metadata);
-    //   for(let i=0; i<this.metadata.profile.ambiences.length; i++){
-    //     this.ambiences += this.metadata.profile.ambiences[i];
-    //     if(i !== this.metadata.profile.ambiences.length - 1)
-    //       this.ambiences += ', ';
-    //   }
-    //   for(let i=0; i<this.metadata.profile.moods.length; i++){
-    //     this.moods += this.metadata.profile.moods[i];
-    //     if(i !== this.metadata.profile.moods.length - 1)
-    //       this.moods += ', ';
-    //   }
-    // })
   }
   public onClose(){
     this._dialog.close();

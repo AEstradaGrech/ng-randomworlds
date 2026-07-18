@@ -90,11 +90,19 @@ export interface CatalogueModel extends ModelInfo{
     collectionDescription: string,
     logoUrl: string,
     collectionUrl:string,
-    imageUrl: string,
+    imageEndpoint: string,
     metadata?: CharacterMetadata,
     paymentTokens:string[]
 }
 
+export interface NftDetailModel{
+    name:string,
+    price: number,
+    imageEndpoint: string,
+    metadata?: CharacterMetadata,
+    mints?: number,
+    maxMints?:number,
+}
 export interface CharacterProfile {
     name: string,
     age: string,
@@ -124,4 +132,8 @@ export interface CustomCharsCatalogue{
 
 export interface CustomCharsCollection extends CustomCharsCatalogue{
     assets: AssetModel[]
+}
+
+export interface CustomCharDetail{
+
 }

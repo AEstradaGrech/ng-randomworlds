@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, AfterViewInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueCollection, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueCollection, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection, NftDetailModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -139,38 +139,31 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public async onViewClick(model:AssetModel){
     console.log('-- on view click',model);
     let cfg = new MatDialogConfig();
-      
-      cfg.height = '90vh';
-      cfg.width = '1100px';
-    if(this.customCharsCollection && this.selectedContractAddress() === this.customCharsCollection.contractAddress)
-    {
-
+    cfg.height = '90vh';
+    cfg.width = '1100px';
+    if(this.customCharsCollection && model.contractAddress === this.customCharsCollection.contractAddress){
+      let detailModel: NftDetailModel = {
+          name: model.metadata.name,
+          imageEndpoint: model.image,
+          metadata: model.metadata,
+          price: parseFloat(web3(this.document)?.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
+        }
+      cfg.data = {model:detailModel, showContractData:true};
     }
     else{
       let collection = this.collections.filter(x => x.summary.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
       if(collection){
         let fileName = model.image.split('/').slice(-1)[0].replace('.png','');
         let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.summary.contractAddress);
-        let catModel:CatalogueModel = {
-          collectionDescription: collection.summary.description,
-          collectionName:collection.summary.name,
-          collectionSymbol: collection.summary.symbol,
-          contractAddress: collection.summary.contractAddress,
-          logoUrl:collection.summary.logoImage,
-          paymentTokens:[],
-          fileName:modelInfo.fileName,
-          fileExtension:modelInfo.fileExtension,
-          available:modelInfo.available,
+        let detailModel: NftDetailModel = {
+          name: model.metadata.name,
+          metadata: model.metadata,
+          imageEndpoint: model.image,
+          price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
           mints:modelInfo.mints,
           maxMints:modelInfo.maxMints,
-          metadata: model.metadata,
-          description:model.metadata.description,
-          price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
-          name:model.metadata.name,
-          imageUrl:model.image,
-          collectionUrl: collection.summary.logoImage
         }
-        cfg.data = {model:catModel, showContractData:true};
+        cfg.data = {model:detailModel, showContractData:true};
       }
     }
     this._dialog.open(CharDetailDialogComponent, cfg);
@@ -234,7 +227,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     }
   }
   public onVisorTypeChange(visualization: string){
-    console.log('new visualization', visualization);
     if(visualization !== 'grid' && visualization !== 'row') return;
     this._visorType = visualization;
     if(visualization === 'grid'){

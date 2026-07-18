@@ -56,8 +56,6 @@ export class MarketplaceComponent implements OnInit{
     this._updateSelectedPrice(this.selectedToken, model);
   }
   public async onPayClick(model:CatalogueModel){
-    console.log('--on buy model--', model);
-    console.log('--selected token--', this.selectedToken);
     let connectedAccounts = await this._smartContractsService.getConnectedAccounts();
     console.log('-- ether mint from account --', connectedAccounts[0]);
     this.loading = true;  
@@ -102,7 +100,7 @@ export class MarketplaceComponent implements OnInit{
         modelInfo.price = parseFloat(web3.utils.fromWei(modelInfo.price.toString(), 'ether'));
         let catalogueModel: CatalogueModel = {
           ...modelInfo,
-          imageUrl: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
+          imageEndpoint: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
           metadata: undefined,//`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`,
           collectionSymbol: summary.symbol,
           logoUrl: `url(${summary.logoImage})`,
@@ -113,7 +111,6 @@ export class MarketplaceComponent implements OnInit{
           paymentTokens: ['ETH', ...summary.enabledTokens]
         }
         this.modelsCatalogue.push(catalogueModel);
-        console.log('-- on init cats --', this.modelsCatalogue);
       })
     })
   }
