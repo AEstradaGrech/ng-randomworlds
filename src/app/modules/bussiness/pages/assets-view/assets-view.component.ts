@@ -35,6 +35,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
   public displayedAssets = signal<AssetModel[]>([]);
+  public selectedContractAddress = signal<string>('');
+  private _visorType:string = 'row';
   private _slideScrollState: ScrollState = {
     step: 100,
     mult: 1,
@@ -58,7 +60,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public defaultLogoUrl:string = 'assets/images/MetamaskIconBrown.png';
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
-  public visorType:string = 'row';
+
   constructor(@Inject(DOCUMENT) private document:Document) { super();}
   
   ngOnInit(): void {
@@ -128,9 +130,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       wallet ? `Connected Wallet Address: ${this._smartContractsService.connectedWallet}` : 'No Wallet connected!');
   }
 
-  public onChangeVisualization(){
-    this.visorType = this.visorType === 'row' ? 'grid' : 'row';
-  }
   public onViewCollectionClick(address:string){
     window.open(`https://sepolia.etherscan.io/token/${address}`, "_blank");
   }
@@ -218,15 +217,47 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
    * Each call site passes the handler it wants, so no runtime type check.
    */
   public readonly selectCustomCharsCollection: CollectionOpenHandler = () => {
-    if(this.customCharsCollection)
+    if(this.customCharsCollection){
+      if(this._visorType !== 'row'){
+        this.selectedContractAddress.set(this.customCharsCollection.contractAddress);
+        return;
+      }
       this.displayedAssets.set(this.customCharsCollection.assets);
+      this.selectedContractAddress.set(this.customCharsCollection.contractAddress);
+    }
   }
-
+  public onVisorTypeChange(visualization: string){
+    console.log('new visualization', visualization);
+    if(visualization !== 'grid' && visualization !== 'row') return;
+    this._visorType = visualization;
+    if(visualization === 'grid'){
+      let assets: AssetModel[] = [];
+      if(this.customCharsCollection && this.customCharsCollection.assets.length > 0){
+        assets = [...this.customCharsCollection.assets];
+      }
+      if(this.collections.length > 0){
+        this.collections.forEach(col => assets = [...assets, ...col.assets]);
+        this.displayedAssets.set(assets);
+      }
+    }
+    else{
+      if(!this.currentCollection && this.collections.length > 0)
+        this.collections[0];
+      
+      if(!this.currentCollection){
+        if(this.customCharsCollection)
+          this.selectCustomCharsCollection();
+      }
+      else this.selectCollection(this.currentCollection);
+    }
+  }
   public readonly selectCollection: CollectionOpenHandler = (item?: unknown) => {
     const collection = item as AssetsCollection;
     if(!collection) return;
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
-    this.displayedAssets.set(this.currentCollection.assets);
+    if(this._visorType === 'row')
+      this.displayedAssets.set(this.currentCollection.assets);  
+    this.selectedContractAddress.set(this.currentCollection.summary.contractAddress);
   }
   public onCardButtonClicked(event:NftCardClickAction){
     console.log('-- char selection >> card btn clicked --', event)
