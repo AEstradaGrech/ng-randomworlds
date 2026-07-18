@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, AfterViewInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueCollection, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -13,6 +13,13 @@ import { NotificationService } from 'src/app/modules/shared/services/notificatio
 import { CharacterCreatorDialogComponent } from './components/character-creator-dialog/character-creator-dialog.component';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
+
+/**
+ * Signature every handler passed to the #collectionsInfo template must satisfy,
+ * so the template can call `open(item)` uniformly regardless of which one it got.
+ */
+export type CollectionOpenHandler = (item?: unknown) => void;
+
 @Component({
   selector: 'app-assets-view',
   templateUrl: './assets-view.component.html',
@@ -27,7 +34,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public currentCollectionLogoUrl: any;
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
-  public displayedAssets: AssetModel[] =[];
+  public displayedAssets = signal<AssetModel[]>([]);
   private _slideScrollState: ScrollState = {
     step: 100,
     mult: 1,
@@ -87,6 +94,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
               let asset:AssetModel = {...nft, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
               return asset;
             });
+            this.selectCollection(collection);
           })
         })
       })
@@ -201,14 +209,24 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public closeSidenav() {
     this.sidenav.close();
   }
-  public selectCustomCharsCollection(){
+
+  /*
+   * These two are passed BY REFERENCE through the #collectionsInfo template
+   * context and invoked from (opened). They are arrow properties, not methods,
+   * on purpose: the template calls them off the context object, so a plain
+   * method would bind `this` to that context instead of the component.
+   * Each call site passes the handler it wants, so no runtime type check.
+   */
+  public readonly selectCustomCharsCollection: CollectionOpenHandler = () => {
     if(this.customCharsCollection)
-      this.displayedAssets = this.customCharsCollection.assets;
+      this.displayedAssets.set(this.customCharsCollection.assets);
   }
-  public selectCollection(collection: AssetsCollection) {
+
+  public readonly selectCollection: CollectionOpenHandler = (item?: unknown) => {
+    const collection = item as AssetsCollection;
     if(!collection) return;
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
-    this.displayedAssets = this.currentCollection.assets;
+    this.displayedAssets.set(this.currentCollection.assets);
   }
   public onCardButtonClicked(event:NftCardClickAction){
     console.log('-- char selection >> card btn clicked --', event)
