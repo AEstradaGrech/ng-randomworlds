@@ -24,14 +24,20 @@ export class HomeComponent implements OnInit{
   web3provider!:any;
   constructor(@Inject(DOCUMENT) private document: Document){}
   ngOnInit(): void {
-    // this.imagesService.getLastWithName("DarkTemplar").subscribe(res => {
-    //   this.imageSource = this.sanitizer.bypassSecurityTrustResourceUrl(`data:image/png;base64, ${res.base64}`);
-    // })
-    //this.loadWeb3();
     this.web3provider = web3(this.document);
     console.log('web3 prov',this.web3provider);
   }
   async onBeginClick(gameType:string){
+    if(!this._smartContractsService.connectedWallet){
+      let isIn:boolean = await this._smartContractsService.tryMetamaskLogin();
+      if(isIn){
+
+      }
+      else{ 
+        this.router.navigateByUrl('');
+        return;
+      }
+    }
     switch(gameType){
       case('quest'):
         let gameData = localStorage.getItem('game-data')
@@ -39,7 +45,7 @@ export class HomeComponent implements OnInit{
           let object = JSON.parse(gameData)
           if(object.gameType !== 'quest'){
             localStorage.removeItem('game-data') //TODO: Modal 'Warning'
-            this._setGameData('quest')
+            await this._setGameData('quest')
           }
         }else{
           this._setGameData('quest')
@@ -57,9 +63,12 @@ export class HomeComponent implements OnInit{
     }
   }
 
-  private _setGameData(gameType:string){
+  private async _setGameData(gameType:string){
     let login = localStorage.getItem('user-login')
-    if(!login) return;
+    if(!login){
+      this.router.navigateByUrl('auth/login');
+      return;
+    }
     let creds = JSON.parse(login)
     let data: GameData ={
       username: creds.username,

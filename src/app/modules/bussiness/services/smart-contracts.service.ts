@@ -14,6 +14,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { CatalogueCollection, CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { UserLogin } from '../../shared/models/common-interfaces';
 @Injectable({
   providedIn: 'root'
 })
@@ -50,6 +51,32 @@ export class SmartContractsService {
     })
   }
   
+  public async tryMetamaskLogin() : Promise<boolean>{
+    try{
+      let window:any = this.document.defaultView;
+      if(!window) return false;
+      if(!window.ethereum) return false;
+      window.web3 = new Web3(window.ethereum);
+      await window.ethereum.enable();
+      let accounts = await window.web3.eth.getAccounts()
+      if(accounts.length <= 0){
+        console.log('-- no accounts connected with MetaMask browser extension --');
+        return false;
+      }
+      this._connectedAccount = accounts[0];
+      let login:UserLogin = {
+        provider:'metamask',
+        username:this._connectedAccount
+      }
+      localStorage.setItem('user-login', JSON.stringify(login));
+      localStorage.removeItem('game-data');
+      return true;
+    }
+    catch (error) {
+      console.log('on login error', error);
+      return false;
+    }
+  }
   public getCustomCharactersFactory(): any{
     return CustomCharsFactory(this.web3);
   }
@@ -250,7 +277,6 @@ export class SmartContractsService {
   
   public async etherMintCustomCharacter(contractAddress:string, price:number) : Promise<boolean>{
     try{
-      let accounts = await this.getConnectedAccounts();
       await this.getCustomCharactersContract(contractAddress).methods.etherPurchase()
         .send({from: this.connectedWallet, value: Web3.utils.toWei(price, 'ether')})
         .on('receipt', (receipt:any) => {
