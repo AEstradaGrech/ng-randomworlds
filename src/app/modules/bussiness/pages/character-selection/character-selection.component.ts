@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -12,19 +12,21 @@ import { Wallet } from 'web3';
 import { EAppButtons } from 'src/app/modules/shared/models/common-enums';
 import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
 import { NotificationService } from 'src/app/modules/shared/services/notification.service';
+import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 
 @Component({
   selector: 'app-character-selection',
   templateUrl: './character-selection.component.html',
   styleUrl: './character-selection.component.scss'
 })
-export class CharacterSelectionComponent implements OnInit {
+export class CharacterSelectionComponent extends BaseComponent implements OnInit {
   
   @ViewChild('sellButton') sellButton!: TemplateRef<any>;
   
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   public assets: AssetModel[] = [];
   public collections:AssetsCollectionSummary[]=[];
+  public customCharsCollection!: CustomCharsCollection;
   public loading:boolean = false;
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   private _dialog:MatDialog = inject(MatDialog);
@@ -33,7 +35,9 @@ export class CharacterSelectionComponent implements OnInit {
 
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
   private _notificationService: NotificationService = inject(NotificationService);
-  constructor(@Inject(DOCUMENT) private document:Document){}
+  constructor(@Inject(DOCUMENT) private document:Document){
+    super();
+  }
 
   ngOnInit(): void {
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
@@ -67,6 +71,27 @@ export class CharacterSelectionComponent implements OnInit {
         })
       })
     })
+    this._smartContractsService.getCustomCharsCatalogue().then(cats => {
+      if(cats.length > 0) {
+        this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
+        this._getCustomCharacters();
+      }
+    });
+    this._notificationsService.setup('center', 'bottom', 3000)
+  }
+  
+  private _getCustomCharacters(){
+    if(this.customCharsCollection){
+      this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress)
+        .then(walletNFTs => {
+          console.log('-- on col wallet resp --', walletNFTs)
+          this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
+            let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
+            return asset;
+          });
+          this.assets = [...this.assets, ...this.customCharsCollection.assets];
+        })
+    }
   }
   public onViewCollectionClick(address:string){
     window.open(`https://sepolia.etherscan.io/token/${address}`, "_blank");
@@ -76,35 +101,35 @@ export class CharacterSelectionComponent implements OnInit {
   }
   public async onViewClick(model:AssetModel){
     console.log('-- on view click',model);
-    let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
-    if(collection){
-      let fileName = model.image.split('/').slice(-1)[0].replace('.png','');
-      let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.contractAddress);
-      let catModel:CatalogueModel = {
-        collectionDescription: collection.description,
-        collectionName:collection.name,
-        collectionSymbol: collection.symbol,
-        contractAddress: collection.contractAddress,
-        logoUrl:collection.logoImage,
-        paymentTokens:[],
-        fileName:modelInfo.fileName,
-        fileExtension:modelInfo.fileExtension,
-        available:modelInfo.available,
-        mints:modelInfo.mints,
-        maxMints:modelInfo.maxMints,
-        metadata: model.metadata,
-        description:model.metadata.description,
-        price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
-        name:model.metadata.name,
-        imageEndpoint:model.image,
-        collectionUrl: collection.logoImage
-      }
-      let cfg = new MatDialogConfig();
-      cfg.data = {model:catModel, showContractData:false}
-      cfg.height = '90vh';
-      cfg.width = '1100px';
-      this._dialog.open(CharDetailDialogComponent, cfg);
+    let cfg = new MatDialogConfig();
+    cfg.height = '90vh';
+    cfg.width = '1100px';
+    if(model.contractAddress !== this.customCharsCollection.contractAddress) {
+      let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
+      if(collection){
+        let fileName = model.image.split('/').slice(-1)[0].replace('.png','');
+        let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.contractAddress);
+        let catModel:NftDetailModel = {
+          name: model.metadata.name,
+          metadata: model.metadata,
+          imageEndpoint: model.image,
+          price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
+          mints:modelInfo.mints,
+          maxMints:modelInfo.maxMints,
+        }
+        cfg.data = {model:catModel, showContractData:false};
+      } 
     }
+    else{
+      let catModel: NftDetailModel ={
+          name: model.metadata.name,
+          imageEndpoint: model.image,
+          metadata: model.metadata,
+          price: parseFloat(web3(this.document)?.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
+      }
+      cfg.data = {model:catModel, showContractData:false};
+    }
+    this._dialog.open(CharDetailDialogComponent, cfg);
   }
 
   public onCardButtonClicked(event:NftCardClickAction){
