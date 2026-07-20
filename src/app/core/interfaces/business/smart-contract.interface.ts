@@ -133,7 +133,3 @@ export interface CustomCharsCatalogue{
 export interface CustomCharsCollection extends CustomCharsCatalogue{
     assets: AssetModel[]
 }
-
-export interface CustomCharDetail{
-
-}
