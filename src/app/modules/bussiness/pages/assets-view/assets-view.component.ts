@@ -129,12 +129,14 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
         })
       })
     });
-    // this._smartContractsService.getCustomCharsCatalogue().then(cats => {
-    //   if(cats.length > 0) {
-    //     this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
-    //     this._getCustomCharacters();
-    //   }
-    // });
+    this._smartContractsService.getCustomCharsCatalogue().then(cats => {
+      this._ngZone.run(() => {
+        if(cats.length > 0) {
+          this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
+          this._getCustomCharacters();
+        }
+      })
+    });
   }
   private _getCustomCharacters(){
     if(this.customCharsCollection){
@@ -147,6 +149,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
                 let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
                 return asset;
               });
+              if(this._visorType === 'grid')
+                this.onVisorTypeChange('grid');
             }
           }
           else{
@@ -289,6 +293,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
       this.displayedAssets.update(x => this.currentCollection ? [...this.currentCollection.assets] : []);  
       //this.displayedAssets = [...this.currentCollection.assets];
     }
+    else this.onVisorTypeChange('grid');
     this.selectedContractAddress.set(this.currentCollection.summary.contractAddress);
   }
   public onCardButtonClicked(event:NftCardClickAction){
