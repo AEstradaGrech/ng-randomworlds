@@ -1,4 +1,4 @@
-import { Component, inject, OnInit,  ElementRef, ViewChild, HostListener, } from '@angular/core';
+import { Component, inject, OnInit,  ElementRef, ViewChild, HostListener, signal, computed, } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router'
@@ -62,9 +62,12 @@ export class WorldGeneratorComponent implements OnInit{
   @ViewChild('genresInput') constraintsInput!: ElementRef<HTMLInputElement>;
   announcer = inject(LiveAnnouncer);
 
-  public selectedCharacter!: AssetModel;
+  public selectedCharacter = signal<AssetModel | null>(null);
   public metadata!: CharacterMetadata;
-  public image: string = '';
+  public image = computed(() => {
+    let selectedChar: AssetModel | null = this.selectedCharacter();
+    return selectedChar ? `url(${selectedChar.image})` : '';
+  });
   constructor() {}
 
   ngOnInit(): void {
@@ -75,34 +78,8 @@ export class WorldGeneratorComponent implements OnInit{
     //   this._snackBar.open("An error has occured while trying to begin the game. Game type or Character bad configured", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
     //   this._router.navigateByUrl('randomworlds/home')
     // }
-    let gameData = this._getGameData();
-    if(!gameData){
-      this._router.navigateByUrl('randomworlds/game/quest')
-      return;
-    }
-    this._gameData = gameData;
-    if(this._gameData.selectedCharacter){
-      this.selectedCharacter = this._gameData.selectedCharacter;
-      this.image = `url(${this.selectedCharacter.image})`
-      if(this.selectedCharacter.metadata){
-        this.metadata = this.selectedCharacter.metadata;
-      }
-      else {
-        // snakAlert
-        console.log('-- no char metadata found --');
-        return;
-      }
-      this.selectedAmbiences = this.metadata.profile.ambiences;
-      this.selectedMoods = this.metadata.profile.moods;
-      this.form = this._fb.group({
-        ambiences: new FormControl(this.selectedAmbiences),
-        moods: new FormControl(this.selectedMoods),
-        genres: new FormControl(''),
-        constraints: new FormControl(this.selectedConstraints),
-        plot: new FormControl('', [Validators.maxLength(200)]),
-        desiredName: new FormControl(undefined, [Validators.maxLength(30)])
-      })
-    }
+    
+    this._setupGameData();
     // this.quests.push({id: this.quests.length +1})
     // this.quests.push({id: this.quests.length +1})
   }
@@ -110,8 +87,10 @@ export class WorldGeneratorComponent implements OnInit{
   @HostListener('window:storage', ['$event'])
   onSelectedCharacterChange(event: StorageEvent){
     console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
-    if(event.key === 'game-data')
+    if(event.key === 'game-data'){
       this._setupGameData();
+      
+    }
   }
 
   private _setupGameData(){
@@ -122,10 +101,9 @@ export class WorldGeneratorComponent implements OnInit{
     }
     this._gameData = gameData;
     if(this._gameData.selectedCharacter){
-      this.selectedCharacter = this._gameData.selectedCharacter;
-      this.image = `url(${this.selectedCharacter.image})`
-      if(this.selectedCharacter.metadata){
-        this.metadata = this.selectedCharacter.metadata;
+      this.selectedCharacter.set(this._gameData.selectedCharacter);
+      if(this._gameData.selectedCharacter.metadata){
+        this.metadata = this._gameData.selectedCharacter.metadata;
       }
       else {
         // snakAlert
@@ -134,6 +112,9 @@ export class WorldGeneratorComponent implements OnInit{
       }
       this.selectedAmbiences = this.metadata.profile.ambiences;
       this.selectedMoods = this.metadata.profile.moods;
+      this.selectedGenres = [];
+      this.onShowSettings(true);
+      this.currentIntro = '';
       this.form = this._fb.group({
         ambiences: new FormControl(this.selectedAmbiences),
         moods: new FormControl(this.selectedMoods),
@@ -261,6 +242,8 @@ export class WorldGeneratorComponent implements OnInit{
       //   "suggestion":"",
       //   "constraints":[""]
       // }
+    let character = this.selectedCharacter();
+    if(!character) return;
     console.log('-- form val --',this.form.getRawValue())
     let formValues = this.form.getRawValue();
     let preferences:QuestPreferences = {
@@ -273,7 +256,7 @@ export class WorldGeneratorComponent implements OnInit{
     console.log('-- intro req prefs --', preferences)
     if(this._hasValidPreferences(preferences)){
       let introReq: QuestIntroRequest = {
-        character:this.isRandomCharacter ? null : this.selectedCharacter.metadata.profile as QuestCharacter ?? null,
+        character:this.isRandomCharacter ? null : character.metadata.profile as QuestCharacter ?? null,
         useRandomCharacter:this.isRandomCharacter, //formControl
         desiredName:this.isRandomCharacter ? formValues.desiredName : "", //formControl
         preferences:preferences
@@ -289,7 +272,7 @@ export class WorldGeneratorComponent implements OnInit{
           this.quests = this.quests.slice(-1)
           this.quests[0].id = 1
         }
-        this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences, character: res.character})
+        this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences, asset: this.selectedCharacter()})
         this.currentIntro = `CHARACTER:\n${this._formatCharacterData(res.character)}\nINTRO SCENE:\n\n${res.intro}`;
         //
       })
@@ -309,6 +292,7 @@ export class WorldGeneratorComponent implements OnInit{
   public onReviewQuestClick(quest:any){
     console.log(quest)
     this.currentIntro = `CHARACTER:\n${this._formatCharacterData(quest.data.character)}\nINTRO SCENE:\n\n${quest.data.intro}`;
+    this.selectedCharacter.set(quest.asset);
     this.selectedAmbiences = [...quest.preferences.ambiences];
     this.selectedMoods = [...quest.preferences.moods];
     this.selectedGenres = [...quest.preferences.genres];
