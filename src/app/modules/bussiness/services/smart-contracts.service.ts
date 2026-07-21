@@ -14,7 +14,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { CatalogueCollection, CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { UserLogin } from '../../shared/models/common-interfaces';
+import { GameData, UserLogin } from '../../shared/models/common-interfaces';
 import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
@@ -25,6 +25,7 @@ export class SmartContractsService {
   public collections: CatalogueCollection[] = [];
   public onPaymentReceipt: EventEmitter<any> = new EventEmitter<any>();
   public onPaymentError: EventEmitter<any> = new EventEmitter<any>();
+  public onAccountChanged: EventEmitter<string> = new EventEmitter<string>(); 
   private _connectedAccount!:string;
   private _baseUrl:string = 'http://localhost:9000/randomworlds'
   private _router: Router = inject(Router);
@@ -41,8 +42,54 @@ export class SmartContractsService {
       console.log('-- smarts connected observable --', res);
       if(res.length <= 0){
         console.log('-- no accounts connected with MetaMask browser extension --');
+        this._router.navigateByUrl('');
         return;
       }
+      // despite the cached account, the user can change the account
+      // or log in again with another wallet so this event notifies that
+      // if no accounts then back to login
+      // otherwise updates the login and cached account
+      // (it is supposed to be a logged user already)
+      // and notifies the change to refresh the catalogue views 
+      // to display the new account nfts
+      // it also invalidates the current game data to notify other tabs
+      // and redirect world generator view to home (delete cached nft data from previous user)
+      let window:any = this.document.defaultView;
+      if(window && window.ethereum){
+        window.web3 = new Web3(window.ethereum);
+        window.ethereum.on('accountsChanged', (accounts: any) => {
+          console.log('ON ACCOUNT CHANGE', accounts);
+          if (accounts.length === 0) {
+            this._router.navigateByUrl('');
+          } else {
+            console.log('New active account:', accounts[0]);
+            this._connectedAccount = accounts[0];
+            let login:UserLogin = {
+              provider:'metamask',
+              username:this._connectedAccount
+            }
+            localStorage.setItem('user-login', JSON.stringify(login));
+            let data: GameData ={
+              username: login.username,
+              gameType:'',
+              gameStatus: "READY",
+              charname:'',
+              selectedCharacter:undefined,
+              character:undefined,
+              isRandomCharacter:false,
+              gameSessionId:'',
+              userPreferences:undefined,
+              intro:"",
+              currentBlock:0
+            };
+            localStorage.setItem('game-data', JSON.stringify(data))
+            localStorage.setItem('game-data', JSON.stringify(data));
+            this.onAccountChanged.emit(this._connectedAccount);
+          }
+        });
+      }
+      // If the service loads and the connected account is not
+      // the cached account, try login again
       if(res[0] !== this._connectedAccount){
         this.tryMetamaskLogin().then(result => {
           if(!result){
@@ -375,9 +422,7 @@ export class SmartContractsService {
     return this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/0xee6870759cbddfb12ee3a4547c35ffb667717df4/collection-address/${collectionAddress}`);
   }
   public async getAccountCollectionNFTs(collectionAddress:string) : Promise<WalletNFT[]>{
-    let signers = await this.getConnectedAccounts();
-    console.log('get account nfts -- signers', signers[0]);
-    let assets = await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${signers[0]}/collection-address/${collectionAddress.toLocaleLowerCase()}`));
+    let assets = await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${this._connectedAccount}/collection-address/${collectionAddress.toLocaleLowerCase()}`));
     console.log('get account nfts -- assets', assets);
     return assets;
   }

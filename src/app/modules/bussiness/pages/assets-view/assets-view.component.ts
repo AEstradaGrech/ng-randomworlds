@@ -29,8 +29,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   public collections: AssetsCollection[] = []
-  public currentCollection!: AssetsCollection;
-  public customCharsCollection!: CustomCharsCollection;
+  public currentCollection!: AssetsCollection | null;
+  public customCharsCollection!: CustomCharsCollection | null;
   public currentCollectionLogoUrl: any;
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
@@ -64,6 +64,18 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   constructor(@Inject(DOCUMENT) private document:Document) { super();}
   
   ngOnInit(): void {
+    this._getAccountAssets();
+    this._smartContractsService.onAccountChanged.subscribe(newAccount => {
+      this._notificationsService.openSnack(ESnackAlertType.WARN, `Refreshing for account: ${newAccount}`, true, 3000);
+      this._getAccountAssets();
+    })
+    this._notificationsService.setup('center', 'bottom', 3000)
+  }
+  
+  private _getAccountAssets() {
+    this.currentCollection = null;
+    this.customCharsCollection = null;
+    this.collections = [];
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
       cat.forEach(item => {
         this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
@@ -107,27 +119,29 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
         this._getCustomCharacters();
       }
     });
-    this._notificationsService.setup('center', 'bottom', 3000)
   }
-  
   private _getCustomCharacters(){
     if(this.customCharsCollection){
       this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress)
         .then(walletNFTs => {
           console.log('-- on col wallet resp --', walletNFTs)
-          this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
-            let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
-            return asset;
-          });
+          if(walletNFTs.length > 0){
+            if(this.customCharsCollection){
+              this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
+                let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
+                return asset;
+              });
+            }
+          }
+          else{
+            this.customCharsCollection = null;
+          }
         })
     }
   }
 
   ngAfterViewInit(): void {
-    let wallet = this._smartContractsService.connectedWallet;
-    this._notificationsService.openSnack(
-      wallet ? ESnackAlertType.WARN : ESnackAlertType.ERROR, 
-      wallet ? `Connected Wallet Address: ${this._smartContractsService.connectedWallet}` : 'No Wallet connected!');
+   
   }
 
   public onViewCollectionClick(address:string){
@@ -254,8 +268,11 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     const collection = item as AssetsCollection;
     if(!collection) return;
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
-    if(this._visorType === 'row')
-      this.displayedAssets.set(this.currentCollection.assets);  
+    if(!this.currentCollection) return;
+    if(this._visorType === 'row'){
+      console.log('displaying assets', this.currentCollection.assets);
+      this.displayedAssets.update(x => this.currentCollection ? [...this.currentCollection.assets] : []);  
+    }
     this.selectedContractAddress.set(this.currentCollection.summary.contractAddress);
   }
   public onCardButtonClicked(event:NftCardClickAction){
