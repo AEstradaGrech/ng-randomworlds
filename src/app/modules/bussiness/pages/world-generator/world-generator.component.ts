@@ -1,4 +1,4 @@
-import { Component, inject, OnInit,  ElementRef, ViewChild, } from '@angular/core';
+import { Component, inject, OnInit,  ElementRef, ViewChild, HostListener, } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router'
@@ -105,6 +105,44 @@ export class WorldGeneratorComponent implements OnInit{
     }
     // this.quests.push({id: this.quests.length +1})
     // this.quests.push({id: this.quests.length +1})
+  }
+
+  @HostListener('window:storage', ['$event'])
+  onSelectedCharacterChange(event: StorageEvent){
+    console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
+    if(event.key === 'game-data')
+      this._setupGameData();
+  }
+
+  private _setupGameData(){
+    let gameData = this._getGameData();
+    if(!gameData){
+      this._router.navigateByUrl('randomworlds/game/quest')
+      return;
+    }
+    this._gameData = gameData;
+    if(this._gameData.selectedCharacter){
+      this.selectedCharacter = this._gameData.selectedCharacter;
+      this.image = `url(${this.selectedCharacter.image})`
+      if(this.selectedCharacter.metadata){
+        this.metadata = this.selectedCharacter.metadata;
+      }
+      else {
+        // snakAlert
+        console.log('-- no char metadata found --');
+        return;
+      }
+      this.selectedAmbiences = this.metadata.profile.ambiences;
+      this.selectedMoods = this.metadata.profile.moods;
+      this.form = this._fb.group({
+        ambiences: new FormControl(this.selectedAmbiences),
+        moods: new FormControl(this.selectedMoods),
+        genres: new FormControl(''),
+        constraints: new FormControl(this.selectedConstraints),
+        plot: new FormControl('', [Validators.maxLength(200)]),
+        desiredName: new FormControl(undefined, [Validators.maxLength(30)])
+      })
+    }
   }
   addAmbience(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
