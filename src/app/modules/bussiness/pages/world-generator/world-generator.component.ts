@@ -88,15 +88,18 @@ export class WorldGeneratorComponent implements OnInit{
   onSelectedCharacterChange(event: StorageEvent){
     console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
     if(event.key === 'game-data'){
-      this._setupGameData();
-      
+      let gameData = this._getGameData();
+      if(!gameData || !gameData.selectedCharacter){
+        this._router.navigateByUrl('randomworlds/home');
+      }
+      else this._setupGameData();
     }
   }
 
   private _setupGameData(){
     let gameData = this._getGameData();
     if(!gameData){
-      this._router.navigateByUrl('randomworlds/game/quest')
+      this._router.navigateByUrl('randomworlds/home')
       return;
     }
     this._gameData = gameData;
