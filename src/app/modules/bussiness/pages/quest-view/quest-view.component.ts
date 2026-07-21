@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { questsViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
 import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-menu-item.model';
@@ -59,6 +59,12 @@ export class QuestViewComponent implements OnInit {
   get questFinishedIcon():string{
     return this.endgameIcon;
   }
+  @HostListener('window:storage', ['$event'])
+    onSelectedCharacterChange(event: StorageEvent){
+      console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
+      if(event.key === 'game-data')
+        this._setupGameData();
+    }
   ngOnInit(): void {
     this.sceneText = '';
     this.storyText = '';
@@ -84,6 +90,9 @@ export class QuestViewComponent implements OnInit {
     }
   }
 
+  private _setupGameData() {
+
+  }
   public onSubmit(){
     console.log('-- on submit --')
     if(this.btnTxt === 'PLAY AGAIN'){
