@@ -1,4 +1,4 @@
-import { EventEmitter, inject, Inject, Injectable } from '@angular/core';
+import { EventEmitter, inject, Inject, Injectable, NgZone } from '@angular/core';
 import { CharacterProfileMock } from 'src/app/core/interfaces/business/prompting.interface';
 import { DOCUMENT } from '@angular/common';
 import Web3Provider from 'src/app/core/scripts/web3';
@@ -29,7 +29,7 @@ export class SmartContractsService {
   private _connectedAccount!:string;
   private _baseUrl:string = 'http://localhost:9000/randomworlds'
   private _router: Router = inject(Router);
-
+  private _ngZone: NgZone = inject(NgZone);
   public get connectedWallet(): string | null{
     return this._connectedAccount;
   }
@@ -57,35 +57,53 @@ export class SmartContractsService {
       let window:any = this.document.defaultView;
       if(window && window.ethereum){
         window.web3 = new Web3(window.ethereum);
+        /*
+          Angular doesn't magically know when to repaint. In a zone-based app, Zone.js monkey-patches the browser's 
+          async APIs — setTimeout, addEventListener, fetch/XHR, Promises — so that whenever one of those callbacks finishes, 
+          Angular runs a change-detection tick. That patched execution context is the NgZone. 
+          "Run CD" is really "a zone turn completed."
+
+          window.ethereum is an EIP-1193 provider — a Node-style EventEmitter with its own .on()/.emit(). 
+          It is not the DOM's addEventListener, and Zone.js does not patch it. 
+          So MetaMask invokes your callback outside the Angular zone.
+
+          Everything downstream inherits that context — the onAccountChanged.emit, the component's .subscribe, _getAccountAssets(), 
+          and every displayedAssets.set(...). The signal does update but no zone turn completes
+
+          The view sits on stale content until you click a button (a real DOM click, which is zone-patched) and 
+          that unrelated event drives the CD pass that finally flushes your already-updated signal
+        */
         window.ethereum.on('accountsChanged', (accounts: any) => {
-          console.log('ON ACCOUNT CHANGE', accounts);
-          if (accounts.length === 0) {
-            this._router.navigateByUrl('');
-          } else {
-            console.log('New active account:', accounts[0]);
-            this._connectedAccount = accounts[0];
-            let login:UserLogin = {
-              provider:'metamask',
-              username:this._connectedAccount
+          //ngZone.run(fn) executes fn inside the Angular zone, so when it returns, a zone turn completes and CD fires.
+          this._ngZone.run(() => {
+            if (accounts.length === 0) {
+              this._router.navigateByUrl('');
+            } else {
+              console.log('New active account:', accounts[0]);
+              this._connectedAccount = accounts[0];
+              let login:UserLogin = {
+                provider:'metamask',
+                username:this._connectedAccount
+              }
+              localStorage.setItem('user-login', JSON.stringify(login));
+              let data: GameData ={
+                username: login.username,
+                gameType:'',
+                gameStatus: "READY",
+                charname:'',
+                selectedCharacter:undefined,
+                character:undefined,
+                isRandomCharacter:false,
+                gameSessionId:'',
+                userPreferences:undefined,
+                intro:"",
+                currentBlock:0
+              };
+              localStorage.setItem('game-data', JSON.stringify(data))
+              localStorage.setItem('game-data', JSON.stringify(data));
+              this.onAccountChanged.emit(this._connectedAccount);
             }
-            localStorage.setItem('user-login', JSON.stringify(login));
-            let data: GameData ={
-              username: login.username,
-              gameType:'',
-              gameStatus: "READY",
-              charname:'',
-              selectedCharacter:undefined,
-              character:undefined,
-              isRandomCharacter:false,
-              gameSessionId:'',
-              userPreferences:undefined,
-              intro:"",
-              currentBlock:0
-            };
-            localStorage.setItem('game-data', JSON.stringify(data))
-            localStorage.setItem('game-data', JSON.stringify(data));
-            this.onAccountChanged.emit(this._connectedAccount);
-          }
+          })
         });
       }
       // If the service loads and the connected account is not

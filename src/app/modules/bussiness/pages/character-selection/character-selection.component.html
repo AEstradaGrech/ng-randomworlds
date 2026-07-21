@@ -1,5 +1,5 @@
 <app-nft-visor 
-    [assets]=assets 
+    [assets]=assets() 
     [nftCardButtonsConfig]="nftCardButtonsConfig"
     [disabled]="loading" 
     (onCardButtonClick)="onCardButtonClicked($event)"
