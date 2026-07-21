@@ -1,4 +1,4 @@
-import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { EventEmitter, inject, Inject, Injectable } from '@angular/core';
 import { CharacterProfileMock } from 'src/app/core/interfaces/business/prompting.interface';
 import { DOCUMENT } from '@angular/common';
 import Web3Provider from 'src/app/core/scripts/web3';
@@ -15,6 +15,7 @@ import { CatalogueCollection, CustomCharsCatalogue, CollectionSummary, ModelInfo
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { UserLogin } from '../../shared/models/common-interfaces';
+import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
@@ -26,6 +27,7 @@ export class SmartContractsService {
   public onPaymentError: EventEmitter<any> = new EventEmitter<any>();
   private _connectedAccount!:string;
   private _baseUrl:string = 'http://localhost:9000/randomworlds'
+  private _router: Router = inject(Router);
 
   public get connectedWallet(): string | null{
     return this._connectedAccount;
@@ -40,6 +42,13 @@ export class SmartContractsService {
       if(res.length <= 0){
         console.log('-- no accounts connected with MetaMask browser extension --');
         return;
+      }
+      if(res[0] !== this._connectedAccount){
+        this.tryMetamaskLogin().then(result => {
+          if(!result){
+            this._router.navigateByUrl('');
+          }
+        })
       }
       this._connectedAccount = res[0];
       console.log('-- smart contracts service :: connected account', this._connectedAccount);
@@ -68,8 +77,13 @@ export class SmartContractsService {
         provider:'metamask',
         username:this._connectedAccount
       }
+      let currentLogin: UserLogin | undefined = JSON.parse(localStorage.getItem('user-login') ?? '');
+      if(currentLogin && currentLogin.username !== this._connectedAccount){
+        localStorage.setItem('user-login', JSON.stringify(login));
+        this._router.navigateByUrl('randomworlds/home');
+        return true;
+      }
       localStorage.setItem('user-login', JSON.stringify(login));
-      localStorage.removeItem('game-data');
       return true;
     }
     catch (error) {
