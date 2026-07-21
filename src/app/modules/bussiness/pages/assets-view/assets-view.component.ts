@@ -1,4 +1,5 @@
-import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, AfterViewInit, NgZone, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueCollection, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection, NftDetailModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -25,8 +26,10 @@ export type CollectionOpenHandler = (item?: unknown) => void;
   templateUrl: './assets-view.component.html',
   styleUrl: './assets-view.component.scss'
 })
-export class AssetsViewComponent extends BaseComponent implements OnInit, AfterViewInit {
+export class AssetsViewComponent extends BaseComponent implements OnInit {
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
+  private _ngZone:NgZone = inject(NgZone);
+  private _destroyRef:DestroyRef = inject(DestroyRef);
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   public collections: AssetsCollection[] = []
   public currentCollection!: AssetsCollection | null;
@@ -35,8 +38,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
   public displayedAssets = signal<AssetModel[]>([]);
+  //public displayedAssets: AssetModel[] = [];
   public selectedContractAddress = signal<string>('');
   private _visorType:string = 'row';
+  private _didInit: boolean = false;
   private _slideScrollState: ScrollState = {
     step: 100,
     mult: 1,
@@ -65,60 +70,71 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   
   ngOnInit(): void {
     this._getAccountAssets();
-    this._smartContractsService.onAccountChanged.subscribe(newAccount => {
-      this._notificationsService.openSnack(ESnackAlertType.WARN, `Refreshing for account: ${newAccount}`, true, 3000);
-      this._getAccountAssets();
-    })
+    // takeUntilDestroyed: without it, every past visit to this route leaves a live
+    // subscription. A stale, off-screen instance would then also run _getAccountAssets
+    // on account-change and update ITS OWN detached signal - so the visible view never moves.
+    this._smartContractsService.onAccountChanged
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe(newAccount => {
+        this._notificationsService.openSnack(ESnackAlertType.WARN, `Refreshing for account: ${newAccount}`, true, 3000);
+        this._getAccountAssets();
+      })
     this._notificationsService.setup('center', 'bottom', 3000)
   }
   
   private _getAccountAssets() {
+    this._didInit = false;
     this.currentCollection = null;
     this.customCharsCollection = null;
     this.collections = [];
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
       cat.forEach(item => {
         this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
-          console.log('summary', summary);
-          let assetsSummary:AssetsCollectionSummary ={
-            contractAddress: item.contractAddress,
-            name: summary.collectionName,
-            tokenName: summary.name,
-            symbol: item.symbol,
-            description: item.description,
-            isFree: item.isFree,
-            isLimited: item.isLimited,
-            isOutOfStock: summary.isOutOfStock,
-            models: summary.models,
-            mints: summary.totalMints,
-            maxMints: summary.maxMints,
-            modelsCid: summary.modelsCid,
-            metaCid: summary.metaCid,
-            logoImage: item.logoImage
-          }
-          let collection:AssetsCollection = {summary:assetsSummary, assets:[]};
-          this.collections.push(collection);
-          if(!this.currentCollection){
-            this.currentCollection = this.collections[0];
-            this.currentCollectionLogoUrl = `url(${this.currentCollection.summary.logoImage}`;
-          }
-          this._smartContractsService.getAccountCollectionNFTs(assetsSummary.contractAddress).then(walletNFTs => {
-            console.log('-- on col wallet resp --', walletNFTs)
-            collection.assets = walletNFTs.map((nft:any) => {
-              let asset:AssetModel = {...nft, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
-              return asset;
-            });
-            this.selectCollection(collection);
+          this._ngZone.run(() => {
+            console.log('summary', summary);
+            let assetsSummary:AssetsCollectionSummary ={
+              contractAddress: item.contractAddress,
+              name: summary.collectionName,
+              tokenName: summary.name,
+              symbol: item.symbol,
+              description: item.description,
+              isFree: item.isFree,
+              isLimited: item.isLimited,
+              isOutOfStock: summary.isOutOfStock,
+              models: summary.models,
+              mints: summary.totalMints,
+              maxMints: summary.maxMints,
+              modelsCid: summary.modelsCid,
+              metaCid: summary.metaCid,
+              logoImage: item.logoImage
+            }
+            let collection:AssetsCollection = {summary:assetsSummary, assets:[]};
+            this.collections.push(collection);
+            this._smartContractsService.getAccountCollectionNFTs(assetsSummary.contractAddress).then(walletNFTs => {
+              console.log('-- on col wallet resp --', walletNFTs);
+              this._ngZone.run(() => {
+                collection.assets = walletNFTs.map((nft:any) => {
+                  let asset:AssetModel = {...nft, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
+                  return asset;
+                });
+                if(!this.currentCollection){
+                  this._didInit = true;
+                  this.currentCollection = collection;
+                  this.currentCollectionLogoUrl = `url(${this.currentCollection.summary.logoImage}`;
+                  this.selectCollection(this.currentCollection);
+                }
+              })
+            })
           })
         })
       })
     });
-    this._smartContractsService.getCustomCharsCatalogue().then(cats => {
-      if(cats.length > 0) {
-        this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
-        this._getCustomCharacters();
-      }
-    });
+    // this._smartContractsService.getCustomCharsCatalogue().then(cats => {
+    //   if(cats.length > 0) {
+    //     this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
+    //     this._getCustomCharacters();
+    //   }
+    // });
   }
   private _getCustomCharacters(){
     if(this.customCharsCollection){
@@ -138,10 +154,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
           }
         })
     }
-  }
-
-  ngAfterViewInit(): void {
-   
   }
 
   public onViewCollectionClick(address:string){
@@ -237,6 +249,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
         return;
       }
       this.displayedAssets.set(this.customCharsCollection.assets);
+      //this.displayedAssets = [...this.customCharsCollection.assets];
       this.selectedContractAddress.set(this.customCharsCollection.contractAddress);
     }
   }
@@ -251,6 +264,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       if(this.collections.length > 0){
         this.collections.forEach(col => assets = [...assets, ...col.assets]);
         this.displayedAssets.set(assets);
+        //this.displayedAssets = [...assets];
       }
     }
     else{
@@ -265,6 +279,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     }
   }
   public readonly selectCollection: CollectionOpenHandler = (item?: unknown) => {
+    if(!this._didInit) return;
     const collection = item as AssetsCollection;
     if(!collection) return;
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
@@ -272,6 +287,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     if(this._visorType === 'row'){
       console.log('displaying assets', this.currentCollection.assets);
       this.displayedAssets.update(x => this.currentCollection ? [...this.currentCollection.assets] : []);  
+      //this.displayedAssets = [...this.currentCollection.assets];
     }
     this.selectedContractAddress.set(this.currentCollection.summary.contractAddress);
   }

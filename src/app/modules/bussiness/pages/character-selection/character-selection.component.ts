@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef, signal } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -24,9 +24,9 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
   @ViewChild('sellButton') sellButton!: TemplateRef<any>;
   
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
-  public assets: AssetModel[] = [];
+  public assets = signal<AssetModel[]>([]);
   public collections:AssetsCollectionSummary[]=[];
-  public customCharsCollection!: CustomCharsCollection;
+  public customCharsCollection!: CustomCharsCollection | null;
   public loading:boolean = false;
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   private _dialog:MatDialog = inject(MatDialog);
@@ -40,6 +40,15 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
   }
 
   ngOnInit(): void {
+    this._getCharactersData();
+    this._smartContractsService.onAccountChanged.subscribe(newAddress => {
+      this._getCharactersData();
+    })
+    this._notificationsService.setup('center', 'bottom', 3000)
+  }
+  private _getCharactersData(){
+    this.collections = [];
+    this.customCharsCollection = null;
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
       cat.forEach(item => {
         this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
@@ -63,10 +72,12 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
           this.collections.push(assetsSummary);
           this._smartContractsService.getAccountCollectionNFTs(item.contractAddress).then(walletNFTs => {
             console.log('-- on col wallet resp --', walletNFTs)
+            let walletAssets: AssetModel[] = [];
             walletNFTs.forEach((nft:WalletNFT) => {
               let asset:AssetModel = {...nft, metadata: nft.metadata, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
-              this.assets.push(asset);
+              walletAssets.push(asset);
             })
+            this.assets.update(x => [...walletAssets]);
           }) 
         })
       })
@@ -77,19 +88,19 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
         this._getCustomCharacters();
       }
     });
-    this._notificationsService.setup('center', 'bottom', 3000)
   }
-  
   private _getCustomCharacters(){
     if(this.customCharsCollection){
       this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress)
         .then(walletNFTs => {
-          console.log('-- on col wallet resp --', walletNFTs)
-          this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
+          console.log('-- on col wallet resp --', walletNFTs);
+          if(this.customCharsCollection){
+            this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
             let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
             return asset;
           });
-          this.assets = [...this.assets, ...this.customCharsCollection.assets];
+          this.assets.update(x => [...this.assets(), ...this.customCharsCollection?.assets ?? []]);
+          }
         })
     }
   }
@@ -104,7 +115,8 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
     let cfg = new MatDialogConfig();
     cfg.height = '90vh';
     cfg.width = '1100px';
-    if(model.contractAddress !== this.customCharsCollection.contractAddress) {
+    
+    if(!this.customCharsCollection || model.contractAddress !== this.customCharsCollection.contractAddress) {
       let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
       if(collection){
         let fileName = model.image.split('/').slice(-1)[0].replace('.png','');

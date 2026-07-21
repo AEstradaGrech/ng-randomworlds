@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-rounded-button',
   templateUrl: './rounded-button.component.html',
   styleUrl: './rounded-button.component.scss'
 })
-export class RoundedButtonComponent implements AfterViewInit {
+export class RoundedButtonComponent implements OnInit {
 
   @Input() id: string | undefined = undefined;
   @Input() iconName: string = '';
@@ -30,7 +30,11 @@ export class RoundedButtonComponent implements AfterViewInit {
     }
     return pixelSize;
   }
-  ngAfterViewInit(): void {
+  // Defaults are set in ngOnInit, NOT ngAfterViewInit: iconColor is bound in the
+  // template ([style.--icon-color]), and ngAfterViewInit runs AFTER that binding
+  // is first checked, so mutating it there throws NG0100. ngOnInit runs before
+  // the first view check, so the binding is consistent from the start.
+  ngOnInit(): void {
     if(this.id === undefined || this.id === '')
       this.id = this.iconName;
     if(!this.iconColor || this.iconColor === '')
