@@ -1,5 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { questsViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
 import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-menu-item.model';
@@ -53,6 +54,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   private _service: QuestsService = inject(QuestsService);
   @ViewChild('scenebox') scenebox!:ElementRef;
   @ViewChild('sideBar') sideBar!:SideNavbarComponent;
+  platformId: Object = inject(PLATFORM_ID);
   get hasGameOngoing():boolean{
     return this.gameData && this.gameData.gameSessionId !== '' && !this.hasFinishedQuest;
   }
@@ -80,6 +82,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   private _clearGameData(){
+    if(isPlatformBrowser(this.platformId)) return;
     console.log('CLEARING GAME DATA');
     let currentData:GameData | null = this._getGameData();
     let data: GameData ={
@@ -108,7 +111,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   ngOnInit(): void {
     this._setupGameData();
   }
-  ngOnDestroy(): void {
+  ngOnDestroy(): void {   
     this._clearGameData();
   }
   private _setupGameData() {
@@ -269,8 +272,14 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   private _setOngoingSession(){
     console.log('-- HAS GAME ONGOIN --')
       this.isLoading = true;
-      this._service.getById(this.gameData.gameSessionId).subscribe(res => {
+      this._service.getById(this.gameData.gameSessionId)
+      .pipe(catchError(error => {
         this.isLoading = false;
+        return of(error);
+      }))
+      .subscribe(res => {
+        this.isLoading = false;
+        if(!this._isValidResponse(res)) return;
         this.currentQuest = res;
         if(this.currentQuest.blocks.length > 0){
           this.currentBlock = this.currentQuest.blocks.slice(-1)[0];
@@ -299,8 +308,14 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this.gameData.currentBlock = 0;
   }
   private _handleQuestStreamEnd(res:any){
-    this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText}).subscribe(res => {
-      this.isLoading=false; 
+    this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
+    .pipe(catchError(error => {
+      this.isLoading = false;
+      return of(error);
+    }))
+    .subscribe(res => {
+      this.isLoading=false;
+      if(!this._isValidResponse(res)) return; 
       if(this.currentBlock && res.options.length >0){
         this.gameData.currentBlock++;
         this.currentBlock.id = this.gameData.currentBlock;
@@ -336,9 +351,15 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       default:
         break;
     }
-    this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
-      this.currentQuest = res;
+    this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, this.currentQuest.blocks.slice(-1)[0])
+    .pipe(catchError(error => {
+      this.isLoading = false;
+      return of(error);
+    }))
+    .subscribe(res => {
       this.isLoading=false; 
+      if(!this._isValidResponse(res)) return;
+      this.currentQuest = res;
       this._snackBar.open("The current QUEST has ended. Mint it if you wish and play again!", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
       this._updateCurrentQuest();
     })
@@ -347,8 +368,13 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this.currentBlock = null;
     this.isLoading = true;
     this.hasStreamedScene = false;
-    this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0]).subscribe(res => {
-      if(this._handleResponseStream(res) ){
+    this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0])
+    .pipe(catchError(error => {
+      this.isLoading = false;
+      return of(error);
+    }))
+    .subscribe(res => {
+      if(this._isValidResponse(res) && this._handleResponseStream(res) ){
         if(!this.hasFinishedQuest){
           this._handleQuestStreamEnd(res);
         }
@@ -360,6 +386,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   private _getGameData():GameData | null{
+      if(!isPlatformBrowser(this.platformId)) return null;
       let gameDataCache = localStorage.getItem('game-data')
       return gameDataCache ? JSON.parse(gameDataCache) : null;
   }
@@ -382,10 +409,11 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       this.isLoading = true;
       this.gameData.gameStatus = 'INITIALIZING';
       this._service.initQuestStream(req)
-        .pipe(catchError(error => { 
-          this.isLoading = false; 
-          return of(error);
-        }))
+        // .pipe(catchError(error => { 
+        //   this.isLoading = false; 
+        //   this.gameData.gameStatus = 'READY';
+        //   return of(error);
+        // }))
         .subscribe((res: any | Error) => {
           console.log('-- on response --', res);
           if(this._isValidResponse(res)){
@@ -423,15 +451,31 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       sort_var:'creationDate',
       is_descending:true
     }
-    this._service.sortedQuery(filter).subscribe(res => {
+    this._service.sortedQuery(filter)
+    .pipe(catchError(error => {
+      this.isLoading = false;
+      this.gameData.gameStatus = 'READY';
+      this.btnTxt = "BEGIN";
+      return of(error);
+    }))
+    .subscribe(res => {
       console.log('-- on sorted query -- response', res);
-      if(res.data.length > 0){
+      if(this._isValidResponse(res)){
+        if(res.data.length > 0){
         this.currentQuest = res.data[0];
         this.gameData.gameSessionId = this.currentQuest.id;
         localStorage.setItem('game-data', JSON.stringify(this.gameData));
         console.log('game-data',this.gameData);
-        this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText}).subscribe(res => {
-          this.isLoading=false; 
+        this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
+        .pipe(catchError(error => {
+          this.isLoading = false;
+          this.gameData.gameStatus = 'READY';
+          this.btnTxt = "BEGIN";
+          return of(error);
+        }))
+        .subscribe(res => {
+          this.isLoading=false;
+          if(!this._isValidResponse(res)) return; 
           if(this.currentBlock){
             this.currentBlock.options = res.options;
             this.currentChoices = this.currentBlock.options;
@@ -447,6 +491,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         })
       }
       else this._snackBar.open("An error has occured while retrieving the new generated Quest", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+      }
     })
   }
 
