@@ -39,7 +39,8 @@ export interface GameData{
     gameSessionId:string,//dbId RandomQuest | RandomAdventure
     userPreferences?: QuestPreferences,
     intro: string,
-    currentBlock:number
+    currentBlock:number,
+    isLocked: boolean // true if the user has a game screen open in the browser
 }
 
 export interface ScrollState{

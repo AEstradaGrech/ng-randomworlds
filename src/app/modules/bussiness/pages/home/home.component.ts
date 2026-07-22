@@ -30,31 +30,26 @@ export class HomeComponent implements OnInit{
   async onBeginClick(gameType:string){
     if(!this._smartContractsService.connectedWallet){
       let isIn:boolean = await this._smartContractsService.tryMetamaskLogin();
-      if(isIn){
-
-      }
-      else{ 
+      if(!isIn){
         this.router.navigateByUrl('');
         return;
       }
     }
+    let data = localStorage.getItem('game-data');
+    let gameData: GameData | null = data ? JSON.parse(data) : null;
+    
     switch(gameType){
       case('quest'):
-        let gameData = localStorage.getItem('game-data')
-        if(gameData){
-          let object = JSON.parse(gameData)
-          if(object.gameType !== 'quest'){
-            localStorage.removeItem('game-data') //TODO: Modal 'Warning'
-            await this._setGameData('quest')
-          }
-        }else{
-          this._setGameData('quest')
-          console.log('-- stored game --', localStorage.getItem('game-type'))
+        if(gameData && gameData.character){
+          this.router.navigateByUrl('randomworlds/game/quest');
+        } 
+        else{
+          this._setGameData('quest');
+          this.router.navigateByUrl('randomworlds/character/select');
         }
-        this.router.navigateByUrl('randomworlds/character/select');
         break;
       case('adventure'):
-        localStorage.setItem('game-type', 'adventure')
+        localStorage.setItem('game-type', 'adventure');
         this.router.navigateByUrl('randomworlds/character/select');
         break;
       default: 
@@ -64,7 +59,7 @@ export class HomeComponent implements OnInit{
   }
 
   private async _setGameData(gameType:string){
-    let login = localStorage.getItem('user-login')
+    let login = localStorage.getItem('user-login');
     if(!login){
       this.router.navigateByUrl('auth/login');
       return;
@@ -81,7 +76,8 @@ export class HomeComponent implements OnInit{
       gameSessionId:'',
       userPreferences:undefined,
       intro:"",
-      currentBlock:0
+      currentBlock:0,
+      isLocked: false
     }
     localStorage.setItem('game-data', JSON.stringify(data))
   }
