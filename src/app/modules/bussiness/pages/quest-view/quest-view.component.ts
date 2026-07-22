@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { questsViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
 import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-menu-item.model';
@@ -8,6 +8,9 @@ import { Router } from '@angular/router'
 import { QuestsService } from '../../services/quests.service';
 import { QuestBlockDto, QuestCharacter, QuestInitRequest, QuestPreferences, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { SideNavbarComponent } from 'src/app/modules/shared/components/side-navbar/side-navbar.component';
+import { catchError, of } from 'rxjs';
+import { BaseComponent } from 'src/app/modules/shared/components/base.component';
+
 @Component({
   selector: 'app-quest-view',
   templateUrl: './quest-view.component.html',
@@ -27,7 +30,7 @@ import { SideNavbarComponent } from 'src/app/modules/shared/components/side-navb
     ])
   ]
 })
-export class QuestViewComponent implements OnInit {
+export class QuestViewComponent extends BaseComponent implements OnInit, OnDestroy {
   btnTxt:string = "BEGIN";
   sceneText!:string;
   choicesText!:string;
@@ -68,12 +71,32 @@ export class QuestViewComponent implements OnInit {
   @HostListener('window:beforeunload', ['$event']) 
   onBeforeCloseTab(event:any){
     console.log('BEFORE UNLOAD EVENT');
-    this._lockGameData(false);
+    this._clearGameData();
   }
   @HostListener('window:unload', ['$event']) 
   onCloseTab(event:any){
     console.log('BEFORE UNLOAD EVENT');
-    this._lockGameData(false);
+    this._clearGameData();
+  }
+
+  private _clearGameData(){
+    console.log('CLEARING GAME DATA');
+    let currentData:GameData | null = this._getGameData();
+    let data: GameData ={
+      username: currentData ? currentData.username : '',
+      gameType: 'quest',
+      gameStatus: "READY",
+      charname:'',
+      selectedCharacter:undefined,
+      character:undefined,
+      isRandomCharacter:false,
+      gameSessionId:'',
+      userPreferences:undefined,
+      intro:"",
+      currentBlock:0,
+      isLocked: false
+    }
+    localStorage.setItem('game-data', JSON.stringify(data))
   }
   private _lockGameData(lock: boolean){
     let gameData = this._getGameData();
@@ -83,13 +106,19 @@ export class QuestViewComponent implements OnInit {
     }
   }
   ngOnInit(): void {
+    this._setupGameData();
+  }
+  ngOnDestroy(): void {
+    this._clearGameData();
+  }
+  private _setupGameData() {
     this.sceneText = '';
     this.storyText = '';
     let gameData = this._getGameData();
     if(gameData){
       gameData.isLocked = true;
       localStorage.setItem('game-data', JSON.stringify(gameData));
-      if(gameData.gameType !== 'quest'){
+      if(!this._isValidGameData(gameData)){
         this._router.navigateByUrl('randomworlds/home');
         return;
       }
@@ -107,8 +136,12 @@ export class QuestViewComponent implements OnInit {
     }
   }
 
-  private _setupGameData() {
-
+  private _isValidGameData(data: GameData){
+    if(data.gameType !== 'quest') return false;
+    if(!data.character) return false;
+    if(!data.selectedCharacter) return false;
+    if(!data.username) return false;
+    return true;
   }
   public onSubmit(){
     console.log('-- on submit --')
@@ -348,18 +381,24 @@ export class QuestViewComponent implements OnInit {
       this.sceneText = "";
       this.isLoading = true;
       this.gameData.gameStatus = 'INITIALIZING';
-      this._service.initQuestStream(req).subscribe(res => {
-        console.log('-- on response --', res)
-        if(this._handleResponseStream(res) && this.currentBlock){
-          this.gameData.currentBlock++;
-          this.currentBlock.id = this.gameData.currentBlock;
-          this._addSceneMenuOption(this.currentBlock.id);
-          this.btnTxt = "SUBMIT";
-          this._completeInitialization(req);
-        }
-      })
-    }
-    
+      this._service.initQuestStream(req)
+        .pipe(catchError(error => { 
+          this.isLoading = false; 
+          return of(error);
+        }))
+        .subscribe((res: any | Error) => {
+          console.log('-- on response --', res);
+          if(this._isValidResponse(res)){
+            if(this._handleResponseStream(res) && this.currentBlock){
+              this.gameData.currentBlock++;
+              this.currentBlock.id = this.gameData.currentBlock;
+              this._addSceneMenuOption(this.currentBlock.id);
+              this.btnTxt = "SUBMIT";
+              this._completeInitialization(req);
+            }
+          }
+        })
+    } 
   }
   private _completeInitialization(req:QuestInitRequest){
     let conditions:QueryCondition[] = []

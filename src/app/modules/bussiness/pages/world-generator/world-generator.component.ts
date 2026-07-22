@@ -265,6 +265,7 @@ export class WorldGeneratorComponent implements OnInit{
         preferences:preferences
       }
       console.log('-- intro req --', introReq);
+      this.filteredGenres = [...this.filteredGenres, ...this.selectedGenres];
       this.isLoading = true;
       this._service.generateIntro(introReq).subscribe(res => {
         console.log('-- on intro response --', res)

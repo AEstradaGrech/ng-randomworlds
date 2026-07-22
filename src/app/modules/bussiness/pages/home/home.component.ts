@@ -40,8 +40,10 @@ export class HomeComponent implements OnInit{
     
     switch(gameType){
       case('quest'):
-        if(gameData && gameData.character){
-          this.router.navigateByUrl('randomworlds/game/quest');
+        if(gameData && gameData.selectedCharacter){
+          if(gameData.character)
+            this.router.navigateByUrl('randomworlds/game/quest');
+          else this.router.navigateByUrl('randomworlds/world/generator');
         } 
         else{
           this._setGameData('quest');
