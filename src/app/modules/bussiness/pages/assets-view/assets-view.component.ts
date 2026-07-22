@@ -37,8 +37,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
   public currentCollectionLogoUrl: any;
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
+  private _router: Router = inject(Router);
   public displayedAssets = signal<AssetModel[]>([]);
-  //public displayedAssets: AssetModel[] = [];
   public selectedContractAddress = signal<string>('');
   private _visorType:string = 'row';
   private _didInit: boolean = false;
@@ -268,7 +268,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
       if(this.collections.length > 0){
         this.collections.forEach(col => assets = [...assets, ...col.assets]);
         this.displayedAssets.set(assets);
-        //this.displayedAssets = [...assets];
       }
     }
     else{
@@ -289,9 +288,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
     this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
     if(!this.currentCollection) return;
     if(this._visorType === 'row'){
-      console.log('displaying assets', this.currentCollection.assets);
       this.displayedAssets.update(x => this.currentCollection ? [...this.currentCollection.assets] : []);  
-      //this.displayedAssets = [...this.currentCollection.assets];
     }
     else this.onVisorTypeChange('grid');
     this.selectedContractAddress.set(this.currentCollection.summary.contractAddress);
@@ -307,10 +304,13 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
         let data = localStorage.getItem('game-data');
         if(data){
           let gameData:GameData = JSON.parse(data);
+          if(gameData.isLocked){
+            this._notificationsService.openSnack(ESnackAlertType.WARN, 'There is a game ongoing in another tab, cannot change the character', true);
+            return;
+          }
           gameData.selectedCharacter = event.asset;
           localStorage.setItem('game-data', JSON.stringify(gameData));
           this._notificationsService.push(`Selected Character: ${event.asset.metadata.name}`);
-          //this._router.navigateByUrl('randomworlds/world/generator')
         }
         else this._notificationsService.push('No Game Data has been found in memory, go back to the home page')
       break;

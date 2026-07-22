@@ -97,7 +97,8 @@ export class SmartContractsService {
                 gameSessionId:'',
                 userPreferences:undefined,
                 intro:"",
-                currentBlock:0
+                currentBlock:0,
+                isLocked: false
               };
               localStorage.setItem('game-data', JSON.stringify(data))
               localStorage.setItem('game-data', JSON.stringify(data));

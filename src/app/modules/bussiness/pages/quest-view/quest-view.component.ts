@@ -60,16 +60,35 @@ export class QuestViewComponent implements OnInit {
     return this.endgameIcon;
   }
   @HostListener('window:storage', ['$event'])
-    onSelectedCharacterChange(event: StorageEvent){
-      console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
-      if(event.key === 'game-data')
-        this._setupGameData();
+  onSelectedCharacterChange(event: StorageEvent){
+    console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
+    if(event.key === 'game-data')
+      this._setupGameData();
+  }
+  @HostListener('window:beforeunload', ['$event']) 
+  onBeforeCloseTab(event:any){
+    console.log('BEFORE UNLOAD EVENT');
+    this._lockGameData(false);
+  }
+  @HostListener('window:unload', ['$event']) 
+  onCloseTab(event:any){
+    console.log('BEFORE UNLOAD EVENT');
+    this._lockGameData(false);
+  }
+  private _lockGameData(lock: boolean){
+    let gameData = this._getGameData();
+    if(gameData){
+      gameData.isLocked = lock;
+      localStorage.setItem('game-data', JSON.stringify(gameData));
     }
+  }
   ngOnInit(): void {
     this.sceneText = '';
     this.storyText = '';
     let gameData = this._getGameData();
     if(gameData){
+      gameData.isLocked = true;
+      localStorage.setItem('game-data', JSON.stringify(gameData));
       if(gameData.gameType !== 'quest'){
         this._router.navigateByUrl('randomworlds/home');
         return;

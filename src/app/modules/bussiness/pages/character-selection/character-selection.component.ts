@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef, signal } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef, signal, HostListener } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -9,7 +9,7 @@ import web3 from 'src/app/core/scripts/web3';
 import { GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router';
 import { Wallet } from 'web3';
-import { EAppButtons } from 'src/app/modules/shared/models/common-enums';
+import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
 import { NotificationService } from 'src/app/modules/shared/services/notification.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -38,13 +38,15 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
   constructor(@Inject(DOCUMENT) private document:Document){
     super();
   }
-
+  // @HostListener('user-login', ['$event'])
+  // public onLoginChange()
   ngOnInit(): void {
     this._getCharactersData();
     this._smartContractsService.onAccountChanged.subscribe(newAddress => {
       this._getCharactersData();
+      this._notificationService.openSnack(ESnackAlertType.WARN, `Refreshing view for address: ${newAddress}`);
     })
-    this._notificationsService.setup('center', 'bottom', 3000)
+    this._notificationsService.setup('center', 'bottom', 3000);
   }
   private _getCharactersData(){
     this.collections = [];
@@ -151,6 +153,14 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
         this.onViewClick(event.asset);
       break;
       case('select'):
+        let data = localStorage.getItem('game-data');
+        if(data){
+          let gameData:GameData =  JSON.parse(data);
+          if(gameData && gameData.isLocked){
+            this._notificationsService.openSnack(ESnackAlertType.WARN, 'There is a game ongoing in another tab, cannot change the character', true);
+            return;
+          }
+        }
         this.onSelectClick(event.asset);
       break;
       default: break;
