@@ -96,8 +96,6 @@ export class QuestViewComponent implements OnInit {
       this.gameData = gameData;
       this.gameData.gameSessionId = '';
       this.charImageUrl = `url(${this.gameData.selectedCharacter?.image ?? ''}`;
-      console.log('-- quest game data --', this.gameData);
-      this.gameData.gameSessionId = '67adf7534d878f51f077963e';
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
     if(this.hasGameOngoing){
