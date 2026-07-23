@@ -82,7 +82,10 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   private _clearGameData(){
-    if(isPlatformBrowser(this.platformId)) return;
+    // Skip on the SERVER only (no localStorage on Node). ngOnDestroy runs during
+    // SSR teardown, so without this the server render crashes. Note the `!`:
+    // the browser MUST run this, or the cross-tab lock never clears.
+    if(!isPlatformBrowser(this.platformId)) return;
     console.log('CLEARING GAME DATA');
     let currentData:GameData | null = this._getGameData();
     let data: GameData ={
@@ -126,7 +129,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         return;
       }
       this.gameData = gameData;
-      this.gameData.gameSessionId = '';
+      this.gameData.gameSessionId = '6a62367f8ea9b35003f420bf';
       this.charImageUrl = `url(${this.gameData.selectedCharacter?.image ?? ''}`;
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
@@ -270,7 +273,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   private _setOngoingSession(){
-    console.log('-- HAS GAME ONGOIN --')
+    console.log('-- HAS GAME ONGOING --')
       this.isLoading = true;
       this._service.getById(this.gameData.gameSessionId)
       .pipe(catchError(error => {
@@ -409,11 +412,11 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       this.isLoading = true;
       this.gameData.gameStatus = 'INITIALIZING';
       this._service.initQuestStream(req)
-        // .pipe(catchError(error => { 
-        //   this.isLoading = false; 
-        //   this.gameData.gameStatus = 'READY';
-        //   return of(error);
-        // }))
+        .pipe(catchError(error => { 
+          this.isLoading = false; 
+          this.gameData.gameStatus = 'READY';
+          return of(error);
+        }))
         .subscribe((res: any | Error) => {
           console.log('-- on response --', res);
           if(this._isValidResponse(res)){
@@ -481,11 +484,18 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
             this.currentChoices = this.currentBlock.options;
             this.currentBlock.options.push(`${res.bad_choice} <<BAD_CHOICE>>`)//devonly
             this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
-            this._service.setQuestStatus(this.gameData.gameSessionId, 'ONGOING').subscribe(res => {
+            this._service.setQuestStatus(this.gameData.gameSessionId, 'ONGOING')
+            .pipe(catchError(error => {
+              this.isLoading = false;
+              this.gameData.gameStatus = 'READY';
+              this.btnTxt = "BEGIN";
+              return of(error);
+            }))
+            .subscribe(res => {
               this.currentQuest = res;
               this.gameData.gameStatus = this.currentQuest.status;
-              localStorage.setItem('game-data', JSON.stringify(this.gameData))
-              console.log('-- current intro --', this.currentQuest.intro)
+              localStorage.setItem('game-data', JSON.stringify(this.gameData));
+              console.log('-- current intro --', this.currentQuest.intro);
             })
           }
         })
