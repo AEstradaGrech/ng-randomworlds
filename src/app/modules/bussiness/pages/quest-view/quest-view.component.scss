@@ -21,7 +21,7 @@
 .text-container{
     background-image: url('/assets/images/City_1.png');
     background-size: cover;
-    height: 45vh;
+    //height: 45vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -29,13 +29,16 @@
 }
 .text-area{
     background-color: #101010a6;
-    min-width: 37vw;
-    max-width: 37vw;
-    min-height: 48vh;
-    max-height: 48vh;
+    min-width: 30vw;
+    //max-width: 37vw;
+    // min-height: 48vh;
+    // max-height: 48vh;
+    display: flex;
+    flex-grow:1;
+    height: 93%;
     color:antiquewhite;
     font-size: 16px;
-    margin: 0px 10px 0px 10px;
+    margin: 0px 15px 0px 15px;
 }
 .card-container{
     display: flex !important;
@@ -62,6 +65,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    overflow-y: auto;
 }
 .begin-btn{
     width: 20%;
@@ -167,5 +171,5 @@ font-weight: bold;
 .loading{
     display: flex;
     justify-content: center;
-    margin: 15px 0px 15px 0px !important;
+    margin: 5px 0px 5px 0px !important;
 }
