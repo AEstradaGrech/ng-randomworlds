@@ -81,74 +81,13 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this._clearGameData();
   }
 
-  private _clearGameData(){
-    // Skip on the SERVER only (no localStorage on Node). ngOnDestroy runs during
-    // SSR teardown, so without this the server render crashes. Note the `!`:
-    // the browser MUST run this, or the cross-tab lock never clears.
-    if(!isPlatformBrowser(this.platformId)) return;
-    console.log('CLEARING GAME DATA');
-    let currentData:GameData | null = this._getGameData();
-    let data: GameData ={
-      username: currentData ? currentData.username : '',
-      gameType: 'quest',
-      gameStatus: "READY",
-      charname:'',
-      selectedCharacter:undefined,
-      character:undefined,
-      isRandomCharacter:false,
-      gameSessionId:'',
-      userPreferences:undefined,
-      intro:"",
-      currentBlock:0,
-      isLocked: false
-    }
-    localStorage.setItem('game-data', JSON.stringify(data))
-  }
-  private _lockGameData(lock: boolean){
-    let gameData = this._getGameData();
-    if(gameData){
-      gameData.isLocked = lock;
-      localStorage.setItem('game-data', JSON.stringify(gameData));
-    }
-  }
   ngOnInit(): void {
     this._setupGameData();
   }
   ngOnDestroy(): void {   
     this._clearGameData();
   }
-  private _setupGameData() {
-    this.sceneText = '';
-    this.storyText = '';
-    let gameData = this._getGameData();
-    if(gameData){
-      gameData.isLocked = true;
-      localStorage.setItem('game-data', JSON.stringify(gameData));
-      if(!this._isValidGameData(gameData)){
-        this._router.navigateByUrl('randomworlds/home');
-        return;
-      }
-      this.gameData = gameData;
-      this.gameData.gameSessionId = '6a62367f8ea9b35003f420bf';
-      this.charImageUrl = `url(${this.gameData.selectedCharacter?.image ?? ''}`;
-    }  
-    this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
-    if(this.hasGameOngoing){
-      this._setOngoingSession();
-    }
-    else {
-      this._switchMenu('Intro');
-      this.sideBar.setMenuEnabled('Intro');
-    }
-  }
 
-  private _isValidGameData(data: GameData){
-    if(data.gameType !== 'quest') return false;
-    if(!data.character) return false;
-    if(!data.selectedCharacter) return false;
-    if(!data.username) return false;
-    return true;
-  }
   public onSubmit(){
     console.log('-- on submit --')
     if(this.btnTxt === 'PLAY AGAIN'){
@@ -183,6 +122,70 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this._switchMenu(event.name);
   }
   
+    private _setupGameData() {
+    this.sceneText = '';
+    this.storyText = '';
+    let gameData = this._getGameData();
+    if(gameData){
+      gameData.isLocked = true;
+      localStorage.setItem('game-data', JSON.stringify(gameData));
+      if(!this._isValidGameData(gameData)){
+        this._router.navigateByUrl('randomworlds/home');
+        return;
+      }
+      this.gameData = gameData;
+      this.gameData.gameSessionId = '6a6249008ea9b35003f420ec';
+      this.charImageUrl = `url(${this.gameData.selectedCharacter?.image ?? ''}`;
+    }  
+    this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
+    if(this.hasGameOngoing){
+      this._setOngoingSession();
+    }
+    else {
+      this._switchMenu('Intro');
+      this.sideBar.setMenuEnabled('Intro');
+    }
+  }
+
+  private _isValidGameData(data: GameData){
+    if(data.gameType !== 'quest') return false;
+    if(!data.character) return false;
+    if(!data.selectedCharacter) return false;
+    if(!data.username) return false;
+    return true;
+  }
+
+    private _clearGameData(){
+    // Skip on the SERVER only (no localStorage on Node). ngOnDestroy runs during
+    // SSR teardown, so without this the server render crashes. Note the `!`:
+    // the browser MUST run this, or the cross-tab lock never clears.
+    if(!isPlatformBrowser(this.platformId)) return;
+    console.log('CLEARING GAME DATA');
+    let currentData:GameData | null = this._getGameData();
+    let data: GameData ={
+      username: currentData ? currentData.username : '',
+      gameType: 'quest',
+      gameStatus: "READY",
+      charname:'',
+      selectedCharacter:undefined,
+      character:undefined,
+      isRandomCharacter:false,
+      gameSessionId:'',
+      userPreferences:undefined,
+      intro:"",
+      currentBlock:0,
+      isLocked: false
+    }
+    localStorage.setItem('game-data', JSON.stringify(data))
+  }
+  private _lockGameData(lock: boolean){
+    let gameData = this._getGameData();
+    if(gameData){
+      gameData.isLocked = lock;
+      localStorage.setItem('game-data', JSON.stringify(gameData));
+    }
+  }
+
   private _switchMenu(name:string){
     switch(name){
       case('Preferences'):
@@ -311,25 +314,32 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this.gameData.currentBlock = 0;
   }
   private _handleQuestStreamEnd(res:any){
-    this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
-    .pipe(catchError(error => {
-      this.isLoading = false;
-      return of(error);
-    }))
-    .subscribe(res => {
-      this.isLoading=false;
-      if(!this._isValidResponse(res)) return; 
-      if(this.currentBlock && res.options.length >0){
-        this.gameData.currentBlock++;
-        this.currentBlock.id = this.gameData.currentBlock;
-        this.currentBlock.options = res.options;
-        this.currentChoices = this.currentBlock.options;
-        let badTag = res.bad_choice.toUpperCase().includes("END_TYPE:") ? "": " <<BAD_CHOICE>>"
-        this.currentBlock.options.push(`${res.bad_choice}${badTag}`)
-        this._addSceneMenuOption(this.currentBlock.id);
-        this._updateCurrentQuest();
-      }
-    }) 
+    if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks){
+      this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
+      .pipe(catchError(error => {
+        this.isLoading = false;
+        return of(error);
+      }))
+      .subscribe(res => {
+        this.isLoading=false;
+        if(!this._isValidResponse(res)) return; 
+        if(this.currentBlock && res.options.length >0){
+          this.gameData.currentBlock++;
+          this.currentBlock.id = this.gameData.currentBlock;
+          this.currentBlock.options = res.options;
+          this.currentChoices = this.currentBlock.options;
+          let badTag = res.bad_choice.toUpperCase().includes("END_TYPE:") ? "": " <<BAD_CHOICE>>"
+          this.currentBlock.options.push(`${res.bad_choice}${badTag}`)
+          this._addSceneMenuOption(this.currentBlock.id);
+          this._updateCurrentQuest();
+        }
+      }) 
+    }
+    else{
+      console.log('-- ON BLOCK LIMIT REACHED >> LAST CHOICE -->', this.currentQuest.blocks.slice(-1)[0].choice);
+      this._handleEndgameDisplay(this.currentQuest.blocks.slice(-1)[0].choice);
+      this._handleQuestEnd();
+    }
   }
   private _handleQuestEnd(){
     if(!this.currentBlock) return;
@@ -465,26 +475,12 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       console.log('-- on sorted query -- response', res);
       if(this._isValidResponse(res)){
         if(res.data.length > 0){
-        this.currentQuest = res.data[0];
-        this.gameData.gameSessionId = this.currentQuest.id;
-        localStorage.setItem('game-data', JSON.stringify(this.gameData));
-        console.log('game-data',this.gameData);
-        this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
-        .pipe(catchError(error => {
-          this.isLoading = false;
-          this.gameData.gameStatus = 'READY';
-          this.btnTxt = "BEGIN";
-          return of(error);
-        }))
-        .subscribe(res => {
-          this.isLoading=false;
-          if(!this._isValidResponse(res)) return; 
-          if(this.currentBlock){
-            this.currentBlock.options = res.options;
-            this.currentChoices = this.currentBlock.options;
-            this.currentBlock.options.push(`${res.bad_choice} <<BAD_CHOICE>>`)//devonly
-            this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
-            this._service.setQuestStatus(this.gameData.gameSessionId, 'ONGOING')
+          this.currentQuest = res.data[0];
+          this.gameData.gameSessionId = this.currentQuest.id;
+          localStorage.setItem('game-data', JSON.stringify(this.gameData));
+          console.log('game-data',this.gameData);
+          if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks){
+            this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
             .pipe(catchError(error => {
               this.isLoading = false;
               this.gameData.gameStatus = 'READY';
@@ -492,19 +488,70 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
               return of(error);
             }))
             .subscribe(res => {
-              this.currentQuest = res;
-              this.gameData.gameStatus = this.currentQuest.status;
-              localStorage.setItem('game-data', JSON.stringify(this.gameData));
-              console.log('-- current intro --', this.currentQuest.intro);
+              this.isLoading=false;
+              if(!this._isValidResponse(res)) return; 
+              if(this.currentBlock){
+                this.currentBlock.options = res.options;
+                this.currentChoices = this.currentBlock.options;
+                this.currentBlock.options.push(`${res.bad_choice} <<BAD_CHOICE>>`)//devonly
+                this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+                this._service.setQuestStatus(this.gameData.gameSessionId, 'ONGOING')
+                .pipe(catchError(error => {
+                  this.isLoading = false;
+                  this.gameData.gameStatus = 'READY';
+                  this.btnTxt = "BEGIN";
+                  return of(error);
+                }))
+                .subscribe(res => {
+                  this.currentQuest = res;
+                  this.gameData.gameStatus = this.currentQuest.status;
+                  localStorage.setItem('game-data', JSON.stringify(this.gameData));
+                  console.log('-- current intro --', this.currentQuest.intro);
+                })
+              }
             })
           }
-        })
-      }
-      else this._snackBar.open("An error has occured while retrieving the new generated Quest", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+          else{
+            console.log('-- ON BLOCK LIMIT REACHED >> LAST CHOICE -->', this.currentQuest.blocks.slice(-1)[0].choice);
+            this._handleEndgameDisplay(this.currentQuest.blocks.slice(-1)[0].choice);
+            this._handleQuestEnd();
+            //save block
+          }
+        }
+        else this._snackBar.open("An error has occured while retrieving the new generated Quest", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});   
       }
     })
   }
 
+  private _handleEndgameDisplay(lastChoice: string | null){
+    if(this.currentBlock && lastChoice){
+      let choiceToUpper = lastChoice.toUpperCase();
+      if(choiceToUpper.includes("[END_TYPE:HAPPY_END]")){
+        this.currentBlock.scene += "\n\nQUEST COMPLETED!";
+        this.sceneText += "\n\nQUEST COMPLETED!";
+        this.currentBlock.choice = 'END QUEST';
+        this.gameData.gameStatus = 'COMPLETED';
+        this.currentQuest.status = 'COMPLETED';
+        this._setEndgameIcon('COMPLETED');
+      }
+      if(choiceToUpper.includes("[END_TYPE:GAME_END]")){
+      this.currentBlock.scene += "\n\nGAME OVER";
+        this.sceneText += "\n\nGAME OVER";
+        this.currentBlock.choice = 'END QUEST';
+        this.gameData.gameStatus = 'FAILED';
+        this.currentQuest.status = 'FAILED';
+        this._setEndgameIcon('FAILED');
+      }
+      if(choiceToUpper.includes("[END_TYPE:UNCERTAIN]")){
+        this.currentBlock.scene += "\n\nTO BE CONTINUED...";
+        this.sceneText += "\n\nTO BE CONTINUED...";
+        this.currentBlock.choice = 'END QUEST';
+        this.gameData.gameStatus = 'UNCERTAIN';
+        this.currentQuest.status = 'UNCERTAIN';
+        this._setEndgameIcon('UNCERTAIN');
+      }
+    }
+  }
   private _setEndgameIcon(status:string){
     switch(status){
       case('FAILED'):

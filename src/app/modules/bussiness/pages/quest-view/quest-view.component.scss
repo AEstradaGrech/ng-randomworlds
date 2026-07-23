@@ -30,9 +30,6 @@
 .text-area{
     background-color: #101010a6;
     min-width: 30vw;
-    //max-width: 37vw;
-    // min-height: 48vh;
-    // max-height: 48vh;
     display: flex;
     flex-grow:1;
     height: 93%;
@@ -48,13 +45,11 @@
 .game-card {
     max-width: 45%;
     height: 69vh;
-  }
+}
   
 .game-card-header-image{
     background-size: cover;
-  }
-
-
+}
 
 .game-card-image{
     margin:3px 7px 15px 7px
