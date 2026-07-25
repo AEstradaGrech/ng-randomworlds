@@ -121,3 +121,9 @@ export interface SceneOptionsResponse{
     options: string[],
     bad_choice:string
 }
+
+export interface FinalOptionsResponse{
+    happy_end_choice:string,
+    uncertain_end_choice:string,
+    game_over_choice:string
+}

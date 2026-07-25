@@ -21,7 +21,6 @@
 .text-container{
     background-image: url('/assets/images/City_1.png');
     background-size: cover;
-    //height: 45vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -29,7 +28,6 @@
 }
 .text-area{
     background-color: #101010a6;
-    min-width: 30vw;
     display: flex;
     flex-grow:1;
     height: 93%;
@@ -43,7 +41,8 @@
 }
 
 .game-card {
-    max-width: 45%;
+    min-width: 35%;
+    max-width: 35%;
     height: 69vh;
 }
   
