@@ -1,7 +1,7 @@
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { filter, Observable } from 'rxjs';
-import { ChatMessage as ChatMessageDto, CreateCharacterRequest, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, RandomWorldsCharacter, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
+import { ChatMessage as ChatMessageDto, CreateCharacterRequest, FinalOptionsResponse, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, RandomWorldsCharacter, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
 import { CollectionResponse, SortedFilter } from '../../shared/models/common-interfaces';
 import { environment } from 'src/environments/environment';
 import { CharacterProfileDto } from '../../shared/models/mgmt-interfaces';
@@ -55,6 +55,9 @@ export class QuestsService {
   }
   public generateSceneOptions(req:SceneOptionsRequest) : Observable<SceneOptionsResponse>{
     return this.http.post<SceneOptionsResponse>(`${this._baseUrl}/scene-options`,req)
+  }
+  public generateFinalOptions(req:SceneOptionsRequest) : Observable<FinalOptionsResponse>{
+    return this.http.post<FinalOptionsResponse>(`${this._baseUrl}/final-scene-options`,req)
   }
   public generateIntro(req:QuestIntroRequest) : Observable<QuestIntroResponse>{
     console.log('generate intro')

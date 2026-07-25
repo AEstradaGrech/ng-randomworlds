@@ -7,7 +7,7 @@ import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-m
 import { GameData, QueryCondition, SortedFilter } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router'
 import { QuestsService } from '../../services/quests.service';
-import { QuestBlockDto, QuestCharacter, QuestInitRequest, QuestPreferences, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
+import { FinalOptionsResponse, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestPreferences, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { SideNavbarComponent } from 'src/app/modules/shared/components/side-navbar/side-navbar.component';
 import { catchError, of } from 'rxjs';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -96,13 +96,26 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     }
     if(this.hasGameOngoing && this.currentBlock){
       if(!this.selectedChoice || this.selectedChoice === '' ){
-        this._snackBar.open("You must pick a choice from the available to continue", 
-          undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+        this._snackBar.open("You must pick a choice from the available to continue", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
         return;
       }
-      this.currentBlock.choice=this.selectedChoice;
-      this.currentQuest.blocks.push(this.currentBlock);
-      this._handleQuest();
+      
+      if(this.selectedChoice){
+        if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks -1){
+          let taggedOption = this.currentBlock.options.find(x => x.includes(this.selectedChoice ?? ''))
+          if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks -2) {
+            if(taggedOption && taggedOption.includes("<<BAD_CHOICE>>"))
+              this.selectedChoice = taggedOption; //pasar el tag para el LLM
+          }
+          else{
+            if(taggedOption)
+              this.selectedChoice = taggedOption;
+          }
+        }
+        this.currentBlock.choice=this.selectedChoice;
+        this.currentQuest.blocks.push(this.currentBlock);
+        this._handleQuest();
+      }
     }
     else this._initializeQuest()
     
@@ -134,7 +147,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         return;
       }
       this.gameData = gameData;
-      this.gameData.gameSessionId = '6a6249008ea9b35003f420ec';
+      this.gameData.gameSessionId = '';
       this.charImageUrl = `url(${this.gameData.selectedCharacter?.image ?? ''}`;
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
@@ -189,19 +202,19 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   private _switchMenu(name:string){
     switch(name){
       case('Preferences'):
-      if(this.gameData && this.gameData.userPreferences)
-        this.sceneText = this._formatUserPreferences(this.gameData.userPreferences);
-      break;
+        if(this.gameData && this.gameData.userPreferences)
+          this.sceneText = this._formatUserPreferences(this.gameData.userPreferences);
+        break;
       case('Character'):
-      if(this.gameData.character)
-        this.sceneText = this._formatCharacterData(this.gameData.character)
-      break;
+        if(this.gameData.character)
+          this.sceneText = this._formatCharacterData(this.gameData.character)
+        break;
       case('Intro'):
-      this.sceneText = this.gameData.intro;
-      break;
+        this.sceneText = this.gameData.intro;
+        break;
       case('Story'):
-      this.sceneText = this.storyText;
-      break;
+        this.sceneText = this.storyText;
+        break;
       default: 
         let split = name.split(' ');
         if(split.length > 1){
@@ -314,8 +327,20 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this.gameData.currentBlock = 0;
   }
   private _handleQuestStreamEnd(res:any){
-    if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks){
-      this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
+    if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks -1){
+      if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks -2)
+        this._generateDefaultSceneOptions();
+      else this._generateFinalSceneOptions();
+    }
+    else{
+      console.log('-- ON BLOCK LIMIT REACHED >> LAST CHOICE -->', this.currentQuest.blocks.slice(-1)[0].choice);
+      this._handleEndgameDisplay(this.currentQuest.blocks.slice(-1)[0].choice);
+      this._handleQuestEnd();
+    }
+  }
+
+  private _generateDefaultSceneOptions(){
+    this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
       .pipe(catchError(error => {
         this.isLoading = false;
         return of(error);
@@ -325,25 +350,54 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         if(!this._isValidResponse(res)) return; 
         if(this.currentBlock && res.options.length >0){
           this.gameData.currentBlock++;
+          localStorage.setItem('game-data', JSON.stringify(this.gameData));
           this.currentBlock.id = this.gameData.currentBlock;
-          this.currentBlock.options = res.options;
-          this.currentChoices = this.currentBlock.options;
+          this.currentBlock.options = [...res.options];
           let badTag = res.bad_choice.toUpperCase().includes("END_TYPE:") ? "": " <<BAD_CHOICE>>"
-          this.currentBlock.options.push(`${res.bad_choice}${badTag}`)
+          this.currentBlock.options.push(`${res.bad_choice}${badTag}`);
+          this.currentChoices = [...res.options];
+          this.currentChoices.push(res.bad_choice);
           this._addSceneMenuOption(this.currentBlock.id);
           this._updateCurrentQuest();
         }
       }) 
-    }
-    else{
-      console.log('-- ON BLOCK LIMIT REACHED >> LAST CHOICE -->', this.currentQuest.blocks.slice(-1)[0].choice);
-      this._handleEndgameDisplay(this.currentQuest.blocks.slice(-1)[0].choice);
-      this._handleQuestEnd();
-    }
   }
+
+  private _generateFinalSceneOptions(){
+    this._service.generateFinalOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
+      .pipe(catchError(error => {
+        this.isLoading = false;
+        return of(error);
+      }))
+      .subscribe(res => {
+        this.isLoading=false;
+        if(!this._isValidResponse(res)) return; 
+        if(this.currentBlock && res as FinalOptionsResponse){
+          this.gameData.currentBlock++;
+          localStorage.setItem('game-data', JSON.stringify(this.gameData));
+          this.currentBlock.id = this.gameData.currentBlock;
+          let finalOptions: string[] = [
+            res.happy_end_choice,
+            res.uncertain_end_choice,
+            res.game_over_choice
+          ]
+          this.currentChoices = finalOptions;
+          this.currentBlock.options = [
+            `${res.happy_end_choice} <<HAPPY>>`,
+            `${res.uncertain_end_choice} <<UNCERTAIN>>`,
+            `${res.game_over_choice} <<GAME_OVER>>`
+          ];
+          
+          this._addSceneMenuOption(this.currentBlock.id);
+          this._updateCurrentQuest();
+        }
+      }) 
+  }
+
   private _handleQuestEnd(){
     if(!this.currentBlock) return;
     this.gameData.currentBlock++;
+    localStorage.setItem('game-data', JSON.stringify(this.gameData));
     this.currentBlock.id = this.gameData.currentBlock;
     this.currentChoices = [];
     this._addSceneMenuOption(this.currentBlock.id);
@@ -491,9 +545,10 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
               this.isLoading=false;
               if(!this._isValidResponse(res)) return; 
               if(this.currentBlock){
-                this.currentBlock.options = res.options;
-                this.currentChoices = this.currentBlock.options;
-                this.currentBlock.options.push(`${res.bad_choice} <<BAD_CHOICE>>`)//devonly
+                this.currentBlock.options = [...res.options];
+                this.currentBlock.options.push(`${res.bad_choice} <<BAD_CHOICE>>`);
+                this.currentChoices = [...res.options];
+                this.currentChoices.push(res.bad_choice);
                 this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
                 this._service.setQuestStatus(this.gameData.gameSessionId, 'ONGOING')
                 .pipe(catchError(error => {
@@ -526,7 +581,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   private _handleEndgameDisplay(lastChoice: string | null){
     if(this.currentBlock && lastChoice){
       let choiceToUpper = lastChoice.toUpperCase();
-      if(choiceToUpper.includes("[END_TYPE:HAPPY_END]")){
+      if(choiceToUpper.includes("<<HAPPY_END>>")){
         this.currentBlock.scene += "\n\nQUEST COMPLETED!";
         this.sceneText += "\n\nQUEST COMPLETED!";
         this.currentBlock.choice = 'END QUEST';
@@ -534,7 +589,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this.currentQuest.status = 'COMPLETED';
         this._setEndgameIcon('COMPLETED');
       }
-      if(choiceToUpper.includes("[END_TYPE:GAME_END]")){
+      if(choiceToUpper.includes("<<GAME_OVER_END>>")){
       this.currentBlock.scene += "\n\nGAME OVER";
         this.sceneText += "\n\nGAME OVER";
         this.currentBlock.choice = 'END QUEST';
@@ -542,7 +597,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this.currentQuest.status = 'FAILED';
         this._setEndgameIcon('FAILED');
       }
-      if(choiceToUpper.includes("[END_TYPE:UNCERTAIN]")){
+      if(choiceToUpper.includes("<<UNCERTAIN_END")){
         this.currentBlock.scene += "\n\nTO BE CONTINUED...";
         this.sceneText += "\n\nTO BE CONTINUED...";
         this.currentBlock.choice = 'END QUEST';
