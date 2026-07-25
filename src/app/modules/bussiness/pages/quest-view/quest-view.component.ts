@@ -220,13 +220,13 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         if(split.length > 1){
           if(this.currentBlock && parseInt(split[1].trim()) === this.currentBlock.id){
             this.sceneText = this.currentBlock.scene;
-            this.currentChoices = this.currentBlock.options;
+            this.currentChoices = this._getSanitizedOptions(this.currentBlock.options);
             break;
           }
           let block = this.currentQuest.blocks.filter(x => x.id === parseInt(split[1].trim()));
-          if(block !== undefined && block.length > 0){
-            this.sceneText = block[0].scene;
-            this.currentChoices = block[0].options;
+          if(block !== undefined && block.length > 0 && block[0].id !== this.currentQuest.maxBlocks){
+            this.sceneText = `> SCENE: ${block[0].scene}\n\n> CHOICE: ${this._getSanitizedOption(block[0].choice ?? '')}`;
+            this.currentChoices = this._getSanitizedOptions(block[0].options);
             this.selectedChoice = block[0].choice;
           }
         }
@@ -234,6 +234,25 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       break;
     }
   }
+
+  private _getSanitizedOptions(options:string[]){
+    let sanitized:string[] = []
+    options.forEach(option => sanitized.push(this._getSanitizedOption(option)));
+    return sanitized;
+  }
+  private _getSanitizedOption(option:string){
+    if(option.length == 0) return "";
+    option = this._tryClearTag(option, '<<HAPPY>>');
+    option = this._tryClearTag(option, '<<GAME_OVER>>');
+    option = this._tryClearTag(option, '<<UNCERTAIN>>');
+    option = this._tryClearTag(option, '<<BAD_CHOICE>>');
+    return option;
+  }
+
+  private _tryClearTag(option:string, tag:string): string{
+    return option.includes(tag) ? option.replace(tag, "").trim() : option;
+  }
+
   private _updateCurrentQuest(){
     this._service.getById(this.currentQuest.id).subscribe(res => {
       this.currentQuest = res;
@@ -255,32 +274,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         choice:"",
         summary:""
       }
-      if(this.sceneText && this.sceneText !== ""){
-        if(this.sceneText.includes('QUEST FINISHED!')){
-          this.currentBlock.choice = 'END QUEST';
-          this.gameData.gameStatus = 'COMPLETED';
-          this.currentQuest.status = 'COMPLETED';
-          this._setEndgameIcon('COMPLETED');
-          
-          return true;
-        }
-        if(this.sceneText.includes('GAME OVER')){
-          this.currentBlock.choice = 'END QUEST';
-          this.gameData.gameStatus = 'FAILED';
-          this.currentQuest.status = 'FAILED';
-          this._setEndgameIcon('FAILED');
-          return true;
-        }
-        if(this.sceneText.includes('TO BE CONTINUED...')){
-          this.currentBlock.choice = 'END QUEST';
-          this.gameData.gameStatus = 'UNCERTAIN';
-          this.currentQuest.status = 'UNCERTAIN';
-          this._setEndgameIcon('UNCERTAIN');
-          return true;
-        }
-      }
       return true;
-      //return this._validateCurrentBlock();
     }
     this.streamedText = res["partialText"];
     if(this.streamedText)
@@ -353,8 +347,8 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           localStorage.setItem('game-data', JSON.stringify(this.gameData));
           this.currentBlock.id = this.gameData.currentBlock;
           this.currentBlock.options = [...res.options];
-          let badTag = res.bad_choice.toUpperCase().includes("END_TYPE:") ? "": " <<BAD_CHOICE>>"
-          this.currentBlock.options.push(`${res.bad_choice}${badTag}`);
+          let badTag = "<<BAD_CHOICE>>"
+          this.currentBlock.options.push(`${res.bad_choice} ${badTag}`);
           this.currentChoices = [...res.options];
           this.currentChoices.push(res.bad_choice);
           this._addSceneMenuOption(this.currentBlock.id);
@@ -581,7 +575,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   private _handleEndgameDisplay(lastChoice: string | null){
     if(this.currentBlock && lastChoice){
       let choiceToUpper = lastChoice.toUpperCase();
-      if(choiceToUpper.includes("<<HAPPY_END>>")){
+      if(choiceToUpper.includes("<<HAPPY>>")){
         this.currentBlock.scene += "\n\nQUEST COMPLETED!";
         this.sceneText += "\n\nQUEST COMPLETED!";
         this.currentBlock.choice = 'END QUEST';
@@ -589,7 +583,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this.currentQuest.status = 'COMPLETED';
         this._setEndgameIcon('COMPLETED');
       }
-      if(choiceToUpper.includes("<<GAME_OVER_END>>")){
+      if(choiceToUpper.includes("<<GAME_OVER>>")){
       this.currentBlock.scene += "\n\nGAME OVER";
         this.sceneText += "\n\nGAME OVER";
         this.currentBlock.choice = 'END QUEST';
@@ -597,7 +591,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this.currentQuest.status = 'FAILED';
         this._setEndgameIcon('FAILED');
       }
-      if(choiceToUpper.includes("<<UNCERTAIN_END")){
+      if(choiceToUpper.includes("<<UNCERTAIN>>")){
         this.currentBlock.scene += "\n\nTO BE CONTINUED...";
         this.sceneText += "\n\nTO BE CONTINUED...";
         this.currentBlock.choice = 'END QUEST';
