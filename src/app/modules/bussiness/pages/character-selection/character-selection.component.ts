@@ -1,15 +1,13 @@
-import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef, signal, HostListener } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef, signal } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
-import { MatSidenav } from '@angular/material/sidenav';
+import { AssetModel, CollectionSummary, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import web3 from 'src/app/core/scripts/web3';
-import { GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
+import { GameData, NftCardClickAction, RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router';
-import { Wallet } from 'web3';
-import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
+import {ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
 import { NotificationService } from 'src/app/modules/shared/services/notification.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -25,7 +23,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
   
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   public assets = signal<AssetModel[]>([]);
-  public collections:AssetsCollectionSummary[]=[];
+  public collections:CollectionSummary[]=[];
   public customCharsCollection!: CustomCharsCollection | null;
   public loading:boolean = false;
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
@@ -55,28 +53,12 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
       cat.forEach(item => {
         this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
           console.log('summary', summary);
-          let assetsSummary:AssetsCollectionSummary ={
-            contractAddress: item.contractAddress,
-            name: summary.collectionName,
-            tokenName: summary.name,
-            symbol: item.symbol,
-            description: item.description,
-            isFree: item.isFree,
-            isLimited: item.isLimited,
-            isOutOfStock: summary.isOutOfStock,
-            models: summary.models,
-            mints: summary.totalMints,
-            maxMints: summary.maxMints,
-            modelsCid: summary.modelsCid,
-            metaCid: summary.metaCid,
-            logoImage: item.logoImage
-          }
-          this.collections.push(assetsSummary);
+          this.collections.push(summary);
           this._smartContractsService.getAccountCollectionNFTs(item.contractAddress).then(walletNFTs => {
             console.log('-- on col wallet resp --', walletNFTs)
             let walletAssets: AssetModel[] = [];
             walletNFTs.forEach((nft:WalletNFT) => {
-              let asset:AssetModel = {...nft, metadata: nft.metadata, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
+              let asset:AssetModel = {...nft, metadata: nft.metadata, collectionLogoUrl: `url(${summary.logoImage})`}
               walletAssets.push(asset);
             })
             this.assets.update(x => [...walletAssets]);
@@ -119,10 +101,10 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
     cfg.width = '1100px';
     
     if(!this.customCharsCollection || model.contractAddress !== this.customCharsCollection.contractAddress) {
-      let collection = this.collections.filter(x => x.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
+      let collection = this.collections.filter(x => x.address.toLowerCase() === model.contractAddress.toLowerCase())[0]
       if(collection){
         let fileName = model.image.split('/').slice(-1)[0].replace('.png','');
-        let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.contractAddress);
+        let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.address);
         let catModel:NftDetailModel = {
           name: model.metadata.name,
           metadata: model.metadata,

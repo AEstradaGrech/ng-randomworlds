@@ -23,13 +23,13 @@ export class MarketplaceComponent implements OnInit{
   private _paymentTokens: Map<string,TokenDetails> = new Map<string, TokenDetails>();
   ngOnInit(): void {
   
-    this._smartContractsService.collections.forEach(item => {
-      this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
+    this._smartContractsService.collectionAddresses.forEach(item => {
+      this._smartContractsService.getCollectionSummary(item).then(summary => {
         console.log('summary', summary);
-        this._smartContractsService.getEnabledTokens(item.contractAddress, true).then(response => {
-          response.forEach(token => this._cachePaymentTokenDetails(item.contractAddress, token));
-          this._setupCatalogueModels({...item, ...summary, enabledTokens:response});
-        });
+        // this._smartContractsService.getEnabledTokens(item.contractAddress, true).then(response => {
+        //   response.forEach(token => this._cachePaymentTokenDetails(item.contractAddress, token));
+        //   this._setupCatalogueModels({...item, ...summary, enabledTokens:response});
+        // });
       })
     })
   }

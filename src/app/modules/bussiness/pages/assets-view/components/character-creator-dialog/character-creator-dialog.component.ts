@@ -4,10 +4,9 @@ import { Component, signal, computed, ElementRef, EventEmitter, inject, OnInit, 
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatRadioChange } from '@angular/material/radio';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabChangeEvent } from '@angular/material/tabs';
-import { CreateCharacterRequest, MintCharacterRequest, QuestCharacter, RandomWorldsCharacter, TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
+import { CreateCharacterRequest, MintCharacterRequest, QuestCharacter, RandomWorldsCharacter, SaveDatasetCharacter, TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { ImagesService } from 'src/app/modules/bussiness/services/images.service';
 import { QuestsService } from 'src/app/modules/bussiness/services/quests.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -58,7 +57,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   availableTokens: string[] = [];
   diffusionSettings!: ProviderSettingsDto;
   isMinting: boolean = false;
-  selectedCurrency = signal<string>('');
+  selectedCurrency = signal<string>('ETH');
 
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
@@ -363,7 +362,7 @@ private getDefaultCurrencyTitle() : string {
     }
 
     if(!this.isRandomGenre)
-      req.constraints.push(this.form.get('isFemaleChar')?.value ? 'The generated character MUST be a female' : 'The generated character MUST be a male');
+      req.constraints.push(this.form.get('isFemaleChar')?.value ? 'The generated character MUST be a female.' : 'The generated character MUST be a male.');
     console.log('on generate profile click', req);
     this.isLoading = true;
     this._charactersService.generateCharacterProfile(req).subscribe(res => {
@@ -377,6 +376,31 @@ private getDefaultCurrencyTitle() : string {
     });
   }
 
+  public onSaveDatasetChar(){
+    let profile: RandomWorldsCharacter | null = this.currentProfile();
+    if(profile){
+       let req: SaveDatasetCharacter = {
+        name: this.form.get('name')?.value,
+        age: this.form.get('age')?.value,
+        ambiences: this.selectedAmbiences,
+        moods: this.selectedMoods,
+        suggestions: this.suggestbox.nativeElement.value.trim(),
+        constraints: this.constraintsbox.nativeElement.value.trim().length > 0 ? [this.constraintsbox.nativeElement.value] : [],
+        profile: profile
+      }
+
+      if(!this.isRandomGenre)
+        req.constraints.push(this.form.get('isFemaleChar')?.value ? 'The generated character MUST be a female' : 'The generated character MUST be a male');
+        console.log('on generate profile click', req);
+        this.isLoading = true;
+        this._charactersService.generateCharacterProfile(req)
+        .subscribe(res => {
+          console.log('-- on char profile response --', res);
+          this._notificationsService.push('Character saved for dataset');
+          this.isLoading = false;
+        });
+    }
+  }
   private _updateProfiles(res: QuestCharacter){
     let profile: RandomWorldsCharacter = res;
     profile.moods = this.selectedMoods;

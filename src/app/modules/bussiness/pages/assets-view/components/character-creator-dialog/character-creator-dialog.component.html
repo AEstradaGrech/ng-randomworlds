@@ -104,6 +104,18 @@
                 [withSpinner]="isLoading && isGeneratingImage"
                 (click)="$event.stopPropagation();onGenerateImageClick()">
               </app-rounded-button>
+                <app-rounded-button
+                matTooltip="Enhance Image prompt from the currently displayed Profile"
+                [matTooltipPosition]="'above'" 
+                [id]="'save'"
+                [iconName]="'edit'"
+                [size]="'35px'"
+                [hoverColor]="'var(--terciary-btn-hover)'"
+                [borderColor]="'var(--terciary-btn-border)'"
+                [disabled]="!currentProfile() || isLoading"
+                [withSpinner]="isLoading && isEnhancing"
+                (click)="$event.stopPropagation();onSaveDatasetChar()">
+              </app-rounded-button>
               <app-rounded-button
                 matTooltip="Enhance Image prompt from the currently displayed Profile"
                 [matTooltipPosition]="'above'" 
@@ -129,10 +141,11 @@
                 (click)="$event.stopPropagation();onGenerateProfileClick()">
               </app-rounded-button>
             </mat-expansion-panel-header>
+            <form [formGroup]="form">
               <div class="form-row first-traits-row">
-                <mat-form-field class="form-control" formControlName="name">
+                <mat-form-field class="form-control">
                   <label>Name</label>
-                  <input matInput type="text">
+                  <input matInput type="text" formControlName="name">
                 </mat-form-field>
                 <div class="toggles-box">
                   <mat-slide-toggle class="char-genre-toggle" [disabled]="isRandomGenre" (change)="onCharacterGenreToggle($event)">Female Character</mat-slide-toggle>
@@ -148,9 +161,10 @@
               <div class="form-row second-traits-row">
                 <mat-form-field class="form-control">
                   <label>Age</label>
-                  <input matInput type="text">
+                  <input matInput type="text" formControlName="age">
                 </mat-form-field>
               </div>
+            </form>
               <div class="form-row third-traits-row">
                 <mat-form-field class="chips-control form-control">
                   <mat-label>Ambiences</mat-label>
