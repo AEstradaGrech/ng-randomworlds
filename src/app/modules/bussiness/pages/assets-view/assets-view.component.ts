@@ -1,7 +1,7 @@
-import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, AfterViewInit, NgZone, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, NgZone, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, AssetsCollectionSummary, CatalogueCollection, CatalogueModel, CustomCharsCatalogue, CustomCharsCollection, NftDetailModel } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { AssetModel, AssetsCollection, CustomCharsCollection, NftDetailModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -10,7 +10,6 @@ import web3 from 'src/app/core/scripts/web3';
 import { GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
 import { Router } from '@angular/router';
-import { NotificationService } from 'src/app/modules/shared/services/notification.service';
 import { CharacterCreatorDialogComponent } from './components/character-creator-dialog/character-creator-dialog.component';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
@@ -92,29 +91,13 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
         this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
           this._ngZone.run(() => {
             console.log('summary', summary);
-            let assetsSummary:AssetsCollectionSummary ={
-              contractAddress: item.contractAddress,
-              name: summary.collectionName,
-              tokenName: summary.name,
-              symbol: item.symbol,
-              description: item.description,
-              isFree: item.isFree,
-              isLimited: item.isLimited,
-              isOutOfStock: summary.isOutOfStock,
-              models: summary.models,
-              mints: summary.totalMints,
-              maxMints: summary.maxMints,
-              modelsCid: summary.modelsCid,
-              metaCid: summary.metaCid,
-              logoImage: item.logoImage
-            }
-            let collection:AssetsCollection = {summary:assetsSummary, assets:[]};
+            let collection:AssetsCollection = {summary:summary, assets:[]};
             this.collections.push(collection);
-            this._smartContractsService.getAccountCollectionNFTs(assetsSummary.contractAddress).then(walletNFTs => {
+            this._smartContractsService.getAccountCollectionNFTs(summary.address).then(walletNFTs => {
               console.log('-- on col wallet resp --', walletNFTs);
               this._ngZone.run(() => {
                 collection.assets = walletNFTs.map((nft:any) => {
-                  let asset:AssetModel = {...nft, collectionLogoUrl: `url(${assetsSummary.logoImage})`}
+                  let asset:AssetModel = {...nft, collectionLogoUrl: `url(${summary.logoImage})`}
                   return asset;
                 });
                 if(!this.currentCollection){
@@ -129,6 +112,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
         })
       })
     });
+    this._smartContractsService.getCustomCharsFactoryOwner().then((res:any) => console.log(res));
+
     this._smartContractsService.getCustomCharsCatalogue().then(cats => {
       this._ngZone.run(() => {
         if(cats.length > 0) {
@@ -181,10 +166,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
       cfg.data = {model:detailModel, showContractData:true};
     }
     else{
-      let collection = this.collections.filter(x => x.summary.contractAddress.toLowerCase() === model.contractAddress.toLowerCase())[0]
+      let collection = this.collections.filter(x => x.summary.address.toLowerCase() === model.contractAddress.toLowerCase())[0]
       if(collection){
         let fileName = model.image.split('/').slice(-1)[0].replace('.png','');
-        let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.summary.contractAddress);
+        let modelInfo = await this._smartContractsService.getModelInfo(fileName, collection.summary.address);
         let detailModel: NftDetailModel = {
           name: model.metadata.name,
           metadata: model.metadata,
@@ -285,13 +270,13 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
     if(!this._didInit) return;
     const collection = item as AssetsCollection;
     if(!collection) return;
-    this.currentCollection = this.collections.filter(x => x.summary.contractAddress === collection.summary.contractAddress)[0]
+    this.currentCollection = this.collections.filter(x => x.summary.address === collection.summary.address)[0]
     if(!this.currentCollection) return;
     if(this._visorType === 'row'){
       this.displayedAssets.update(x => this.currentCollection ? [...this.currentCollection.assets] : []);  
     }
     else this.onVisorTypeChange('grid');
-    this.selectedContractAddress.set(this.currentCollection.summary.contractAddress);
+    this.selectedContractAddress.set(this.currentCollection.summary.address);
   }
   public onCardButtonClicked(event:NftCardClickAction){
     console.log('-- char selection >> card btn clicked --', event)

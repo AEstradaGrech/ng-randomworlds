@@ -1,26 +1,11 @@
 
-export interface CatalogueCollection {
-    contractAddress:string,
-    name:string,
-    description:string,
-    symbol:string,
-    isFree:boolean,
-    isLimited:boolean,
-    logoImage:string
-}
-export interface AssetsCollectionSummary extends CatalogueCollection {
-    isOutOfStock:boolean,
-    models:string[],
-    maxMints: number,
-    mints: number,
-    modelsCid:string,
-    metaCid:string,
-    tokenName: string
-}
+
 export interface CollectionSummary {
+    owner: string,
+    address: string,
     name:string,
     symbol:string,
-    collectionName:string,
+    tokenName:string,
     description:string,
     isFreeCollection: boolean,
     isLimitedCollection: boolean
@@ -31,7 +16,7 @@ export interface CollectionSummary {
     modelsCid:string,
     metaCid:string,
     gateway:string,
-    owner: string
+    logoImage:string
 }
 export interface CharacterMetadata{
     name:string,
@@ -70,7 +55,7 @@ export interface AssetModel extends WalletNFT {
     collectionLogoUrl: string
 }
 export interface AssetsCollection{
-    summary: AssetsCollectionSummary,
+    summary: CollectionSummary,
     assets: AssetModel[]
 }
 export interface ModelInfo{

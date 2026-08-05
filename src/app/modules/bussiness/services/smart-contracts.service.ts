@@ -11,7 +11,7 @@ import RagCharsCollection from 'src/app/core/scripts/ragCharsCollection';
 import CustomChars from 'src/app/core/scripts/customCharacters';
 import CustomCharsFactory from 'src/app/core/scripts/customCharsFactory';
 import { firstValueFrom, Observable } from 'rxjs';
-import { CatalogueCollection, CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { GameData, UserLogin } from '../../shared/models/common-interfaces';
@@ -22,7 +22,7 @@ import { Router } from '@angular/router';
 export class SmartContractsService {
   public web3!:any;
   public factory:any;
-  public collections: CatalogueCollection[] = [];
+  public collectionAddresses: string[] = [];
   public onPaymentReceipt: EventEmitter<any> = new EventEmitter<any>();
   public onPaymentError: EventEmitter<any> = new EventEmitter<any>();
   public onAccountChanged: EventEmitter<string> = new EventEmitter<string>(); 
@@ -121,8 +121,8 @@ export class SmartContractsService {
     })
     this.getCollectionsCatalogue().then(res => {
       console.log('--contract address--',this.factory._address)
-      this.collections = this._mapCatalogueData(res);
-      console.log('-- factory cats --', this.collections);
+      this.collectionAddresses = res;
+      console.log('-- factory cats --', this.collectionAddresses);
     })
   }
   
@@ -159,6 +159,9 @@ export class SmartContractsService {
   }
   public getCustomCharactersFactory(): any{
     return CustomCharsFactory(this.web3);
+  }
+  public async getCustomCharsFactoryOwner(): Promise<string>{
+    return await this.getCustomCharactersFactory().methods.owner().call();
   }
 
   public getCustomCharactersContract(address: string) : any{
@@ -201,25 +204,42 @@ export class SmartContractsService {
   }
 
   public async getCollectionSummary(address: string): Promise<CollectionSummary>{
-    let data = await this.getCollectionContract(address).methods.getContractSummary().call();
+    let collection = await this.getCollectionContract(address).call();
+    let owner = await collection.methods.owner().call();
+    let tokenName = await collection.methods.name().call();
+    let symbol = await collection.methods.symbol().call();
+    let imagesCid = await collection.methods.modelsFolderCID().call();
+    let metadataCid = await collection.methods.metadataFolderCID().call();
+    let description = await collection.methods.collectionDescription().call();
+    let name = await collection.methods.collectionName().call();
+    let endpoint = await collection.methods.endpoint().call();
+    let logoEndpoint = await collection.methods.logoEndpoint().call();
+    let isLimited = await collection.methods.isLimited().call();
+    let maxMints = await collection.methods.maxMints().call();
+    let currentTokenId = await collection.methods.tokenId().call();
+    let isOutOfStock = await collection.methods.isOutOfStock().call();
+    let defaultWeiPrice = await collection.methods.defaultWeiPrice().call();
+    let models = await collection.methods.models().call();
     let summary:CollectionSummary = {
-      name: data.name,
-      symbol: data.symbol,
-      collectionName: data.collectionName,
-      description: data.description,
-      isFreeCollection: data.isFreeCollection,
-      isLimitedCollection: data.isLimitedCollection,
-      isOutOfStock: data.isOutOfStock,
-      maxMints: parseInt(data.maxMints),
-      totalMints: parseInt(data.totalMints),
-      models: data.models,
-      modelsCid: data.modelsCid,
-      metaCid: data.metaCid,
-      gateway:data.gateway,
-      owner:data.owner
+      owner: owner,
+      address: address,
+      name: name,
+      symbol: symbol,
+      tokenName: tokenName,
+      description: description,
+      isFreeCollection: parseInt(defaultWeiPrice) > 0,
+      isLimitedCollection: isLimited,
+      isOutOfStock: isOutOfStock,
+      maxMints: parseInt(maxMints),
+      totalMints: parseInt(currentTokenId),
+      models: models,
+      modelsCid: imagesCid,
+      metaCid: metadataCid,
+      gateway:endpoint,
+      logoImage: logoEndpoint
     }
     return summary;
-  }
+  }  
 
   public async getEnabledTokens(collectionAddress:string, isCollectionContract: boolean) : Promise<string[]>{
     return isCollectionContract ?
@@ -298,20 +318,7 @@ export class SmartContractsService {
   //   return metadata;
   // }
   //public async getAssetInfo()
-  private _mapCatalogueData(res: any) : CatalogueCollection[]{
-    return res.map((item:any) => { 
-      let dto: CatalogueCollection = {
-        contractAddress: item.contractAddress,
-        name: item.name,
-        description: item.description,
-        symbol: item.symbol,
-        isFree: item.isFree,
-        isLimited: item.isLimited,
-        logoImage: item.logoImage
-      }; 
-      return dto;
-    })
-  }
+
 
   //etherPurchaseCustomCharacter(contractAddress: string, collectorAddress: string) : Promise<boolean>{} <- on confirmation
   public async etherMintCharacter(contractAddress:string, model: string, price:number, collectorAddress: string) : Promise<boolean>{

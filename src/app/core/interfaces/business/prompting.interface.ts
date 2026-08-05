@@ -11,6 +11,11 @@ export interface CreateCharacterRequest{
     suggestions: string | null,
     constraints: string []
 }
+
+export interface SaveDatasetCharacter extends CreateCharacterRequest{
+    profile: RandomWorldsCharacter
+}
+
 export interface QuestIntroRequest {
     character: QuestCharacter | null,
     preferences: QuestPreferences,

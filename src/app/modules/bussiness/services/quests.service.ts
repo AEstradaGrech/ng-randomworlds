@@ -1,7 +1,7 @@
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { filter, Observable } from 'rxjs';
-import { ChatMessage as ChatMessageDto, CreateCharacterRequest, FinalOptionsResponse, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, RandomWorldsCharacter, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
+import { ChatMessage as ChatMessageDto, CreateCharacterRequest, FinalOptionsResponse, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, RandomWorldsCharacter, SaveDatasetCharacter, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
 import { CollectionResponse, SortedFilter } from '../../shared/models/common-interfaces';
 import { environment } from 'src/environments/environment';
 import { CharacterProfileDto } from '../../shared/models/mgmt-interfaces';
@@ -65,9 +65,11 @@ export class QuestsService {
   }
 
   public generateCharacterProfile(req: CreateCharacterRequest): Observable<QuestCharacter>{
-    return this.http.post<QuestCharacter>(`${this._baseUrl}/character`, req);
+    return this.http.post<QuestCharacter>(`${this._charsUrl}/generate`, req);
   }
-
+  public saveDatasetCharacter(req: SaveDatasetCharacter): Observable<RandomWorldsCharacter>{
+    return this.http.post<RandomWorldsCharacter>(`${this._charsUrl}/dataset/save`, req);
+  }
   public generateCharacterImagePrompt(req: RandomWorldsCharacter): Observable<ChatMessageDto>{
     return this.http.post<ChatMessageDto>(`${this._charsUrl}/image/enhanced-generate`, req);
   }
