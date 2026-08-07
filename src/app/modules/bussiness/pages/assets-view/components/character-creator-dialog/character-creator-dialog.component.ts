@@ -147,6 +147,9 @@ private getDefaultCurrencyTitle() : string {
   characterImages: Map<RandomWorldsCharacter, GenerateImageResponse[]> = new Map<RandomWorldsCharacter, GenerateImageResponse[]>();
 
   ngOnInit(): void {
+    this._web3Service.getCurrentChainId().then(id => {
+      console.log('-- CONNECTED CHAIN --')
+    })
     this.onContractLoaded.subscribe((contractAddress:string) => {
       this._web3Service.getEnabledTokens(contractAddress, false).then(response => {
         this.availableTokens = response;
@@ -158,38 +161,41 @@ private getDefaultCurrencyTitle() : string {
       let wallet:string | null = data.receipt.from;
       let profile: RandomWorldsCharacter | null = this.currentProfile();
       let image: GenerateImageResponse | null = this.currentImage();
-      if(wallet && profile && image){
-        let ticket: MintCharacterRequest = {
-          txHash: data.receipt.transactionHash,
-          currency: data.currency,
-          price: web3.utils.fromWei(data.price, 'ether'),
-          character: profile,
-          base64: image.base64
+      this._web3Service.getCurrentChainId().then(chain => {
+        if(wallet && profile && image){
+          let ticket: MintCharacterRequest = {
+            chainId: Number(chain),
+            txHash: data.receipt.transactionHash,
+            currency: data.currency,
+            price: web3.utils.fromWei(data.price, 'ether'),
+            character: profile,
+            base64: image.base64
+          }
+          this._mgmtService.uploadCustomCharacter(wallet, this._charsContractInfo.contractAddress, ticket)
+            .pipe(catchError(e => {
+              this.isLoading = false; 
+              this.isMinting = false;
+              return of(e);
+            }))
+            .subscribe((res: TicketDto | Error) => {
+              console.log('-- on character IPFS upload completed --', res);
+              if(res as unknown as TicketDto !== undefined)
+                this.onTokenUploaded.emit(res as unknown as TicketDto);
+              else this._notificationsService.openSnack(ESnackAlertType.ERROR, `${(res as unknown as Error).message}`, true);
+          });
         }
-        this._mgmtService.uploadCustomCharacter(wallet, this._charsContractInfo.contractAddress, ticket)
-          .pipe(catchError(e => {
-            this.isLoading = false; 
-            this.isMinting = false;
-            return of(e);
-          }))
-          .subscribe((res: TicketDto | Error) => {
-            console.log('-- on character IPFS upload completed --', res);
-            if(res as unknown as TicketDto !== undefined)
-              this.onTokenUploaded.emit(res as unknown as TicketDto);
-            else this._notificationsService.openSnack(ESnackAlertType.ERROR, `${(res as unknown as Error).message}`, true);
-        });
-      }
-      else {
-        this.isLoading = false;
-        this.isMinting = false;
-        this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while gathering wallet | profile | image values, try again');
-      }
+        else {
+          this.isLoading = false;
+          this.isMinting = false;
+          this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while gathering wallet | profile | image values, try again');
+        }
+      })
     });
 
     this.onTokenUploaded.subscribe(ticket => {
-      if(ticket.metaUri){
+      if(ticket.metaUri && ticket.mintSignature){
         console.log('redeeming ticket w/metaUri: ', ticket.metaUri);
-        this._web3Service.redeemCustomCharNFT(this._charsContractInfo.contractAddress, ticket.metaUri)
+        this._web3Service.redeemCustomCharNFT(this._charsContractInfo.contractAddress, ticket.metaUri, ticket.mintSignature)
           .on('receipt', (receipt:any) => {
             console.log('-- on etherMint receipt --', receipt);
               this.isLoading = false;
@@ -209,16 +215,15 @@ private getDefaultCurrencyTitle() : string {
       this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No wallet connected', true);
       this._dialogRef.close();
     }
-    this._web3Service.getCustomCharsCatalogue().then(cats => {
-      if(cats.length == 0) {
+    this._web3Service.getCustomCharsCatalogue().then(cat => {
+      if(!cat) {
         this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No Immutable Characters Contract deployed. Cannot mint NFT', true, 5000);
         this._dialogRef.close();
       }
-      const contract: CustomCharsCatalogue = cats.slice(-1)[0];
-      this._charsContractInfo = contract;
-      this._notificationsService.openSnack(ESnackAlertType.SUCCESS, `Current Characters contract: ${contract.name}`, true, 5000);
-      this.selectedCurrency.update(v => 'ETH');
-      this.onContractLoaded.emit(contract.contractAddress);
+       this._charsContractInfo = cat;
+        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, `Current Characters contract: ${cat.name}`, true, 5000);
+        this.selectedCurrency.update(v => 'ETH');
+        this.onContractLoaded.emit(cat.contractAddress);
     });
 
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;

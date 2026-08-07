@@ -114,10 +114,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
     });
     this._smartContractsService.getCustomCharsFactoryOwner().then((res:any) => console.log(res));
 
-    this._smartContractsService.getCustomCharsCatalogue().then(cats => {
+    this._smartContractsService.getCustomCharsCatalogue().then(cat => {
       this._ngZone.run(() => {
-        if(cats.length > 0) {
-          this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
+        if(cat) {
+          this.customCharsCollection = {...cat, assets:[]};
           this._getCustomCharacters();
         }
       })
