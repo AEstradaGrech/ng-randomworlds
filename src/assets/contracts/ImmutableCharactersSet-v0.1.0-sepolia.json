@@ -8,9 +8,14 @@
 	"weiPrice": "1000000000000000",
 	"maxMints": "0",
 	"isLimited": false,
-	"factoryAddress": "0xa9f8499621Cf3fb13E3928B5Baf33D4bF56B6Ca8",
-	"collectionAddress": "0x39fa9Ff7Bc7B71F74C7457da67b93275E6116049",
+	"factoryAddress": "0x92A6dDFa1E72737F19e4dc6b4650462834d0BEae",
+	"collectionAddress": "0xc98800fe47089dBE4D83868260877366f8809490",
 	"factoryABI": [
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
   {
     "inputs": [
       {
@@ -32,6 +37,11 @@
         "internalType": "uint256",
         "name": "maxMints",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "signer",
+        "type": "address"
       }
     ],
     "name": "deployCollection",
@@ -41,39 +51,12 @@
   },
   {
     "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "inputs": [],
     "name": "getCatalogue",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "contractAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "symbol",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "weiMintPrice",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct RandomCharactersFactory.CollectionInfo[]",
+        "internalType": "address[]",
         "name": "",
-        "type": "tuple[]"
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -92,7 +75,7 @@
     "stateMutability": "view",
     "type": "function"
   }
-	],
+  ],
 	"collectionABI": [
   {
     "inputs": [
@@ -120,6 +103,11 @@
         "internalType": "uint256",
         "name": "allowedMints",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "signerAddress",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",

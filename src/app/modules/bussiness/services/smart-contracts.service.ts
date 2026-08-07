@@ -184,25 +184,34 @@ export class SmartContractsService {
     }
     return 
   }
+
+  public async getCurrentChainId() : Promise<number>{
+    return await this.web3.eth.net.getId();
+  }
   public async getConnectedAccounts() : Promise<any[]>{
     return await this.web3.eth.getAccounts();
   }
   public async getCollectionsCatalogue(): Promise<any[]>{
     return await this.factory.methods.getCatalogue().call();
   }
-  public async getCustomCharsCatalogue() : Promise<CustomCharsCatalogue[]>{
+  public async getCustomCharsCatalogue() : Promise<CustomCharsCatalogue>{
     let cats = await this.getCustomCharactersFactory().methods.getCatalogue().call();
-    return cats.map((cat:any) => {
-      let dto: CustomCharsCatalogue = {
-        contractAddress: cat.contractAddress,
-        name: cat.name,
-        symbol: cat.symbol,
-        weiMintPrice: BigInt(cat.weiMintPrice)
-      };
-      return dto;
-    })
+    let current = cats.slice(-1)[0];
+    return await this.getCustomCharsSummary(current);
   }
-
+  public async getCustomCharsSummary(address: string): Promise<CustomCharsCatalogue>{
+    let contract = this.getCustomCharactersContract(address);
+    let name = await contract.methods.name().call();
+    let symbol = await contract.methods.symbol().call();
+    let weiPrice = await contract.methods.weiMintPrice().call();
+    let summary: CustomCharsCatalogue = {
+      contractAddress: address,
+      name: name,
+      symbol: symbol,
+      weiMintPrice: BigInt(weiPrice)
+    };
+    return summary
+  }
   public async getCollectionSummary(address: string): Promise<CollectionSummary>{
     let collection = await this.getCollectionContract(address).call();
     let owner = await collection.methods.owner().call();
@@ -457,8 +466,8 @@ export class SmartContractsService {
     return this.web3.utils.hexToAscii(value);
   }
 
-  public redeemCustomCharNFT(contract:string, metaUri: string){
-    return this.getCustomCharactersContract(contract).methods.redeemNFT(metaUri).send({from: this.connectedWallet, gas:'7000000' })
+  public redeemCustomCharNFT(contract:string, metaUri: string, mintSignature: string){
+    return this.getCustomCharactersContract(contract).methods.redeemNFT(metaUri, mintSignature).send({from: this.connectedWallet, gas:'7000000' })
   }
   // private _mapWalletNFT(item:any): WalletNFT{
   //   let asset: WalletNFT = item;

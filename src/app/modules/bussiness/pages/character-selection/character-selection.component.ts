@@ -66,9 +66,9 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
         })
       })
     })
-    this._smartContractsService.getCustomCharsCatalogue().then(cats => {
-      if(cats.length > 0) {
-        this.customCharsCollection = {...cats.slice(-1)[0], assets:[]};
+    this._smartContractsService.getCustomCharsCatalogue().then(cat => {
+      if(cat) {
+        this.customCharsCollection = {...cat, assets:[]};
         this._getCustomCharacters();
       }
     });
