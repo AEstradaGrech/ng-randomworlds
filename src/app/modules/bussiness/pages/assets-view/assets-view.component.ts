@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, NgZone, DestroyRef } from '@angular/core';
+import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, NgZone, DestroyRef, AfterViewInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, AssetsCollection, CustomCharsCollection, NftDetailModel } from 'src/app/core/interfaces/business/smart-contract.interface';
@@ -66,7 +66,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
 
   constructor(@Inject(DOCUMENT) private document:Document) { super();}
-  
+
   ngOnInit(): void {
     this._getAccountAssets();
     // takeUntilDestroyed: without it, every past visit to this route leaves a live
@@ -112,7 +112,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
         })
       })
     });
-    this._smartContractsService.getCustomCharsFactoryOwner().then((res:any) => console.log(res));
+   // this._smartContractsService.getCustomCharsFactoryOwner().then((res:any) => console.log(res));
 
     this._smartContractsService.getCustomCharsCatalogue().then(cat => {
       this._ngZone.run(() => {
@@ -136,6 +136,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
               });
               if(this._visorType === 'grid')
                 this.onVisorTypeChange('grid');
+              if(!this.currentCollection)
+                this.selectCustomCharsCollection();
             }
           }
           else{
