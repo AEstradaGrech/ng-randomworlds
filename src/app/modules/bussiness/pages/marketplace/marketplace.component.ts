@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { CatalogueModel, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
@@ -6,6 +6,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-marketplace',
@@ -21,15 +22,14 @@ export class MarketplaceComponent implements OnInit{
   public selectedToken:string = 'ETH';
   public selectedPrice:string = '--'
   private _paymentTokens: Map<string,TokenDetails> = new Map<string, TokenDetails>();
+  private _destroyRef: DestroyRef = inject(DestroyRef);
   ngOnInit(): void {
-  
-    this._smartContractsService.collectionAddresses.forEach(item => {
-      this._smartContractsService.getCollectionSummary(item).then(summary => {
-        console.log('summary', summary);
-        // this._smartContractsService.getEnabledTokens(item.contractAddress, true).then(response => {
-        //   response.forEach(token => this._cachePaymentTokenDetails(item.contractAddress, token));
-        //   this._setupCatalogueModels({...item, ...summary, enabledTokens:response});
-        // });
+    this._smartContractsService.onImmutableCatalogue.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(res => {
+      this._smartContractsService.collectionAddresses.forEach(item => {
+        this._smartContractsService.getCollectionSummary(item).then(summary => {
+          console.log('summary', summary);
+          this._setupCatalogueModels(summary);
+        })
       })
     })
   }
@@ -95,25 +95,35 @@ export class MarketplaceComponent implements OnInit{
   }
   private _setupCatalogueModels(summary:any){
     summary.models.forEach((model:string) => {
-      this._smartContractsService.getModelInfo(model, summary.contractAddress).then(modelInfo => {
+      this._smartContractsService.getModelInfo(model, summary.address).then(modelInfo => {
         console.log('-- model info --', modelInfo);
         modelInfo.price = parseFloat(web3.utils.fromWei(modelInfo.price.toString(), 'ether'));
-        let catalogueModel: CatalogueModel = {
-          ...modelInfo,
-          imageEndpoint: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
-          metadata: undefined,//`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`,
-          collectionSymbol: summary.symbol,
-          logoUrl: `url(${summary.logoImage})`,
-          collectionUrl: summary.logoImage,
-          contractAddress: summary.contractAddress,
-          collectionName: summary.name,
-          collectionDescription:summary.description,
-          paymentTokens: ['ETH', ...summary.enabledTokens]
-        }
-        this.modelsCatalogue.push(catalogueModel);
+        this._smartContractsService.getIpfsMetadata(`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`).subscribe(metadata => {
+          console.log('IPFS METADATA', metadata.encrypted_profile);
+          if(metadata && metadata.encrypted_profile){
+            this._smartContractsService.decryptCharacterMetadata(metadata.encrypted_profile).subscribe(profile => {
+              console.log('-- DECRYPTED CHARACTER --');
+              let catalogueModel: CatalogueModel = {
+                ...modelInfo,
+                imageEndpoint: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
+                metadata: profile,//`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`,
+                collectionSymbol: summary.symbol,
+                logoUrl: `url(${summary.logoImage})`,
+                collectionUrl: summary.logoImage,
+                contractAddress: summary.contractAddress,
+                collectionName: summary.name,
+                collectionDescription:summary.description,
+                paymentTokens: ['ETH']
+              }
+              this.modelsCatalogue.push(catalogueModel);
+            })
+          }
+        });
       })
     })
   }
+
+
   private _convertToWei(ether:string, tokenDecimals:number){
     switch(tokenDecimals){
         case(3):

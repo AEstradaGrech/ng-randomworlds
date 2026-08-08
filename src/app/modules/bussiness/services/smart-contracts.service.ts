@@ -11,11 +11,12 @@ import RagCharsCollection from 'src/app/core/scripts/ragCharsCollection';
 import CustomChars from 'src/app/core/scripts/customCharacters';
 import CustomCharsFactory from 'src/app/core/scripts/customCharsFactory';
 import { firstValueFrom, Observable } from 'rxjs';
-import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT, CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { GameData, UserLogin } from '../../shared/models/common-interfaces';
 import { Router } from '@angular/router';
+import { DecryptedMetadataRequest } from '../models/smart-contract.interfaces';
 @Injectable({
   providedIn: 'root'
 })
@@ -26,6 +27,7 @@ export class SmartContractsService {
   public onPaymentReceipt: EventEmitter<any> = new EventEmitter<any>();
   public onPaymentError: EventEmitter<any> = new EventEmitter<any>();
   public onAccountChanged: EventEmitter<string> = new EventEmitter<string>(); 
+  public onImmutableCatalogue: EventEmitter<boolean> = new EventEmitter<boolean>();
   private _connectedAccount!:string;
   private _baseUrl:string = 'http://localhost:9000/randomworlds'
   private _router: Router = inject(Router);
@@ -123,6 +125,7 @@ export class SmartContractsService {
       console.log('--contract address--',this.factory._address)
       this.collectionAddresses = res;
       console.log('-- factory cats --', this.collectionAddresses);
+      this.onImmutableCatalogue.emit(true);
     })
   }
   
@@ -213,7 +216,7 @@ export class SmartContractsService {
     return summary
   }
   public async getCollectionSummary(address: string): Promise<CollectionSummary>{
-    let collection = await this.getCollectionContract(address).call();
+    let collection = await this.getCollectionContract(address);
     let owner = await collection.methods.owner().call();
     let tokenName = await collection.methods.name().call();
     let symbol = await collection.methods.symbol().call();
@@ -298,19 +301,15 @@ export class SmartContractsService {
   //   console.log('-- decrypted char meta --', metadata);
   //   return metadata;
   // }
-  // public async getCharacterMetadata(metadataUrl:string) : Promise<CharacterMetadata>{
-  //   let rawData = await firstValueFrom(this.http.get<any>(metadataUrl));
-  //   console.log('meta resp', rawData);
-  //   let profile: CharacterProfile = JSON.parse(Decrypter(rawData.encryptedProfile));
-  //   let metadata: CharacterMetadata = {
-  //     name:rawData.name,
-  //     description: rawData.description,
-  //     rarity: rawData.rarity,
-  //     profile:profile,
-  //     image: rawData.endpoint
-  //   }
-  //   console.log('-- decrypted char meta --', metadata);
-  //   return metadata;
+  // public getCharacterMetadata(request: DecryptedMetadataRequest) : Observable<CharacterMetadata>{
+  //   return this.http.post<CharacterMetadata>(`${this._baseUrl}/`, request);
+  // }
+  public getIpfsMetadata(metaUri:string) : Observable<any>{
+    return this.http.get<any>(metaUri);
+  }
+  public decryptCharacterMetadata(cypher: string) : Observable<CharacterMetadata>{
+    return this.http.get<CharacterMetadata>(`${this._baseUrl}/blockchain/character/decrypt/${cypher}`);
+  } 
   // }
   // public async getMetadata(model:CatalogueModel) : Promise<any>{
   //   let rawData = await firstValueFrom(this.http.get<any>(model.metadataUrl));
