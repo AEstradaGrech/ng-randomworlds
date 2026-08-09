@@ -305,17 +305,16 @@ export class SmartContractsService {
     };
     return charMeta;
   }
-  
-  //etherPurchaseCustomCharacter(contractAddress: string, collectorAddress: string) : Promise<boolean>{} <- on confirmation
+
   public async etherMintCharacter(contractAddress:string, model: string, price:number, collectorAddress: string) : Promise<boolean>{
     try{
       let accounts = await this.getConnectedAccounts();
+      let weiPrice = Web3.utils.toWei(price.toString(), 'ether');
       await this.getCollectionContract(contractAddress).methods.etherMint(collectorAddress, model)
-        .send({from: accounts[0], value: Web3.utils.toWei(price, 'ether')})
+        .send({from: accounts[0], value: BigInt(weiPrice)})
         .on('receipt', (receipt:any) => {
           console.log('-- on etherMint receipt --', receipt);
           this.onPaymentReceipt.emit(receipt);
-          // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
         })
         .on('error', (error:any, receipt:any) => {
           console.log('-- on ether collection mint error --', error, receipt);
@@ -355,7 +354,6 @@ export class SmartContractsService {
         .on('receipt', (receipt:any) => {
           console.log('-- on etherMint receipt --', receipt);
           this.onPaymentReceipt.emit(receipt);
-          // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
         })
         .on('error', (error:any, receipt:any) => {
           console.log('-- on ether collection mint error --', error, receipt);
@@ -384,7 +382,6 @@ export class SmartContractsService {
           .on('receipt', (receipt:any) => {
             console.log('-- on etherMint receipt --', receipt);
             this.onPaymentReceipt.emit(receipt);
-            // onTransactionConfirmed.emit<any>(receipt); <- alli donde se use el servicio se crea un suscriptor que recibe los OK
           })
           .on('error', (error:any, receipt:any) => {
             console.log('-- on ether collection mint error --', error, receipt);
@@ -420,23 +417,21 @@ export class SmartContractsService {
     }
     return false;
   }
+
   public async getWalletNFTs(address:string) : Promise<any>{
-    let assets = await this.http.get<any>(`${this._baseUrl}/wallet-nfts/${address}`)
+    return await this.http.get<any>(`${this._baseUrl}/wallet-nfts/${address}`)
   }
+
   public async getWalletCollectionNFTs(address:string, collectionAddress:string) : Promise<any>{
-    let assets = await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${address}/collection-address/${collectionAddress}`));
-    return assets;
-    // return assets.map((item:any) => {
-    //  return this._mapWalletNFT(item);
-    // })
+    return await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${address}/collection-address/${collectionAddress}`));
   }
+
   public getWalletNFTsObservable(collectionAddress:string) : Observable<WalletNFT[]>{
     return this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/0xee6870759cbddfb12ee3a4547c35ffb667717df4/collection-address/${collectionAddress}`);
   }
+
   public async getAccountCollectionNFTs(collectionAddress:string) : Promise<WalletNFT[]>{
-    let assets = await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${this._connectedAccount}/collection-address/${collectionAddress.toLocaleLowerCase()}`));
-    console.log('get account nfts -- assets', assets);
-    return assets;
+    return await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${this._connectedAccount}/collection-address/${collectionAddress.toLocaleLowerCase()}`));
   }
 
   public decodeHexString(value: string) : string {
@@ -446,16 +441,6 @@ export class SmartContractsService {
   public redeemCustomCharNFT(contract:string, metaUri: string, mintSignature: string){
     return this.getCustomCharactersContract(contract).methods.redeemNFT(metaUri, mintSignature).send({from: this.connectedWallet, gas:'7000000' })
   }
-  // private _mapWalletNFT(item:any): WalletNFT{
-  //   let asset: WalletNFT = item;
-  //   console.log('-- mapping wallet nft --', asset);
-  //   if(asset.metadata){
-  //     let decryptedProfile: CharacterProfile = JSON.parse(Decrypter(item.metadata.encryptedProfile));
-  //     console.log('-- decrypted profile --', decryptedProfile);
-  //     asset.metadata.profile = decryptedProfile;
-  //   }
-  //   return asset;
-  // }
 
   public getMockedNFTs(): CharacterProfileMock[]{
     return [

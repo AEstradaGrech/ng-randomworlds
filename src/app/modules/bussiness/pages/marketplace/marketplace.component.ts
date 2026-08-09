@@ -22,7 +22,7 @@ export class MarketplaceComponent implements OnInit{
   public selectedToken:string = 'ETH';
   public selectedPrice:string = '--'
   private _paymentTokens: Map<string,TokenDetails> = new Map<string, TokenDetails>();
-  private _destroyRef: DestroyRef = inject(DestroyRef);
+
   ngOnInit(): void {
     this._smartContractsService.getCollectionsCatalogue().then(items => {
       items.forEach(item => {
@@ -88,25 +88,20 @@ export class MarketplaceComponent implements OnInit{
     }
     this.loading = false;
   }
-  private _cachePaymentTokenDetails(collectionAddress: string, tokenSymbol: string){
-    this._smartContractsService.getTokenDetails(collectionAddress, tokenSymbol, true).then(details => {
-      this._paymentTokens.set(tokenSymbol, details);
-    })
-  }
+
   private _setupCatalogueModels(summary:any){
     summary.models.forEach((model:string) => {
       this._smartContractsService.getModelInfo(model, summary.address).then(modelInfo => {
-        console.log('-- model info --', modelInfo);
         modelInfo.price = parseFloat(web3.utils.fromWei(modelInfo.price.toString(), 'ether'));
         this._smartContractsService.getCharacterMetadata(`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`).then(metadata => {
           let catalogueModel: CatalogueModel = {
             ...modelInfo,
             imageEndpoint: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
-            metadata: metadata,//`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`,
+            metadata: metadata,
             collectionSymbol: summary.symbol,
             logoUrl: `url(${summary.logoImage})`,
             collectionUrl: summary.logoImage,
-            contractAddress: summary.contractAddress,
+            contractAddress: summary.address,
             collectionName: summary.name,
             collectionDescription:summary.description,
             paymentTokens: ['ETH']
