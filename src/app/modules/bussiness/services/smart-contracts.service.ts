@@ -11,7 +11,7 @@ import RagCharsCollection from 'src/app/core/scripts/ragCharsCollection';
 import CustomChars from 'src/app/core/scripts/customCharacters';
 import CustomCharsFactory from 'src/app/core/scripts/customCharsFactory';
 import { firstValueFrom, Observable } from 'rxjs';
-import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT, CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT, CharacterMetadata, CharacterProfile } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { GameData, UserLogin } from '../../shared/models/common-interfaces';
@@ -285,49 +285,27 @@ export class SmartContractsService {
     }
     return info;
   }
-  // public async getModelMetadata(model:ModelInfo, collection: CollectionSummary) : Promise<CharacterMetadata>{
-  //   let url = `${collection.gateway}/${collection.metaCid}/${model.fileName}.json`;
-  //   console.log('meta url', url);
-  //   let rawData = await firstValueFrom(this.http.get<any>(url));
-  //   console.log('meta resp', rawData);
-  //   let profile: CharacterProfile | null = null; //JSON.parse(Decrypter(rawData.encryptedProfile));
-  //   let metadata: CharacterMetadata = {
-  //     name:rawData.name,
-  //     description: rawData.description,
-  //     rarity: rawData.rarity,
-  //     profile:profile,
-  //     image: rawData.endpoint
-  //   }
-  //   console.log('-- decrypted char meta --', metadata);
-  //   return metadata;
-  // }
-  // public getCharacterMetadata(request: DecryptedMetadataRequest) : Observable<CharacterMetadata>{
-  //   return this.http.post<CharacterMetadata>(`${this._baseUrl}/`, request);
-  // }
+
   public getIpfsMetadata(metaUri:string) : Observable<any>{
     return this.http.get<any>(metaUri);
   }
-  public decryptCharacterMetadata(cypher: string) : Observable<CharacterMetadata>{
-    return this.http.get<CharacterMetadata>(`${this._baseUrl}/blockchain/character/decrypt/${cypher}`);
-  } 
-  // }
-  // public async getMetadata(model:CatalogueModel) : Promise<any>{
-  //   let rawData = await firstValueFrom(this.http.get<any>(model.metadataUrl));
-  //   console.log('meta resp', rawData);
-  //   let profile: CharacterProfile = JSON.parse(Decrypter(rawData.encryptedProfile));
-  //   let metadata: CharacterMetadata = {
-  //     name:rawData.name,
-  //     description: rawData.description,
-  //     rarity: rawData.rarity,
-  //     profile:profile,
-  //     image: rawData.endpoint
-  //   }
-  //   console.log('-- decrypted char meta --', metadata);
-  //   return metadata;
-  // }
-  //public async getAssetInfo()
-
-
+  public decryptCharacterMetadata(cypher: string) : Observable<CharacterProfile>{
+    return this.http.get<CharacterProfile>(`${this._baseUrl}/blockchain/character/decrypt/${cypher}`);
+  }
+  
+  public async getCharacterMetadata(metaUri: string): Promise<CharacterMetadata>{
+    let metadata = await firstValueFrom(this.http.get<any>(metaUri));
+    let profile = await firstValueFrom(this.http.get<CharacterProfile>(`${this._baseUrl}/blockchain/character/decrypt/${metadata.encrypted_profile}`))
+    let charMeta:CharacterMetadata = {
+      name: metadata.name,
+      description: metadata.description,
+      image:metadata.image,
+      profile: profile,
+      attributes: metadata.attributtes
+    };
+    return charMeta;
+  }
+  
   //etherPurchaseCustomCharacter(contractAddress: string, collectorAddress: string) : Promise<boolean>{} <- on confirmation
   public async etherMintCharacter(contractAddress:string, model: string, price:number, collectorAddress: string) : Promise<boolean>{
     try{

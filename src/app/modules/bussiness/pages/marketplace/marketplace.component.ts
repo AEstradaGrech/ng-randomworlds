@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { CatalogueModel, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { CatalogueModel, CharacterMetadata, CharacterProfile, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
@@ -24,14 +24,14 @@ export class MarketplaceComponent implements OnInit{
   private _paymentTokens: Map<string,TokenDetails> = new Map<string, TokenDetails>();
   private _destroyRef: DestroyRef = inject(DestroyRef);
   ngOnInit(): void {
-    this._smartContractsService.onImmutableCatalogue.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(res => {
-      this._smartContractsService.collectionAddresses.forEach(item => {
+    this._smartContractsService.getCollectionsCatalogue().then(items => {
+      items.forEach(item => {
         this._smartContractsService.getCollectionSummary(item).then(summary => {
           console.log('summary', summary);
           this._setupCatalogueModels(summary);
         })
       })
-    })
+    });
   }
   public onCharSelect(model:CatalogueModel){
     console.log('-- on char select --', model);
@@ -98,27 +98,21 @@ export class MarketplaceComponent implements OnInit{
       this._smartContractsService.getModelInfo(model, summary.address).then(modelInfo => {
         console.log('-- model info --', modelInfo);
         modelInfo.price = parseFloat(web3.utils.fromWei(modelInfo.price.toString(), 'ether'));
-        this._smartContractsService.getIpfsMetadata(`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`).subscribe(metadata => {
-          console.log('IPFS METADATA', metadata.encrypted_profile);
-          if(metadata && metadata.encrypted_profile){
-            this._smartContractsService.decryptCharacterMetadata(metadata.encrypted_profile).subscribe(profile => {
-              console.log('-- DECRYPTED CHARACTER --');
-              let catalogueModel: CatalogueModel = {
-                ...modelInfo,
-                imageEndpoint: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
-                metadata: profile,//`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`,
-                collectionSymbol: summary.symbol,
-                logoUrl: `url(${summary.logoImage})`,
-                collectionUrl: summary.logoImage,
-                contractAddress: summary.contractAddress,
-                collectionName: summary.name,
-                collectionDescription:summary.description,
-                paymentTokens: ['ETH']
-              }
-              this.modelsCatalogue.push(catalogueModel);
-            })
+        this._smartContractsService.getCharacterMetadata(`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`).then(metadata => {
+          let catalogueModel: CatalogueModel = {
+            ...modelInfo,
+            imageEndpoint: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
+            metadata: metadata,//`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`,
+            collectionSymbol: summary.symbol,
+            logoUrl: `url(${summary.logoImage})`,
+            collectionUrl: summary.logoImage,
+            contractAddress: summary.contractAddress,
+            collectionName: summary.name,
+            collectionDescription:summary.description,
+            paymentTokens: ['ETH']
           }
-        });
+          this.modelsCatalogue.push(catalogueModel);
+        })
       })
     })
   }
