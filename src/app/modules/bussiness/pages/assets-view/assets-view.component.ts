@@ -87,8 +87,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
     this.customCharsCollection = null;
     this.collections = [];
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
-      cat.forEach(item => {
-        this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
+      cat.forEach(address => {
+        this._smartContractsService.getCollectionSummary(address).then(summary => {
           this._ngZone.run(() => {
             console.log('summary', summary);
             let collection:AssetsCollection = {summary:summary, assets:[]};
@@ -112,8 +112,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
         })
       })
     });
-   // this._smartContractsService.getCustomCharsFactoryOwner().then((res:any) => console.log(res));
-
     this._smartContractsService.getCustomCharsCatalogue().then(cat => {
       this._ngZone.run(() => {
         if(cat) {
@@ -136,8 +134,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
               });
               if(this._visorType === 'grid')
                 this.onVisorTypeChange('grid');
-              if(!this.currentCollection)
+              setTimeout(() => {
+                if(!this.currentCollection)
                 this.selectCustomCharsCollection();
+              }, 3000);
             }
           }
           else{

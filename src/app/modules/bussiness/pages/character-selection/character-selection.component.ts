@@ -50,18 +50,18 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
     this.collections = [];
     this.customCharsCollection = null;
     this._smartContractsService.getCollectionsCatalogue().then(cat => {
-      cat.forEach(item => {
-        this._smartContractsService.getCollectionSummary(item.contractAddress).then(summary => {
+      cat.forEach(address => {
+        this._smartContractsService.getCollectionSummary(address).then(summary => {
           console.log('summary', summary);
           this.collections.push(summary);
-          this._smartContractsService.getAccountCollectionNFTs(item.contractAddress).then(walletNFTs => {
+          this._smartContractsService.getAccountCollectionNFTs(address).then(walletNFTs => {
             console.log('-- on col wallet resp --', walletNFTs)
             let walletAssets: AssetModel[] = [];
             walletNFTs.forEach((nft:WalletNFT) => {
               let asset:AssetModel = {...nft, metadata: nft.metadata, collectionLogoUrl: `url(${summary.logoImage})`}
               walletAssets.push(asset);
             })
-            this.assets.update(x => [...walletAssets]);
+            this.assets.update(x => [...this.assets(),...walletAssets]);
           }) 
         })
       })

@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div *ngIf="assets.length >= 4" class="skip-buttons-wrapper skip-btn-margin-l" [style.--skip-btns-position]="skipButtonsPosition">
+        <div *ngIf="assets.length > 4" class="skip-buttons-wrapper skip-btn-margin-l" [style.--skip-btns-position]="skipButtonsPosition">
             <div class="btns-grid-cell"  [style.--content-position]="'center'">
                 <app-rounded-button  *ngIf="visualization === 'row'"
                 [id]="'skip_btn_left'"
@@ -56,7 +56,7 @@
                 <ng-content select=".upper-buttons-r"></ng-content>
             </div>
         </div>
-        <div *ngIf="assets.length >= 4" class="skip-buttons-wrapper skip-btn-margin-r" [style.--skip-btns-position]="skipButtonsPosition">
+        <div *ngIf="assets.length > 4" class="skip-buttons-wrapper skip-btn-margin-r" [style.--skip-btns-position]="skipButtonsPosition">
             <div class="btns-grid-cell" [style.--content-position]="'center'">
                 <app-rounded-button *ngIf="visualization === 'row'"
                     [id]="'skip_btn_right'"
