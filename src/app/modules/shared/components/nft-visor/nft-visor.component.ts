@@ -12,7 +12,7 @@ export class NftVisorComponent implements OnInit, OnChanges{
   @Input() assets: AssetModel[] = [];
   @Input() nftCardButtonsConfig: RoundedButtonConfig[] = [];
   @Input() disabled: boolean = false;
-  @Input() projectedButtonsTemplate!: TemplateRef<any>;
+  @Input() projectedButtonsTemplate: TemplateRef<any>[] = [];
   @Input() skipButtonsPosition:string = 'center';
   @Input() visualization: string = 'row'; // | grid;
   @Output() onCardButtonClick: EventEmitter<NftCardClickAction> = new EventEmitter<NftCardClickAction>();

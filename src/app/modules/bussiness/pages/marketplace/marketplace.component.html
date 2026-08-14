@@ -15,30 +15,30 @@
                   <img mat-card-image class="game-card-image" [src]="model.imageEndpoint" alt="Character NFT image">
               </div>
               <mat-card-actions class="game-card-actions">
-                <button class="col-details-btn" [matMenuTriggerFor]="colMenu" >
-                  <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                  aria-hidden="false" 
-                  aria-label="Example power icon"
-                  fontIcon="assignment"
-                  ></mat-icon>
-                </button>
-                <button class="view-btn" (click)="onCharSelect(model)">
-                  <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
-                  aria-hidden="false" 
-                  aria-label="Example power icon"
-                  fontIcon="visibility"
-                  ></mat-icon>
-                </button>
-                <button [disabled]="loading" class="buy-btn" [matMenuTriggerFor]="payMenu" (click)="onBuyClick(model)">
-                  <mat-icon *ngIf="!loading" style="margin-top: 6px; font-size: 20px !important; color: #dbbd0e;"
-                  aria-hidden="false" 
-                  aria-label="Example power icon"
-                  fontIcon="shopping_cart"
-                  ></mat-icon>
-                  <div *ngIf="loading" style="margin: 6px 2px;">
-                    <mat-spinner diameter="20"></mat-spinner>
-                  </div>
-                </button>
+                <app-rounded-button [matMenuTriggerFor]="colMenu"
+                  [id]="'col_view'"
+                  [iconName]="'assignment'"
+                  [hoverColor]="'var(--primary-btn-hover)'"
+                  [borderColor]="'var(--primary-btn-border)'"
+                  [disabled]="loading">
+                  </app-rounded-button>
+                <app-rounded-button
+                  [id]="'char_view'"
+                  [iconName]="'visibility'"
+                  [hoverColor]="'var(--primary-btn-hover)'"
+                  [borderColor]="'var(--primary-btn-border)'"
+                  [disabled]="loading"
+                  (onClickEvent)="onCharSelect(model)">
+                  </app-rounded-button>
+                <app-rounded-button [matMenuTriggerFor]="payMenu"
+                  [id]="'sell'"
+                  [iconName]="'payment'"
+                  [hoverColor]="'var(--secondary-btn-hover)'"
+                  [borderColor]="'var(--secondary-btn-border)'"
+                  [disabled]="loading"
+                  [withSpinner]="true"
+                  (onClickEvent)="onBuyClick(model)">
+                </app-rounded-button>
                 <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
                   <mat-card class="collection-card" appearance="outlined">
                       <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
@@ -71,9 +71,9 @@
                       <button mat-stroked-button class="pay-btn" (click)="onPayClick(model)">BUY</button>
                     </mat-card-actions>
                   </mat-card>
-              </mat-menu>
-            </mat-card-actions>
-        </mat-card>
+                </mat-menu>
+              </mat-card-actions>
+          </mat-card>
         }
     </div>
 </div>

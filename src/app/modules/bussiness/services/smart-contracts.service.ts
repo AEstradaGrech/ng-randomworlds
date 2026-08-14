@@ -293,6 +293,11 @@ export class SmartContractsService {
     return this.http.get<CharacterProfile>(`${this._baseUrl}/blockchain/character/decrypt/${cypher}`);
   }
   
+  public async withTimeout<T>(timeout: number, promise: Promise<T | void>): Promise<T>{
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Promise timed out')), timeout));
+    
+      return await Promise.race([promise, timeoutPromise]) as Promise<T>;
+  }
   public async getCharacterMetadata(metaUri: string): Promise<CharacterMetadata>{
     let metadata = await firstValueFrom(this.http.get<any>(metaUri));
     let profile = await firstValueFrom(this.http.get<CharacterProfile>(`${this._baseUrl}/blockchain/character/decrypt/${metadata.encrypted_profile}`))

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { CatalogueModel, CharacterMetadata, CharacterProfile, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
@@ -6,7 +6,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
 
 @Component({
   selector: 'app-marketplace',
@@ -14,6 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrl: './marketplace.component.scss'
 })
 export class MarketplaceComponent implements OnInit{
+
   private _smartContractsService = inject(SmartContractsService);
   private _dialog:MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -88,25 +89,28 @@ export class MarketplaceComponent implements OnInit{
     }
     this.loading = false;
   }
-
+  public onCardButtonClicked(event:any){
+    console.log('-- on card button click --', event);
+  }
   private _setupCatalogueModels(summary:any){
     summary.models.forEach((model:string) => {
       this._smartContractsService.getModelInfo(model, summary.address).then(modelInfo => {
         modelInfo.price = parseFloat(web3.utils.fromWei(modelInfo.price.toString(), 'ether'));
-        this._smartContractsService.getCharacterMetadata(`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`).then(metadata => {
-          let catalogueModel: CatalogueModel = {
-            ...modelInfo,
-            imageEndpoint: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
-            metadata: metadata,
-            collectionSymbol: summary.symbol,
-            logoUrl: `url(${summary.logoImage})`,
-            collectionUrl: summary.logoImage,
-            contractAddress: summary.address,
-            collectionName: summary.name,
-            collectionDescription:summary.description,
-            paymentTokens: ['ETH']
-          }
-          this.modelsCatalogue.push(catalogueModel);
+        this._smartContractsService.withTimeout<CharacterMetadata>(24000, this._smartContractsService.getCharacterMetadata(`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`))
+          .then(metadata => {
+            let catalogueModel: CatalogueModel = {
+              ...modelInfo,
+              imageEndpoint: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
+              metadata: metadata,
+              collectionSymbol: summary.symbol,
+              logoUrl: `url(${summary.logoImage})`,
+              collectionUrl: summary.logoImage,
+              contractAddress: summary.address,
+              collectionName: summary.name,
+              collectionDescription:summary.description,
+              paymentTokens: ['ETH']
+            }
+            this.modelsCatalogue.push(catalogueModel);
         })
       })
     })

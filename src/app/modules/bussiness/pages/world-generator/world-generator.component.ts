@@ -285,8 +285,9 @@ export class WorldGeneratorComponent implements OnInit{
     
   }
   public onPlayQuestClick(quest: any){
-    // this._gameData.intro = intro
-    //localStorage.setItem('game-data', JSON.stringify(gameData))
+
+    // GAME SESSION INIT STUFF
+    // _web3Service.initGame(address, blah, blah).then()
     this._gameData.character = quest.data.character;
     this._gameData.intro = quest.data.intro;
     this._gameData.userPreferences = quest.preferences;

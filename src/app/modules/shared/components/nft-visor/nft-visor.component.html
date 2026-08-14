@@ -45,7 +45,9 @@
             [disabled]="disabled" 
             (onCardButtonClick)="onCardButtonClicked($event)">
             <ng-container class="projected-buttons">
-                <ng-container *ngTemplateOutlet="projectedButtonsTemplate context: { $implicit: model, model: model }"></ng-container>
+                @for(template of projectedButtonsTemplate; track template){
+                    <ng-container *ngTemplateOutlet="template context: { $implicit: model, model: model }"></ng-container>
+                }
             </ng-container>
         </app-nft-card>
       }

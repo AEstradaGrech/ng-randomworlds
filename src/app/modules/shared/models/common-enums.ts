@@ -4,7 +4,8 @@ export enum EAppButtons{
     BUY = 'buy',
     SELL = 'sell',
     SKIP_L = 'skip-l',
-    SKIP_R = 'skip-r'
+    SKIP_R = 'skip-r',
+    VIEW_COLLECTION = 'assignment'
 }
 
 export enum ESnackAlertType {

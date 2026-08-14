@@ -18,4 +18,5 @@ export const defaultNftCardButtons: RoundedButtonConfig[] = [
         borderColor: 'var(--primary-btn-border)',
         withSpinner: true
     }
-] 
+]
+ 
