@@ -4,6 +4,7 @@ import { DOCUMENT } from '@angular/common';
 import Web3Provider from 'src/app/core/scripts/web3';
 import Kaka from 'src/app/core/scripts/kakaCoin';
 import Crap from 'src/app/core/scripts/crapCoin';
+import WordsCoin from 'src/app/core/scripts/wordsCoin';
 import Web3 from 'web3';
 import Factory from 'src/app/core/scripts/immutableFactory';
 import Collection from 'src/app/core/scripts/immutableCollection';
@@ -13,10 +14,9 @@ import CustomCharsFactory from 'src/app/core/scripts/customCharsFactory';
 import { firstValueFrom, Observable } from 'rxjs';
 import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT, CharacterMetadata, CharacterProfile } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
 import { GameData, UserLogin } from '../../shared/models/common-interfaces';
 import { Router } from '@angular/router';
-import { DecryptedMetadataRequest } from '../models/smart-contract.interfaces';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -160,6 +160,10 @@ export class SmartContractsService {
       return false;
     }
   }
+
+  public getWordsContract() : any{
+    return WordsCoin(this.web3);
+  }
   public getCustomCharactersFactory(): any{
     return CustomCharsFactory(this.web3);
   }
@@ -183,6 +187,8 @@ export class SmartContractsService {
         return Kaka(this.web3);
       case('CRAP'):
         return Crap(this.web3);
+      case('WORDS'):
+        return WordsCoin(this.web3);
       default:break;
     }
     return 
@@ -200,7 +206,7 @@ export class SmartContractsService {
   public async getCustomCharsCatalogue() : Promise<CustomCharsCatalogue>{
     let cats = await this.getCustomCharactersFactory().methods.getCatalogue().call();
     let current = cats.slice(-1)[0];
-    return await this.getCustomCharsSummary(current);
+    return await this.getCustomCharsSummary(current[0]);
   }
   public async getCustomCharsSummary(address: string): Promise<CustomCharsCatalogue>{
     let contract = this.getCustomCharactersContract(address);
@@ -257,6 +263,12 @@ export class SmartContractsService {
     return isCollectionContract ?
       this.getCollectionContract(collectionAddress).methods.getEnabledTokens().call() :
       this.getCustomCharactersContract(collectionAddress).methods.enabledTokens().call();
+  }
+
+  public async getWordsTokenAddress(collectionAddress:string, isCollectionContract: boolean) : Promise<string>{
+    return isCollectionContract ?
+      this.getCollectionContract(collectionAddress).methods.wordsToken().call() :
+      this.getCustomCharactersContract(collectionAddress).methods.wordsToken().call();
   }
 
   public async getTokenDetails(collectionAddress:string, tokenSymbol: string, isCollectionContract: boolean): Promise<TokenDetails>{

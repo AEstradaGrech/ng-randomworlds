@@ -54,7 +54,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   imagePrompts = signal<string[]>([]);
   generatedProfiles = signal<RandomWorldsCharacter[]>([]);
   currentImage = signal<GenerateImageResponse | null>(null);
-  availableTokens: string[] = [];
+  availableTokens:string[] = ['ETH'];
   diffusionSettings!: ProviderSettingsDto;
   isMinting: boolean = false;
   selectedCurrency = signal<string>('ETH');
@@ -151,9 +151,9 @@ private getDefaultCurrencyTitle() : string {
       console.log('-- CONNECTED CHAIN --')
     })
     this.onContractLoaded.subscribe((contractAddress:string) => {
-      this._web3Service.getEnabledTokens(contractAddress, false).then(response => {
-        this.availableTokens = response;
-        response.forEach(token => this._cachePaymentTokenDetails(contractAddress, token));
+      this._setupWordsTokenDetails(contractAddress).then(response => {
+        if(response && response.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
+          this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
       });
     });
     this.onTicketPurchased.subscribe((data: any) => {
@@ -220,10 +220,10 @@ private getDefaultCurrencyTitle() : string {
         this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No Immutable Characters Contract deployed. Cannot mint NFT', true, 5000);
         this._dialogRef.close();
       }
-       this._charsContractInfo = cat;
-        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, `Current Characters contract: ${cat.name}`, true, 5000);
-        this.selectedCurrency.update(v => 'ETH');
-        this.onContractLoaded.emit(cat.contractAddress);
+      this._charsContractInfo = cat;
+      this._notificationsService.openSnack(ESnackAlertType.SUCCESS, `Current Characters contract: ${cat.name}`, true, 5000);
+      this.selectedCurrency.update(v => 'ETH');
+      this.onContractLoaded.emit(cat.contractAddress);
     });
 
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
@@ -616,11 +616,20 @@ private getDefaultCurrencyTitle() : string {
     return text.trim()
   }
 
-   private _cachePaymentTokenDetails(collectionAddress: string, tokenSymbol: string){
-    this._web3Service.getTokenDetails(collectionAddress, tokenSymbol, false).then(details => {
-      // Replace the Map, don't mutate it: map.set() in place changes no reference,
-      // so the signal would see no change and dependents would never re-run.
-      this._paymentTokens.set(tokenSymbol, details);
-    })
+  private async _setupWordsTokenDetails(collectionAddress: string) : Promise<TokenDetails | null>{
+    let address = await this._web3Service.getWordsTokenAddress(collectionAddress, false)
+    let symbol = await this._web3Service.getWordsContract().methods.symbol().call();
+    let decimals = await this._web3Service.getWordsContract().methods.decimals().call();
+    let exchange = await this._web3Service.getCustomCharactersContract(collectionAddress).methods.wordsExchangeRate().call();
+    if(symbol !== 'WORDS') return null;
+
+    let tokenDetails: TokenDetails = {
+      tokenContract:address,
+      multiplier: exchange,
+      decimals: decimals
+    }
+    this.availableTokens.push(symbol);
+    this._paymentTokens.set(symbol, tokenDetails);
+    return tokenDetails;
   }
 }
