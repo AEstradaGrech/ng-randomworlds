@@ -9,6 +9,12 @@
     [style.--btn-color]="backgroundColor" 
     [style.--btn-hover]="hoverColor"
     [style.--btn-border-color]="borderColor"
+    [style.--badge-textcolor]="badgeConfig.color"
+    [style.--bg-badge]="badgeConfig.background"
+    [matBadgeSize]="badgeConfig.size"
+    [matBadge]="badgeValue" 
+    [matBadgePosition]="badgeConfig.position"
+    [matBadgeHidden]="hiddenBadge()"
     [ngClass]="{'disabled-btn': disabled }">
     @if(disabled && withSpinner){
         <mat-spinner diameter="20"></mat-spinner>

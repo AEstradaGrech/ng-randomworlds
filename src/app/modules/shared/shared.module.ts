@@ -11,7 +11,6 @@ import { HeaderNavbarComponent } from './components/header-navbar/header-navbar.
 import { SideNavbarComponent } from './components/side-navbar/side-navbar.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SearchInputComponent } from './components/search-input/search-input.component';
-import { NanToNumPipe } from './pipes/nan-to-num.pipe';
 import { NftCardComponent } from './components/nft-card/nft-card.component';
 import { NftVisorComponent } from './components/nft-visor/nft-visor.component';
 import { RoundedButtonComponent } from './components/rounded-button/rounded-button.component';

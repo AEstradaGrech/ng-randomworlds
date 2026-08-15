@@ -1,3 +1,4 @@
+import { MatBadgePosition, MatBadgeSize } from "@angular/material/badge"
 import { CharacterProfileMock, QuestCharacter, QuestPreferences } from "src/app/core/interfaces/business/prompting.interface"
 import { AssetModel, WalletNFT } from "src/app/core/interfaces/business/smart-contract.interface"
 
@@ -63,4 +64,11 @@ export interface RoundedButtonConfig {
 export interface NftCardClickAction{
     name: string,
     asset: AssetModel
+}
+
+export interface MatBadgeConfig{
+    position:MatBadgePosition,
+    size:MatBadgeSize,
+    color: string,
+    background:string
 }

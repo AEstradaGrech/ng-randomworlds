@@ -14,6 +14,10 @@
         color: var(--btn-color) !important;
       }
     }
+    .mat-badge-content{
+        color: var(--badge-textcolor);
+        background-color: var(--bg-badge);
+    }
     
 }
 .btn-icon{

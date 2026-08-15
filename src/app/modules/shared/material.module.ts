@@ -24,6 +24,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatBadgeModule} from '@angular/material/badge';
+
 @NgModule({
 declarations:[],
 imports:[
@@ -43,7 +45,8 @@ imports:[
     CdkDrag,
     CdkDropList,
     MatTabsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatBadgeModule
 ],
 exports:[
     MatListModule,
@@ -73,7 +76,8 @@ exports:[
     CdkDrag,
     CdkDropList,
     MatTabsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatBadgeModule
 ],
 providers:[]
 })

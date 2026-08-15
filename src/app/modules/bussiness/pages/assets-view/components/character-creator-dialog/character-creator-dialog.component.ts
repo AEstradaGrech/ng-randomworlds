@@ -340,6 +340,10 @@ private getDefaultCurrencyTitle() : string {
     } 
   }
 
+  private async _hasAvailablePurchases(contract: string) : Promise<boolean>{
+    this._web3Service.getCustomCharactersContract(contract).methods.availablePurchases()
+    return false;
+  }
   onShowSettings(){
     this.showSettings = true;
   }

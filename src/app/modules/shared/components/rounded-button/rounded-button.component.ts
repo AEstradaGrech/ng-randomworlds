@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, computed, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatBadgeConfig } from '../../models/common-interfaces';
+import { defaultButtonBadge } from 'src/app/core/constants/configs/nft-card';
 
 @Component({
   selector: 'app-rounded-button',
@@ -12,6 +14,7 @@ export class RoundedButtonComponent implements OnInit {
   @Input() bgImageIcon:string = 'url(assets/images/MetamaskIconBrown.png)'
   @Input() iconColor!: string;
   @Input() withSpinner: boolean = false;
+  @Input() badgeValue!: number | null;
   @Input() disabled: boolean = false;
   @Input() hoverColor: string = 'var(--primary-btn-hover)';
   @Input() backgroundColor: string = 'var(--primary-btn-color)';
@@ -22,6 +25,14 @@ export class RoundedButtonComponent implements OnInit {
   @Output() onMousedownEvent: EventEmitter<string> = new EventEmitter<string>();
   @Output() onMouseupEvent: EventEmitter<string> = new EventEmitter<string>();
 
+  @Input() badgeConfig!: MatBadgeConfig;
+
+  public hiddenBadge = computed(() => {
+    if(!this.badgeValue)
+      return true;
+
+    else return false;
+  })
   public get iconSize() : string{
     let pixelSize: string = '20px';
     if(this.size.includes('px')){
@@ -39,6 +50,8 @@ export class RoundedButtonComponent implements OnInit {
       this.id = this.iconName;
     if(!this.iconColor || this.iconColor === '')
       this.iconColor = this.hoverColor;
+    if(!this.badgeConfig)
+      this.badgeConfig = defaultButtonBadge;
   }
 
   public onClick(): void {

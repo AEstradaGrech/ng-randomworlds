@@ -1,5 +1,5 @@
 import { EAppButtons } from "src/app/modules/shared/models/common-enums";
-import { RoundedButtonConfig } from "src/app/modules/shared/models/common-interfaces";
+import { MatBadgeConfig, RoundedButtonConfig } from "src/app/modules/shared/models/common-interfaces";
 
 export const defaultNftCardButtons: RoundedButtonConfig[] = [
     {
@@ -19,4 +19,11 @@ export const defaultNftCardButtons: RoundedButtonConfig[] = [
         withSpinner: true
     }
 ]
+
+export const defaultButtonBadge: MatBadgeConfig = {
+    position: 'after',
+    size: 'small',
+    color: 'white',
+    background: 'var(--primary-btn-hover)'
+} 
  
