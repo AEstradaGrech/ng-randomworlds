@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, signal, computed, ElementRef, EventEmitter, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, signal, computed, ElementRef, EventEmitter, inject, OnInit, ViewChild, DestroyRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -19,6 +19,7 @@ import { SmartContractsService } from 'src/app/modules/bussiness/services/smart-
 import { CustomCharsCatalogue, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
 import { catchError, of } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-character-creator-dialog',
@@ -59,10 +60,12 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   isMinting: boolean = false;
   selectedCurrency = signal<string>('ETH');
   availablePurchases = signal<number | null>(null);
+
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
   readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
 
+  private _currentTicket!: TicketDto;
   private _connectedWallet!: string;
   private _dialogRef: MatDialogRef<CharacterCreatorDialogComponent> = inject(MatDialogRef<CharacterCreatorDialogComponent>);
   private _mgmtService: MgmtService = inject(MgmtService);
@@ -71,6 +74,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _web3Service: SmartContractsService = inject(SmartContractsService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _sanitizer: DomSanitizer = inject(DomSanitizer);
+  private _destroyRef: DestroyRef = inject(DestroyRef);
   private _currentImageUrl:string = '';
   private _currentProfileIdx:number = 0;
   private _charsContractInfo!: CustomCharsCatalogue;
@@ -156,8 +160,22 @@ private getDefaultCurrencyTitle() : string {
           this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
       });
       this._web3Service.getAvailableCharPurchases(contractAddress).then(res => {
-        if(res && res > 0)
+        if(res && res > 0){
           this.availablePurchases.update(v => res);
+          if(this._web3Service.connectedWallet){
+            this._mgmtService.getCurrentTicket(this._web3Service.connectedWallet, contractAddress, true)
+              .pipe(takeUntilDestroyed(this._destroyRef))
+              .subscribe(res => {
+                this._currentTicket = res;
+                //_displayUnredeemedChar();
+            })
+          }
+          //DB_TRY_GET_FAILED_TICKET
+          //DISPLAY_FAILED_TICKET
+          // NEW_PROFILE = OVERWRITE (1 ticket x user siempre)
+          // DISPLAY_REDEEM_PAYMENT_OPTION
+          // ONPAYCLICK_IF_REDEEM -> GET_CURRENT_TICKET_META & REDEEM ELSE PAY
+        }
       });
     });
     this.onTicketPurchased.subscribe((data: any) => {

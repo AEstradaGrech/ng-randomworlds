@@ -14,4 +14,8 @@ export class MgmtService {
   public uploadCustomCharacter(wallet:string, contract:string, req: MintCharacterRequest) : Observable<TicketDto>{
     return this._http.post<TicketDto>(`${this._baseUrl}/blockchain/customchar/ipfs/upload/${wallet}/${contract}`,req);
   }
+
+  public getCurrentTicket(wallet:string, contract:string, signed: boolean) : Observable<TicketDto>{
+    return this._http.get<TicketDto>(`${this._baseUrl}/blockchain/customchar/ticket/wallet/${wallet}/contract/${contract}?signed=${signed}`)
+  }
 }
