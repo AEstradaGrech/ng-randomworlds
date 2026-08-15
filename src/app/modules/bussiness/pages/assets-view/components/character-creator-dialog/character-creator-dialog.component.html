@@ -56,7 +56,7 @@
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
             [badgeValue]="availablePurchases()"
-            [disabled]="!this.imageUrl() || isMinting">
+            [disabled]="!currentImage() || isMinting">
           </app-rounded-button>
           <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
             <app-token-selector-matmenu 

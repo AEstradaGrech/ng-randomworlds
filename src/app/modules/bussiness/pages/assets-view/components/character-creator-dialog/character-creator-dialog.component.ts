@@ -177,10 +177,6 @@ private getDefaultCurrencyTitle() : string {
                 this._displayUnredeemedTicket();
             })
           }
-          //DB_TRY_GET_FAILED_TICKET
-          //DISPLAY_FAILED_TICKET
-          // NEW_PROFILE = OVERWRITE (1 ticket x user siempre)
-          // DISPLAY_REDEEM_PAYMENT_OPTION
           // ONPAYCLICK_IF_REDEEM -> GET_CURRENT_TICKET_META & REDEEM ELSE PAY
         }
         else{
@@ -319,22 +315,40 @@ private getDefaultCurrencyTitle() : string {
     if(!contract) return;
 
     if(this.selectedCurrency() !== 'ETH') {
-      const tokenDetails: TokenDetails | undefined = this._paymentTokens.get(this.selectedCurrency());
-      // Never fall through to the ETH branch when the token details are missing:
-      // that would charge the user in ETH for a purchase they made in tokens.
-      if(!tokenDetails){
-        this._notificationsService.openSnack(ESnackAlertType.ERROR, `No token details loaded yet for ${this.selectedCurrency()}, try again in a moment`, true);
-        return;
+      if(this.selectedCurrency() === 'REDEEM') {
+        if(this.currentTicket() && this.currentTicket()?.contractAddress && this.currentTicket()?.metaUri && this.currentTicket()?.metaCid && this.currentTicket()?.mintSignature){
+          this.isMinting = true;
+          this._web3Service.redeemCustomCharNFT(this.currentTicket()?.contractAddress ?? '', this.currentTicket()?.metaUri ?? '', this.currentTicket()?.mintSignature ?? '')
+          .on('receipt', (receipt:any) => {
+            console.log('-- on etherMint receipt --', receipt);
+              this.isLoading = false;
+              this.isMinting = false;
+              this._dialogRef.close(this.currentTicket());
+          })
+          .on('error', (error:any, receipt:any) => {
+            console.log('-- on ether collection mint error --', error, receipt); 
+            this.isLoading = false;
+            this.isMinting = false;
+          });
+        }
       }
-      this.isLoading = true;
-      this.isMinting = true;
-      // The contract wants an integer in the token's own base units - a
-      // different number from the one we render in the title.
-      const amount: string = this._baseUnits(contract.weiMintPrice, tokenDetails);
-      await this._web3Service.getCoinContract(this.selectedCurrency()).methods
-        .approve(contract.contractAddress, amount)
-        .send({from: this._web3Service.connectedWallet})
-        .on('receipt', (receipt:any) => {
+      else{
+        const tokenDetails: TokenDetails | undefined = this._paymentTokens.get(this.selectedCurrency());
+        // Never fall through to the ETH branch when the token details are missing:
+        // that would charge the user in ETH for a purchase they made in tokens.
+        if(!tokenDetails){
+          this._notificationsService.openSnack(ESnackAlertType.ERROR, `No token details loaded yet for ${this.selectedCurrency()}, try again in a moment`, true);
+          return;
+        }
+        this.isLoading = true;
+        this.isMinting = true;
+        // The contract wants an integer in the token's own base units - a
+        // different number from the one we render in the title.
+        const amount: string = this._baseUnits(contract.weiMintPrice, tokenDetails);
+        await this._web3Service.getCoinContract(this.selectedCurrency()).methods
+          .approve(contract.contractAddress, amount)
+          .send({from: this._web3Service.connectedWallet})
+          .on('receipt', (receipt:any) => {
             console.log('-- on etherMint receipt --', receipt);
             this._web3Service.mintCustomCharacter(this._charsContractInfo.contractAddress, this.selectedCurrency())
             .on('receipt', (pur_receipt: any) => {
@@ -352,7 +366,8 @@ private getDefaultCurrencyTitle() : string {
             this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
             this.isLoading = false;
             this.isMinting = false;
-          });
+          }); 
+      }
     }
     else{
       this.isLoading = true;
@@ -579,28 +594,6 @@ private getDefaultCurrencyTitle() : string {
         default:break;
       }
     }
-  }
-
-  public onMintNFT(){
-    console.log("-- todo --");
-    //TODO: _smartContractsService.approveCustomMint().subscribe(res => then ticket)
-
-    // this._smartcontractsService.onReceipt.subscribe(receipt => { // generate NFT});
-    // await this._smartContractsService.etherPurchase()
-
-    // let wallet:string | null = this._web3Service.connectedWallet;
-    // let profile: RandomWorldsCharacter | null = this.currentProfile();
-    // let image: GenerateImageResponse | null = this.currentImage();
-    // if(wallet && profile && image){
-    //   let ticket: MintCharacterRequest = {
-    //     character: profile,
-    //     base64: image.base64
-    //   }
-    //   this._mgmtService.mintCustomCharacter(wallet, 'TODO', ticket).subscribe(res => {
-    //     console.log('-- on IPFS upload --', res);
-    //   });
-    // }
-    
   }
 
   public onSettingsHidden() {
