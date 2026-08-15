@@ -58,7 +58,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   diffusionSettings!: ProviderSettingsDto;
   isMinting: boolean = false;
   selectedCurrency = signal<string>('ETH');
-
+  availablePurchases = signal<number | null>(null);
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
   readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
@@ -154,6 +154,10 @@ private getDefaultCurrencyTitle() : string {
       this._setupWordsTokenDetails(contractAddress).then(response => {
         if(response && response.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
           this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
+      });
+      this._web3Service.getAvailableCharPurchases(contractAddress).then(res => {
+        if(res && res > 0)
+          this.availablePurchases.update(v => res);
       });
     });
     this.onTicketPurchased.subscribe((data: any) => {
@@ -340,10 +344,7 @@ private getDefaultCurrencyTitle() : string {
     } 
   }
 
-  private async _hasAvailablePurchases(contract: string) : Promise<boolean>{
-    this._web3Service.getCustomCharactersContract(contract).methods.availablePurchases()
-    return false;
-  }
+
   onShowSettings(){
     this.showSettings = true;
   }

@@ -458,5 +458,8 @@ export class SmartContractsService {
   public redeemCustomCharNFT(contract:string, metaUri: string, mintSignature: string){
     return this.getCustomCharactersContract(contract).methods.redeemNFT(metaUri, mintSignature).send({from: this.connectedWallet, gas:'7000000' })
   }
-
+  public async getAvailableCharPurchases(contract: string) : Promise<number>{
+    let purchases = await this.getCustomCharactersContract(contract).methods.availablePurchases().call({from: this.connectedWallet});
+    return parseInt(purchases);
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, computed, EventEmitter, Input, OnChanges, OnInit, Output, signal, SimpleChanges } from '@angular/core';
 import { MatBadgeConfig } from '../../models/common-interfaces';
 import { defaultButtonBadge } from 'src/app/core/constants/configs/nft-card';
 
@@ -7,7 +7,11 @@ import { defaultButtonBadge } from 'src/app/core/constants/configs/nft-card';
   templateUrl: './rounded-button.component.html',
   styleUrl: './rounded-button.component.scss'
 })
-export class RoundedButtonComponent implements OnInit {
+export class RoundedButtonComponent implements OnInit, OnChanges {
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['badgeValue'])
+      this.hiddenBadge.set(changes['badgeValue'].currentValue  && changes['badgeValue'].currentValue > 0 ? false : true);
+  }
 
   @Input() id: string | undefined = undefined;
   @Input() iconName: string = '';
@@ -27,12 +31,8 @@ export class RoundedButtonComponent implements OnInit {
 
   @Input() badgeConfig!: MatBadgeConfig;
 
-  public hiddenBadge = computed(() => {
-    if(!this.badgeValue)
-      return true;
+  public hiddenBadge = signal<boolean>(true);
 
-    else return false;
-  })
   public get iconSize() : string{
     let pixelSize: string = '20px';
     if(this.size.includes('px')){

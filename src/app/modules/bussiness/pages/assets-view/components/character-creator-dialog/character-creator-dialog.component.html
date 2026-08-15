@@ -55,7 +55,7 @@
             [size]="'35px'"
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
-            [badgeValue]="7"
+            [badgeValue]="availablePurchases()"
             [disabled]="profileImagesCount() == 0 || isMinting">
           </app-rounded-button>
           <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
