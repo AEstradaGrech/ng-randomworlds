@@ -55,7 +55,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   imagePrompts = signal<string[]>([]);
   generatedProfiles = signal<RandomWorldsCharacter[]>([]);
   currentImage = signal<GenerateImageResponse | null>(null);
-  availableTokens:string[] = ['ETH'];
+  availableTokens = signal<string[]>(['ETH']);
   diffusionSettings!: ProviderSettingsDto;
   isMinting: boolean = false;
   selectedCurrency = signal<string>('ETH');
@@ -65,7 +65,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
   readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
 
-  private _currentTicket!: TicketDto;
+  public currentTicket = signal<TicketDto | null>(null);
   private _connectedWallet!: string;
   private _dialogRef: MatDialogRef<CharacterCreatorDialogComponent> = inject(MatDialogRef<CharacterCreatorDialogComponent>);
   private _mgmtService: MgmtService = inject(MgmtService);
@@ -118,9 +118,12 @@ private getDefaultCurrencyTitle() : string {
   tokenSelectorTitle = computed(() => {
     let currentToken: string = this.selectedCurrency();
     if(currentToken !== 'ETH') {
-      if(currentToken && currentToken.length > 0 && this._paymentTokens.has(currentToken)){
-        let details:TokenDetails | undefined = this._paymentTokens.get(currentToken);
-        return details ? `${currentToken} - ${this._displayPrice(this._charsContractInfo.weiMintPrice, details.multiplier)}` : '';
+      if(currentToken && currentToken.length > 0){
+        if(this._paymentTokens.has(currentToken)){
+          let details:TokenDetails | undefined = this._paymentTokens.get(currentToken);
+          return details ? `${currentToken} - ${this._displayPrice(this._charsContractInfo.weiMintPrice, details.multiplier)}` : '';
+        }
+        else return currentToken;
       }
       else return this.getDefaultCurrencyTitle();
     }
@@ -130,12 +133,17 @@ private getDefaultCurrencyTitle() : string {
   imageUrl = computed(() => {
     console.log('-on image computed --');
     let currentImg: GenerateImageResponse | null = this.currentImage();
+    let currentTicket: TicketDto | null = this.currentTicket();
     if(currentImg){
       let b64:string = currentImg.base64;
       return this._sanitizer.bypassSecurityTrustResourceUrl(`data:image/png;base64,${b64}`);
     }
     else {
-      return this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
+      if(currentTicket){
+        let b64:string = currentTicket.base64;
+        return this._sanitizer.bypassSecurityTrustResourceUrl(`data:image/png;base64,${b64}`);
+      }
+      else return this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
     }
   });
   charsProfilePage = computed(() => Math.max(this.generatedProfiles().length -1, 0));
@@ -155,19 +163,18 @@ private getDefaultCurrencyTitle() : string {
       console.log('-- CONNECTED CHAIN --')
     })
     this.onContractLoaded.subscribe((contractAddress:string) => {
-      this._setupWordsTokenDetails(contractAddress).then(response => {
-        if(response && response.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
-          this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
-      });
       this._web3Service.getAvailableCharPurchases(contractAddress).then(res => {
         if(res && res > 0){
           this.availablePurchases.update(v => res);
+          this.availableTokens.set(["REDEEM"]);
+          this.selectedCurrency.set(this.availableTokens()[0]);
           if(this._web3Service.connectedWallet){
             this._mgmtService.getCurrentTicket(this._web3Service.connectedWallet, contractAddress, true)
               .pipe(takeUntilDestroyed(this._destroyRef))
               .subscribe(res => {
-                this._currentTicket = res;
-                //_displayUnredeemedChar();
+                console.log('-- UNREDEEMED TICKET --', res);
+                this.currentTicket.set(res);
+                this._displayUnredeemedTicket();
             })
           }
           //DB_TRY_GET_FAILED_TICKET
@@ -175,6 +182,12 @@ private getDefaultCurrencyTitle() : string {
           // NEW_PROFILE = OVERWRITE (1 ticket x user siempre)
           // DISPLAY_REDEEM_PAYMENT_OPTION
           // ONPAYCLICK_IF_REDEEM -> GET_CURRENT_TICKET_META & REDEEM ELSE PAY
+        }
+        else{
+          this._setupWordsTokenDetails(contractAddress).then(response => {
+            if(response && response.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
+              this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
+          });
         }
       });
     });
@@ -398,7 +411,7 @@ private getDefaultCurrencyTitle() : string {
       if(this.showSettings)
         this.showSettings = false;
       
-      this._updateProfiles(res);
+      this._updateProfiles(res, false);
       
       this.isLoading = false;
     });
@@ -429,10 +442,12 @@ private getDefaultCurrencyTitle() : string {
         });
     }
   }
-  private _updateProfiles(res: QuestCharacter){
+  private _updateProfiles(res: QuestCharacter, isFromTicket: boolean){
     let profile: RandomWorldsCharacter = res;
-    profile.moods = this.selectedMoods;
-    profile.ambiences = this.selectedAmbiences;
+    if(!isFromTicket){
+      profile.moods = this.selectedMoods;
+      profile.ambiences = this.selectedAmbiences;
+    }
     this.generatedProfiles.update(v => [...v, profile]);
     this.currentProfile.set(profile);
     this._currentProfileIdx = this.charsProfilePage();
@@ -651,8 +666,30 @@ private getDefaultCurrencyTitle() : string {
       multiplier: exchange,
       decimals: decimals
     }
-    this.availableTokens.push(symbol);
     this._paymentTokens.set(symbol, tokenDetails);
+    if(!this.currentTicket())
+      this.availableTokens.update(v => [...v, symbol]);
+    
     return tokenDetails;
+  }
+
+  private _displayUnredeemedTicket(){
+    if(!this.currentTicket()) return;
+    let profile: RandomWorldsCharacter | undefined = this.currentTicket()?.character;
+    if(profile) {
+      if(this.showSettings)
+        this.showSettings = false;
+      
+      if(profile.ambiences)
+        this.selectedAmbiences = [...profile.ambiences];
+      
+      if(profile.moods)
+        this.selectedMoods = [...profile.moods];
+
+      this.form.controls['name'].setValue(profile.name);
+      this.form.controls['age'].setValue(profile.age);
+      this._updateProfiles(profile, true);
+
+    }
   }
 }

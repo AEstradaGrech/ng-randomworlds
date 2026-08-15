@@ -13,6 +13,7 @@ export class TokenSelectorMatmenuComponent implements OnChanges{
   @Input() label:string = 'Payment Token';
   @Input() buttonText:string = 'BUY';
   @Input() paymentTokens: string[] = ['ETH'];
+  @Input() withDefaultEth: boolean = true;
   @Output() onTokenChanged: EventEmitter<string> = new EventEmitter<string>();
   @Output() onTokenSelected: EventEmitter<string> = new EventEmitter<string>();
   public selectedToken:string = 'ETH';
@@ -20,7 +21,7 @@ export class TokenSelectorMatmenuComponent implements OnChanges{
   ngOnChanges(changes: SimpleChanges): void {
     if(changes && changes["paymentTokens"]){
       let newValues = changes["paymentTokens"].currentValue;
-      if(!newValues.includes("ETH"))
+      if(!newValues.includes("ETH") && this.withDefaultEth)
         this.paymentTokens = ["ETH", ...changes["paymentTokens"].currentValue];
 
       else this.paymentTokens = changes["paymentTokens"].currentValue;

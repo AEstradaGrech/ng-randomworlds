@@ -29,8 +29,8 @@
     <mat-tab label="Character"> 
       <div class="char-tab-container">
       <div class="image-container">
-        @if(profileImagesCount() > 0 && currentImage()){
-          <img class="char-image" [src]="imageUrl()" alt="UnknownCharacter">
+        @if((profileImagesCount() > 0 && currentImage()) || currentTicket()){
+          <img class="char-image" [src]="imageUrl()" alt="GeneratedCharacter">
         }
         @else{
           <img class="char-image" [src]="charImageUrl" alt="UnknownCharacter">
@@ -56,13 +56,14 @@
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
             [badgeValue]="availablePurchases()"
-            [disabled]="profileImagesCount() == 0 || isMinting">
+            [disabled]="!this.imageUrl() || isMinting">
           </app-rounded-button>
           <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
             <app-token-selector-matmenu 
             [buttonText]="'MINT'"
             [title]="tokenSelectorTitle()"
-            [paymentTokens]="availableTokens"
+            [paymentTokens]="availableTokens()"
+            [withDefaultEth]="false"
             (onTokenChanged)="onSelectedTokenChange($event)",
             (onTokenSelected)="onSelectedTokenPay($event)"
             >
@@ -101,11 +102,11 @@
                 [size]="'35px'"
                 [hoverColor]="'var(--terciary-btn-hover)'"
                 [borderColor]="'var(--terciary-btn-border)'"
-                [disabled]="!currentProfile() || isLoading"
+                [disabled]="!currentProfile() || isLoading || currentTicket() !== null"
                 [withSpinner]="isLoading && isGeneratingImage"
                 (click)="$event.stopPropagation();onGenerateImageClick()">
               </app-rounded-button>
-                <app-rounded-button
+                <!-- <app-rounded-button
                 matTooltip="Enhance Image prompt from the currently displayed Profile"
                 [matTooltipPosition]="'above'" 
                 [id]="'save'"
@@ -113,10 +114,10 @@
                 [size]="'35px'"
                 [hoverColor]="'var(--terciary-btn-hover)'"
                 [borderColor]="'var(--terciary-btn-border)'"
-                [disabled]="!currentProfile() || isLoading"
+                [disabled]="!currentProfile() || isLoading || currentTicket()"
                 [withSpinner]="isLoading && isEnhancing"
                 (click)="$event.stopPropagation();onSaveDatasetChar()">
-              </app-rounded-button>
+              </app-rounded-button> -->
               <app-rounded-button
                 matTooltip="Enhance Image prompt from the currently displayed Profile"
                 [matTooltipPosition]="'above'" 
@@ -125,7 +126,7 @@
                 [size]="'35px'"
                 [hoverColor]="'var(--terciary-btn-hover)'"
                 [borderColor]="'var(--terciary-btn-border)'"
-                [disabled]="!currentProfile() || isLoading"
+                [disabled]="!currentProfile() || isLoading || currentTicket() !== null"
                 [withSpinner]="isLoading && isEnhancing"
                 (click)="$event.stopPropagation();onEnhanceImagePromptClick()">
               </app-rounded-button>
@@ -137,8 +138,8 @@
                 [size]="'35px'"
                 [hoverColor]="'var(--primary-btn-hover)'"
                 [borderColor]="'var(--primary-btn-border)'"
-                [disabled]="isLoading && !isEnhancing && !isGeneratingImage"
-                [withSpinner]="true"
+                [disabled]="(isLoading && !isEnhancing && !isGeneratingImage) || currentTicket() !== null"
+                [withSpinner]="currentTicket() === null"
                 (click)="$event.stopPropagation();onGenerateProfileClick()">
               </app-rounded-button>
             </mat-expansion-panel-header>
