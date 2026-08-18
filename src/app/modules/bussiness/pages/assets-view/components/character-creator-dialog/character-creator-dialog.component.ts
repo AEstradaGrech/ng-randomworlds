@@ -163,29 +163,27 @@ private getDefaultCurrencyTitle() : string {
       console.log('-- CONNECTED CHAIN --')
     })
     this.onContractLoaded.subscribe((contractAddress:string) => {
-      this._web3Service.getAvailableCharPurchases(contractAddress).then(res => {
-        if(res && res > 0){
-          this.availablePurchases.update(v => res);
-          this.availableTokens.set(["REDEEM"]);
-          this.selectedCurrency.set(this.availableTokens()[0]);
-          if(this._web3Service.connectedWallet){
-            this._mgmtService.getCurrentTicket(this._web3Service.connectedWallet, contractAddress, true)
-              .pipe(takeUntilDestroyed(this._destroyRef))
-              .subscribe(res => {
-                console.log('-- UNREDEEMED TICKET --', res);
-                this.currentTicket.set(res);
-                this._displayUnredeemedTicket();
-            })
-          }
-          // ONPAYCLICK_IF_REDEEM -> GET_CURRENT_TICKET_META & REDEEM ELSE PAY
-        }
-        else{
-          this._setupWordsTokenDetails(contractAddress).then(response => {
-            if(response && response.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
-              this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
-          });
-        }
-      });
+      if(this._web3Service.connectedWallet){
+        this._mgmtService.getCurrentTicket(this._web3Service.connectedWallet, contractAddress, true)
+          .pipe(takeUntilDestroyed(this._destroyRef))
+          .subscribe(res => {
+            console.log('-- UNREDEEMED TICKET --', res);
+            if(res && !res.isRedeemed) {
+              this.currentTicket.set(res);
+              this._web3Service.getAvailableCharPurchases(contractAddress).then(res => {
+                if(res && res > 0){
+                  this.availablePurchases.update(v => res);
+                  this.availableTokens.set(["REDEEM"]);
+                  this.selectedCurrency.set(this.availableTokens()[0]);
+                  this._displayUnredeemedTicket();
+                  // ONPAYCLICK_IF_REDEEM -> GET_CURRENT_TICKET_META & REDEEM ELSE PAY
+                }
+                else this._setForPurchase(contractAddress, this.currentTicket());
+              });
+            }
+            else this._setForPurchase(contractAddress, res);
+          })
+      }
     });
     this.onTicketPurchased.subscribe((data: any) => {
       console.log('purchase transaction', data.receipt.transactionHash);
@@ -231,7 +229,14 @@ private getDefaultCurrencyTitle() : string {
             console.log('-- on etherMint receipt --', receipt);
               this.isLoading = false;
               this.isMinting = false;
-              this._dialogRef.close(ticket);
+              if(ticket.id){
+                this._mgmtService.setTicketRedeemed(ticket.id)
+                  .pipe(takeUntilDestroyed(this._destroyRef))
+                  .subscribe(res => {
+                    this._dialogRef.close(res);   
+                  });
+              }
+              else this._dialogRef.close(ticket);
           })
           .on('error', (error:any, receipt:any) => {
             console.log('-- on ether collection mint error --', error, receipt); 
@@ -287,6 +292,22 @@ private getDefaultCurrencyTitle() : string {
     this._displayTabChangeAlerts("Ambiences");
   }
   
+  private _setForPurchase(contractAddress: string, invalidTicket: TicketDto | null){
+    if(invalidTicket && invalidTicket.id){
+      this._mgmtService.deleteTicket(invalidTicket.id)
+        .pipe(takeUntilDestroyed(this._destroyRef))
+        .subscribe(res => {
+          if(!res){
+            this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while deleting an invalid ticket');  
+          }
+      })
+    }
+    this.currentTicket.set(null);
+    this._setupWordsTokenDetails(contractAddress).then(response => {
+    if(response && response.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
+      this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
+    });
+  }
   
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
@@ -409,8 +430,8 @@ private getDefaultCurrencyTitle() : string {
     }
     
     let req: CreateCharacterRequest = {
-      name: this.form.get('name')?.value,
-      age: this.form.get('age')?.value,
+      name: this.form.get('name')?.value.trim(),
+      age: this.form.get('age')?.value.trim(),
       ambiences: this.selectedAmbiences,
       moods: this.selectedMoods,
       suggestions: this.suggestbox.nativeElement.value.trim(),

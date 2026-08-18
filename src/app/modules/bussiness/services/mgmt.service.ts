@@ -18,4 +18,13 @@ export class MgmtService {
   public getCurrentTicket(wallet:string, contract:string, signed: boolean) : Observable<TicketDto>{
     return this._http.get<TicketDto>(`${this._baseUrl}/blockchain/customchar/ticket/wallet/${wallet}/contract/${contract}?signed=${signed}`)
   }
+  public deleteTicket(id:string) : Observable<TicketDto>{
+    return this._http.delete<TicketDto>(`${this._baseUrl}/blockchain/customchar/ticket/id/${id}`);
+  }
+  public setTicketRedeemed(id:string) : Observable<TicketDto>{
+    return this._http.get<TicketDto>(`${this._baseUrl}/blockchain/customchar/ticket/id/${id}/redeem`);
+  }
+  public updateTicket(ticket: TicketDto) : Observable<TicketDto>{
+    return this._http.put<TicketDto>(`${this._baseUrl}/blockchain/customchar/ticket/update`, ticket);
+  }
 }

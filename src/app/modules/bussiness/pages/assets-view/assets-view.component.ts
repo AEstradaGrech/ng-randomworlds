@@ -78,7 +78,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
         this._notificationsService.openSnack(ESnackAlertType.WARN, `Refreshing for account: ${newAccount}`, true, 3000);
         this._getAccountAssets();
       })
-    this._notificationsService.setup('center', 'bottom', 3000)
+    this._notificationsService.setup('center', 'bottom', 3000);
   }
   
   private _getAccountAssets() {
@@ -136,7 +136,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
                 this.onVisorTypeChange('grid');
               setTimeout(() => {
                 if(!this.currentCollection)
-                this.selectCustomCharsCollection();
+                  this.selectCustomCharsCollection();
+                if(this.customCharsCollection && this.selectedContractAddress() === this.customCharsCollection.contractAddress){
+                  this.selectCustomCharsCollection();
+                }
               }, 3000);
             }
           }
@@ -309,8 +312,9 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
     this._dialog.open(CharacterCreatorDialogComponent, { data: {connectedWallet: this._smartContractsService.connectedWallet }})
       .afterClosed()
       .subscribe(result => {
-        if(result){
-          this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created");
+        if(true){
+          this.selectCustomCharsCollection();
+          setTimeout(() => {this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created");}, 2000);
           this._getCustomCharacters();
           //refresh NFTs
         }
