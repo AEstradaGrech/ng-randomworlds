@@ -1,3 +1,3 @@
-const { contractABI } = require('src/assets/contracts/GameSession-ImmutableRandomQuests-v0.0.1-sepolia.json');
+const { contractABI, contractAddress } = require('src/assets/contracts/GameSession-ImmutableRandomQuests-v0.0.1-sepolia.json');
 import Web3 from 'web3';
-export default (web3: Web3, address: string) => { return new web3.eth.Contract(contractABI, address);}
+export default (web3: Web3) => { return new web3.eth.Contract(contractABI, contractAddress);}

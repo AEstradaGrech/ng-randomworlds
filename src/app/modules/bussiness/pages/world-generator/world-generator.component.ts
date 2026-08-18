@@ -3,14 +3,17 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router'
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {MatAutocompleteSelectedEvent, MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
+import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {MatChipInputEvent} from '@angular/material/chips';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { QuestsService } from '../../services/quests.service';
 import { QuestCharacter, QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { AssetModel, CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { BaseComponent } from 'src/app/modules/shared/components/base.component';
+import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
+import { SmartContractsService } from '../../services/smart-contracts.service';
 
 @Component({
   selector: 'app-world-generator',
@@ -25,7 +28,7 @@ import { AssetModel, CharacterMetadata } from 'src/app/core/interfaces/business/
         ])
   ]
 })
-export class WorldGeneratorComponent implements OnInit{
+export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   /* (https://www.premiumbeat.com/blog/guide-to-basic-film-genres/#the-basic-film-genres)
   Action
   Comedy
@@ -50,6 +53,8 @@ export class WorldGeneratorComponent implements OnInit{
   private _router = inject(Router);
   private _snackBar = inject(MatSnackBar);
   private _service = inject(QuestsService);
+  private _web3Service = inject(SmartContractsService);
+
   private _gameData!:GameData;
   separatorKeysCodes: number[] = [ENTER, COMMA];
   filteredAmbiences: string[] = [];
@@ -68,7 +73,6 @@ export class WorldGeneratorComponent implements OnInit{
     let selectedChar: AssetModel | null = this.selectedCharacter();
     return selectedChar ? `url(${selectedChar.image})` : '';
   });
-  constructor() {}
 
   ngOnInit(): void {
     // this.gameType = localStorage.getItem('game-type');
@@ -109,8 +113,10 @@ export class WorldGeneratorComponent implements OnInit{
         this.metadata = this._gameData.selectedCharacter.metadata;
       }
       else {
-        // snakAlert
-        console.log('-- no char metadata found --');
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No character metadata present in the game data', true, 3000);
+        setTimeout(() => {
+            this._router.navigateByUrl('randomworlds/home');
+        }, 3000);
         return;
       }
       this.selectedAmbiences = this.metadata.profile.ambiences;
@@ -165,7 +171,6 @@ export class WorldGeneratorComponent implements OnInit{
     }
     // Clear the input value
     event.chipInput!.clear();
-    //this.form.controls['ambiences'].setValue(null); ?? Pa ke?
   }
 
   removeMood(mood: string): void {
@@ -181,7 +186,6 @@ export class WorldGeneratorComponent implements OnInit{
     this.selectedMoods.push(event.option.viewValue);
     this.filteredMoods = this.filteredMoods.filter(x => x !== event.option.viewValue)
     this.moodsInput.nativeElement.value = '';
-    //this.form.controls['ambience'].setValue(null);
   }
   addGenre(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
@@ -192,7 +196,6 @@ export class WorldGeneratorComponent implements OnInit{
     }
     // Clear the input value
     event.chipInput!.clear();
-    //this.form.controls['genre'].setValue(null);
   }
 
   removeGenre(genre: string): void {
@@ -207,17 +210,14 @@ export class WorldGeneratorComponent implements OnInit{
     this.selectedGenres.push(event.option.viewValue);
     this.filteredGenres = this.filteredGenres.filter(x => x !== event.option.viewValue)
     this.genreInput.nativeElement.value = '';
-    //this.form.controls['genre'].setValue(null);
   }
 
   addConstraint(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-    // Add our fruit
     if (value) 
       this.selectedConstraints.push(value);
     // Clear the input value
     event.chipInput!.clear();
-    //this.form.controls['genre'].setValue(null);
   }
 
   removeConstraint(constraint: string): void {
@@ -292,7 +292,12 @@ export class WorldGeneratorComponent implements OnInit{
     this._gameData.intro = quest.data.intro;
     this._gameData.userPreferences = quest.preferences;
     localStorage.setItem('game-data', JSON.stringify(this._gameData));
-    this._router.navigateByUrl('randomworlds/game/quest')
+    this._web3Service.startGame(this._gameData.selectedCharacter?.contractAddress ?? '', this._gameData.selectedCharacter?.tokenId ?? -1).then(res => {
+      if(res){
+        this._router.navigateByUrl('randomworlds/game/quest');
+      }
+    })
+    // web3Service.startGame().then(){nav to view}
   }
   public onReviewQuestClick(quest:any){
     console.log(quest)

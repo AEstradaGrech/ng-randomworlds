@@ -1,5 +1,4 @@
 import { EventEmitter, inject, Inject, Injectable, NgZone } from '@angular/core';
-import { CharacterProfileMock } from 'src/app/core/interfaces/business/prompting.interface';
 import { DOCUMENT } from '@angular/common';
 import Web3Provider from 'src/app/core/scripts/web3';
 import Kaka from 'src/app/core/scripts/kakaCoin';
@@ -16,6 +15,8 @@ import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, Walle
 import { HttpClient } from '@angular/common/http';
 import { GameData, UserLogin } from '../../shared/models/common-interfaces';
 import { Router } from '@angular/router';
+import GameSession from 'src/app/core/scripts/gameSession';
+import { PlayerGameSession } from '../models/smart-contract.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -161,6 +162,43 @@ export class SmartContractsService {
     }
   }
 
+  public async startGame(collection:string, tokenId: number) : Promise<boolean>{
+    let gameSession: any = GameSession(this.web3);
+    
+    if(!gameSession) return false;
+
+    let entryFee = await gameSession.methods.entryFee().call();
+
+    let signer = await gameSession.methods.gameSigner().call({ from: this.connectedWallet});
+
+    let isAllowedCollection = await gameSession.methods.allowedCollections(collection).call();
+
+    if(!isAllowedCollection) return false;
+    
+    await gameSession.methods.startGame(collection, tokenId as number).send({from: this.connectedWallet, value: BigInt(entryFee)});
+
+    let session = await this.getPlayerSession(collection, tokenId);
+
+    return session && session.player === this.connectedWallet;
+  }
+
+  public async getPlayerSession(collection: string, tokenId: number) : Promise<PlayerGameSession>{
+
+    let gameSession: any = GameSession(this.web3);
+
+    let sessionKey = await gameSession.methods.getKey(collection, tokenId).call({ from: this.connectedWallet });
+
+    let session = await gameSession.methods.sessions(sessionKey).call();
+    
+    let playerSession: PlayerGameSession = {
+      player: session.player,
+      wager: parseInt(session.wager),
+      epoch: parseInt(session.epoch),
+      startedAt: parseInt(session.startedAt)
+    };
+
+    return playerSession;
+  }
   public getWordsContract() : any{
     return WordsCoin(this.web3);
   }
