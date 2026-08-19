@@ -52,7 +52,10 @@ export interface WalletNFT{
     */
 }
 export interface AssetModel extends WalletNFT {
-    collectionLogoUrl: string
+    collectionLogoUrl: string,
+    isLocked?: boolean,
+    isInGame?: boolean, 
+    lockedUntil?: number
 }
 export interface AssetsCollection{
     summary: CollectionSummary,

@@ -161,15 +161,22 @@ export class SmartContractsService {
       return false;
     }
   }
-
+  public isAssetLocked(contract:string, isCustom: boolean, tokenId: number) : Promise<boolean>{
+    return isCustom ? 
+      this.getCustomCharactersContract(contract).methods.locked(tokenId).call() :
+      this.getCollectionContract(contract).methods.locked(tokenId).call();
+  }
+  public isLockedUntil(contract:string, isCustom: boolean, tokenId: number) : Promise<number>{
+    return isCustom ? 
+      this.getCustomCharactersContract(contract).methods.lockedUntil(tokenId).call() :
+      this.getCollectionContract(contract).methods.lockedUntil(tokenId).call();
+  }
   public async startGame(collection:string, tokenId: number) : Promise<boolean>{
     let gameSession: any = GameSession(this.web3);
     
     if(!gameSession) return false;
 
     let entryFee = await gameSession.methods.entryFee().call();
-
-    let signer = await gameSession.methods.gameSigner().call({ from: this.connectedWallet});
 
     let isAllowedCollection = await gameSession.methods.allowedCollections(collection).call();
 
@@ -181,6 +188,23 @@ export class SmartContractsService {
 
     return session && session.player === this.connectedWallet;
   }
+
+  public async abandonGame(collection:string, tokenId: number) : Promise<boolean>{
+    let gameSession: any = GameSession(this.web3);
+    
+    if(!gameSession) return false;
+
+    let session = await this.getPlayerSession(collection, tokenId);
+
+    if(session.startedAt === 0) return false;
+
+    await gameSession.methods.abandon(collection, tokenId as number).send({from: this.connectedWallet });
+
+    session = await this.getPlayerSession(collection, tokenId);
+
+    return session && session.startedAt === 0;
+  }
+
 
   public async getPlayerSession(collection: string, tokenId: number) : Promise<PlayerGameSession>{
 

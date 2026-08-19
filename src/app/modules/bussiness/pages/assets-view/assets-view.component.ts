@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, NgZone, DestroyRef, AfterViewInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, NgZone, DestroyRef, AfterViewInit, EventEmitter } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, AssetsCollection, CustomCharsCollection, NftDetailModel } from 'src/app/core/interfaces/business/smart-contract.interface';
@@ -19,7 +19,11 @@ import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
  * so the template can call `open(item)` uniformly regardless of which one it got.
  */
 export type CollectionOpenHandler = (item?: unknown) => void;
-
+export interface LoadedCollection {
+  address: string,
+  isCustom: boolean,
+  assets: AssetModel[]
+}
 @Component({
   selector: 'app-assets-view',
   templateUrl: './assets-view.component.html',
@@ -36,11 +40,11 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
   public currentCollectionLogoUrl: any;
   public loading:boolean = false;
   private _dialog:MatDialog = inject(MatDialog);
-  private _router: Router = inject(Router);
   public displayedAssets = signal<AssetModel[]>([]);
   public selectedContractAddress = signal<string>('');
   private _visorType:string = 'row';
   private _didInit: boolean = false;
+  private onCollectionLoaded: EventEmitter<LoadedCollection> = new EventEmitter<LoadedCollection>();
   private _slideScrollState: ScrollState = {
     step: 100,
     mult: 1,
@@ -68,7 +72,28 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
   constructor(@Inject(DOCUMENT) private document:Document) { super();}
 
   ngOnInit(): void {
-    this._getAccountAssets();
+    this.onCollectionLoaded.subscribe(data => {
+      console.log('-- on collection loaded --', data);
+      if(data.assets.length === 0) return;
+      data.assets.forEach(asset => {
+          this._smartContractsService.isAssetLocked(data.address, data.isCustom, asset.tokenId)
+            .then(locked => {
+              asset.isLocked = locked;
+              if(locked){
+                //asset.isInGame = checkSession
+                this._smartContractsService.getPlayerSession(data.address, asset.tokenId).then(session => {
+                  console.log('-- on player session --', session);
+                  if(session.startedAt > 0)
+                    asset.isInGame = true;
+                });
+                this._smartContractsService.isLockedUntil(data.address, data.isCustom, asset.tokenId)
+                  .then(lockTime => {
+                    asset.lockedUntil = lockTime;
+                });
+              }
+            });
+      });
+    });
     // takeUntilDestroyed: without it, every past visit to this route leaves a live
     // subscription. A stale, off-screen instance would then also run _getAccountAssets
     // on account-change and update ITS OWN detached signal - so the visible view never moves.
@@ -78,6 +103,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
         this._notificationsService.openSnack(ESnackAlertType.WARN, `Refreshing for account: ${newAccount}`, true, 3000);
         this._getAccountAssets();
       })
+    this._getAccountAssets();
     this._notificationsService.setup('center', 'bottom', 3000);
   }
   
@@ -100,6 +126,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
                   let asset:AssetModel = {...nft, collectionLogoUrl: `url(${summary.logoImage})`}
                   return asset;
                 });
+                this.onCollectionLoaded.emit({address: collection.summary.address, isCustom: false, assets: collection.assets });
                 if(!this.currentCollection){
                   this._didInit = true;
                   this.currentCollection = collection;
@@ -132,6 +159,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
                 let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
                 return asset;
               });
+              this.onCollectionLoaded.emit({address: this.customCharsCollection.contractAddress, isCustom: false, assets: this.customCharsCollection.assets });
               if(this._visorType === 'grid')
                 this.onVisorTypeChange('grid');
               setTimeout(() => {
@@ -189,8 +217,28 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
     this._dialog.open(CharDetailDialogComponent, cfg);
   }
   public onSellClick(model:AssetModel){
-    console.log('-- on sell click --', model)
+    console.log('-- on sell click (TODO) --', model)
   }
+
+  public onUnlockAssetClick(model: AssetModel){
+    if(model.isInGame){
+      this._smartContractsService.abandonGame(model.contractAddress, model.tokenId).then(res => {
+        if(res){
+          this._getAccountAssets();
+          this._notificationsService.openSnack(ESnackAlertType.WARN, 'Current game session abandoned', false, 3000);
+        }
+        else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while abandoning the game', false, 3000);
+      });
+    }
+    else{
+      //TODO payToUnlock
+    }
+    // getGameSessionKey
+    // getSession
+    // if session -> displayText = Character in game
+    // else displayText = Character recovering + lockedUntil --> (v0.1.2)WORDS | PAY unlock
+  }
+
   public onSlideViewClick(direction: string){
     if(this._slideScrollState.isScrolling) return;
     this._clickScrollState.direction = direction;

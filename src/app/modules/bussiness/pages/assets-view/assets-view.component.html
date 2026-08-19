@@ -49,7 +49,7 @@
                 [disabled]="loading" 
                 (onCardButtonClick)="onCardButtonClicked($event)"
                 (onVisualizationChange)="onVisorTypeChange($event)"
-                [projectedButtonsTemplate]="[sellButton]">
+                [projectedButtonsTemplate]="[sellButton, lockButton]">
                 <ng-template #sellButton let-model="model">  
                     <app-rounded-button [matMenuTriggerFor]="payMenu"
                                 [id]="'sell'"
@@ -63,7 +63,7 @@
                         <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
                             <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
                                 <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
-                                <mat-card-subtitle class="collection-card-subtitle">{{model.collection}}</mat-card-subtitle>
+                                <mat-card-subtitle class="collection-card-subtitle">{{model.contractAddress}}</mat-card-subtitle>
                             </mat-card-header>
                             <mat-card-content class="payment-card-content"></mat-card-content>
                             <mat-card-actions style="display: flex; justify-content: center;">
@@ -71,6 +71,38 @@
                             </mat-card-actions>
                         </mat-card>
                     </mat-menu>
+                </ng-template>
+                <ng-template #lockButton let-model="model"> 
+                    @if(model.isLocked){
+                        <app-rounded-button [matMenuTriggerFor]="unlockMenu"
+                                [id]="'unlock'"
+                                [iconName]="'lock'"
+                                [hoverColor]="'red'"
+                                [borderColor]="'red'"
+                                [disabled]="loading"
+                                >
+                    </app-rounded-button>
+                    <mat-menu #unlockMenu="matMenu" yPosition="above" xPosition="after">
+                        <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
+                            <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                                <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
+                                <mat-card-subtitle class="collection-card-subtitle">{{model.contractAddress}}</mat-card-subtitle>
+                            </mat-card-header>
+                            <mat-card-content class="lockedchar-card-content">
+                                @if(model.isInGame){
+                                    <h5>Character is currently in game</h5>
+                                }
+                                @else{
+                                    <h5>Character is recovering. Locked until {{model.lockedUntil}}</h5>
+                                }
+                                
+                            </mat-card-content>
+                            <mat-card-actions style="display: flex; justify-content: center;">
+                                <button mat-stroked-button class="pay-btn" (click)="onUnlockAssetClick(model)">{{model.isInGame ? 'ABANDON' : 'UNLOCK'}}</button>
+                            </mat-card-actions>
+                        </mat-card>
+                    </mat-menu>
+                    }
                 </ng-template>
                 <ng-container class="upper-buttons-l">
                     <div style="display: grid">
