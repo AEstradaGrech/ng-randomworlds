@@ -7,12 +7,11 @@ import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import web3 from 'src/app/core/scripts/web3';
-import { GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
+import { AssetCardButtonState, GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
-import { Router } from '@angular/router';
 import { CharacterCreatorDialogComponent } from './components/character-creator-dialog/character-creator-dialog.component';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
-import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
+import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 
 /**
  * Signature every handler passed to the #collectionsInfo template must satisfy,
@@ -29,7 +28,7 @@ export interface LoadedCollection {
   templateUrl: './assets-view.component.html',
   styleUrl: './assets-view.component.scss'
 })
-export class AssetsViewComponent extends BaseComponent implements OnInit {
+export class AssetsViewComponent extends BaseComponent implements OnInit{
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   private _ngZone:NgZone = inject(NgZone);
   private _destroyRef:DestroyRef = inject(DestroyRef);
@@ -44,6 +43,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
   public selectedContractAddress = signal<string>('');
   private _visorType:string = 'row';
   private _didInit: boolean = false;
+  public onCardBtnChange: EventEmitter<AssetCardButtonState> = new EventEmitter<AssetCardButtonState>();
   private onCollectionLoaded: EventEmitter<LoadedCollection> = new EventEmitter<LoadedCollection>();
   private _slideScrollState: ScrollState = {
     step: 100,
@@ -76,22 +76,23 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
       console.log('-- on collection loaded --', data);
       if(data.assets.length === 0) return;
       data.assets.forEach(asset => {
-          this._smartContractsService.isAssetLocked(data.address, data.isCustom, asset.tokenId)
-            .then(locked => {
-              asset.isLocked = locked;
-              if(locked){
-                //asset.isInGame = checkSession
-                this._smartContractsService.getPlayerSession(data.address, asset.tokenId).then(session => {
-                  console.log('-- on player session --', session);
-                  if(session.startedAt > 0)
-                    asset.isInGame = true;
-                });
-                this._smartContractsService.isLockedUntil(data.address, data.isCustom, asset.tokenId)
-                  .then(lockTime => {
-                    asset.lockedUntil = lockTime;
-                });
-              }
-            });
+        this._smartContractsService.isAssetLocked(data.address, data.isCustom, asset.tokenId)
+          .then(locked => {
+            asset.isLocked = locked;
+            if(locked){
+              //asset.isInGame = checkSession
+              this.onCardBtnChange.emit({buttonId: EAppButtons.SELECT, disabled: true, contract: asset.contractAddress, tokenId: asset.tokenId});
+              this._smartContractsService.getPlayerSession(data.address, asset.tokenId).then(session => {
+                console.log('-- on player session --', session);
+                if(session.startedAt > 0)
+                  asset.isInGame = true;
+              });
+              this._smartContractsService.isLockedUntil(data.address, data.isCustom, asset.tokenId)
+                .then(lockTime => {
+                  asset.lockedUntil = lockTime;
+              });
+            }
+          });
       });
     });
     // takeUntilDestroyed: without it, every past visit to this route leaves a live
@@ -102,7 +103,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit {
       .subscribe(newAccount => {
         this._notificationsService.openSnack(ESnackAlertType.WARN, `Refreshing for account: ${newAccount}`, true, 3000);
         this._getAccountAssets();
-      })
+      });
     this._getAccountAssets();
     this._notificationsService.setup('center', 'bottom', 3000);
   }

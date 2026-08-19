@@ -42,7 +42,8 @@
         <app-nft-card 
             [model]="model" 
             [cardButtons]="nftCardButtonsConfig"
-            [disabled]="disabled" 
+            [disabled]="disabled"
+            [onBtnStateChange]="onCardBtnChange" 
             (onCardButtonClick)="onCardButtonClicked($event)">
             <ng-container class="projected-buttons">
                 @for(template of projectedButtonsTemplate; track template){

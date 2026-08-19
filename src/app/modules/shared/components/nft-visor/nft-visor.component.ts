@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, TemplateRef, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { AssetModel } from 'src/app/core/interfaces/business/smart-contract.interface';
-import { NftCardClickAction, RoundedButtonConfig, ScrollState } from '../../models/common-interfaces';
+import { AssetCardButtonState, NftCardClickAction, RoundedButtonConfig, ScrollState } from '../../models/common-interfaces';
+import { RoundedButtonComponent } from '../rounded-button/rounded-button.component';
 
 @Component({
   selector: 'app-nft-visor',
@@ -15,6 +16,7 @@ export class NftVisorComponent implements OnInit, OnChanges{
   @Input() projectedButtonsTemplate: TemplateRef<any>[] = [];
   @Input() skipButtonsPosition:string = 'center';
   @Input() visualization: string = 'row'; // | grid;
+  @Input() onCardBtnChange!: EventEmitter<AssetCardButtonState>;
   @Output() onCardButtonClick: EventEmitter<NftCardClickAction> = new EventEmitter<NftCardClickAction>();
   @Output() onVisualizationChange: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
@@ -33,6 +35,7 @@ export class NftVisorComponent implements OnInit, OnChanges{
       isScrolling:false
     }
   
+
   ngOnInit(): void {
     this.onChangeVisualization();
   }

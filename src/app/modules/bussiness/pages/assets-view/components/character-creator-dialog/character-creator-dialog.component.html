@@ -46,7 +46,7 @@
             [disabled]="isMinting"
             (click)="$event.stopPropagation();onSkipImage('left')">
           </app-rounded-button>
-          <app-rounded-button [matMenuTriggerFor]="payMenu"
+          <app-rounded-button [matMenuTriggerFor]="(currentImage() ? payMenu : null)"
             style="margin-right:13px"
             matTooltip="Mint the current image & profile"
             [matTooltipPosition]="'above'" 

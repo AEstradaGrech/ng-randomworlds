@@ -47,16 +47,17 @@
                 [assets]=displayedAssets()
                 [nftCardButtonsConfig]="nftCardButtonsConfig"
                 [disabled]="loading" 
+                [onCardBtnChange]="onCardBtnChange"
                 (onCardButtonClick)="onCardButtonClicked($event)"
                 (onVisualizationChange)="onVisorTypeChange($event)"
                 [projectedButtonsTemplate]="[sellButton, lockButton]">
                 <ng-template #sellButton let-model="model">  
-                    <app-rounded-button [matMenuTriggerFor]="payMenu"
+                    <app-rounded-button [matMenuTriggerFor]="(model.isInGame ? null :payMenu)" 
                                 [id]="'sell'"
                                 [iconName]="'payment'"
                                 [hoverColor]="'var(--secondary-btn-hover)'"
                                 [borderColor]="'var(--secondary-btn-border)'"
-                                [disabled]="loading"
+                                [disabled]="loading || model.isInGame"
                                 >
                     </app-rounded-button>
                     <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
