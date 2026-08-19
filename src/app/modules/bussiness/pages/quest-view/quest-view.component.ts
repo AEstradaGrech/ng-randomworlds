@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { questsViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
@@ -7,10 +7,11 @@ import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-m
 import { GameData, QueryCondition, SortedFilter } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router'
 import { QuestsService } from '../../services/quests.service';
-import { FinalOptionsResponse, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestPreferences, RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
+import { FinalOptionsResponse, QuestBlockDto, QuestCharacter, NewQuestRequest, QuestPreferences, RandomQuestDto, InitQuestRequest } from 'src/app/core/interfaces/business/prompting.interface';
 import { SideNavbarComponent } from 'src/app/modules/shared/components/side-navbar/side-navbar.component';
 import { catchError, of } from 'rxjs';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-quest-view',
@@ -52,6 +53,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   private _snackBar = inject(MatSnackBar);
   private _router:Router = inject(Router);
   private _service: QuestsService = inject(QuestsService);
+  private _destroyRef: DestroyRef = inject(DestroyRef);
   @ViewChild('scenebox') scenebox!:ElementRef;
   @ViewChild('sideBar') sideBar!:SideNavbarComponent;
   platformId: Object = inject(PLATFORM_ID);
@@ -135,7 +137,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this._switchMenu(event.name);
   }
   
-    private _setupGameData() {
+  private _setupGameData() {
     this.sceneText = '';
     this.storyText = '';
     let gameData = this._getGameData();
@@ -156,7 +158,25 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     }
     else {
       this._switchMenu('Intro');
-      this.sideBar.setMenuEnabled('Intro');
+      if(this.sideBar)
+        this.sideBar.setMenuEnabled('Intro');
+      if(this.gameData && this.gameData.selectedCharacter && this.gameData.character && this.gameData.userPreferences){
+        let req:NewQuestRequest = {
+          username:this.gameData.username,
+          charCollectionAddress:this.gameData.selectedCharacter.contractAddress,
+          charTokenId:`${this.gameData.selectedCharacter.tokenId}`,
+          character:this.gameData.character,
+          preferences:this.gameData.userPreferences,
+          intro:this.gameData.intro,
+          isRandomCharacter:this.gameData.isRandomCharacter,
+          maxBlocks:5
+        }
+        this._service.saveNewQuest(req)
+          .pipe(takeUntilDestroyed(this._destroyRef))
+          .subscribe(res => {
+            this.currentQuest = res;
+        });
+      }
     }
   }
 
@@ -453,16 +473,13 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   private _initializeQuest(){
-    if(this.gameData.character && this.gameData.userPreferences && this.gameData.selectedCharacter){
-      let req:QuestInitRequest = {
+    //if(this.gameData.character && this.gameData.userPreferences && this.gameData.selectedCharacter){
+      if(this.currentQuest){
+      let req:InitQuestRequest = {
+        questId: this.currentQuest.id,
         username:this.gameData.username,
-        charCollectionAddress:this.gameData.selectedCharacter.contractAddress,
-        charTokenId:`${this.gameData.selectedCharacter.tokenId}`,
-        character:this.gameData.character,
-        preferences:this.gameData.userPreferences,
-        intro:this.gameData.intro,
-        isRandomCharacter:this.gameData.isRandomCharacter,
-        maxBlocks:5
+        charCollectionAddress:this.currentQuest.charCollectionAddress,
+        charTokenId:`${this.currentQuest.charTokenId}`
       }
       console.log('-- init req -- ', req);
       this.hasStreamedScene = false;
@@ -489,7 +506,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         })
     } 
   }
-  private _completeInitialization(req:QuestInitRequest){
+  private _completeInitialization(req:InitQuestRequest){
     let conditions:QueryCondition[] = []
     const vars = Object.keys(req);
     vars.forEach((v:string) => {

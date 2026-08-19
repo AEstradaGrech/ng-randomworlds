@@ -75,7 +75,7 @@ export interface TicketDto{
     metaUri?: string,
     mintSignature?: string
 }
-export interface QuestInitRequest{
+export interface NewQuestRequest{
     username:string,
     charTokenId: string,
     charCollectionAddress:string,
@@ -84,6 +84,12 @@ export interface QuestInitRequest{
     preferences: QuestPreferences,
     intro: string,
     maxBlocks:number
+}
+export interface InitQuestRequest{
+    questId: string,
+    username:string,
+    charTokenId: string,
+    charCollectionAddress:string, 
 }
 export interface RandomQuestDto{
     id:string,

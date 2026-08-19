@@ -1,7 +1,7 @@
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { filter, Observable } from 'rxjs';
-import { ChatMessage as ChatMessageDto, CreateCharacterRequest, FinalOptionsResponse, QuestBlockDto, QuestCharacter, QuestInitRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, RandomWorldsCharacter, SaveDatasetCharacter, SceneOptionsRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
+import { ChatMessage as ChatMessageDto, CreateCharacterRequest, FinalOptionsResponse, QuestBlockDto, QuestCharacter, NewQuestRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, RandomWorldsCharacter, SaveDatasetCharacter, SceneOptionsRequest, SceneOptionsResponse, InitQuestRequest } from 'src/app/core/interfaces/business/prompting.interface';
 import { CollectionResponse, SortedFilter } from '../../shared/models/common-interfaces';
 import { environment } from 'src/environments/environment';
 import { CharacterProfileDto } from '../../shared/models/mgmt-interfaces';
@@ -15,7 +15,7 @@ export class QuestsService {
   private _charsUrl:string = 'http://localhost:9000/randomworlds/characters';
   constructor(private http: HttpClient) { }
 
-  public initQuestStream(req:QuestInitRequest):Observable<any>{
+  public initQuestStream(req:InitQuestRequest):Observable<any>{
     return this.http.post(`${this._baseUrl}/init`, req, {
             responseType: 'text',
             observe: 'events',
@@ -41,6 +41,11 @@ export class QuestsService {
           event.type === HttpEventType.Response,
       ))
   }
+
+  public saveNewQuest(req:NewQuestRequest) : Observable<RandomQuestDto>{
+    return this.http.post<RandomQuestDto>(`${this._baseUrl}/new/save`,req);
+  }
+
   public sortedQuery(filter:SortedFilter):Observable<CollectionResponse<RandomQuestDto>>{
     return this.http.post<CollectionResponse<RandomQuestDto>>(`${this._baseUrl}/sorted-query`,filter)
   }
