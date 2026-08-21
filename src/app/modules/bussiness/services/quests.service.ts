@@ -47,26 +47,29 @@ export class QuestsService {
   }
 
   public sortedQuery(filter:SortedFilter):Observable<CollectionResponse<RandomQuestDto>>{
-    return this.http.post<CollectionResponse<RandomQuestDto>>(`${this._baseUrl}/sorted-query`,filter)
+    return this.http.post<CollectionResponse<RandomQuestDto>>(`${this._baseUrl}/sorted-query`,filter);
   }
   public setQuestStatus(id:string, status:string) : Observable<RandomQuestDto>{
-    return this.http.get<RandomQuestDto>(`${this._baseUrl}/${id}/set-status/${status}`)
+    return this.http.get<RandomQuestDto>(`${this._baseUrl}/${id}/set-status/${status}`);
   }
   public getById(id:string) : Observable<RandomQuestDto>{
-    return this.http.get<RandomQuestDto>(`${this._baseUrl}/${id}`)
+    return this.http.get<RandomQuestDto>(`${this._baseUrl}/${id}`);
+  }
+  public getCurrentQuestFor(tokenId: number, collection: string, wallet: string) : Observable<RandomQuestDto>{
+    return this.http.get<RandomQuestDto>(`${this._baseUrl}/current/character/${tokenId}/collection/${collection}/owner/${wallet}`);
   }
   public endQuest(id:string, status:string, block:QuestBlockDto) : Observable<RandomQuestDto>{
-    return this.http.post<RandomQuestDto>(`${this._baseUrl}/${id}/end/${status}`, block)
+    return this.http.post<RandomQuestDto>(`${this._baseUrl}/${id}/end/${status}`, block);
   }
   public generateSceneOptions(req:SceneOptionsRequest) : Observable<SceneOptionsResponse>{
-    return this.http.post<SceneOptionsResponse>(`${this._baseUrl}/scene-options`,req)
+    return this.http.post<SceneOptionsResponse>(`${this._baseUrl}/scene-options`,req);
   }
   public generateFinalOptions(req:SceneOptionsRequest) : Observable<FinalOptionsResponse>{
-    return this.http.post<FinalOptionsResponse>(`${this._baseUrl}/final-scene-options`,req)
+    return this.http.post<FinalOptionsResponse>(`${this._baseUrl}/final-scene-options`,req);
   }
   public generateIntro(req:QuestIntroRequest) : Observable<QuestIntroResponse>{
     console.log('generate intro')
-    return this.http.post<QuestIntroResponse>(`${this._baseUrl}/intro`, req)
+    return this.http.post<QuestIntroResponse>(`${this._baseUrl}/intro`, req);
   }
 
   public generateCharacterProfile(req: CreateCharacterRequest): Observable<QuestCharacter>{

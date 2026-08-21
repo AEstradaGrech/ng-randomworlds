@@ -84,6 +84,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   ngOnInit(): void {
+    
     this._setupGameData();
   }
   ngOnDestroy(): void {   

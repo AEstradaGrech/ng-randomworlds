@@ -89,7 +89,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
               });
               this._smartContractsService.isLockedUntil(data.address, data.isCustom, asset.tokenId)
                 .then(lockTime => {
-                  asset.lockedUntil = lockTime;
+                  asset.lockedUntil = Number(lockTime);
               });
             }
           });
@@ -339,19 +339,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
         this.onViewClick(event.asset);
       break;
       case('select'):
-        console.log('-- on select click --', event.asset);
-        let data = localStorage.getItem('game-data');
-        if(data){
-          let gameData:GameData = JSON.parse(data);
-          if(gameData.isLocked){
-            this._notificationsService.openSnack(ESnackAlertType.WARN, 'There is a game ongoing in another tab, cannot change the character', true);
-            return;
-          }
-          gameData.selectedCharacter = event.asset;
-          localStorage.setItem('game-data', JSON.stringify(gameData));
-          this._notificationsService.push(`Selected Character: ${event.asset.metadata.name}`);
-        }
-        else this._notificationsService.push('No Game Data has been found in memory, go back to the home page')
+        this.onCardSelected(event.asset);
       break;
       default: break;
     }
@@ -368,5 +356,21 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
           //refresh NFTs
         }
     })
+  }
+
+  public onCardSelected(asset: AssetModel){
+    console.log('-- on select click --', asset);
+    let data = localStorage.getItem('game-data');
+    if(data){
+      let gameData:GameData = JSON.parse(data);
+      // if(gameData.isLocked){
+      //   this._notificationsService.openSnack(ESnackAlertType.WARN, 'There is a game ongoing in another tab, cannot change the character', true);
+      //   return;
+      // }
+      gameData.selectedCharacter = asset;
+      localStorage.setItem('game-data', JSON.stringify(gameData));
+      this._notificationsService.push(`Selected Character: ${asset.metadata.name}`);
+    }
+    else this._notificationsService.push('No Game Data has been found in memory, go back to the home page')
   }
 }

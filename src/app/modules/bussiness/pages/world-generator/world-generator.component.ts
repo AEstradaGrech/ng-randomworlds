@@ -73,19 +73,12 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
     let selectedChar: AssetModel | null = this.selectedCharacter();
     return selectedChar ? `url(${selectedChar.image})` : '';
   });
-
+  public isCharLocked = computed(() => {
+    let selectedChar: AssetModel | null = this.selectedCharacter();
+      return selectedChar ? selectedChar.isLocked : false;
+  });
   ngOnInit(): void {
-    // this.gameType = localStorage.getItem('game-type');
-    // this.charName = localStorage.getItem('selected-char');
-
-    // if(!this.gameType || !this.charName){
-    //   this._snackBar.open("An error has occured while trying to begin the game. Game type or Character bad configured", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
-    //   this._router.navigateByUrl('randomworlds/home')
-    // }
-    
     this._setupGameData();
-    // this.quests.push({id: this.quests.length +1})
-    // this.quests.push({id: this.quests.length +1})
   }
 
   @HostListener('window:storage', ['$event'])
@@ -103,7 +96,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   private _setupGameData(){
     let gameData = this._getGameData();
     if(!gameData){
-      this._router.navigateByUrl('randomworlds/home')
+      this._router.navigateByUrl('randomworlds/home');
       return;
     }
     this._gameData = gameData;
@@ -111,19 +104,37 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
       this.selectedCharacter.set(this._gameData.selectedCharacter);
       if(this._gameData.selectedCharacter.metadata){
         this.metadata = this._gameData.selectedCharacter.metadata;
+        if(this._gameData.selectedCharacter.isInGame){
+          this._service.getCurrentQuestFor(
+            this._gameData.selectedCharacter.tokenId, 
+            this._gameData.selectedCharacter.contractAddress, 
+            this._gameData.selectedCharacter.ownerAddress)
+            .subscribe(res => {
+              if(res){
+                this._notificationsService.openSnack(ESnackAlertType.WARN, 'Recovering Game for selected character', true, 3000);
+                this._gameData.gameSessionId = res.id;
+                this._gameData.gameStatus = res.status;
+                localStorage.setItem('game-data', JSON.stringify(this._gameData));
+                this.quests.push({id: this.quests.length + 1, data: res, preferences: res.preferences, asset: this.selectedCharacter()})
+                this.currentIntro = `CHARACTER:\n${res.character}\nINTRO SCENE:\n\n${res.intro}`;
+              }
+            });
+          //try get current session for character 
+          // _setOngoingOption()
+          //  gameData.sessionId = res.id
+          //  pintar opcion con 'CONTINUE'
+        }
       }
       else {
         this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No character metadata present in the game data', true, 3000);
-        setTimeout(() => {
-            this._router.navigateByUrl('randomworlds/home');
-        }, 3000);
+        setTimeout(() => { this._router.navigateByUrl('randomworlds/home');}, 3000);
         return;
       }
       this.selectedAmbiences = this.metadata.profile.ambiences;
       this.selectedMoods = this.metadata.profile.moods;
       this.selectedGenres = [];
       this.onShowSettings(true);
-      this.currentIntro = '';
+      this.currentIntro = this.quests.length > 0 ? this.quests[0].intro :  '';
       this.form = this._fb.group({
         ambiences: new FormControl(this.selectedAmbiences),
         moods: new FormControl(this.selectedMoods),
@@ -132,6 +143,11 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
         plot: new FormControl('', [Validators.maxLength(200)]),
         desiredName: new FormControl(undefined, [Validators.maxLength(30)])
       })
+    }
+    else {
+      this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No character selected', true, 2500);
+      setTimeout(() => {this._router.navigateByUrl('randomworlds/home');}, 3000);
+      return;
     }
   }
   addAmbience(event: MatChipInputEvent): void {

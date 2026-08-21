@@ -26,6 +26,10 @@ export class HomeComponent implements OnInit{
   ngOnInit(): void {
     this.web3provider = web3(this.document);
     //this._setGameData('quest');
+    let data = localStorage.getItem('game-data');
+    if(!data)
+      this._setGameData('quest');
+    
     console.log('web3 prov',this.web3provider);
   }
   async onBeginClick(gameType:string){

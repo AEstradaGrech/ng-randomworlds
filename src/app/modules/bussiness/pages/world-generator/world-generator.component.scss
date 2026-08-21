@@ -44,8 +44,8 @@
 }
 .begin-btn{
     width: 20%;
-    color: #99c531 !important;
-    border-color: rgb(175 239 24) !important;
+    color: #99c531;
+    border-color: rgb(175 239 24);
 }
 .begin-btn:hover{
     width: 20%;
@@ -120,4 +120,9 @@
     color: #ffffff !important;
     border-color: rgb(245, 247, 243) !important;
     background-color: #99c531 !important;
+}
+
+.disabled-btn{
+    border-color:#c3c3c5;
+    color:#c3c3c5; 
 }
