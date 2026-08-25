@@ -27,17 +27,20 @@
                           @for (ambience of selectedAmbiences; track ambience) {
                             <mat-chip-row (removed)="removeAmbience(ambience)">
                               {{ambience}}
-                              <button matChipRemove aria-label="'removeAmbience ' + ambience">
+                              <button [disabled]="formControlDisabled()" matChipRemove aria-label="'removeAmbience ' + ambience">
                                 <mat-icon>cancel</mat-icon>
                               </button>
                             </mat-chip-row>
                           }
                         </mat-chip-grid>
-                        <input placeholder="Add Ambience..." #ambienceInput
-                          [matChipInputFor]="ambienceChipGrid" [matAutocomplete]="ambsAuto"
+                        <input matInput placeholder="Add Ambience..." #ambienceInput
+                          [disabled]="formControlDisabled()"
+                          [matChipInputFor]="ambienceChipGrid" 
+                          [matAutocomplete]="ambsAuto"
                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                           (matChipInputTokenEnd)="addAmbience($event)"/>
-                        <mat-autocomplete #ambsAuto="matAutocomplete" (optionSelected)="ambienceSelected($event)">
+                        <mat-autocomplete #ambsAuto="matAutocomplete" 
+                          (optionSelected)="ambienceSelected($event)">
                           @for (ambience of filteredAmbiences; track ambience) {
                             <mat-option [value]="ambience">{{ambience}}</mat-option>
                           }
@@ -49,14 +52,16 @@
                           @for (mood of selectedMoods; track mood) {
                             <mat-chip-row (removed)="removeMood(mood)">
                               {{mood}}
-                              <button matChipRemove aria-label="'removeMood ' + mood">
+                              <button [disabled]="formControlDisabled()" matChipRemove aria-label="'removeMood ' + mood">
                                 <mat-icon>cancel</mat-icon>
                               </button>
                             </mat-chip-row>
                           }
                         </mat-chip-grid>
-                        <input placeholder="Add Mood..." #moodInput
-                          [matChipInputFor]="moodChipGrid" [matAutocomplete]="moodsAuto"
+                        <input matInput placeholder="Add Mood..." #moodInput
+                          [disabled]="formControlDisabled()"
+                          [matChipInputFor]="moodChipGrid" 
+                          [matAutocomplete]="moodsAuto"
                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                           (matChipInputTokenEnd)="addMood($event)"/>
                         <mat-autocomplete #moodsAuto="matAutocomplete" (optionSelected)="moodSelected($event)">
@@ -71,14 +76,16 @@
                           @for (genre of selectedGenres; track genre) {
                             <mat-chip-row (removed)="removeGenre(genre)">
                               {{genre}}
-                              <button matChipRemove aria-label="'removeMood ' + genre">
+                              <button [disabled]="formControlDisabled()" matChipRemove aria-label="'removeMood ' + genre">
                                 <mat-icon>cancel</mat-icon>
                               </button>
                             </mat-chip-row>
                           }
                         </mat-chip-grid>
-                        <input placeholder="Add Genre..." #genreInput
-                          [matChipInputFor]="genresChipGrid" [matAutocomplete]="gensAuto"
+                        <input matInput placeholder="Add Genre..." #genreInput
+                          [disabled]="formControlDisabled()"
+                          [matChipInputFor]="genresChipGrid" 
+                          [matAutocomplete]="gensAuto"
                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                           (matChipInputTokenEnd)="addGenre($event)"/>
                         <mat-autocomplete #gensAuto="matAutocomplete" (optionSelected)="genreSelected($event)">
@@ -93,22 +100,23 @@
                           @for (constraint of selectedConstraints; track constraint) {
                             <mat-chip-row (removed)="removeConstraint(constraint)">
                               {{constraint}}
-                              <button matChipRemove aria-label="'removeConstraint ' + constraint">
+                              <button [disabled]="formControlDisabled()" matChipRemove aria-label="'removeConstraint ' + constraint">
                                 <mat-icon>cancel</mat-icon>
                               </button>
                             </mat-chip-row>
                           }
                         </mat-chip-grid>
-                        <input placeholder="Add Constraint..." #constraintsInput
+                        <input matInput placeholder="Add Constraint..." #constraintsInput
+                          [disabled]="formControlDisabled()"
                           [matChipInputFor]="constraintsChipGrid"
                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                           (matChipInputTokenEnd)="addConstraint($event)"/>
                       </mat-form-field>
-                      <mat-slide-toggle class="form-control"[checked]="isRandomCharacter" (change)="onUseRandomCharToggle($event)">Use Random Character</mat-slide-toggle>
+                      <!-- <mat-slide-toggle class="form-control"[checked]="isRandomCharacter" (change)="onUseRandomCharToggle($event)">Use Random Character</mat-slide-toggle>
                       <mat-form-field class="form-control" *ngIf="isRandomCharacter">
                         <mat-label>Desired Name</mat-label>
-                        <input matInput type="text" placeholder="Character name..." formControlName="desiredName">
-                      </mat-form-field>
+                        <input matInput [disabled]="formControlDisabled()" type="text" placeholder="Character name..." formControlName="desiredName">
+                      </mat-form-field> -->
                       <mat-expansion-panel>
                         <mat-expansion-panel-header style="height: 35px;">
                           <mat-panel-description style="justify-content: center;">
@@ -117,14 +125,14 @@
                         </mat-expansion-panel-header>       
                         <mat-form-field class="form-control" style="width: 100%;">
                             <mat-label>Plot</mat-label>
-                            <input formControlName="plot" matInput type="text" max="20"/>
+                            <input matInput [disabled]="true" formControlName="plot"/>
                         </mat-form-field>
                       </mat-expansion-panel>
                     </form>
                 </mat-expansion-panel>
               </mat-accordion>
                 <div class="text-container" [@settingsState]="showSettings">
-                    <textarea [ngClass]="{'text-area': showSettings === 'hidden', 'hidden-text-area': showSettings === 'visible'}">{{currentIntro}}</textarea>
+                    <textarea readonly [ngClass]="{'text-area': showSettings === 'hidden', 'hidden-text-area': showSettings === 'visible'}">{{currentIntro}}</textarea>
                 </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">

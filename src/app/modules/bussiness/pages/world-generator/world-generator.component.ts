@@ -1,4 +1,4 @@
-import { Component, inject, OnInit,  ElementRef, ViewChild, HostListener, signal, computed, } from '@angular/core';
+import { Component, inject, OnInit,  ElementRef, ViewChild, HostListener, signal, computed, effect, EffectRef, } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router'
@@ -43,7 +43,8 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   public selectedMoods: string[]=[]
   public selectedGenres: string[]=[]
   public selectedConstraints: string[]=[]
-  public form!: FormGroup;  
+  public form!: FormGroup;
+  public selectedQuest = signal<any>(undefined);  
   public quests:any[] = []
   public showSettings:string = 'visible';
   public isRandomCharacter:boolean = false;
@@ -55,16 +56,26 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   private _service = inject(QuestsService);
   private _web3Service = inject(SmartContractsService);
 
+  private _disableControlEffect?: EffectRef;
+
   private _gameData!:GameData;
   separatorKeysCodes: number[] = [ENTER, COMMA];
   filteredAmbiences: string[] = [];
   filteredMoods: string[]=[]
   filteredGenres: string[]= ['Action', 'Drama','Thriller', 'Horror', 'Comedy', 'Mystery', 'Romance', 'Fantasy'];
 
+
+  public formControlDisabled = computed(() => {
+    let currentQuest = this.selectedQuest();
+    if(currentQuest)
+      return currentQuest.status !== 'NOT_STARTED';
+    else return false;
+  });
+
   @ViewChild('ambienceInput') ambienceInput!: ElementRef<HTMLInputElement>;
   @ViewChild('moodsInput') moodsInput!: ElementRef<HTMLInputElement>;
   @ViewChild('genresInput') genreInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('genresInput') constraintsInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('constraintsInput') constraintsInput!: ElementRef<HTMLInputElement>;
   announcer = inject(LiveAnnouncer);
 
   public selectedCharacter = signal<AssetModel | null>(null);
@@ -77,7 +88,9 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
     let selectedChar: AssetModel | null = this.selectedCharacter();
       return selectedChar ? selectedChar.isLocked : false;
   });
+
   ngOnInit(): void {
+      
     this._setupGameData();
   }
 
@@ -115,8 +128,18 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
                 this._gameData.gameSessionId = res.id;
                 this._gameData.gameStatus = res.status;
                 localStorage.setItem('game-data', JSON.stringify(this._gameData));
-                this.quests.push({id: this.quests.length + 1, data: res, preferences: res.preferences, asset: this.selectedCharacter()})
+                this.quests.push({id: this.quests.length + 1, data: res, preferences: res.preferences, asset: this.selectedCharacter(), status: res.status})
                 this.currentIntro = `CHARACTER:\n${res.character}\nINTRO SCENE:\n\n${res.intro}`;
+                this.selectedQuest.set(this.quests.slice(-1));
+                // keep 'plot' control in sync with disabled state when recovering an ongoing quest
+                if (this.form) {
+                  if (this.formControlDisabled()) {
+                    this.form.controls['plot'].disable();
+                  } else {
+                    this.form.controls['plot'].enable();
+                  }
+                }
+                this.onShowSettings(false);
               }
             });
           //try get current session for character 
@@ -134,15 +157,35 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
       this.selectedMoods = this.metadata.profile.moods;
       this.selectedGenres = [];
       this.onShowSettings(true);
-      this.currentIntro = this.quests.length > 0 ? this.quests[0].intro :  '';
+      this.currentIntro = this.quests.length > 0 && this.currentIntro ? this.currentIntro :  '';
       this.form = this._fb.group({
         ambiences: new FormControl(this.selectedAmbiences),
         moods: new FormControl(this.selectedMoods),
         genres: new FormControl(''),
         constraints: new FormControl(this.selectedConstraints),
-        plot: new FormControl('', [Validators.maxLength(200)]),
-        desiredName: new FormControl(undefined, [Validators.maxLength(30)])
-      })
+        plot: new FormControl('', [Validators.maxLength(200)])
+        //desiredName: new FormControl(undefined, [Validators.maxLength(30)])
+      });
+      this._disableControlEffect = effect(() => {
+        if (!this.form) return;
+        const quest = this.selectedQuest();
+        // Decide whether controls should be disabled: when a quest exists and its status is not NOT_STARTED
+        const shouldDisable = !!quest ? quest.status !== 'NOT_STARTED' : false;
+        // Iterate all controls in the FormGroup and enable/disable as needed
+        Object.values(this.form.controls).forEach(ctrl => {
+          if (shouldDisable) {
+            if (!ctrl.disabled) ctrl.disable({ emitEvent: false });
+          } else {
+            if (ctrl.disabled) ctrl.enable({ emitEvent: false });
+          }
+        });
+      });
+      // Keep the 'plot' control disabled/enabled in sync with the computed signal used by other inputs.
+      if (this.formControlDisabled()) {
+        this.form.controls['plot'].disable();
+      } else {
+        this.form.controls['plot'].enable();
+      }
     }
     else {
       this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No character selected', true, 2500);
@@ -252,15 +295,6 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   }
   public onGenerateClick(){
     console.log('-- onGenerate --')
-    
-    //TODO: chipsDataSource = gameData.userPrefs (nft data) -> filter -> update from chips
-      // gameData.userPreferences = {
-      //   "ambiences":[],
-      //   "genres":[""],
-      //   "moods":[],
-      //   "suggestion":"",
-      //   "constraints":[""]
-      // }
     let character = this.selectedCharacter();
     if(!character) return;
     console.log('-- form val --',this.form.getRawValue())
@@ -292,8 +326,9 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
           this.quests = this.quests.slice(-1)
           this.quests[0].id = 1
         }
-        this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences, asset: this.selectedCharacter()})
+        this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences, asset: this.selectedCharacter(), status: 'NOT_STARTED'})
         this.currentIntro = `CHARACTER:\n${this._formatCharacterData(res.character)}\nINTRO SCENE:\n\n${res.intro}`;
+        this.selectedQuest.set(this.quests.slice(-1));
         //
       })
       //TODO: generat Lore w/AssTeam. Add to gameData | userPrefs
@@ -316,7 +351,8 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
     // web3Service.startGame().then(){nav to view}
   }
   public onReviewQuestClick(quest:any){
-    console.log(quest)
+    console.log(quest);
+    this.selectedQuest.set(quest);
     this.currentIntro = `CHARACTER:\n${this._formatCharacterData(quest.data.character)}\nINTRO SCENE:\n\n${quest.data.intro}`;
     this.selectedCharacter.set(quest.asset);
     this.selectedAmbiences = [...quest.preferences.ambiences];
