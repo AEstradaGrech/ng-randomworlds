@@ -91,6 +91,7 @@ export interface NftDetailModel{
     mints?: number,
     maxMints?:number,
 }
+//TODO: borrar y usar solo RandomWorldsCharacter
 export interface CharacterProfile {
     name: string,
     age: string,

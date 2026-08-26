@@ -39,7 +39,7 @@ export interface GameData{
     character?:QuestCharacter, // CharMeta | RandomChar from preferences
     isRandomCharacter:boolean,
     gameSessionId:string,//dbId RandomQuest | RandomAdventure
-    userPreferences?: QuestPreferences,
+    userPreferences?: QuestPreferences | string,
     intro: string,
     currentBlock:number,
     isLocked: boolean // true if the user has a game screen open in the browser

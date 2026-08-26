@@ -12,6 +12,7 @@ import { SideNavbarComponent } from 'src/app/modules/shared/components/side-navb
 import { catchError, of } from 'rxjs';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 
 @Component({
   selector: 'app-quest-view',
@@ -50,22 +51,27 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   endgameIcon:string = "mood"
   storyText:string = "";
   charImageUrl:string = '';
+  
   private _snackBar = inject(MatSnackBar);
   private _router:Router = inject(Router);
   private _service: QuestsService = inject(QuestsService);
   private _destroyRef: DestroyRef = inject(DestroyRef);
+  
   @ViewChild('scenebox') scenebox!:ElementRef;
   @ViewChild('sideBar') sideBar!:SideNavbarComponent;
+  
   platformId: Object = inject(PLATFORM_ID);
+
   get hasGameOngoing():boolean{
     return this.gameData && this.gameData.gameSessionId !== '' && !this.hasFinishedQuest;
   }
   get hasFinishedQuest():boolean{
-    return this.gameData && (this.gameData.gameStatus !== 'READY' && this.gameData.gameStatus !== 'INITIALIZING' && this.gameData.gameStatus !== 'ONGOING');
+    return this.gameData && this.gameData.gameStatus !== 'READY' && this.gameData.gameStatus !== 'INITIALIZING' && this.gameData.gameStatus !== 'ONGOING';
   }
   get questFinishedIcon():string{
     return this.endgameIcon;
   }
+
   @HostListener('window:storage', ['$event'])
   onSelectedCharacterChange(event: StorageEvent){
     console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
@@ -84,7 +90,6 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   ngOnInit(): void {
-    
     this._setupGameData();
   }
   ngOnDestroy(): void {   
@@ -150,8 +155,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         return;
       }
       this.gameData = gameData;
-      this.gameData.gameSessionId = '';
-      this.charImageUrl = `url(${this.gameData.selectedCharacter?.image ?? ''}`;
+      this.charImageUrl = `url(${replaceEndpoint(this.gameData.selectedCharacter?.image ?? '', 'IPFS', 'ALCHEMY')}`;
     }  
     this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
     if(this.hasGameOngoing){
@@ -167,7 +171,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           charCollectionAddress:this.gameData.selectedCharacter.contractAddress,
           charTokenId:`${this.gameData.selectedCharacter.tokenId}`,
           character:this.gameData.character,
-          preferences:this.gameData.userPreferences,
+          preferences:this.gameData.userPreferences as QuestPreferences,
           intro:this.gameData.intro,
           isRandomCharacter:this.gameData.isRandomCharacter,
           maxBlocks:5
@@ -182,6 +186,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   private _isValidGameData(data: GameData){
+    console.log('-- IS VALID DATA --', data);
     if(data.gameType !== 'quest') return false;
     if(!data.character) return false;
     if(!data.selectedCharacter) return false;
@@ -212,19 +217,15 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     }
     localStorage.setItem('game-data', JSON.stringify(data))
   }
-  private _lockGameData(lock: boolean){
-    let gameData = this._getGameData();
-    if(gameData){
-      gameData.isLocked = lock;
-      localStorage.setItem('game-data', JSON.stringify(gameData));
-    }
-  }
 
   private _switchMenu(name:string){
     switch(name){
       case('Preferences'):
-        if(this.gameData && this.gameData.userPreferences)
-          this.sceneText = this._formatUserPreferences(this.gameData.userPreferences);
+        if(this.gameData){
+          this.sceneText = this.gameData.userPreferences as string ? 
+            this.gameData.userPreferences as string :
+            this._formatUserPreferences(this.gameData.userPreferences as QuestPreferences);
+        }
         break;
       case('Character'):
         if(this.gameData.character)
@@ -318,7 +319,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         if(this.currentQuest.blocks.length > 0){
           this.currentBlock = this.currentQuest.blocks.slice(-1)[0];
           this.sceneText = this.currentBlock.scene;
-          this.currentChoices = this.currentBlock.options;
+          this.currentChoices = this.currentBlock.options.map(opt => this._tryClearTag(opt, '<<BAD_CHOICE>>'));
           this.currentQuest.blocks.forEach(x => {
             this._addSceneMenuOption(x.id);
             this.storyText += `${x.summary}\n\n`
@@ -646,8 +647,7 @@ GENRES: ${data.genres}
 
 CONSTRAINTS: ${data.constraints ?? 'NONE'}
 
-SUGGESTION: ${data.suggestion ?? 'NONE'}
-    `
+SUGGESTION: ${data.suggestion ?? 'NONE'}`
   }
   private _formatCharacterData(data: QuestCharacter):string{
     return `
@@ -666,5 +666,5 @@ MOTIVATIONS: ${data.motivations}
 ICONIC MOMENT: ${data.iconicMoment}
 
 REMARKABLE COMMENT: ${data.comment}`
-    }
+  }
 }

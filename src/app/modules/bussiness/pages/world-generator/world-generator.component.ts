@@ -121,6 +121,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
       this.selectedCharacter.set(this._gameData.selectedCharacter);
       if(this._gameData.selectedCharacter.metadata){
         this.metadata = this._gameData.selectedCharacter.metadata;
+        this._gameData.charname = this._gameData.selectedCharacter?.metadata.name ?? '';
         if(this._gameData.selectedCharacter.isInGame){
           this._service.getCurrentQuestFor(
             this._gameData.selectedCharacter.tokenId, 
@@ -128,10 +129,15 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
             this._gameData.selectedCharacter.ownerAddress)
             .subscribe(res => {
               if(res){
+                console.log('-- RECOVERED SESSION --', res);
                 this._notificationsService.openSnack(ESnackAlertType.WARN, 'Recovering Game for selected character', true, 3000);
                 this._gameData.gameSessionId = res.id;
                 this._gameData.gameStatus = res.status;
+                this._gameData.intro = res.intro ?? '';
+                this._gameData.character = this._gameData.selectedCharacter?.metadata.profile as QuestCharacter;
+                this._gameData.userPreferences = res.preferences;
                 localStorage.setItem('game-data', JSON.stringify(this._gameData));
+                console.log('-- RETRIEVED GAME DATA --', this._gameData);
                 this.quests.push({id: this.quests.length + 1, data: res, preferences: res.preferences, asset: this.selectedCharacter(), status: res.status})
                 this.currentIntro = `CHARACTER:\n${res.character}\nINTRO SCENE:\n\n${res.intro}`;
                 this.selectedQuest.set(this.quests.slice(-1));
@@ -342,19 +348,18 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
     
   }
   public onPlayQuestClick(quest: any){
-
-    // GAME SESSION INIT STUFF
-    // _web3Service.initGame(address, blah, blah).then()
-    this._gameData.character = quest.data.character;
-    this._gameData.intro = quest.data.intro;
-    this._gameData.userPreferences = quest.preferences;
-    localStorage.setItem('game-data', JSON.stringify(this._gameData));
-    this._web3Service.startGame(this._gameData.selectedCharacter?.contractAddress ?? '', this._gameData.selectedCharacter?.tokenId ?? -1).then(res => {
-      if(res){
-        this._router.navigateByUrl('randomworlds/game/quest');
-      }
-    })
-    // web3Service.startGame().then(){nav to view}
+    if(quest.status === 'NOT_STARTED'){
+      this._gameData.character = quest.data.character;
+      this._gameData.intro = quest.data.intro;
+      this._gameData.userPreferences = quest.preferences;
+      localStorage.setItem('game-data', JSON.stringify(this._gameData));
+      this._web3Service.startGame(this._gameData.selectedCharacter?.contractAddress ?? '', this._gameData.selectedCharacter?.tokenId ?? -1)
+        .then(res => {
+          if(res)
+            this._router.navigateByUrl('randomworlds/game/quest');
+      });
+    }
+    else this._router.navigateByUrl('randomworlds/game/quest');
   }
   public onReviewQuestClick(quest:any){
     console.log(quest);
