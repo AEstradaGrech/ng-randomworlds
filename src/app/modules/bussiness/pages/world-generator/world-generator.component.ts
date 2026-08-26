@@ -44,7 +44,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   public selectedGenres: string[]=[]
   public selectedConstraints: string[]=[]
   public form!: FormGroup;
-  public selectedQuest = signal<any>(undefined);  
+  public selectedQuest = signal<any | null>(null);  
   public quests:any[] = []
   public showSettings:string = 'visible';
   public isRandomCharacter:boolean = false;
@@ -102,7 +102,11 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
       if(!gameData || !gameData.selectedCharacter){
         this._router.navigateByUrl('randomworlds/home');
       }
-      else this._setupGameData();
+      else {
+        if(this.selectedQuest())
+          this.selectedQuest().set(null);
+        this._setupGameData();
+      }
     }
   }
 
@@ -166,6 +170,8 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
         plot: new FormControl('', [Validators.maxLength(200)])
         //desiredName: new FormControl(undefined, [Validators.maxLength(30)])
       });
+
+      // EFFECT --> PARA MOVIDAS CON LOGICA CAMBIO ESTADO. COMPUTED PARA COSAS READONLY
       this._disableControlEffect = effect(() => {
         if (!this.form) return;
         const quest = this.selectedQuest();
@@ -353,24 +359,30 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   public onReviewQuestClick(quest:any){
     console.log(quest);
     this.selectedQuest.set(quest);
-    this.currentIntro = `CHARACTER:\n${this._formatCharacterData(quest.data.character)}\nINTRO SCENE:\n\n${quest.data.intro}`;
-    this.selectedCharacter.set(quest.asset);
-    this.selectedAmbiences = [...quest.preferences.ambiences];
-    this.selectedMoods = [...quest.preferences.moods];
-    this.selectedGenres = [...quest.preferences.genres];
-    this.selectedConstraints = [...quest.preferences.constraints];
-    // para cada array --> handle filtered... (comparar con gameData.character (source of truth)) #TODO 
-    this.isRandomCharacter = quest.data.isRandomCharacter;
-    if(this.isRandomCharacter)
-      this.form.controls["desiredName"].setValue(quest.character.name);
-    this.form = this._fb.group({
-      ambiences: new FormControl(this.selectedAmbiences),
-      moods: new FormControl(this.selectedMoods),
-      genres: new FormControl(this.selectedGenres),
-      constraints: new FormControl(this.selectedConstraints),
-      plot: new FormControl(quest.preferences.suggestion, [Validators.maxLength(200)]),
-      desiredName: new FormControl(quest.character.name, [Validators.maxLength(30)])
-    })
+    if(quest.status === 'NOT_STARTED'){
+      this.currentIntro = `CHARACTER:\n${this._formatCharacterData(quest.data.character)}\nINTRO SCENE:\n\n${quest.data.intro}`;
+      this.selectedCharacter.set(quest.asset);
+      this.selectedAmbiences = [...quest.preferences.ambiences];
+      this.selectedMoods = [...quest.preferences.moods];
+      this.selectedGenres = [...quest.preferences.genres];
+      this.selectedConstraints = [...quest.preferences.constraints];
+      // para cada array --> handle filtered... (comparar con gameData.character (source of truth)) #TODO 
+      // this.isRandomCharacter = quest.data.isRandomCharacter;
+      // if(this.isRandomCharacter)
+      //   this.form.controls["desiredName"].setValue(quest.character.name);
+      this.form = this._fb.group({
+        ambiences: new FormControl(this.selectedAmbiences),
+        moods: new FormControl(this.selectedMoods),
+        genres: new FormControl(this.selectedGenres),
+        constraints: new FormControl(this.selectedConstraints),
+        plot: new FormControl(quest.preferences.suggestion, [Validators.maxLength(200)]),
+        desiredName: new FormControl(quest.character.name, [Validators.maxLength(30)])
+      })
+    }
+    else{
+      this.currentIntro = `CHARACTER:\n${quest.data.character}\nINTRO SCENE:\n\n${quest.data.intro}`;
+      this.onShowSettings(false);
+    }
   }
   public onShowSettings(value:boolean){
     this.showSettings = value ? 'visible' : 'hidden';

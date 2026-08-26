@@ -1,0 +1,2009 @@
+{
+	"contractType": "ImmutableCollection",
+	"version": "0.1.2",
+	"deployment": "RandomWorlds-Season_1",
+	"tokenName": "RandomWorldsHardHat",
+	"tokenSymbol": "RNDS1",
+	"network": "sepolia",
+	"collectionName": "RandomWorlds - Season_1",
+	"collectionDescription": "A collection of NFT characters to play Random Quests in the Random Worlds app",
+	"isFreeCollection": false,
+	"defaultWeiPrice": 300000000000000,
+	"isLimitedCollection": true,
+	"maxMints": 50,
+	"ipfsDeployment": {
+		"contractType": "ImmutableCollection",
+		"deployment": "RandomWorlds-Season_1",
+		"collectionName": "RandomWorlds - Season 1",
+		"collectionDescription": "A collection of NFT characters to play Random Quests in the Random Worlds app",
+		"modelsData": {
+			"folderCid": "QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU",
+			"filesNumber": 7,
+			"timestamp": "2026-04-05T18:52:14.555Z",
+			"isOriginalCopy": false,
+			"mimeType": "directory",
+			"models": [
+				"Abigail_Williams.png",
+				"Augustus_Augie_Eastwood.png",
+				"Dark_Animist.png",
+				"Kaelin_Blackjack_Vex_Common.png",
+				"Kazimir_Koldun.png",
+				"Malicia_Folcott.png",
+				"RandomWorlds-Season1_logo.png"
+			],
+			"failedUploads": [
+
+			]
+		},
+		"modelsMetadata": {
+			"folderCid": "QmRZwQbC2m4AZ8iBMaTMoKcwX2j7H11zr8h6SYEPVCrTq3",
+			"metadata": [
+				{
+					"name": "Kaelin 'Blackjack' Vex",
+					"description": "'Luck is for the weak.'",
+					"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Kaelin_Blackjack_Vex_Common.png",
+					"attributes": [
+						{
+							"display_type": "boost_percentage",
+							"trait_type": "Rarity",
+							"value": "Common",
+							"max_value": 4
+						},
+						{
+							"display_type": "number",
+							"trait_type": "Generation",
+							"value": 1,
+							"max_value": 5
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Sci-fi"
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Cyberpunk"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Distopic"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Street gangster"
+						}
+					],
+					"encrypted_profile": "f5703a25fb04167dd00fb27c344cd1383e15e2dfb5e6be7cac69d2a2835161abb0a0d0081caff1a5482dcf984a2efac0c533eab19bd0b7ed2cb8ba1d748dd32163ddce876b8f8c54d4fe57e3e5525dfb6b5ea803d6e17f8790e9722c83b4aaa9d56a9023bdb93fd2187bde05245a8cf2a12e2f57cabcf4a3ffab5a877c70e608d3af4ad7597126f72c2bb5b6637561c26d6dd9bf4e1203c88e740ac27d18eb61b820dff01a3f3ca2f9549067977bb11ee90391dfe1fbba0705d78551e123fceba81599a4f04f7474f62911ff61913e824295c200960fa7d2047f686b69a9f1534beabc64a73ae02da790fc15b7fa1a482871c00e47c70da99e53990d0a3bfa39bec13036a1eb4a9bf5aba0d3f7a12efd0cc5fd50c8ddf33cf7acccaf2f33b12d96d0da8031089d5fc98282372eba0bc5c0dd909cdc2b56d1c62ed3763a850d84539ee4143f26cbe8a8d194a8850401ce4fc77795d4cc351789cca1d23f908efc28b45b1b6e61d2dedcd7333d92b9bc99c853119bdc08ea337c4902e5c630dbaf5da2e43d8468e8ae9b4e124ee8c98f0e48a4582f1b4edeb259874bd112d0145d8937ea2f8fb0400309da3c49150e20524af238506004d03bf06e7c1f11d5a8dc5add01f3d54e7408b7288fb9d51a18a682c41c2aac7061c41c5e5c6239302863f6551d66672a2ca76ab4471a0dc713169851f2c3a3d06bf56102eaa1992377df3f1945851b60a9dae65e078f10bcf74fadf623c92bab69e18ad0cf3871a5d6f37d819df711b7986931c029bc728f774da2dd651f6330c00611dbdd4bb1f1cc8d75955fe11e9021dec915ef9457873038bcf974f3652422372970d8960f4d66024b4dcaa3d54f826c37ba78fd4345edd31b997fbd110380288fa204596e37af5b869898e487090e136c95e35ee953096988201db69dec5bc75ce0c6d3bdbab207501ea9c304f80f26186b4f9dc1f36e6b7f33dd82079052928153bba3c08272888d401e0ced3127ed24662d581c50cb37f4bd2defe4d9d984f46c312fe17299718cf64ca4386501a6b6d5510058ca7b5e98f6b45d038abf20e38e7d4aa022828736de8c155f727b45657daf4f4ea9d933743454d92fb329923a555bb093c3085ebf6fc7a1f1dbe5fe0d4012ef7eb34feef15ba712caf5844d956efc30a5050422d3219ae64fea794ad3eee682763b2808c301dc26e5fc30f67866d4af732a10b1b84c354531592735f470023076852a5c7dd86fac5a3648fffcd1af7e1df04732098fa9f7dd071d288df001918827a61cc12069ee78750b5b18dab3f74032d6cc54c09ed4bbee244bf3971a049e7920328e220f082fa2b2b686d005b4118a814395502e78e95ce24a35182267352bc6dbcbb6b6fe7faa61711b2531bc9ba4ab0a1c399b6e6376366640c344e45e915d0110227b5b05b13ef17f47d8c80099007325fc8ef7be146d47d2e1d32974991f21946d83913c8eafe43274a219916275803190d637897e814d25ed9af49ae054202bb14d91e891b0ca119adb3bffa633df9d28b47f15843e3964067c068a00d49f0f8f4e7f5bacad181cb52e53375f15e59e9f3b38ba866e275603e7f47094e2df8b6e68e59109e56ab93ce15c88d9d99bf4425ccd74bd969f4a9d0a2acec7e4bf85a336433fff67fd02b9296616105709136f94901ac8d44d9797c05a0384f85bfcedf03f92e869baf722e09f49d333c77b719a3ab7bbc0529a2b87f97e745ba4bdeb5d2abfffa673407b547f538f3b90d2620695d24c7773e8b0c251eaaf015c3da1acd23812e7f2bdca0981185e4b3cdc6923a585c454627fad96e70ab90dd7e3440ce12fd0b8adbbddfe7bb503dd1a"
+				},
+				{
+					"name": "Augustus 'Augie' Eastwood",
+					"description": "People say that Augie is crazy, they call it 'Eastwood's Luck' when pilots survive impossible situations.",
+					"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Augustus_Augie_Eastwood.png",
+					"attributes": [
+						{
+							"display_type": "boost_percentage",
+							"trait_type": "Rarity",
+							"value": "Common",
+							"max_value": 4
+						},
+						{
+							"display_type": "number",
+							"trait_type": "Generation",
+							"value": 1,
+							"max_value": 5
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Sci-fi"
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Historical fiction"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Distopic"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Post-apocalyptic"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Retrofuturistic"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Steampunk"
+						}
+					],
+					"encrypted_profile": "608cb21e54ef2f90827d01819c426d053bd87c542220bcbb50cb02922ddffaccb1d556b3281a3132b5234b0b722d1fd55b8522adbc954db2b415e48b7b3d4de1bd0b088f7ce84a517bd163ab8f7a671bb5c9e5c98a694c07a2898362912a78cb6d7456eb7d97018025d0527e684b940b9d03bae6965e67667feae7b7b24f48a7cacf58a3796bb13c455075b1add73fb924e85dcecf183b55013004fc66173c3af573a5c09248ca6c1855eae70cc21fe9114f5451c18ff78e696b24be37881f1eaa240c9924cf87772090ac3941facd3c0ff41eefa27e3a13bad7ce16038bc3673d4548c4cc3f0094eaac7ac6b4bd2610acd80f4021969f7c12c14c1cbdf2326c21decf1a3f4adfa3bfaebbea7a8c5182e69a78cddecbc2a29436689b66b6934e13b27158cdd7df7de4860d61c664322ba758b3415e759b1f9b4f4e078936fa9d211b43a354ed36b9b2efeaed734af1a9f821b080d602ef41f99a29c94b9e870f31b9b036886eedf9b825563d822009a28a12ad3502e260ccb3fe2bca210704be5a01b5cd05745d8781ba47eff1b1801656905b8d2cacc70a1d172b008536c2b476a7d8149feb99f794be7a46d567b857d0df627db54011dcca8a3d99320a1b084076a15d1fb1d55ac2919b9cbc5f5a372bc802c16c049c5498b5f7c7a6e99b8b48b01167b13aff4d24af9314920cb93f804c00b6c958b6123ceb7b8ebe0bda01f866ca708c90a5c63050297cde80ef1c29d0bd6d2559010e943ac590012efa9cbd50fa960c50b57e7b59ccc05617dcdace3c38ec7b1f02473fedf12761cbadf266232e4dedba733b4cdb2fed8a229c141b398d4870b162a3e5d0c1828497d2af6367d589af0814d18597ac974e71dbfaa6f891e9c7dbce15ae7cc5fff17a6ef7a5299d3703582fbea6e1f539077c597eba049e81b6a4eeff8547449b47fc471230ff0112a0e343c9bd6439a25fc7ef433a51c9124f972c984761d205a6d2e06e921aae30ed5fc73bbb852ac578dd145c861d0c66f0aaf6fb8aa9210f4a640234d5323f5b8318a07cc767f5274430cf8fec05475f6a5c5dc89498a26461efb1b37040d0340d62dbe399e4358ba4e2034805721ee8eb4493bf69e043215b28e11258c0f1a8ec0e69f2c030c252af17bc47c629e362ecac2afa670c7ab11645702b355e3c6efecb92c51b3c5db1cffdfded8c71a9e4835fd4119d5d64b15554acf6313c39685b1b8280b17a0f3a49df8022fca2a655b01baeb31984db7441acf4bdd8118657bc75d48c2a3058703abdce50305872f216137dff2e7e6907ca241a13770586daae5be12eb23f1987741d69c8f5c9e0140f28474f113361d3848c29234420ed57bb1de5440e452c1b0c29b0924e2067455eb80327948f249b37ad28fa9791e77d7ef17b228adf2fe9543e367e9ae16e8f16ab275d5a099761bbe7327168af58f6e0c29b2166525bdc38ef1daae6273760c0bea981225e1b8378e6fc8423f885118222bd81c1282369f32a41e3651f9d33b8488d523c103eb2a307e760f22009a3ed8ff1f032d076bc96281ab727186b0a49b9cdc12e64a61a463b7e6f7c4c6b0fd85d702b38add275537b354f3434dec34a6b76944a3a390216eacf002214388f5f2d0091dfcd803adc775406685eedcfda0435f19cf1c73cc5876dec5b8504e883a1e4446f482dc6aa4272d16a405b36c1bfc91cce6f466187a656fb61c60867cb24eba794ed3e7cf30729280fd9503c19fec652e3ff4503c0c792328198340339cffdf030f52d6299653d4b9a3c43c7000f05ed42656024f13b5136d985aae48dfbb643928c81590f393e01fa790c7398698cb4d502fe631342d2e9822737e856406f340fdba627548bdc37b1d5225d32363641f3e30a96f634521082bd83a5a0bcb67b12c57eab836ec0644a5da2ec0583c7710b2a873a6182b6795c2f8683bd8db1a4a55f4e79f23b0f2c3c175be7180279c86093ac8b5a483c1a57fe914baaeaa108e5bf2ca2b7935e405fdfb1623ae021f39b2e9b3b3ff9e8d1b7719f8f8c57d2427bd1a8354162e4650de30f3a4649a78ed7a890f041f87b024e61480c2da81757e9f9b7e43c10afbf46ea28c5dccd13eb492a6ea3fdfe7035442650b8d7e38cf1157f7ec371d2f6a9b70402cd9923cb1921c7802a9484e034c64fd7c1cf1a933ac26e051f34eadd02c6ade0af89ade22b3260476a8b8ddfd324d68066cb62049468199604ad9e8b43b1bf2fcfb8ff58f9d1f8d76b787eb202f4fe64094e3747469bdcc01d8758211c972fe1a03b67072047aa5cf31492c4653852426ee56c4fb15cd3df395fbb0c4518e64c966b77e370a502f73d9a4985442270bd2739b91e0d1e1aeb308d972ad95b83f5260e7a480d8ba307bcac7b297bc686abdec801465f11651f5e4746fb05ec680a071f025dca55d3412cf016b42b1235b0856c3650fad7fdc33f760ce47e553bd7121f1b3fcffc1bbf0e2c757cecd1b4955cd1e43ef567bdb1542dddd58e551115a026705af863438bb25af06e464a9295aa4de8a7ade8663ec63922e1684b598577ad75ea7df731689a37f289f30b1a307485a60c3b3e98d39cdb4ddf0107a290db8a3c3c364d238a8f367af699a44228d4cf515d2cbe4cb02d99da39b0cab4cd3818d6bc91196438cabed69b98f5349463cea81045ca34a1694887f6bae38a70fc1b40b31cd8f061b89977bfa0"
+				},
+				{
+					"name": "Kazimir Koldun",
+					"description": "'The spirits whisper secrets in my ear, and I am the vessel for their wrath.'",
+					"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Kazimir_Koldun.png",
+					"attributes": [
+						{
+							"display_type": "boost_percentage",
+							"trait_type": "Rarity",
+							"value": "Rare",
+							"max_value": 4
+						},
+						{
+							"display_type": "number",
+							"trait_type": "Generation",
+							"value": 1,
+							"max_value": 5
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Fantasy"
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Medieval"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Black Magic"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Superstition"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Epic Saga"
+						}
+					],
+					"encrypted_profile": "d9994f89876458af84215ef0a8087796ba30d9f518bae6f1067b160357bc7322dcef2084346d76b0bcb0eae770447bcbb4cbba8a19a85ef087eaa9a223f6bd53ae5ae3fc717b3ccc4c8019d3193e0cbda4e160233e3af469005e7cf92502fe32f5b63e5b339e73d2b67cb4f3a06b81014789579ea8c405c1e9582263ed3c7b86b8c6e867006dcf1cff7b6b979b12e45136a3a6c60af3011a4df85ac6edd6849053ddce8e2d65ad404e1290f280130cf1b3fe01d1351e805d313ba314817ab5c610983f91675bbc6257ba7930ff59014d8dbdc42ef1b2a1957fffa8883bf81317103e77faf4da8e5fdac6cd890cb2f917e722839e541e41591f7ebb0f9ade6ddac687fa70d08d03a7f4e28c57ef81075f671dd5543efbb60096d6c9a6d90914d69bd84b82b25565361b2b1272cbb85d2d8e94c9006cadb8c728708258ba3d344fc365d5529f51310fac863d6251ae59fe5776c0820b4a5284476d4e3a0f11643c114495b3d1fd6d3bf8d3e211f19ae47d406edc4beb044bd9f75d97d717b5b9ac8e7c718ff1e6743cf25f24e1d09c1137ae2b721c5344146dd88d5d2141a69b724b40db2cad73b9e5375efda3a4a8919493b2612273df4a6d7bc61ac5fafb2ec99532f2f7bef51c206bacc5f89b5c8fb942d630847d3e37738ca348c94a4edce8dcda51c7d38021c58fcc36fd34bc74fbfff77896796550d1e5642d858efb63fd7cc03b4444d51cb65cb9cd88530d9fefadb2ed2e26817b4ca470311d536798b77c2fb1ae344770db60b7a53f66894ab6f84e47bffbd9772ca2053b9cdb3d5f0adcd4d5b359c0b3e0f16f7fb1b1a40ba62f7a93fb1519055beed13c9977be43910e40180106a1b3219e6cdcfeb2ff1db4055c75acfb6b572f29058af078cb5962c4052de3d5d061132c8522af1f01b239ce313a9302b524ce68879a75aa5972b434e0fe5f000e7606b1b86b9cdba3d7f4eeb3eb95188e8497e6a82346a44c8b505ef61c05671d7943e3dc4fdaf7dc99872af421cd291dd8bc15904bbd424d9069ab30fe5a358e4a6c8d50b42d47f937744ec7f3d89e1a2189ae267b1d2837d8caf893b9c4187a1d05736101ed2b6dbf4a4c582a96a02c1bb0c94f70c73040055fcfbd1718e18ffb6b387d5a29f738fb0bf68822fbbbad5767a639823ddb1c522984e52e5fe2b655bdee288bc9e00448c0b8ba84a3ef02b14a5292a09f94e90b24f3381fd800a4cd0e3c3ce4041ae91f4cc7358328f04df622894e59a3c5abb95a5958f4eb2b52fe389b487963fcd94cbb401a017d48479ae57780f2eb01d75b53bcf5927355a6ff5cbefc928b66f42c22eb071a62fd800e1f1834e4c7e61f999f633af1054cf2362cd54ca7ae4bb825095fc97010c2970badad46fe165232c7af75f9984285d426b02666d16a3dbe617695885a2fe0f9328664ed222068c05153bb67837c9650e01fb8514a237ae2a219b408a05f295e43227d16d71b03c7e8db872de5361d3f068dc67ba44721a04a718583226e968f7b1afe6d975bb85f4064c3b2dbb1b4abc6a561d75451b4205031"
+				},
+				{
+					"name": "Dark Animist",
+					"description": "Those who seek to understand the balance of nature must first learn its language.",
+					"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Dark_Animist.png",
+					"attributes": [
+						{
+							"display_type": "boost_percentage",
+							"trait_type": "Rarity",
+							"value": "Exotic",
+							"max_value": 4
+						},
+						{
+							"display_type": "number",
+							"trait_type": "Generation",
+							"value": 1,
+							"max_value": 5
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Fantasy"
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Medieval"
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Celtic Folklore"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Black Magic"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Superstition"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Epic Saga"
+						}
+					],
+					"encrypted_profile": "78e4093c4a683170e0442ae27194ed7aaf35533a437897db3bbcfdf48ffabeb8c594158dd4edde4e52ef7d9877c94fcfacc72030d22663bd5f0bf239c41a42b39516a6aa51369875ebb9423b4ddd821f09ab10b3a348bf813c9b57596208b5aa32dec486bff8a8abe28b44acaea9689c30ec95b62d64df637118f891f77e50345f72c8bcdc5a31bce69d6ab50480d218710ac84910e0293a1cedc85e9df2c1c99513d9bba380c2cff3529ede719190108d38c6c600e90b804e03a230574c40cfa5a43474b8af1bbe445aa7c4a548d6c06e81251cda615a43771422bd0e70375f1121ec69062716cbb894e601dd0b1c99264f5e886523fcd99b821ba88c9a061e9f11b008ec28dd1fc1e31a916dc73380863855d14ef57fb7579462667d145f68b9c54729933c48d0da4ed7de53681552bd9cdd781085e6b63783609c713e96f466ce7eef92a776f3949f5203eda490f6531647132949926c5f4d1da49fb27a278e44ecf4693fc5cd3ecabf445740be5ca972e42a30d1d59e8c0d8a33a95f032eb8387d8d56b8c3bd9410b57e8a7a477f65eab8559420e3031decbd1bb1f3ef6ace85c5d7ff27074ab328a2ef7e86c500a0f5e0bcae89b137d220c19bee9e102939202515d837332ef3f004f843f38ed95d34df5ee3b77ef83a1b1fc51b47f7bb1041a5df662aa7bc3dd896454ff352e0f09ba26d1e8b5739ada8e34816adc17a85f5de42f8c10838fa8f58d3552e058f6b9a443ff41138c02f90b1c78ad5bbd183b853b0290da7bac374838ba44746ae7f05c189afb1653beedf71d69ec8c1f2d1adfe72033ecc2cbc444fd545d443a3158bfdd660f87dfa828d7fa927ab4cd899095a5e7e71b895327c84575558868d4923eeedfaaa8d820f7ab83f6e216f0ed7cf722c652bb41ae37fbbfca0b71d0bfba257ba7534f8b5c1c98fd2bfc28e665f38171c41befbdba26900a507f8df50957fddb3b895dbf60370734cfd6ad8c63c7f79c1e2835ba9ba1bb446083e846fe406f85df128f0683ad2c206758bd0d1b122c00340e578040f7451a20703eb2bd58413fcaa5d39a1ae6d4a32512312ba296f53928fb09cd7bb68d227e76abe02303ad2f226bdfdbe248e5034a439df917a7bf538bc3fee363a64095ae1618c1ba8eb723b014d58015463942ab7cdf725e938d40fbe4a678da6c5760ccbb98c29a617c063170aefa37e376472578b5cace3817857ee974e1e9275a8042a7630c8321cbe555f9bdca09e0e5b3e0c0122d79e8046842c3d9037d181afc1efceb850aef0cc93b1927749015d1a9b27dcb1a717ef5aaa799905895d93353730c8968f8e6fb22d32496946e622d5acac29ada54e636bf2dfbe3d70924ef5af60945837ec5d175f8306edcf561dddcc5c29ba3dc540815f31d64c60dad23cc4e142b1b69cbfb949bce4fc02d179cc5cbf7a088807920a8457b5c2431ca0b382c2fb9b74ca2cd9a66d63bab19827897fd1778964d9ddff0584a0aa21715febab6d365650abe270bdcd6527a1182837a240bdb0cf770255ccf852e16f6955cff48bab8bb8817bc5d94a886439bcf9a2d341fb016abe0ab3bc77f3db279064b3f02b013e627fafec06ee111ad054ed6d57e1d53b1d3618940e125fdfdf08b406bd108560ba6de0a6fac8a49f34ae39e9368b6ad3c6bf0e14767330d2557366cac1dc992685"
+				},
+				{
+					"name": "Malicia Folcott",
+					"description": "'The darkness that consumed me will now consume you.'",
+					"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Malicia_Folcott.png",
+					"attributes": [
+						{
+							"display_type": "boost_percentage",
+							"trait_type": "Rarity",
+							"value": "Rare",
+							"max_value": 4
+						},
+						{
+							"display_type": "number",
+							"trait_type": "Generation",
+							"value": 1,
+							"max_value": 5
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Fantasy"
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "XVII century"
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Salem Trials"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Black Magic"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Dark"
+						}
+					],
+					"encrypted_profile": "98154aeb7fd198b470e4e1218805974c45fbb227735ca2b991be958c516b1c2178ff7c2b3c9620412d1748a3ddb64833c6e9a91146bcdd5b0b9c70d9d9d4eba2862fcf1b5be86ef3be130098a102e7b97cfc25e2cc0bbb091ee64735bae6fcb61b19960f7ffe940b72e1d87983ace5105d54c6ee0823a06398fb354d28aac4cd40f99a96ec4f12985d9b45478cbe0cbe2c457744e7091d80591fe58cf58b6e8da7a3b92caaa062bd74691b01f2b9d1438cf2b4f3838fba1a2a84859c70d76ca5baa39210b70b36d53e544d0f24fbfce6feee13562dc930aece5bb9297ed2928a2ddb3a2183ace6304accfd6728a6b091320832aa6e69cd87694110925b4db49fe490d69c6daff13e5dc619b12deea2e529e6e9f604ecc0b8af513a8a9ff6befecbf983e3bc4545b6d233ba8a48100f8cee4b2bc6b8dd678c02a1a82c8edef13bad34806be51a8869ad88e4452cfebdd89a429cc14595903ba6cbfc9b7f2c0c9c938cd62e8aa1cc1597837a775f10819f245442c27cd1d5aa0e72f7701f17a4f596bd8ad2b10fbb8dd997b1a5d5b9e256d1cda19104f0f631cab43b0ccace4ff41ec22e92fa23f3ddbd85625a3155cb3406d6630beed34d5ecdf27e3eff6b538408e9543844da4ff613019bbc66dae67fa6db49df4494bb35f2c2bb051c95204d8ac9b9b60fb4173c327297933a183515da2a97f7fb7ce71c2a0ff4ec61deae31e13be8122cd45e9cc8ba15a8074b02e8e9f4784b1b340b7520a6b6d3426ae961d5243a7a978cf534d37abf118f5796ebc0e6042022d5f96e4d7a4ee9c1f196265d6b69a8e13aae1a83fba568229b8faa3c1a062593a5a3216263030b49a98c12a685bdcc3eae3f94c0014fb9b8c60c49f8239eba2445f7cac46d5be89a3ab932976b2b08421da43a78ea04532f6bb72042b4b2736d7213e423f629d89950fdbe8738974e791973f65ee3f967fab68bae45134a92e6cda80bb26060007673b7ffb0bf92a6e1137de5762e9a70919298afdd47208ad1acf8e74220d1d6b2cc828c62fe37ff6b151e44b5c01704b0ec7fd97495e47acb873b4103860e6e02f5439c62657ffd06e975117639626cbf25fe2be46ae83fb6216e15b37b4c1b153e610ee1962d2d4f8df15d0c502d246867f17335be99d59906e6b91a02a8ee7164129375699fed541488db9546b09d5e195c833860ab8c45edede584cff5620882e7d5c988b9be5ace65c25a2400263f87d0d5e264fbfca61368ec49d1a68e7913fe3a427c4813b1725316117a253453d13a3a944328d1615160101fc1e2a0718e736b1fa9979e4b66e6be7b14d23ec5cd162d70deb94422963423aa69bf6352aa01324d4e93f429c6b759a68755106ef1d610e0d0a5409e21f222b4e8863d5696998aa4b1bcc6d1f997f861990d1a113f57082878cdcf905a94c9934c4bce4d3797c86d4c2cd91fd804733c5127da6c2632d10d96fd8116626849d360849ff932a25ac503926725c426ea0a27399fe3719c1f31cbf12b6af2e46117581cfa755d8e259f6e4b4305b91761c45c1b97a9eb08e4cfcbebaabb383a75f7d96033e965e97b04a34967e9c079a8b705b2385495925e196621b50dbe9e1f4ed401b97416536725646d9d6f41b0692f7eb177d84719eb0f31de465dc3e3840ad79013d2db6fad1e9cb389595d905af35d4a2e2e2529a7215969e599c5c7e6f2372e1de588dfc3fee7651315af5617fd0413a193c9bab59561494e0c5b2a6224b9480ab37d9142766534787224d1d891edaeff3356be02225eddd1fd8f3b57537b6976da9344138613d698b3cc6ea04391f6ce246ffde2eb02ff6cde2f58e8e7364b451808f49a4a4ae618143ae0e92247eab4806b279e1bfa7c8bab1bc39a8213192055ae795a8ce2856719d7b2dc797dd80bd954d27ce5597301b4108428ab47579482d49fa080a6549fc34d847e45be175236cd268f3f855cedf304601b318d67f663f425f969700617c68494fad302e7d7f35ab0072c738feee681adb51b04c552e0dc1e0b"
+				},
+				{
+					"name": "Abigail Williams",
+					"description": "'The darkness will consume them all.'",
+					"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Abigail_Williams.png",
+					"attributes": [
+						{
+							"display_type": "boost_percentage",
+							"trait_type": "Rarity",
+							"value": "Unique",
+							"max_value": 4
+						},
+						{
+							"display_type": "number",
+							"trait_type": "Generation",
+							"value": 1,
+							"max_value": 5
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Fantasy"
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "XVII century"
+						},
+						{
+							"trait_type": "Ambience",
+							"value": "Salem Trials"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Black Magic"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Superstition"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Gothic"
+						},
+						{
+							"trait_type": "Mood",
+							"value": "Horror"
+						}
+					],
+					"encrypted_profile": "8e8001cb2695817892fcdecf1b0c88bf67d2824814054390a7ddfb730618348aa57a8517af6d20d957e2f20a1cc21b92377faf31c1fee387b098a50deb29f2b42b43259678cfc55febf5a1439c49b9b8bb06fb7e108328f635aabc51f7dd92d1193594a2da287d4596d914beb4ad48e0f42f1eb476794f4fae9848d20c36ec928e141d876a37a06d8fdfc963da1e9e5867e10bec2191cadcaf6f5e55ef767e33d93071e7a6abe09d729ed11a6cff9c770a700df0ca00f17d344e3679a6d3f8c5017e8c97f2768e0d6b39bd90fa1808b44e9e8936e70556a4e9cd3382db68e6a8019039d62e52f2a18cfd9ec4b45045fd715fe6179042aedaf6cd3c4e9e6a1c49257553fc3eeb6d7775e47d4379b89442a8793515423f13edb3b95ef907719a932e742b3f6414b1aa6a2d46fd201b0583f0c77eb0d4d6d8a57cfb65deb0eccc80d0447aca7ffb01b9e4174257dd8a11eb88ef485a332b91de0d674f21acd7f1e77468d2a36aaf95dfd89886d277cb7c3894eebc62c2defb27d6116384ac37e1c5ae1b3ab4b3441b548062d0d6814eb2ee170b9177d477a4b625792d42b43288954fe2cb7e5079ad056ce3729c6bc363d2312abc50c65eb8b57338b434e89ddf37e9d3fc60c8f8bde5e4eb3481735092ade62b1ee97617ec3220919f2a88e1bf356db0a0c36340346783e78b6077a055dd3f1e5843d5a720d48d381af33625da1a0feef68f78dd64af801060c84ad499d2169b3ef7bd729d2807bc0b556708636efaf71800f0d1489f47d5f7d8452bd585ee69f2a9a859830b1619a8f1123c4008ba5553aa40b693b5a3767bd391e8cfdde4d276831738ddb5de79dcc0def09ba334acbe29747289bf56374497ba235b47b08af03c3ded55a11229884826d77e67126245d5b28dcc73ff10e0418d836f9cabb4b486bbf3324afb50d29630d76341568e9c57348f84852d26ef7e0eee7ca3173b69fc88c95704b2c93f8d458f07dd93bbfd820799b84f84eb9bbf3040f0e4db5ee7d989b6a5e2a939ad3d227d82034f57b330fb363e51976203846109173d4fd4d09632c9f5e47fb09659c2ec5bcd56c993e810c3a1ce475e1781ec334cfc19950f5ac60c5dab0168ce353f85a9c4df34dfe4361dac338b8aeafe1b4c24c0903f937c466f4c64532ac3c9b7227f1fda8b16d5ab2762815c1390cb9e4c5054a5506be23280343414c0159610505501d66677221609c30c4dba39c077cad34194a9fd67c8c60aae31c9e231a8d1346cc9e41cc07f6ef550d9ef8f69b9ff8aa3d55f30a9e5e1816fc69b01e30aacb67449149f0c8c65ddd31596ca3a3c43b60a751ae2555ffc1e47a9fec7e5048b0bad25bb93a18831da3a62342bcb0a05aae5079f7d6c59187dc8e86be1c6fa69dbd090950cb8a252d390f900bcbc21ddeed8f95dd35ac82c22de777ab32aa8f02d959f1a5426913273e285913fd9c6a8998b33864e35d153ec33023746198851e0bace78c4b7d454db2bb68c41bf6a12e3967cda59e1fcc1508cad2f57e4593b584907e38890aac294c35795075a2539b27a28505e88155cb62fb17b8f5de959e119dc6ec4d31f3032ba583a3dd1013b9cff488237fd17d68c5399120dc591a4f847393ab2bb2ea85325a3ac2fadd5566478c996dd07e5a947cb164590f3558f047b508191829d804943b481ad54397cb1ce1c9774076926a9e6e1bb30280ec8e07638c168ba4d0347f195faefa7cd46978f5019e1ac0a2b7ad0a69092d1713eda9af3e9ff290a63fdb08963526fc4aa12d7b75ee67bc652c9bd7150b1224e91e831682435923668401d935d15ca44b295c599dc3d18c0ab09889c0ea0729636e73a9a37355736edec1f4338141970c8d16caff22164870dfb6f59218dc68a495ac1ef48be7bd23b28fa316817102d1b17a1147f507ee4ffd4bf1708805cb3ed8659a43a5ed23b21fd1ca26c9a73996908ab3356d4297dada649ce45a428f44187588e4928659ac1cacf69796d38a5b03de830d19cd76f6d0ed1ac963ea017595f10a14af7d11b87ab8574b16682a4729fba398f81a1ab7dac3dc625f852c56504892b433ce23d7682d035c09871cd464857568d9f165e3a8b48d3ab5ce8518191f4b2ae301d1f387dd3b99c45bc9b1309d894597ca84a54ed3190ba8cf6a06c1aa005810d8b139a6994763f1b9e957a1aef0211f369555639e1336161fa8ced52731ca310a66865fca40283f5c9c81bfacfa18e2ae3e3a0e49796dfe1af9b343b06617bf5f1911c7baf00f4baefa408d3854ffde6a89e241ac1f833856530b1f4015bb6d359edb708212ce6470b2ed222a6f56946e88b4088bd691cccdd49577a05bed881686883612bcfad44b4b872599a981de88599b7c22d28e3b92a905db974c534e50531907e250dcc08b2b047e2921ef8b88a34e0fb1e9df8e7e112512ce211af982e4e49b1467814b8745d6e7db5eee44f52ce899aa8aa1ba47dbad67381903678fff3fb145223ab0e348cb4059d99b6706d6a9fe0f1a3ab97db9d068f2ff6c1fdc9ae24a4f6472f42376903c04ef31bfae0a7ec6e27c0f4419b86286f2710c320decd6d52dbc8c5ccba4b8f89ef7516d1b1dfbe383dd7ecfdc86e9005b3dceaae46fc5bfa77178e9536413a7355d87a6942116f144018adbdf1a4483ef3eda688db0801f55e689a3086adf192224ca962c1bde607e5bbf148c49ed34339b9c9f25929d110996ddee404ed8ea75b2c7004a7f2524d7a646d4d8da6e4d78ba945a0502d1974319fd22cebce504c08"
+				}
+			]
+		}
+	},
+	"logoImgEndpoint": "https://ipfs.io/ipfs/QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/RandomWorlds-Season1_logo.png",
+	"nftMetadata": {
+		"imagesCid": "QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU",
+		"metaCid": "QmRZwQbC2m4AZ8iBMaTMoKcwX2j7H11zr8h6SYEPVCrTq3",
+		"metadata": [
+			{
+				"name": "Kaelin 'Blackjack' Vex",
+				"description": "'Luck is for the weak.'",
+				"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Kaelin_Blackjack_Vex_Common.png",
+				"attributes": [
+					{
+						"display_type": "boost_percentage",
+						"trait_type": "Rarity",
+						"value": "Common",
+						"max_value": 4
+					},
+					{
+						"display_type": "number",
+						"trait_type": "Generation",
+						"value": 1,
+						"max_value": 5
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Sci-fi"
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Cyberpunk"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Distopic"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Street gangster"
+					}
+				],
+				"encrypted_profile": "f5703a25fb04167dd00fb27c344cd1383e15e2dfb5e6be7cac69d2a2835161abb0a0d0081caff1a5482dcf984a2efac0c533eab19bd0b7ed2cb8ba1d748dd32163ddce876b8f8c54d4fe57e3e5525dfb6b5ea803d6e17f8790e9722c83b4aaa9d56a9023bdb93fd2187bde05245a8cf2a12e2f57cabcf4a3ffab5a877c70e608d3af4ad7597126f72c2bb5b6637561c26d6dd9bf4e1203c88e740ac27d18eb61b820dff01a3f3ca2f9549067977bb11ee90391dfe1fbba0705d78551e123fceba81599a4f04f7474f62911ff61913e824295c200960fa7d2047f686b69a9f1534beabc64a73ae02da790fc15b7fa1a482871c00e47c70da99e53990d0a3bfa39bec13036a1eb4a9bf5aba0d3f7a12efd0cc5fd50c8ddf33cf7acccaf2f33b12d96d0da8031089d5fc98282372eba0bc5c0dd909cdc2b56d1c62ed3763a850d84539ee4143f26cbe8a8d194a8850401ce4fc77795d4cc351789cca1d23f908efc28b45b1b6e61d2dedcd7333d92b9bc99c853119bdc08ea337c4902e5c630dbaf5da2e43d8468e8ae9b4e124ee8c98f0e48a4582f1b4edeb259874bd112d0145d8937ea2f8fb0400309da3c49150e20524af238506004d03bf06e7c1f11d5a8dc5add01f3d54e7408b7288fb9d51a18a682c41c2aac7061c41c5e5c6239302863f6551d66672a2ca76ab4471a0dc713169851f2c3a3d06bf56102eaa1992377df3f1945851b60a9dae65e078f10bcf74fadf623c92bab69e18ad0cf3871a5d6f37d819df711b7986931c029bc728f774da2dd651f6330c00611dbdd4bb1f1cc8d75955fe11e9021dec915ef9457873038bcf974f3652422372970d8960f4d66024b4dcaa3d54f826c37ba78fd4345edd31b997fbd110380288fa204596e37af5b869898e487090e136c95e35ee953096988201db69dec5bc75ce0c6d3bdbab207501ea9c304f80f26186b4f9dc1f36e6b7f33dd82079052928153bba3c08272888d401e0ced3127ed24662d581c50cb37f4bd2defe4d9d984f46c312fe17299718cf64ca4386501a6b6d5510058ca7b5e98f6b45d038abf20e38e7d4aa022828736de8c155f727b45657daf4f4ea9d933743454d92fb329923a555bb093c3085ebf6fc7a1f1dbe5fe0d4012ef7eb34feef15ba712caf5844d956efc30a5050422d3219ae64fea794ad3eee682763b2808c301dc26e5fc30f67866d4af732a10b1b84c354531592735f470023076852a5c7dd86fac5a3648fffcd1af7e1df04732098fa9f7dd071d288df001918827a61cc12069ee78750b5b18dab3f74032d6cc54c09ed4bbee244bf3971a049e7920328e220f082fa2b2b686d005b4118a814395502e78e95ce24a35182267352bc6dbcbb6b6fe7faa61711b2531bc9ba4ab0a1c399b6e6376366640c344e45e915d0110227b5b05b13ef17f47d8c80099007325fc8ef7be146d47d2e1d32974991f21946d83913c8eafe43274a219916275803190d637897e814d25ed9af49ae054202bb14d91e891b0ca119adb3bffa633df9d28b47f15843e3964067c068a00d49f0f8f4e7f5bacad181cb52e53375f15e59e9f3b38ba866e275603e7f47094e2df8b6e68e59109e56ab93ce15c88d9d99bf4425ccd74bd969f4a9d0a2acec7e4bf85a336433fff67fd02b9296616105709136f94901ac8d44d9797c05a0384f85bfcedf03f92e869baf722e09f49d333c77b719a3ab7bbc0529a2b87f97e745ba4bdeb5d2abfffa673407b547f538f3b90d2620695d24c7773e8b0c251eaaf015c3da1acd23812e7f2bdca0981185e4b3cdc6923a585c454627fad96e70ab90dd7e3440ce12fd0b8adbbddfe7bb503dd1a",
+				"maxMints": 14,
+				"weiPrice": 300000000000000,
+				"fileName": "Kaelin_Blackjack_Vex_Common",
+				"extension": ".png"
+			},
+			{
+				"name": "Augustus 'Augie' Eastwood",
+				"description": "People say that Augie is crazy, they call it 'Eastwood's Luck' when pilots survive impossible situations.",
+				"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Augustus_Augie_Eastwood.png",
+				"attributes": [
+					{
+						"display_type": "boost_percentage",
+						"trait_type": "Rarity",
+						"value": "Common",
+						"max_value": 4
+					},
+					{
+						"display_type": "number",
+						"trait_type": "Generation",
+						"value": 1,
+						"max_value": 5
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Sci-fi"
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Historical fiction"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Distopic"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Post-apocalyptic"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Retrofuturistic"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Steampunk"
+					}
+				],
+				"encrypted_profile": "608cb21e54ef2f90827d01819c426d053bd87c542220bcbb50cb02922ddffaccb1d556b3281a3132b5234b0b722d1fd55b8522adbc954db2b415e48b7b3d4de1bd0b088f7ce84a517bd163ab8f7a671bb5c9e5c98a694c07a2898362912a78cb6d7456eb7d97018025d0527e684b940b9d03bae6965e67667feae7b7b24f48a7cacf58a3796bb13c455075b1add73fb924e85dcecf183b55013004fc66173c3af573a5c09248ca6c1855eae70cc21fe9114f5451c18ff78e696b24be37881f1eaa240c9924cf87772090ac3941facd3c0ff41eefa27e3a13bad7ce16038bc3673d4548c4cc3f0094eaac7ac6b4bd2610acd80f4021969f7c12c14c1cbdf2326c21decf1a3f4adfa3bfaebbea7a8c5182e69a78cddecbc2a29436689b66b6934e13b27158cdd7df7de4860d61c664322ba758b3415e759b1f9b4f4e078936fa9d211b43a354ed36b9b2efeaed734af1a9f821b080d602ef41f99a29c94b9e870f31b9b036886eedf9b825563d822009a28a12ad3502e260ccb3fe2bca210704be5a01b5cd05745d8781ba47eff1b1801656905b8d2cacc70a1d172b008536c2b476a7d8149feb99f794be7a46d567b857d0df627db54011dcca8a3d99320a1b084076a15d1fb1d55ac2919b9cbc5f5a372bc802c16c049c5498b5f7c7a6e99b8b48b01167b13aff4d24af9314920cb93f804c00b6c958b6123ceb7b8ebe0bda01f866ca708c90a5c63050297cde80ef1c29d0bd6d2559010e943ac590012efa9cbd50fa960c50b57e7b59ccc05617dcdace3c38ec7b1f02473fedf12761cbadf266232e4dedba733b4cdb2fed8a229c141b398d4870b162a3e5d0c1828497d2af6367d589af0814d18597ac974e71dbfaa6f891e9c7dbce15ae7cc5fff17a6ef7a5299d3703582fbea6e1f539077c597eba049e81b6a4eeff8547449b47fc471230ff0112a0e343c9bd6439a25fc7ef433a51c9124f972c984761d205a6d2e06e921aae30ed5fc73bbb852ac578dd145c861d0c66f0aaf6fb8aa9210f4a640234d5323f5b8318a07cc767f5274430cf8fec05475f6a5c5dc89498a26461efb1b37040d0340d62dbe399e4358ba4e2034805721ee8eb4493bf69e043215b28e11258c0f1a8ec0e69f2c030c252af17bc47c629e362ecac2afa670c7ab11645702b355e3c6efecb92c51b3c5db1cffdfded8c71a9e4835fd4119d5d64b15554acf6313c39685b1b8280b17a0f3a49df8022fca2a655b01baeb31984db7441acf4bdd8118657bc75d48c2a3058703abdce50305872f216137dff2e7e6907ca241a13770586daae5be12eb23f1987741d69c8f5c9e0140f28474f113361d3848c29234420ed57bb1de5440e452c1b0c29b0924e2067455eb80327948f249b37ad28fa9791e77d7ef17b228adf2fe9543e367e9ae16e8f16ab275d5a099761bbe7327168af58f6e0c29b2166525bdc38ef1daae6273760c0bea981225e1b8378e6fc8423f885118222bd81c1282369f32a41e3651f9d33b8488d523c103eb2a307e760f22009a3ed8ff1f032d076bc96281ab727186b0a49b9cdc12e64a61a463b7e6f7c4c6b0fd85d702b38add275537b354f3434dec34a6b76944a3a390216eacf002214388f5f2d0091dfcd803adc775406685eedcfda0435f19cf1c73cc5876dec5b8504e883a1e4446f482dc6aa4272d16a405b36c1bfc91cce6f466187a656fb61c60867cb24eba794ed3e7cf30729280fd9503c19fec652e3ff4503c0c792328198340339cffdf030f52d6299653d4b9a3c43c7000f05ed42656024f13b5136d985aae48dfbb643928c81590f393e01fa790c7398698cb4d502fe631342d2e9822737e856406f340fdba627548bdc37b1d5225d32363641f3e30a96f634521082bd83a5a0bcb67b12c57eab836ec0644a5da2ec0583c7710b2a873a6182b6795c2f8683bd8db1a4a55f4e79f23b0f2c3c175be7180279c86093ac8b5a483c1a57fe914baaeaa108e5bf2ca2b7935e405fdfb1623ae021f39b2e9b3b3ff9e8d1b7719f8f8c57d2427bd1a8354162e4650de30f3a4649a78ed7a890f041f87b024e61480c2da81757e9f9b7e43c10afbf46ea28c5dccd13eb492a6ea3fdfe7035442650b8d7e38cf1157f7ec371d2f6a9b70402cd9923cb1921c7802a9484e034c64fd7c1cf1a933ac26e051f34eadd02c6ade0af89ade22b3260476a8b8ddfd324d68066cb62049468199604ad9e8b43b1bf2fcfb8ff58f9d1f8d76b787eb202f4fe64094e3747469bdcc01d8758211c972fe1a03b67072047aa5cf31492c4653852426ee56c4fb15cd3df395fbb0c4518e64c966b77e370a502f73d9a4985442270bd2739b91e0d1e1aeb308d972ad95b83f5260e7a480d8ba307bcac7b297bc686abdec801465f11651f5e4746fb05ec680a071f025dca55d3412cf016b42b1235b0856c3650fad7fdc33f760ce47e553bd7121f1b3fcffc1bbf0e2c757cecd1b4955cd1e43ef567bdb1542dddd58e551115a026705af863438bb25af06e464a9295aa4de8a7ade8663ec63922e1684b598577ad75ea7df731689a37f289f30b1a307485a60c3b3e98d39cdb4ddf0107a290db8a3c3c364d238a8f367af699a44228d4cf515d2cbe4cb02d99da39b0cab4cd3818d6bc91196438cabed69b98f5349463cea81045ca34a1694887f6bae38a70fc1b40b31cd8f061b89977bfa0",
+				"maxMints": 15,
+				"weiPrice": 500000000000000,
+				"fileName": "Augustus_Augie_Eastwood",
+				"extension": ".png"
+			},
+			{
+				"name": "Kazimir Koldun",
+				"description": "'The spirits whisper secrets in my ear, and I am the vessel for their wrath.'",
+				"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Kazimir_Koldun.png",
+				"attributes": [
+					{
+						"display_type": "boost_percentage",
+						"trait_type": "Rarity",
+						"value": "Rare",
+						"max_value": 4
+					},
+					{
+						"display_type": "number",
+						"trait_type": "Generation",
+						"value": 1,
+						"max_value": 5
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Fantasy"
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Medieval"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Black Magic"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Superstition"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Epic Saga"
+					}
+				],
+				"encrypted_profile": "d9994f89876458af84215ef0a8087796ba30d9f518bae6f1067b160357bc7322dcef2084346d76b0bcb0eae770447bcbb4cbba8a19a85ef087eaa9a223f6bd53ae5ae3fc717b3ccc4c8019d3193e0cbda4e160233e3af469005e7cf92502fe32f5b63e5b339e73d2b67cb4f3a06b81014789579ea8c405c1e9582263ed3c7b86b8c6e867006dcf1cff7b6b979b12e45136a3a6c60af3011a4df85ac6edd6849053ddce8e2d65ad404e1290f280130cf1b3fe01d1351e805d313ba314817ab5c610983f91675bbc6257ba7930ff59014d8dbdc42ef1b2a1957fffa8883bf81317103e77faf4da8e5fdac6cd890cb2f917e722839e541e41591f7ebb0f9ade6ddac687fa70d08d03a7f4e28c57ef81075f671dd5543efbb60096d6c9a6d90914d69bd84b82b25565361b2b1272cbb85d2d8e94c9006cadb8c728708258ba3d344fc365d5529f51310fac863d6251ae59fe5776c0820b4a5284476d4e3a0f11643c114495b3d1fd6d3bf8d3e211f19ae47d406edc4beb044bd9f75d97d717b5b9ac8e7c718ff1e6743cf25f24e1d09c1137ae2b721c5344146dd88d5d2141a69b724b40db2cad73b9e5375efda3a4a8919493b2612273df4a6d7bc61ac5fafb2ec99532f2f7bef51c206bacc5f89b5c8fb942d630847d3e37738ca348c94a4edce8dcda51c7d38021c58fcc36fd34bc74fbfff77896796550d1e5642d858efb63fd7cc03b4444d51cb65cb9cd88530d9fefadb2ed2e26817b4ca470311d536798b77c2fb1ae344770db60b7a53f66894ab6f84e47bffbd9772ca2053b9cdb3d5f0adcd4d5b359c0b3e0f16f7fb1b1a40ba62f7a93fb1519055beed13c9977be43910e40180106a1b3219e6cdcfeb2ff1db4055c75acfb6b572f29058af078cb5962c4052de3d5d061132c8522af1f01b239ce313a9302b524ce68879a75aa5972b434e0fe5f000e7606b1b86b9cdba3d7f4eeb3eb95188e8497e6a82346a44c8b505ef61c05671d7943e3dc4fdaf7dc99872af421cd291dd8bc15904bbd424d9069ab30fe5a358e4a6c8d50b42d47f937744ec7f3d89e1a2189ae267b1d2837d8caf893b9c4187a1d05736101ed2b6dbf4a4c582a96a02c1bb0c94f70c73040055fcfbd1718e18ffb6b387d5a29f738fb0bf68822fbbbad5767a639823ddb1c522984e52e5fe2b655bdee288bc9e00448c0b8ba84a3ef02b14a5292a09f94e90b24f3381fd800a4cd0e3c3ce4041ae91f4cc7358328f04df622894e59a3c5abb95a5958f4eb2b52fe389b487963fcd94cbb401a017d48479ae57780f2eb01d75b53bcf5927355a6ff5cbefc928b66f42c22eb071a62fd800e1f1834e4c7e61f999f633af1054cf2362cd54ca7ae4bb825095fc97010c2970badad46fe165232c7af75f9984285d426b02666d16a3dbe617695885a2fe0f9328664ed222068c05153bb67837c9650e01fb8514a237ae2a219b408a05f295e43227d16d71b03c7e8db872de5361d3f068dc67ba44721a04a718583226e968f7b1afe6d975bb85f4064c3b2dbb1b4abc6a561d75451b4205031",
+				"maxMints": 10,
+				"weiPrice": 700000000000000,
+				"fileName": "Kazimir_Koldun",
+				"extension": ".png"
+			},
+			{
+				"name": "Dark Animist",
+				"description": "Those who seek to understand the balance of nature must first learn its language.",
+				"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Dark_Animist.png",
+				"attributes": [
+					{
+						"display_type": "boost_percentage",
+						"trait_type": "Rarity",
+						"value": "Exotic",
+						"max_value": 4
+					},
+					{
+						"display_type": "number",
+						"trait_type": "Generation",
+						"value": 1,
+						"max_value": 5
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Fantasy"
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Medieval"
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Celtic Folklore"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Black Magic"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Superstition"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Epic Saga"
+					}
+				],
+				"encrypted_profile": "78e4093c4a683170e0442ae27194ed7aaf35533a437897db3bbcfdf48ffabeb8c594158dd4edde4e52ef7d9877c94fcfacc72030d22663bd5f0bf239c41a42b39516a6aa51369875ebb9423b4ddd821f09ab10b3a348bf813c9b57596208b5aa32dec486bff8a8abe28b44acaea9689c30ec95b62d64df637118f891f77e50345f72c8bcdc5a31bce69d6ab50480d218710ac84910e0293a1cedc85e9df2c1c99513d9bba380c2cff3529ede719190108d38c6c600e90b804e03a230574c40cfa5a43474b8af1bbe445aa7c4a548d6c06e81251cda615a43771422bd0e70375f1121ec69062716cbb894e601dd0b1c99264f5e886523fcd99b821ba88c9a061e9f11b008ec28dd1fc1e31a916dc73380863855d14ef57fb7579462667d145f68b9c54729933c48d0da4ed7de53681552bd9cdd781085e6b63783609c713e96f466ce7eef92a776f3949f5203eda490f6531647132949926c5f4d1da49fb27a278e44ecf4693fc5cd3ecabf445740be5ca972e42a30d1d59e8c0d8a33a95f032eb8387d8d56b8c3bd9410b57e8a7a477f65eab8559420e3031decbd1bb1f3ef6ace85c5d7ff27074ab328a2ef7e86c500a0f5e0bcae89b137d220c19bee9e102939202515d837332ef3f004f843f38ed95d34df5ee3b77ef83a1b1fc51b47f7bb1041a5df662aa7bc3dd896454ff352e0f09ba26d1e8b5739ada8e34816adc17a85f5de42f8c10838fa8f58d3552e058f6b9a443ff41138c02f90b1c78ad5bbd183b853b0290da7bac374838ba44746ae7f05c189afb1653beedf71d69ec8c1f2d1adfe72033ecc2cbc444fd545d443a3158bfdd660f87dfa828d7fa927ab4cd899095a5e7e71b895327c84575558868d4923eeedfaaa8d820f7ab83f6e216f0ed7cf722c652bb41ae37fbbfca0b71d0bfba257ba7534f8b5c1c98fd2bfc28e665f38171c41befbdba26900a507f8df50957fddb3b895dbf60370734cfd6ad8c63c7f79c1e2835ba9ba1bb446083e846fe406f85df128f0683ad2c206758bd0d1b122c00340e578040f7451a20703eb2bd58413fcaa5d39a1ae6d4a32512312ba296f53928fb09cd7bb68d227e76abe02303ad2f226bdfdbe248e5034a439df917a7bf538bc3fee363a64095ae1618c1ba8eb723b014d58015463942ab7cdf725e938d40fbe4a678da6c5760ccbb98c29a617c063170aefa37e376472578b5cace3817857ee974e1e9275a8042a7630c8321cbe555f9bdca09e0e5b3e0c0122d79e8046842c3d9037d181afc1efceb850aef0cc93b1927749015d1a9b27dcb1a717ef5aaa799905895d93353730c8968f8e6fb22d32496946e622d5acac29ada54e636bf2dfbe3d70924ef5af60945837ec5d175f8306edcf561dddcc5c29ba3dc540815f31d64c60dad23cc4e142b1b69cbfb949bce4fc02d179cc5cbf7a088807920a8457b5c2431ca0b382c2fb9b74ca2cd9a66d63bab19827897fd1778964d9ddff0584a0aa21715febab6d365650abe270bdcd6527a1182837a240bdb0cf770255ccf852e16f6955cff48bab8bb8817bc5d94a886439bcf9a2d341fb016abe0ab3bc77f3db279064b3f02b013e627fafec06ee111ad054ed6d57e1d53b1d3618940e125fdfdf08b406bd108560ba6de0a6fac8a49f34ae39e9368b6ad3c6bf0e14767330d2557366cac1dc992685",
+				"maxMints": 5,
+				"weiPrice": 900000000000000,
+				"fileName": "Dark_Animist",
+				"extension": ".png"
+			},
+			{
+				"name": "Malicia Folcott",
+				"description": "'The darkness that consumed me will now consume you.'",
+				"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Malicia_Folcott.png",
+				"attributes": [
+					{
+						"display_type": "boost_percentage",
+						"trait_type": "Rarity",
+						"value": "Rare",
+						"max_value": 4
+					},
+					{
+						"display_type": "number",
+						"trait_type": "Generation",
+						"value": 1,
+						"max_value": 5
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Fantasy"
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "XVII century"
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Salem Trials"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Black Magic"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Dark"
+					}
+				],
+				"encrypted_profile": "98154aeb7fd198b470e4e1218805974c45fbb227735ca2b991be958c516b1c2178ff7c2b3c9620412d1748a3ddb64833c6e9a91146bcdd5b0b9c70d9d9d4eba2862fcf1b5be86ef3be130098a102e7b97cfc25e2cc0bbb091ee64735bae6fcb61b19960f7ffe940b72e1d87983ace5105d54c6ee0823a06398fb354d28aac4cd40f99a96ec4f12985d9b45478cbe0cbe2c457744e7091d80591fe58cf58b6e8da7a3b92caaa062bd74691b01f2b9d1438cf2b4f3838fba1a2a84859c70d76ca5baa39210b70b36d53e544d0f24fbfce6feee13562dc930aece5bb9297ed2928a2ddb3a2183ace6304accfd6728a6b091320832aa6e69cd87694110925b4db49fe490d69c6daff13e5dc619b12deea2e529e6e9f604ecc0b8af513a8a9ff6befecbf983e3bc4545b6d233ba8a48100f8cee4b2bc6b8dd678c02a1a82c8edef13bad34806be51a8869ad88e4452cfebdd89a429cc14595903ba6cbfc9b7f2c0c9c938cd62e8aa1cc1597837a775f10819f245442c27cd1d5aa0e72f7701f17a4f596bd8ad2b10fbb8dd997b1a5d5b9e256d1cda19104f0f631cab43b0ccace4ff41ec22e92fa23f3ddbd85625a3155cb3406d6630beed34d5ecdf27e3eff6b538408e9543844da4ff613019bbc66dae67fa6db49df4494bb35f2c2bb051c95204d8ac9b9b60fb4173c327297933a183515da2a97f7fb7ce71c2a0ff4ec61deae31e13be8122cd45e9cc8ba15a8074b02e8e9f4784b1b340b7520a6b6d3426ae961d5243a7a978cf534d37abf118f5796ebc0e6042022d5f96e4d7a4ee9c1f196265d6b69a8e13aae1a83fba568229b8faa3c1a062593a5a3216263030b49a98c12a685bdcc3eae3f94c0014fb9b8c60c49f8239eba2445f7cac46d5be89a3ab932976b2b08421da43a78ea04532f6bb72042b4b2736d7213e423f629d89950fdbe8738974e791973f65ee3f967fab68bae45134a92e6cda80bb26060007673b7ffb0bf92a6e1137de5762e9a70919298afdd47208ad1acf8e74220d1d6b2cc828c62fe37ff6b151e44b5c01704b0ec7fd97495e47acb873b4103860e6e02f5439c62657ffd06e975117639626cbf25fe2be46ae83fb6216e15b37b4c1b153e610ee1962d2d4f8df15d0c502d246867f17335be99d59906e6b91a02a8ee7164129375699fed541488db9546b09d5e195c833860ab8c45edede584cff5620882e7d5c988b9be5ace65c25a2400263f87d0d5e264fbfca61368ec49d1a68e7913fe3a427c4813b1725316117a253453d13a3a944328d1615160101fc1e2a0718e736b1fa9979e4b66e6be7b14d23ec5cd162d70deb94422963423aa69bf6352aa01324d4e93f429c6b759a68755106ef1d610e0d0a5409e21f222b4e8863d5696998aa4b1bcc6d1f997f861990d1a113f57082878cdcf905a94c9934c4bce4d3797c86d4c2cd91fd804733c5127da6c2632d10d96fd8116626849d360849ff932a25ac503926725c426ea0a27399fe3719c1f31cbf12b6af2e46117581cfa755d8e259f6e4b4305b91761c45c1b97a9eb08e4cfcbebaabb383a75f7d96033e965e97b04a34967e9c079a8b705b2385495925e196621b50dbe9e1f4ed401b97416536725646d9d6f41b0692f7eb177d84719eb0f31de465dc3e3840ad79013d2db6fad1e9cb389595d905af35d4a2e2e2529a7215969e599c5c7e6f2372e1de588dfc3fee7651315af5617fd0413a193c9bab59561494e0c5b2a6224b9480ab37d9142766534787224d1d891edaeff3356be02225eddd1fd8f3b57537b6976da9344138613d698b3cc6ea04391f6ce246ffde2eb02ff6cde2f58e8e7364b451808f49a4a4ae618143ae0e92247eab4806b279e1bfa7c8bab1bc39a8213192055ae795a8ce2856719d7b2dc797dd80bd954d27ce5597301b4108428ab47579482d49fa080a6549fc34d847e45be175236cd268f3f855cedf304601b318d67f663f425f969700617c68494fad302e7d7f35ab0072c738feee681adb51b04c552e0dc1e0b",
+				"maxMints": 5,
+				"weiPrice": 400000000000000,
+				"fileName": "Malicia_Folcott",
+				"extension": ".png"
+			},
+			{
+				"name": "Abigail Williams",
+				"description": "'The darkness will consume them all.'",
+				"image": "ipfs://QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/Abigail_Williams.png",
+				"attributes": [
+					{
+						"display_type": "boost_percentage",
+						"trait_type": "Rarity",
+						"value": "Unique",
+						"max_value": 4
+					},
+					{
+						"display_type": "number",
+						"trait_type": "Generation",
+						"value": 1,
+						"max_value": 5
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Fantasy"
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "XVII century"
+					},
+					{
+						"trait_type": "Ambience",
+						"value": "Salem Trials"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Black Magic"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Superstition"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Gothic"
+					},
+					{
+						"trait_type": "Mood",
+						"value": "Horror"
+					}
+				],
+				"encrypted_profile": "8e8001cb2695817892fcdecf1b0c88bf67d2824814054390a7ddfb730618348aa57a8517af6d20d957e2f20a1cc21b92377faf31c1fee387b098a50deb29f2b42b43259678cfc55febf5a1439c49b9b8bb06fb7e108328f635aabc51f7dd92d1193594a2da287d4596d914beb4ad48e0f42f1eb476794f4fae9848d20c36ec928e141d876a37a06d8fdfc963da1e9e5867e10bec2191cadcaf6f5e55ef767e33d93071e7a6abe09d729ed11a6cff9c770a700df0ca00f17d344e3679a6d3f8c5017e8c97f2768e0d6b39bd90fa1808b44e9e8936e70556a4e9cd3382db68e6a8019039d62e52f2a18cfd9ec4b45045fd715fe6179042aedaf6cd3c4e9e6a1c49257553fc3eeb6d7775e47d4379b89442a8793515423f13edb3b95ef907719a932e742b3f6414b1aa6a2d46fd201b0583f0c77eb0d4d6d8a57cfb65deb0eccc80d0447aca7ffb01b9e4174257dd8a11eb88ef485a332b91de0d674f21acd7f1e77468d2a36aaf95dfd89886d277cb7c3894eebc62c2defb27d6116384ac37e1c5ae1b3ab4b3441b548062d0d6814eb2ee170b9177d477a4b625792d42b43288954fe2cb7e5079ad056ce3729c6bc363d2312abc50c65eb8b57338b434e89ddf37e9d3fc60c8f8bde5e4eb3481735092ade62b1ee97617ec3220919f2a88e1bf356db0a0c36340346783e78b6077a055dd3f1e5843d5a720d48d381af33625da1a0feef68f78dd64af801060c84ad499d2169b3ef7bd729d2807bc0b556708636efaf71800f0d1489f47d5f7d8452bd585ee69f2a9a859830b1619a8f1123c4008ba5553aa40b693b5a3767bd391e8cfdde4d276831738ddb5de79dcc0def09ba334acbe29747289bf56374497ba235b47b08af03c3ded55a11229884826d77e67126245d5b28dcc73ff10e0418d836f9cabb4b486bbf3324afb50d29630d76341568e9c57348f84852d26ef7e0eee7ca3173b69fc88c95704b2c93f8d458f07dd93bbfd820799b84f84eb9bbf3040f0e4db5ee7d989b6a5e2a939ad3d227d82034f57b330fb363e51976203846109173d4fd4d09632c9f5e47fb09659c2ec5bcd56c993e810c3a1ce475e1781ec334cfc19950f5ac60c5dab0168ce353f85a9c4df34dfe4361dac338b8aeafe1b4c24c0903f937c466f4c64532ac3c9b7227f1fda8b16d5ab2762815c1390cb9e4c5054a5506be23280343414c0159610505501d66677221609c30c4dba39c077cad34194a9fd67c8c60aae31c9e231a8d1346cc9e41cc07f6ef550d9ef8f69b9ff8aa3d55f30a9e5e1816fc69b01e30aacb67449149f0c8c65ddd31596ca3a3c43b60a751ae2555ffc1e47a9fec7e5048b0bad25bb93a18831da3a62342bcb0a05aae5079f7d6c59187dc8e86be1c6fa69dbd090950cb8a252d390f900bcbc21ddeed8f95dd35ac82c22de777ab32aa8f02d959f1a5426913273e285913fd9c6a8998b33864e35d153ec33023746198851e0bace78c4b7d454db2bb68c41bf6a12e3967cda59e1fcc1508cad2f57e4593b584907e38890aac294c35795075a2539b27a28505e88155cb62fb17b8f5de959e119dc6ec4d31f3032ba583a3dd1013b9cff488237fd17d68c5399120dc591a4f847393ab2bb2ea85325a3ac2fadd5566478c996dd07e5a947cb164590f3558f047b508191829d804943b481ad54397cb1ce1c9774076926a9e6e1bb30280ec8e07638c168ba4d0347f195faefa7cd46978f5019e1ac0a2b7ad0a69092d1713eda9af3e9ff290a63fdb08963526fc4aa12d7b75ee67bc652c9bd7150b1224e91e831682435923668401d935d15ca44b295c599dc3d18c0ab09889c0ea0729636e73a9a37355736edec1f4338141970c8d16caff22164870dfb6f59218dc68a495ac1ef48be7bd23b28fa316817102d1b17a1147f507ee4ffd4bf1708805cb3ed8659a43a5ed23b21fd1ca26c9a73996908ab3356d4297dada649ce45a428f44187588e4928659ac1cacf69796d38a5b03de830d19cd76f6d0ed1ac963ea017595f10a14af7d11b87ab8574b16682a4729fba398f81a1ab7dac3dc625f852c56504892b433ce23d7682d035c09871cd464857568d9f165e3a8b48d3ab5ce8518191f4b2ae301d1f387dd3b99c45bc9b1309d894597ca84a54ed3190ba8cf6a06c1aa005810d8b139a6994763f1b9e957a1aef0211f369555639e1336161fa8ced52731ca310a66865fca40283f5c9c81bfacfa18e2ae3e3a0e49796dfe1af9b343b06617bf5f1911c7baf00f4baefa408d3854ffde6a89e241ac1f833856530b1f4015bb6d359edb708212ce6470b2ed222a6f56946e88b4088bd691cccdd49577a05bed881686883612bcfad44b4b872599a981de88599b7c22d28e3b92a905db974c534e50531907e250dcc08b2b047e2921ef8b88a34e0fb1e9df8e7e112512ce211af982e4e49b1467814b8745d6e7db5eee44f52ce899aa8aa1ba47dbad67381903678fff3fb145223ab0e348cb4059d99b6706d6a9fe0f1a3ab97db9d068f2ff6c1fdc9ae24a4f6472f42376903c04ef31bfae0a7ec6e27c0f4419b86286f2710c320decd6d52dbc8c5ccba4b8f89ef7516d1b1dfbe383dd7ecfdc86e9005b3dceaae46fc5bfa77178e9536413a7355d87a6942116f144018adbdf1a4483ef3eda688db0801f55e689a3086adf192224ca962c1bde607e5bbf148c49ed34339b9c9f25929d110996ddee404ed8ea75b2c7004a7f2524d7a646d4d8da6e4d78ba945a0502d1974319fd22cebce504c08",
+				"maxMints": 1,
+				"weiPrice": 1200000000000000,
+				"fileName": "Abigail_Williams",
+				"extension": ".png"
+			}
+		]
+	},
+	"factoryAddress": "0x96D725242C619065dC6234A2C20c117f20953620",
+	"contractAddress": "0x43d29f442B9783679a6d3DC225D2881a15f159Cf",
+	"contractOwner": "0xee6870759cbDdFb12EE3A4547C35FFB667717df4",
+	"abi": [
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "owner_",
+					"type": "address"
+				},
+				{
+					"internalType": "string",
+					"name": "tokenName",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "tokenSymbol",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "name_",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "desc_",
+					"type": "string"
+				},
+				{
+					"internalType": "uint256",
+					"name": "maxmints",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "price",
+					"type": "uint256"
+				},
+				{
+					"internalType": "string",
+					"name": "logoUrl",
+					"type": "string"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "constructor"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint64",
+					"name": "until",
+					"type": "uint64"
+				}
+			],
+			"name": "CharacterLocked",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "ERC721IncorrectOwner",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "operator",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "ERC721InsufficientApproval",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "approver",
+					"type": "address"
+				}
+			],
+			"name": "ERC721InvalidApprover",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "operator",
+					"type": "address"
+				}
+			],
+			"name": "ERC721InvalidOperator",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "ERC721InvalidOwner",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "receiver",
+					"type": "address"
+				}
+			],
+			"name": "ERC721InvalidReceiver",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				}
+			],
+			"name": "ERC721InvalidSender",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "ERC721NonexistentToken",
+			"type": "error"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "EmptyValue",
+			"type": "error"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "ModelExists",
+			"type": "error"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "NotConfigured",
+			"type": "error"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "NotLocker",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "OwnableInvalidOwner",
+			"type": "error"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "account",
+					"type": "address"
+				}
+			],
+			"name": "OwnableUnauthorizedAccount",
+			"type": "error"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "SoldOut",
+			"type": "error"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "TransferFailed",
+			"type": "error"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "UnknownModel",
+			"type": "error"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "WordsDisabled",
+			"type": "error"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "WrongEtherAmount",
+			"type": "error"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "approved",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "Approval",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "operator",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "bool",
+					"name": "approved",
+					"type": "bool"
+				}
+			],
+			"name": "ApprovalForAll",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "_fromTokenId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "_toTokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "BatchMetadataUpdate",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "bool",
+					"name": "locked",
+					"type": "bool"
+				}
+			],
+			"name": "DefaultLocked",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "bool",
+					"name": "locked",
+					"type": "bool"
+				}
+			],
+			"name": "Locked",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "_tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "MetadataUpdate",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "previousOwner",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "OwnershipTransferStarted",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "previousOwner",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "OwnershipTransferred",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "from",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "Transfer",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				}
+			],
+			"name": "Withdrawn",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "token",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "exchangeRate",
+					"type": "uint256"
+				}
+			],
+			"name": "WordsConfigUpdated",
+			"type": "event"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "acceptOwnership",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "approve",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				}
+			],
+			"name": "balanceOf",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "collectionDescription",
+			"outputs": [
+				{
+					"internalType": "string",
+					"name": "",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "collectionName",
+			"outputs": [
+				{
+					"internalType": "string",
+					"name": "",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "defaultLocked",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "pure",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "defaultWeiPrice",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "endpoint",
+			"outputs": [
+				{
+					"internalType": "string",
+					"name": "",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "collector",
+					"type": "address"
+				},
+				{
+					"internalType": "string",
+					"name": "model",
+					"type": "string"
+				}
+			],
+			"name": "etherMint",
+			"outputs": [
+
+			],
+			"stateMutability": "payable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "getApproved",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "owner",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "operator",
+					"type": "address"
+				}
+			],
+			"name": "isApprovedForAll",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "isLimited",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "isOutOfStock",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint64",
+					"name": "until",
+					"type": "uint64"
+				}
+			],
+			"name": "lock",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "locked",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "lockedUntil",
+			"outputs": [
+				{
+					"internalType": "uint64",
+					"name": "",
+					"type": "uint64"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "locker",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "logoEndpoint",
+			"outputs": [
+				{
+					"internalType": "string",
+					"name": "",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "maxMints",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "metadataFolderCID",
+			"outputs": [
+				{
+					"internalType": "string",
+					"name": "",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "string",
+					"name": "fileName",
+					"type": "string"
+				}
+			],
+			"name": "modelInfo",
+			"outputs": [
+				{
+					"components": [
+						{
+							"internalType": "string",
+							"name": "name",
+							"type": "string"
+						},
+						{
+							"internalType": "string",
+							"name": "description",
+							"type": "string"
+						},
+						{
+							"internalType": "uint256",
+							"name": "weiPrice",
+							"type": "uint256"
+						},
+						{
+							"internalType": "string",
+							"name": "fileName",
+							"type": "string"
+						},
+						{
+							"internalType": "string",
+							"name": "fileExtension",
+							"type": "string"
+						},
+						{
+							"internalType": "uint256",
+							"name": "mints",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "maxMints",
+							"type": "uint256"
+						},
+						{
+							"internalType": "bool",
+							"name": "available",
+							"type": "bool"
+						}
+					],
+					"internalType": "struct ImmutableCollection.ModelMetadata",
+					"name": "",
+					"type": "tuple"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "models",
+			"outputs": [
+				{
+					"internalType": "string[]",
+					"name": "",
+					"type": "string[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "modelsFolderCID",
+			"outputs": [
+				{
+					"internalType": "string",
+					"name": "",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "name",
+			"outputs": [
+				{
+					"internalType": "string",
+					"name": "",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "owner",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "ownerOf",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "pendingOwner",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "renounceOwnership",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "from",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "safeTransferFrom",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "from",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "data",
+					"type": "bytes"
+				}
+			],
+			"name": "safeTransferFrom",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "operator",
+					"type": "address"
+				},
+				{
+					"internalType": "bool",
+					"name": "approved",
+					"type": "bool"
+				}
+			],
+			"name": "setApprovalForAll",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "string",
+					"name": "uri",
+					"type": "string"
+				}
+			],
+			"name": "setBaseURI",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "string",
+					"name": "modelsCID",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "metadataCID",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "ipfsEndpoint",
+					"type": "string"
+				}
+			],
+			"name": "setIpfsData",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "locker_",
+					"type": "address"
+				}
+			],
+			"name": "setLocker",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "string",
+					"name": "modelName",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "fileName",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "fileExtension",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "modelDesc",
+					"type": "string"
+				},
+				{
+					"internalType": "uint256",
+					"name": "maxmints",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "weiPrice",
+					"type": "uint256"
+				}
+			],
+			"name": "setModel",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "token",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "exchangeRate",
+					"type": "uint256"
+				}
+			],
+			"name": "setWordsConfig",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "bytes4",
+					"name": "id",
+					"type": "bytes4"
+				}
+			],
+			"name": "supportsInterface",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "symbol",
+			"outputs": [
+				{
+					"internalType": "string",
+					"name": "",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "tokenId",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "tokenURI",
+			"outputs": [
+				{
+					"internalType": "string",
+					"name": "",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "from",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "transferFrom",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "transferOwnership",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "unlock",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				}
+			],
+			"name": "withdraw",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "wordsExchangeRate",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "collector",
+					"type": "address"
+				},
+				{
+					"internalType": "string",
+					"name": "model",
+					"type": "string"
+				},
+				{
+					"internalType": "uint256",
+					"name": "deadline",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint8",
+					"name": "v",
+					"type": "uint8"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "r",
+					"type": "bytes32"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "s",
+					"type": "bytes32"
+				}
+			],
+			"name": "wordsMint",
+			"outputs": [
+
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "weiPrice",
+					"type": "uint256"
+				}
+			],
+			"name": "wordsPrice",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+
+			],
+			"name": "wordsToken",
+			"outputs": [
+				{
+					"internalType": "contract IWords",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		}
+	],
+	"contractSummary": {
+		"tokenName": "RandomWorldsHardHat",
+		"symbol": "RNDS1",
+		"name": "RandomWorlds - Season_1",
+		"description": "A collection of NFT characters to play Random Quests in the Random Worlds app",
+		"imagesCid": "QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU",
+		"metadataCid": "QmRZwQbC2m4AZ8iBMaTMoKcwX2j7H11zr8h6SYEPVCrTq3",
+		"endpoint": "https://ipfs.io/ipfs",
+		"logoEndpoint": "https://ipfs.io/ipfs/QmUhKuo2c32hrwgG6As3B7oWHLxM31a4T9ovpTwF8xiHaU/RandomWorlds-Season1_logo.png",
+		"isLimited": true,
+		"maxMints": 50,
+		"isOutOfStock": false,
+		"defaultWeiPrice": 300000000000000,
+		"models": [
+			"Kaelin_Blackjack_Vex_Common",
+			"Augustus_Augie_Eastwood",
+			"Kazimir_Koldun",
+			"Dark_Animist",
+			"Malicia_Folcott",
+			"Abigail_Williams"
+		]
+	},
+	"deploymentStatus": {
+		"settedModels": [
+			"Kaelin_Blackjack_Vex_Common",
+			"Augustus_Augie_Eastwood",
+			"Kazimir_Koldun",
+			"Dark_Animist",
+			"Malicia_Folcott",
+			"Abigail_Williams"
+		],
+		"ipfsDataSet": true,
+		"enabledTokens": [
+			"ETH"
+		]
+	}
+}

@@ -17,6 +17,7 @@ import { GameData, UserLogin } from '../../shared/models/common-interfaces';
 import { Router } from '@angular/router';
 import GameSession from 'src/app/core/scripts/gameSession';
 import { PlayerGameSession } from '../models/smart-contract.interfaces';
+import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 
 @Injectable({
   providedIn: 'root'
@@ -240,9 +241,7 @@ export class SmartContractsService {
   public getCollectionContract(address:string) : any{
     return Collection(this.web3, address);
   }
-  public getRagCharsCollectionContract() :any {
-    return RagCharsCollection(this.web3, '0xA43DaCA8B909AB78367b3F1814A1080D92e05510');
-  }
+
   public getCoinContract(symbol:string) : any {
     switch(symbol){
       case('KAKA'):
@@ -373,7 +372,7 @@ export class SmartContractsService {
       return await Promise.race([promise, timeoutPromise]) as Promise<T>;
   }
   public async getCharacterMetadata(metaUri: string): Promise<CharacterMetadata>{
-    let metadata = await firstValueFrom(this.http.get<any>(metaUri));
+    let metadata = await firstValueFrom(this.http.get<any>(replaceEndpoint(metaUri, 'IPFS', 'ALCHEMY')));
     let profile = await firstValueFrom(this.http.get<CharacterProfile>(`${this._baseUrl}/blockchain/character/decrypt/${metadata.encrypted_profile}`))
     let charMeta:CharacterMetadata = {
       name: metadata.name,
@@ -472,26 +471,6 @@ export class SmartContractsService {
       catch(error){
         console.log(error);
         return false;
-      }
-    }
-    return false;
-  }
-
-  public async mintRagChar(paymentToken:string, price:string, model:string) : Promise<boolean>{
-    let tokenContract = this.getCoinContract(paymentToken);
-    if(tokenContract){
-      try{
-        let accounts = await this.getConnectedAccounts();
-        console.log('price', price);
-        console.log('account', accounts[0]);
-        console.log('pay params: ', paymentToken, model);
-        
-        await tokenContract.methods.approve(accounts[0], price).send({from:accounts[0]});
-        await this.getRagCharsCollectionContract().methods.customTokenMint(accounts[0], model, paymentToken).send({from:accounts[0],gas:'7000000'})
-        return true;
-      }
-      catch(error){
-        console.log(error);
       }
     }
     return false;

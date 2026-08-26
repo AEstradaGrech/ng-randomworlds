@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChange
 import { AssetModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { AssetCardButtonState, NftCardClickAction, RoundedButtonConfig } from '../../models/common-interfaces';
 import { EAppButtons } from '../../models/common-enums';
+import { ALCHEMY_ENDPOINT, IPFS_ENDPOINT } from 'src/app/core/constants/configs/nft-card';
 
 @Component({
   selector: 'app-nft-card',
@@ -48,7 +49,11 @@ export class NftCardComponent implements OnInit, OnChanges {
   }
 
   getCollectionLogo(): string {
-    return this.model ? this.model.collectionLogoUrl : `url(assets/images/ng-app-logo.png)`;
+    return this.model ? 
+      (this.model.collectionLogoUrl.includes(IPFS_ENDPOINT) ? 
+        this.model.collectionLogoUrl.replace(IPFS_ENDPOINT, ALCHEMY_ENDPOINT) : 
+        this.model.collectionLogoUrl) : 
+      `url(assets/images/ng-app-logo.png)`;
   }
   onButtonClick(event:string){
     console.log('-- clicked button ID --', event)

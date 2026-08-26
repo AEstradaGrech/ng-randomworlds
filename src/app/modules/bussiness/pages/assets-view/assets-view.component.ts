@@ -8,7 +8,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
 import web3 from 'src/app/core/scripts/web3';
 import { AssetCardButtonState, GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
-import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
+import { ALCHEMY_ENDPOINT, defaultNftCardButtons, endpointByTag, IPFS_ENDPOINT, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { CharacterCreatorDialogComponent } from './components/character-creator-dialog/character-creator-dialog.component';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
@@ -108,6 +108,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
     this._notificationsService.setup('center', 'bottom', 3000);
   }
   
+  public imageWithEndpointReplace(imageUrl: string, replaced: string, provider: string){
+    return replaceEndpoint(imageUrl, replaced, provider);
+  }
+
   private _getAccountAssets() {
     this._didInit = false;
     this.currentCollection = null;

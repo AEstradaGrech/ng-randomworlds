@@ -34,7 +34,7 @@
                         address: collection.summary.address,
                         description: collection.summary.description,
                         total: collection.assets.length,
-                        image: collection.summary.logoImage,
+                        image: imageWithEndpointReplace(collection.summary.logoImage, 'IPFS', 'ALCHEMY'),
                         item: collection,
                         open: selectCollection
                         }">

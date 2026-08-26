@@ -7,6 +7,7 @@ import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dia
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
+import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 
 @Component({
   selector: 'app-marketplace',
@@ -100,10 +101,10 @@ export class MarketplaceComponent implements OnInit{
           .then(metadata => {
             let catalogueModel: CatalogueModel = {
               ...modelInfo,
-              imageEndpoint: `${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`,
+              imageEndpoint: replaceEndpoint(`${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`, 'IPFS', 'ALCHEMY'),
               metadata: metadata,
               collectionSymbol: summary.symbol,
-              logoUrl: `url(${summary.logoImage})`,
+              logoUrl: `url(${replaceEndpoint(summary.logoImage, 'IPFS', 'ALCHEMY')})`,
               collectionUrl: summary.logoImage,
               contractAddress: summary.address,
               collectionName: summary.name,
