@@ -4,6 +4,8 @@ export interface DecryptedMetadataRequest{
 }
 
 export interface PlayerGameSession{
+    chainId: number,
+    contract: string,
     player: string,
     wager: number,
     epoch: number,

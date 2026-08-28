@@ -14,6 +14,7 @@ import { AssetModel, CharacterMetadata } from 'src/app/core/interfaces/business/
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { SmartContractsService } from '../../services/smart-contracts.service';
+import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 
 @Component({
   selector: 'app-world-generator',
@@ -82,7 +83,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   public metadata!: CharacterMetadata;
   public image = computed(() => {
     let selectedChar: AssetModel | null = this.selectedCharacter();
-    return selectedChar ? `url(${selectedChar.image})` : '';
+    return selectedChar ? `url(${replaceEndpoint(selectedChar.image, 'IPFS', 'ALCHEMY')})` : '';
   });
   public isCharLocked = computed(() => {
     let selectedChar: AssetModel | null = this.selectedCharacter();

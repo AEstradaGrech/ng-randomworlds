@@ -37,3 +37,4 @@ export interface ChatDocDto{
     maxTokens:number,
     messages:any[]
 }
+

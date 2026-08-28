@@ -1,7 +1,7 @@
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { filter, Observable } from 'rxjs';
-import { ChatMessage as ChatMessageDto, CreateCharacterRequest, FinalOptionsResponse, QuestBlockDto, QuestCharacter, NewQuestRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, RandomWorldsCharacter, SaveDatasetCharacter, SceneOptionsRequest, SceneOptionsResponse, InitQuestRequest } from 'src/app/core/interfaces/business/prompting.interface';
+import { ChatMessage as ChatMessageDto, CreateCharacterRequest, FinalOptionsResponse, QuestBlockDto, QuestCharacter, NewQuestRequest, QuestIntroRequest, QuestIntroResponse, RandomQuestDto, RandomWorldsCharacter, SaveDatasetCharacter, SceneOptionsRequest, SceneOptionsResponse, InitQuestRequest, EndGameRequest } from 'src/app/core/interfaces/business/prompting.interface';
 import { CollectionResponse, SortedFilter } from '../../shared/models/common-interfaces';
 import { environment } from 'src/environments/environment';
 import { CharacterProfileDto } from '../../shared/models/mgmt-interfaces';
@@ -58,8 +58,8 @@ export class QuestsService {
   public getCurrentQuestFor(tokenId: number, collection: string, wallet: string) : Observable<RandomQuestDto>{
     return this.http.get<RandomQuestDto>(`${this._baseUrl}/current/character/${tokenId}/collection/${collection}/owner/${wallet}`);
   }
-  public endQuest(id:string, status:string, block:QuestBlockDto) : Observable<RandomQuestDto>{
-    return this.http.post<RandomQuestDto>(`${this._baseUrl}/${id}/end/${status}`, block);
+  public endQuest(id:string, status:string, request:EndGameRequest) : Observable<RandomQuestDto>{
+    return this.http.post<RandomQuestDto>(`${this._baseUrl}/${id}/end/${status}`, request);
   }
   public generateSceneOptions(req:SceneOptionsRequest) : Observable<SceneOptionsResponse>{
     return this.http.post<SceneOptionsResponse>(`${this._baseUrl}/scene-options`,req);

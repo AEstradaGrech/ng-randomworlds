@@ -7,12 +7,14 @@ import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-m
 import { GameData, QueryCondition, SortedFilter } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router'
 import { QuestsService } from '../../services/quests.service';
-import { FinalOptionsResponse, QuestBlockDto, QuestCharacter, NewQuestRequest, QuestPreferences, RandomQuestDto, InitQuestRequest } from 'src/app/core/interfaces/business/prompting.interface';
+import { FinalOptionsResponse, QuestBlockDto, QuestCharacter, NewQuestRequest, QuestPreferences, RandomQuestDto, InitQuestRequest, EndGameRequest } from 'src/app/core/interfaces/business/prompting.interface';
 import { SideNavbarComponent } from 'src/app/modules/shared/components/side-navbar/side-navbar.component';
 import { catchError, of } from 'rxjs';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
+import { GameOutcome } from 'src/app/modules/shared/models/common-enums';
+import { SmartContractsService } from '../../services/smart-contracts.service';
 
 @Component({
   selector: 'app-quest-view',
@@ -56,6 +58,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   private _router:Router = inject(Router);
   private _service: QuestsService = inject(QuestsService);
   private _destroyRef: DestroyRef = inject(DestroyRef);
+  private _web3Service: SmartContractsService = inject(SmartContractsService);
   
   @ViewChild('scenebox') scenebox!:ElementRef;
   @ViewChild('sideBar') sideBar!:SideNavbarComponent;
@@ -107,19 +110,10 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this._snackBar.open("You must pick a choice from the available to continue", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
         return;
       }
-      
       if(this.selectedChoice){
-        if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks -1){
-          let taggedOption = this.currentBlock.options.find(x => x.includes(this.selectedChoice ?? ''))
-          if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks -2) {
-            if(taggedOption && taggedOption.includes("<<BAD_CHOICE>>"))
-              this.selectedChoice = taggedOption; //pasar el tag para el LLM
-          }
-          else{
-            if(taggedOption)
-              this.selectedChoice = taggedOption;
-          }
-        }
+        let taggedOption = this.currentBlock.options.find(x => x.includes(this.selectedChoice ?? ''))
+        if(taggedOption)
+          this.selectedChoice = taggedOption;
         this.currentBlock.choice=this.selectedChoice;
         this.currentQuest.blocks.push(this.currentBlock);
         this._handleQuest();
@@ -258,9 +252,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   private _getSanitizedOptions(options:string[]){
-    let sanitized:string[] = []
-    options.forEach(option => sanitized.push(this._getSanitizedOption(option)));
-    return sanitized;
+    return options.map(option => this._getSanitizedOption(option));
   }
   private _getSanitizedOption(option:string){
     if(option.length == 0) return "";
@@ -319,7 +311,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         if(this.currentQuest.blocks.length > 0){
           this.currentBlock = this.currentQuest.blocks.slice(-1)[0];
           this.sceneText = this.currentBlock.scene;
-          this.currentChoices = this.currentBlock.options.map(opt => this._tryClearTag(opt, '<<BAD_CHOICE>>'));
+          this.currentChoices = this._getSanitizedOptions(this.currentBlock.options);
           this.currentQuest.blocks.forEach(x => {
             this._addSceneMenuOption(x.id);
             this.storyText += `${x.summary}\n\n`
@@ -434,18 +426,43 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       default:
         break;
     }
-    this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, this.currentQuest.blocks.slice(-1)[0])
-    .pipe(catchError(error => {
-      this.isLoading = false;
-      return of(error);
-    }))
-    .subscribe(res => {
-      this.isLoading=false; 
-      if(!this._isValidResponse(res)) return;
-      this.currentQuest = res;
-      this._snackBar.open("The current QUEST has ended. Mint it if you wish and play again!", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-      this._updateCurrentQuest();
-    })
+
+    this._web3Service.getPlayerSession(this.currentQuest.charCollectionAddress, parseInt(this.currentQuest.charTokenId))
+      .then(session => {
+      let endGameReq: EndGameRequest = {
+        contract: session.contract,
+        wallet: session.player,
+        collection: this.currentQuest.charCollectionAddress,
+        tokenId: parseInt(this.currentQuest.charTokenId),
+        chainId: session.chainId,
+        epoch: session.epoch,
+        outcome: this._gameStatusToOutcome(this.gameData.gameStatus),
+        finalBlock: this.currentQuest.blocks.slice(-1)[0]
+      }
+      this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, endGameReq)
+        .pipe(catchError(error => {
+          this.isLoading = false;
+          return of(error);
+        }))
+        .subscribe(res => {
+          this.isLoading=false; 
+          if(!this._isValidResponse(res)) return;
+          this.currentQuest = res;
+          if(res.signature && res.signature !== ''){
+            this._web3Service.settleGame(this.currentQuest.charCollectionAddress, parseInt(this.currentQuest.charTokenId), endGameReq.outcome, res.signature)
+            .then(res => {
+              if(res){
+                this._snackBar.open("Current QUEST finished! ", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+                this._updateCurrentQuest();
+              }
+              else this._snackBar.open("An error has occured while settling the current game", undefined, { duration: 3000,panelClass: ['snack-error'], verticalPosition: 'bottom'});
+            })
+          }
+          else this._snackBar.open("An error has occured while settling the current game. Invalid signature", undefined, { duration: 3000,panelClass: ['snack-error'], verticalPosition: 'bottom'});
+          
+          //this._web3Service.settleGame()
+        });
+      });
   }
   private _handleQuest(){ 
     this.currentBlock = null;
@@ -635,6 +652,19 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
   private _addSceneMenuOption(sceneId:number){
     this.actionsBarConfig.push(new TreeMenuItem(`Scene ${sceneId}`, 2, undefined, false, false, true, undefined))
+  }
+
+  private _gameStatusToOutcome(status:string){
+    switch(status){
+      case('COMPLETED'):
+        return GameOutcome.WIN;
+      case('UNCERTAIN'):
+        return GameOutcome.DRAW;
+      case('FAILED'):
+        return GameOutcome.LOSS;
+      default:
+        return GameOutcome.NONE
+    }
   }
 
   private _formatUserPreferences(data:QuestPreferences): string{

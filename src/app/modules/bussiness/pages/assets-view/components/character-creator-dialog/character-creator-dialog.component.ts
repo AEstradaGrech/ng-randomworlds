@@ -159,9 +159,6 @@ private getDefaultCurrencyTitle() : string {
   characterImages: Map<RandomWorldsCharacter, GenerateImageResponse[]> = new Map<RandomWorldsCharacter, GenerateImageResponse[]>();
 
   ngOnInit(): void {
-    this._web3Service.getCurrentChainId().then(id => {
-      console.log('-- CONNECTED CHAIN --')
-    })
     this.onContractLoaded.subscribe((contractAddress:string) => {
       if(this._web3Service.connectedWallet){
         this._mgmtService.getCurrentTicket(this._web3Service.connectedWallet, contractAddress, true)
@@ -193,7 +190,7 @@ private getDefaultCurrencyTitle() : string {
       this._web3Service.getCurrentChainId().then(chain => {
         if(wallet && profile && image){
           let ticket: MintCharacterRequest = {
-            chainId: Number(chain),
+            chainId: chain,
             txHash: data.receipt.transactionHash,
             currency: data.currency,
             price: web3.utils.fromWei(data.price, 'ether'),

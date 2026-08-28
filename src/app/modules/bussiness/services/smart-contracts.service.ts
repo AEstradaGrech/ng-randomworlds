@@ -190,6 +190,18 @@ export class SmartContractsService {
     return session && session.player === this.connectedWallet;
   }
 
+  public async settleGame(collection: string, tokenId: number, outcome: number, signature: string) : Promise<boolean>{
+    let gameSession: any = GameSession(this.web3);
+    
+    if(!gameSession) return false;
+
+    await gameSession.methods.settle(collection, tokenId, outcome, signature).send({ from: this.connectedWallet });
+
+    let session = await this.getPlayerSession(collection, tokenId);
+
+    return session && session.player !== this.connectedWallet;
+  }
+
   public async abandonGame(collection:string, tokenId: number) : Promise<boolean>{
     let gameSession: any = GameSession(this.web3);
     
@@ -211,11 +223,17 @@ export class SmartContractsService {
 
     let gameSession: any = GameSession(this.web3);
 
+    let chainId: number = await this.getCurrentChainId();
+
+    let address: string = await gameSession._address;
+
     let sessionKey = await gameSession.methods.getKey(collection, tokenId).call({ from: this.connectedWallet });
 
     let session = await gameSession.methods.sessions(sessionKey).call();
     
     let playerSession: PlayerGameSession = {
+      chainId: chainId,
+      contract: address,
       player: session.player,
       wager: parseInt(session.wager),
       epoch: parseInt(session.epoch),
@@ -256,7 +274,7 @@ export class SmartContractsService {
   }
 
   public async getCurrentChainId() : Promise<number>{
-    return await this.web3.eth.net.getId();
+    return Number(await this.web3.eth.net.getId());
   }
   public async getConnectedAccounts() : Promise<any[]>{
     return await this.web3.eth.getAccounts();

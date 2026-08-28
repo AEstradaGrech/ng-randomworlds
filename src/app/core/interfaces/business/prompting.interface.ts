@@ -101,8 +101,21 @@ export interface RandomQuestDto{
     intro:string | null
     maxBlocks:number,
     status:string,
-    blocks:QuestBlockDto[]
+    blocks:QuestBlockDto[],
+    signature?:string
 }
+
+export interface EndGameRequest{
+    contract: string,
+    wallet: string,
+    collection:string,
+    tokenId: number,
+    chainId: number,
+    epoch: number,
+    outcome: number,
+    finalBlock: QuestBlockDto
+}
+
 export interface QuestBlockDto{
     id:number,
     scene:string,

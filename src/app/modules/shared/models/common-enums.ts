@@ -13,3 +13,10 @@ export enum ESnackAlertType {
     WARN = 'warn',
     ERROR = 'error'
 }
+
+export enum GameOutcome{
+    NONE = 0,
+    WIN = 1,
+    DRAW = 2,
+    LOSS = 3
+}
