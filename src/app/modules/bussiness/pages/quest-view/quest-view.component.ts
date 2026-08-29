@@ -53,7 +53,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   endgameIcon:string = "mood"
   storyText:string = "";
   charImageUrl:string = '';
-  
+  private _isGameRecovery: boolean = false;
   private _snackBar = inject(MatSnackBar);
   private _router:Router = inject(Router);
   private _service: QuestsService = inject(QuestsService);
@@ -267,7 +267,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     return option.includes(tag) ? option.replace(tag, "").trim() : option;
   }
 
-  private _updateCurrentQuest(){
+  private _updateCurrentQuestSummary(){
     this._service.getById(this.currentQuest.id).subscribe(res => {
       this.currentQuest = res;
       if(this.currentQuest.blocks.length > 0){
@@ -312,13 +312,15 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           this.currentBlock = this.currentQuest.blocks.slice(-1)[0];
           this.sceneText = this.currentBlock.scene;
           this.currentChoices = this._getSanitizedOptions(this.currentBlock.options);
+          this.gameData.currentBlock = this.currentQuest.blocks.length;
+          this.currentQuest.blocks = this.currentQuest.blocks.filter(b => b.id !== this.currentBlock?.id);
           this.currentQuest.blocks.forEach(x => {
             this._addSceneMenuOption(x.id);
             this.storyText += `${x.summary}\n\n`
           });
         }
         this.gameData.gameStatus = this.currentQuest.status;
-        this.gameData.currentBlock = this.currentQuest.blocks.length;
+        this._isGameRecovery = true;
         if(this.hasFinishedQuest)
           this.btnTxt = "PLAY AGAIN";
       })
@@ -366,7 +368,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           this.currentChoices = [...res.options];
           this.currentChoices.push(res.bad_choice);
           this._addSceneMenuOption(this.currentBlock.id);
-          this._updateCurrentQuest();
+          this._updateCurrentQuestSummary();
         }
       }) 
   }
@@ -397,7 +399,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           ];
           
           this._addSceneMenuOption(this.currentBlock.id);
-          this._updateCurrentQuest();
+          this._updateCurrentQuestSummary();
         }
       }) 
   }
@@ -409,7 +411,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this.currentBlock.id = this.gameData.currentBlock;
     this.currentChoices = [];
     this._addSceneMenuOption(this.currentBlock.id);
-    this._updateCurrentQuest();
+    //this._updateCurrentQuestSummary();
     this.btnTxt = 'PLAY AGAIN';
     this.currentQuest.blocks.push(this.currentBlock);
     this.currentBlock = null;
@@ -453,7 +455,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
             .then(res => {
               if(res){
                 this._snackBar.open("Current QUEST finished! ", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-                this._updateCurrentQuest();
+                this._updateCurrentQuestSummary();
               }
               else this._snackBar.open("An error has occured while settling the current game", undefined, { duration: 3000,panelClass: ['snack-error'], verticalPosition: 'bottom'});
             })
@@ -468,13 +470,14 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this.currentBlock = null;
     this.isLoading = true;
     this.hasStreamedScene = false;
-    this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0])
+    this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0], this._isGameRecovery)
     .pipe(catchError(error => {
       this.isLoading = false;
       return of(error);
     }))
     .subscribe(res => {
       if(this._isValidResponse(res) && this._handleResponseStream(res) ){
+        this._isGameRecovery = false; // esto marca el init unicamente (para partidas empezadas)
         if(!this.hasFinishedQuest){
           this._handleQuestStreamEnd(res);
         }

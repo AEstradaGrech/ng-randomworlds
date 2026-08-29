@@ -28,8 +28,8 @@ export class QuestsService {
                 event.type === HttpEventType.Response,
             ))
   }
-  public handleQuestStream(id:string, currentBlock:QuestBlockDto) : Observable<any>{
-    return this.http.post(`${this._baseUrl}/${id}/handle`, currentBlock, {
+  public handleQuestStream(id:string, currentBlock:QuestBlockDto, isOverwrite:boolean = false) : Observable<any>{
+    return this.http.post(`${this._baseUrl}/${id}/handle?is_overwrite=${isOverwrite}`, currentBlock, {
       responseType: 'text',
       observe: 'events',
       reportProgress: true,
@@ -80,5 +80,9 @@ export class QuestsService {
   }
   public generateCharacterImagePrompt(req: RandomWorldsCharacter): Observable<ChatMessageDto>{
     return this.http.post<ChatMessageDto>(`${this._charsUrl}/image/enhanced-generate`, req);
+  }
+
+  public patchQuestBlocks(quest: RandomQuestDto) : Observable<RandomQuestDto>{
+    return this.http.post<RandomQuestDto>(`${this._baseUrl}/patch/blocks`, quest);
   }
 }
