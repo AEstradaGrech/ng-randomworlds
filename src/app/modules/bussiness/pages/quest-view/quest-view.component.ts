@@ -13,7 +13,7 @@ import { catchError, of } from 'rxjs';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
-import { GameOutcome } from 'src/app/modules/shared/models/common-enums';
+import { ESnackAlertType, GameOutcome } from 'src/app/modules/shared/models/common-enums';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 
 @Component({
@@ -74,7 +74,9 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   get questFinishedIcon():string{
     return this.endgameIcon;
   }
-
+  get didGameInit():boolean {
+    return this.gameData && this.gameData.gameStatus !== 'INITIALIZING';
+  }
   @HostListener('window:storage', ['$event'])
   onSelectedCharacterChange(event: StorageEvent){
     console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
@@ -105,13 +107,13 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       this._setForNewGame();
       return;
     }
-    if(this.hasGameOngoing && this.currentBlock){
+    if(this.didGameInit && this.hasGameOngoing && this.currentBlock){
       if(!this.selectedChoice || this.selectedChoice === '' ){
         this._snackBar.open("You must pick a choice from the available to continue", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
         return;
       }
       if(this.selectedChoice){
-        let taggedOption = this.currentBlock.options.find(x => x.includes(this.selectedChoice ?? ''))
+        let taggedOption = this.currentBlock.options.find(x => x.includes(this.selectedChoice ?? ''));
         if(taggedOption)
           this.selectedChoice = taggedOption;
         this.currentBlock.choice=this.selectedChoice;
@@ -119,8 +121,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this._handleQuest();
       }
     }
-    else this._initializeQuest()
-    
+    else this._initializeQuest();
   }
 
   onOpenBtnClick(btn:string){
@@ -239,14 +240,13 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
             this.currentChoices = this._getSanitizedOptions(this.currentBlock.options);
             break;
           }
-          let block = this.currentQuest.blocks.filter(x => x.id === parseInt(split[1].trim()));
-          if(block !== undefined && block.length > 0 && block[0].id !== this.currentQuest.maxBlocks){
-            this.sceneText = `> SCENE: ${block[0].scene}\n\n> CHOICE: ${this._getSanitizedOption(block[0].choice ?? '')}`;
-            this.currentChoices = this._getSanitizedOptions(block[0].options);
-            this.selectedChoice = block[0].choice;
+          let block = this.currentQuest.blocks.filter(x => x.id === parseInt(split[1].trim()))[0];
+          if(block){
+            this.sceneText = `> SCENE: ${block.scene}\n\n> CHOICE: ${this._getSanitizedOption(block.choice ?? '')}`;
+            this.currentChoices = this._getSanitizedOptions(block.options);
+            this.selectedChoice = block.choice;
           }
         }
-        
       break;
     }
   }
@@ -313,11 +313,21 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           this.sceneText = this.currentBlock.scene;
           this.currentChoices = this._getSanitizedOptions(this.currentBlock.options);
           this.gameData.currentBlock = this.currentQuest.blocks.length;
-          this.currentQuest.blocks = this.currentQuest.blocks.filter(b => b.id !== this.currentBlock?.id);
           this.currentQuest.blocks.forEach(x => {
             this._addSceneMenuOption(x.id);
             this.storyText += `${x.summary}\n\n`
           });
+          this.currentQuest.blocks = this.currentQuest.blocks.filter(b => b.id !== this.currentBlock?.id);
+        }
+        else {
+          this._switchMenu("Intro");
+          if(this.currentQuest.status === 'INITIALIZING')
+            this._service.setQuestStatus(this.currentQuest.id, 'REINITIALIZING')
+              .pipe(takeUntilDestroyed(this._destroyRef))
+              .subscribe(res => {
+                if(!this._isValidResponse(res))
+                  this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while recovering an UNINITIALIZED quest');
+              });
         }
         this.gameData.gameStatus = this.currentQuest.status;
         this._isGameRecovery = true;
@@ -470,7 +480,8 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this.currentBlock = null;
     this.isLoading = true;
     this.hasStreamedScene = false;
-    this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0], this._isGameRecovery)
+    this._switchMenu("Story");
+    this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0], this._isGameRecovery && this.currentQuest.blocks.length > 1)
     .pipe(catchError(error => {
       this.isLoading = false;
       return of(error);
