@@ -1,0 +1,41 @@
+.collection-card-title{
+    color:#99c531;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+}
+.collection-card-subtitle{
+    font-style: oblique;
+    color: #c3c3c5;
+    font-weight: 100;
+    font-size: 11px;
+    padding: 0px 15px 0px 15px;
+}
+.collection-card-content{
+    margin: 5px 2px 5px 2px;
+    color: #99c531;
+    font-weight: 200;
+    font-size: 14px;
+}
+.payment-card-content{
+    margin: 5px 2px 5px 2px;
+    color: #99c531;
+    font-weight: 200;
+    font-size: 14px;
+    display:flex;
+    flex-direction: column;
+}
+
+.lockedchar-card-content{
+    margin: 5px 2px 5px 2px;
+    color: #99c531;
+    font-weight: 200;
+    font-size: 14px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    h5 {
+        display: flex;
+        justify-content: center;
+    }
+}

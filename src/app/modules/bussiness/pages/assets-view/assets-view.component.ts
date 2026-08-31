@@ -238,10 +238,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
     else{
       //TODO payToUnlock
     }
-    // getGameSessionKey
-    // getSession
-    // if session -> displayText = Character in game
-    // else displayText = Character recovering + lockedUntil --> (v0.1.2)WORDS | PAY unlock
   }
 
   public onSlideViewClick(direction: string){

@@ -60,7 +60,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
           let isLocked = await this._smartContractsService.isAssetLocked(address, false, nft.tokenId);
           let asset:AssetModel = {...nft, metadata: nft.metadata, isLocked: isLocked, collectionLogoUrl: `url(${replaceEndpoint(summary.logoImage, 'IPFS', 'ALCHEMY')})`}
           if(isLocked){
-            asset.lockedUntil = await this._smartContractsService.isLockedUntil(address, false, nft.tokenId);
+            asset.lockedUntil = Number(await this._smartContractsService.isLockedUntil(address, false, nft.tokenId));
             let session = await this._smartContractsService.getPlayerSession(address, nft.tokenId);
             asset.isInGame = session && session.startedAt > 0;
             this.assets.update(x => [...this.assets(), asset]);
@@ -77,6 +77,23 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
       }
     });
   }
+  public onUnlockAssetClick(model: AssetModel){
+     if(model.isInGame){
+      this._smartContractsService.abandonGame(model.contractAddress, model.tokenId).then(res => {
+        if(res){
+          this._getCharactersData();
+          this._notificationsService.openSnack(ESnackAlertType.WARN, 'Current game session abandoned', false, 3000);
+        }
+        else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while abandoning the game', false, 3000);
+      });
+    }
+    else{
+      //TODO payToUnlock
+    }
+  }
+  public onCardSelected(model: AssetModel){
+
+  }
   private async _getCustomCharacters(){
     if(this.customCharsCollection){
       let walletNFTs = await this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress)
@@ -85,7 +102,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
         let isLocked = await this._smartContractsService.isAssetLocked(this.customCharsCollection?.contractAddress ?? '', true, nft.tokenId);
         let asset:AssetModel = {...nft, isLocked: isLocked, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`};
         if(asset.isLocked){
-          asset.lockedUntil = await this._smartContractsService.isLockedUntil(this.customCharsCollection?.contractAddress ?? '', true, asset.tokenId);
+          asset.lockedUntil = Number(await this._smartContractsService.isLockedUntil(this.customCharsCollection?.contractAddress ?? '', true, asset.tokenId));
           let session = await this._smartContractsService.getPlayerSession(this.customCharsCollection?.contractAddress ?? '', nft.tokenId);
           asset.isInGame = session.startedAt > 0;
           this.customCharsCollection?.assets.push(asset);

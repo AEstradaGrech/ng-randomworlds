@@ -16,6 +16,7 @@ import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { ESnackAlertType, GameOutcome } from 'src/app/modules/shared/models/common-enums';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 
+
 @Component({
   selector: 'app-quest-view',
   templateUrl: './quest-view.component.html',
@@ -76,6 +77,10 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
   get didGameInit():boolean {
     return this.gameData && this.gameData.gameStatus !== 'INITIALIZING';
+  }
+
+  get collectionLogoImg():string{
+    return replaceEndpoint(this.gameData?.selectedCharacter?.collectionLogoUrl ?? '', 'IPFS', 'ALCHEMY')
   }
   @HostListener('window:storage', ['$event'])
   onSelectedCharacterChange(event: StorageEvent){
@@ -311,7 +316,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         if(this.currentQuest.blocks.length > 0){
           this.currentBlock = this.currentQuest.blocks.slice(-1)[0];
           this.sceneText = this.currentBlock.scene;
-          this.currentChoices = this._getSanitizedOptions(this.currentBlock.options);
+          this.currentChoices = this._shuffledFinalOptions([...this._getSanitizedOptions(this.currentBlock.options)]);
           this.gameData.currentBlock = this.currentQuest.blocks.length;
           this.currentQuest.blocks.forEach(x => {
             this._addSceneMenuOption(x.id);
@@ -377,6 +382,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           this.currentBlock.options.push(`${res.bad_choice} ${badTag}`);
           this.currentChoices = [...res.options];
           this.currentChoices.push(res.bad_choice);
+          this.currentChoices = this._shuffledFinalOptions([...this.currentChoices]);
           this._addSceneMenuOption(this.currentBlock.id);
           this._updateCurrentQuestSummary();
         }
@@ -396,11 +402,11 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           this.gameData.currentBlock++;
           localStorage.setItem('game-data', JSON.stringify(this.gameData));
           this.currentBlock.id = this.gameData.currentBlock;
-          let finalOptions: string[] = [
+          let finalOptions: string[] = this._shuffledFinalOptions([
             res.happy_end_choice,
             res.uncertain_end_choice,
             res.game_over_choice
-          ]
+          ])
           this.currentChoices = finalOptions;
           this.currentBlock.options = [
             `${res.happy_end_choice} <<HAPPY>>`,
@@ -414,6 +420,23 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       }) 
   }
 
+  private _shuffledFinalOptions(options: string[], selected: string[] = []) : string[]{
+    if(options.length == 0) return selected;
+    
+    let option:string = options[this._getRandomInt(options.length)];
+    if(option)
+    {
+      selected.push(option);
+      options = options.filter(x => x !== option);
+    }
+    return this._shuffledFinalOptions(options, selected);
+  }
+  //max is exclusive
+  private _getRandomInt(max:number, min: number = 0) : number{
+    min = Math.floor(min)
+    max = Math.floor(max)
+    return Math.round(Math.random() * (max - min + 1) + min);
+  }
   private _handleQuestEnd(){
     if(!this.currentBlock) return;
     this.gameData.currentBlock++;
