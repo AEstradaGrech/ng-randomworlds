@@ -83,6 +83,6 @@ export class QuestsService {
   }
 
   public patchQuestBlocks(quest: RandomQuestDto) : Observable<RandomQuestDto>{
-    return this.http.post<RandomQuestDto>(`${this._baseUrl}/patch/blocks`, quest);
+    return this.http.patch<RandomQuestDto>(`${this._baseUrl}/patch/blocks`, quest);
   }
 }

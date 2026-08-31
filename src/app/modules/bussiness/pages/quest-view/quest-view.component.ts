@@ -79,9 +79,10 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     return this.gameData && this.gameData.gameStatus !== 'INITIALIZING';
   }
 
-  get collectionLogoImg():string{
-    return replaceEndpoint(this.gameData?.selectedCharacter?.collectionLogoUrl ?? '', 'IPFS', 'ALCHEMY')
+  public collectionLogoImg(imgUrl: string):string{
+    return replaceEndpoint(imgUrl, 'IPFS', 'ALCHEMY');
   }
+
   @HostListener('window:storage', ['$event'])
   onSelectedCharacterChange(event: StorageEvent){
     console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
@@ -121,8 +122,15 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         let taggedOption = this.currentBlock.options.find(x => x.includes(this.selectedChoice ?? ''));
         if(taggedOption)
           this.selectedChoice = taggedOption;
-        this.currentBlock.choice=this.selectedChoice;
-        this.currentQuest.blocks.push(this.currentBlock);
+        if(this.currentQuest.blocks.filter(x => x.id === this.currentBlock?.id).length > 0){
+          let block = this.currentQuest.blocks.find(x => x.id === this.currentBlock?.id);
+          if(block)
+            block.choice = this.selectedChoice;
+        }
+        else {
+          this.currentBlock.choice=this.selectedChoice;
+          this.currentQuest.blocks.push(this.currentBlock);
+        }
         this._handleQuest();
       }
     }
@@ -272,7 +280,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     return option.includes(tag) ? option.replace(tag, "").trim() : option;
   }
 
-  private _updateCurrentQuestSummary(){
+  private _readCurrentQuestSummary(){
     this._service.getById(this.currentQuest.id).subscribe(res => {
       this.currentQuest = res;
       if(this.currentQuest.blocks.length > 0){
@@ -384,7 +392,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           this.currentChoices.push(res.bad_choice);
           this.currentChoices = this._shuffledFinalOptions([...this.currentChoices]);
           this._addSceneMenuOption(this.currentBlock.id);
-          this._updateCurrentQuestSummary();
+          this._pathQuest();
         }
       }) 
   }
@@ -415,7 +423,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           ];
           
           this._addSceneMenuOption(this.currentBlock.id);
-          this._updateCurrentQuestSummary();
+          this._pathQuest();
         }
       }) 
   }
@@ -488,7 +496,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
             .then(res => {
               if(res){
                 this._snackBar.open("Current QUEST finished! ", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-                this._updateCurrentQuestSummary();
+                this._readCurrentQuestSummary();
               }
               else this._snackBar.open("An error has occured while settling the current game", undefined, { duration: 3000,panelClass: ['snack-error'], verticalPosition: 'bottom'});
             })
@@ -552,6 +560,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           console.log('-- on response --', res);
           if(this._isValidResponse(res)){
             if(this._handleResponseStream(res) && this.currentBlock){
+              this._isGameRecovery = false; // esto marca el init unicamente (para partidas empezadas)
               this.gameData.currentBlock++;
               this.currentBlock.id = this.gameData.currentBlock;
               this._addSceneMenuOption(this.currentBlock.id);
@@ -613,9 +622,10 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
               if(!this._isValidResponse(res)) return; 
               if(this.currentBlock){
                 this.currentBlock.options = [...res.options];
+                this.currentChoices = [...this.currentBlock.options];
                 this.currentBlock.options.push(`${res.bad_choice} <<BAD_CHOICE>>`);
-                this.currentChoices = [...res.options];
                 this.currentChoices.push(res.bad_choice);
+                this.currentChoices = this._shuffledFinalOptions([...this.currentChoices]);
                 this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
                 this._service.setQuestStatus(this.gameData.gameSessionId, 'ONGOING')
                 .pipe(catchError(error => {
@@ -628,6 +638,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
                   this.currentQuest = res;
                   this.gameData.gameStatus = this.currentQuest.status;
                   localStorage.setItem('game-data', JSON.stringify(this.gameData));
+                  this._pathQuest();
                   console.log('-- current intro --', this.currentQuest.intro);
                 })
               }
@@ -645,6 +656,18 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     })
   }
 
+  private _pathQuest(){
+    let questUpdate = {...this.currentQuest};
+    if(this.currentBlock)
+      questUpdate.blocks.push(this.currentBlock)
+    this._service.patchQuestBlocks(questUpdate)
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe(res => {
+        if(res)
+          this._readCurrentQuestSummary();
+        else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while patching the quest blocks');
+      });
+  }
   private _handleEndgameDisplay(lastChoice: string | null){
     if(this.currentBlock && lastChoice){
       let choiceToUpper = lastChoice.toUpperCase();

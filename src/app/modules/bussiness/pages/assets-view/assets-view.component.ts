@@ -161,7 +161,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
           if(walletNFTs.length > 0){
             if(this.customCharsCollection){
               this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
-                let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
+                let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetamaskIconBrown.png')`}
                 return asset;
               });
               this.onCollectionLoaded.emit({address: this.customCharsCollection.contractAddress, isCustom: false, assets: this.customCharsCollection.assets });

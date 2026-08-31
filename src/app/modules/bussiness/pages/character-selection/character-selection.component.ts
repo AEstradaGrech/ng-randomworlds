@@ -100,7 +100,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
       console.log('-- on col wallet resp --', walletNFTs);
       walletNFTs.forEach(async (nft:any) => {
         let isLocked = await this._smartContractsService.isAssetLocked(this.customCharsCollection?.contractAddress ?? '', true, nft.tokenId);
-        let asset:AssetModel = {...nft, isLocked: isLocked, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`};
+        let asset:AssetModel = {...nft, isLocked: isLocked, collectionLogoUrl: `url('assets/images/MetamaskIconBrown.png')`};
         if(asset.isLocked){
           asset.lockedUntil = Number(await this._smartContractsService.isLockedUntil(this.customCharsCollection?.contractAddress ?? '', true, asset.tokenId));
           let session = await this._smartContractsService.getPlayerSession(this.customCharsCollection?.contractAddress ?? '', nft.tokenId);

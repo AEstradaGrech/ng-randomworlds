@@ -18,7 +18,7 @@
         <mat-divider vertical="true"></mat-divider>
         <mat-card class="game-card" appearance="outlined">
             <mat-card-header>
-              <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': collectionLogoImg}"></div>
+              <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': collectionLogoImg(this.gameData.selectedCharacter.collectionLogoUrl)}"></div>
               <mat-card-title class="game-card-title">Random Quest </mat-card-title>
               <mat-card-subtitle class="game-card-subtitle">Progress in your story with the right choice. -- {{gameData.gameStatus}}</mat-card-subtitle>
             </mat-card-header>
