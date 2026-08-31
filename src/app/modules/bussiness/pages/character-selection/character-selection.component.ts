@@ -8,7 +8,7 @@ import web3 from 'src/app/core/scripts/web3';
 import { GameData, NftCardClickAction, RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router';
 import {ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
-import { defaultNftCardButtons } from 'src/app/core/constants/configs/nft-card';
+import { defaultNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { NotificationService } from 'src/app/modules/shared/services/notification.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 
@@ -32,40 +32,44 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
 
 
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
-  private _notificationService: NotificationService = inject(NotificationService);
+
   constructor(@Inject(DOCUMENT) private document:Document){
     super();
   }
-  // @HostListener('user-login', ['$event'])
-  // public onLoginChange()
+
   ngOnInit(): void {
     this._getCharactersData();
     this._smartContractsService.onAccountChanged.subscribe(newAddress => {
       this._getCharactersData();
-      this._notificationService.openSnack(ESnackAlertType.WARN, `Refreshing view for address: ${newAddress}`);
+      this._notificationsService.openSnack(ESnackAlertType.WARN, `Refreshing view for address: ${newAddress}`);
     })
     this._notificationsService.setup('center', 'bottom', 3000);
   }
-  private _getCharactersData(){
+  private async _getCharactersData(){
     this.collections = [];
     this.customCharsCollection = null;
-    this._smartContractsService.getCollectionsCatalogue().then(cat => {
-      cat.forEach(address => {
-        this._smartContractsService.getCollectionSummary(address).then(summary => {
-          console.log('summary', summary);
-          this.collections.push(summary);
-          this._smartContractsService.getAccountCollectionNFTs(address).then(walletNFTs => {
-            console.log('-- on col wallet resp --', walletNFTs)
-            let walletAssets: AssetModel[] = [];
-            walletNFTs.forEach((nft:WalletNFT) => {
-              let asset:AssetModel = {...nft, metadata: nft.metadata, collectionLogoUrl: `url(${summary.logoImage})`}
-              walletAssets.push(asset);
-            })
-            this.assets.update(x => [...this.assets(),...walletAssets]);
-          }) 
-        })
-      })
-    })
+    let cat = await this._smartContractsService.getCollectionsCatalogue();
+    if(!cat) return;
+    cat.forEach(async address => {
+      let summary = await this._smartContractsService.getCollectionSummary(address);
+      if(!summary) return;
+      this.collections.push(summary);
+      let walletNFTs = await this._smartContractsService.getAccountCollectionNFTs(address);
+      console.log('-- on col wallet resp --', walletNFTs);
+      walletNFTs.forEach(async (nft:WalletNFT) => {
+          let isLocked = await this._smartContractsService.isAssetLocked(address, false, nft.tokenId);
+          let asset:AssetModel = {...nft, metadata: nft.metadata, isLocked: isLocked, collectionLogoUrl: `url(${replaceEndpoint(summary.logoImage, 'IPFS', 'ALCHEMY')})`}
+          if(isLocked){
+            asset.lockedUntil = await this._smartContractsService.isLockedUntil(address, false, nft.tokenId);
+            let session = await this._smartContractsService.getPlayerSession(address, nft.tokenId);
+            asset.isInGame = session && session.startedAt > 0;
+            this.assets.update(x => [...this.assets(), asset]);
+          }
+          else this.assets.update(x => [...this.assets(), asset]);
+        });
+    });
+
+    
     this._smartContractsService.getCustomCharsCatalogue().then(cat => {
       if(cat) {
         this.customCharsCollection = {...cat, assets:[]};
@@ -73,19 +77,22 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
       }
     });
   }
-  private _getCustomCharacters(){
+  private async _getCustomCharacters(){
     if(this.customCharsCollection){
-      this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress)
-        .then(walletNFTs => {
-          console.log('-- on col wallet resp --', walletNFTs);
-          if(this.customCharsCollection){
-            this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
-            let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`}
-            return asset;
-          });
-          this.assets.update(x => [...this.assets(), ...this.customCharsCollection?.assets ?? []]);
-          }
-        })
+      let walletNFTs = await this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress)
+      console.log('-- on col wallet resp --', walletNFTs);
+      walletNFTs.forEach(async (nft:any) => {
+        let isLocked = await this._smartContractsService.isAssetLocked(this.customCharsCollection?.contractAddress ?? '', true, nft.tokenId);
+        let asset:AssetModel = {...nft, isLocked: isLocked, collectionLogoUrl: `url('assets/images/MetaMaskIconBrown.png')`};
+        if(asset.isLocked){
+          asset.lockedUntil = await this._smartContractsService.isLockedUntil(this.customCharsCollection?.contractAddress ?? '', true, asset.tokenId);
+          let session = await this._smartContractsService.getPlayerSession(this.customCharsCollection?.contractAddress ?? '', nft.tokenId);
+          asset.isInGame = session.startedAt > 0;
+          this.customCharsCollection?.assets.push(asset);
+        }
+        else this.customCharsCollection?.assets.push(asset);
+        this.assets.update(x => [...this.assets(), asset]);
+      });
     }
   }
   public onViewCollectionClick(address:string){
@@ -157,6 +164,6 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
       localStorage.setItem('game-data', JSON.stringify(gameData));
       this._router.navigateByUrl('randomworlds/world/generator')
     }
-    else this._notificationService.push('No Game Data has been found in memory, go back to the home page')
+    else this._notificationsService.push('No Game Data has been found in memory, go back to the home page')
   }
 }
