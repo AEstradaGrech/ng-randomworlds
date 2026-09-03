@@ -392,7 +392,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           this.currentChoices.push(res.bad_choice);
           this.currentChoices = this._shuffledFinalOptions([...this.currentChoices]);
           this._addSceneMenuOption(this.currentBlock.id);
-          this._pathQuest();
+          this._patchQuest();
         }
       }) 
   }
@@ -423,7 +423,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           ];
           
           this._addSceneMenuOption(this.currentBlock.id);
-          this._pathQuest();
+          this._patchQuest();
         }
       }) 
   }
@@ -638,7 +638,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
                   this.currentQuest = res;
                   this.gameData.gameStatus = this.currentQuest.status;
                   localStorage.setItem('game-data', JSON.stringify(this.gameData));
-                  this._pathQuest();
+                  this._patchQuest();
                   console.log('-- current intro --', this.currentQuest.intro);
                 })
               }
@@ -656,17 +656,20 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     })
   }
 
-  private _pathQuest(){
-    let questUpdate = {...this.currentQuest};
-    if(this.currentBlock)
-      questUpdate.blocks.push(this.currentBlock)
-    this._service.patchQuestBlocks(questUpdate)
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe(res => {
-        if(res)
-          this._readCurrentQuestSummary();
-        else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while patching the quest blocks');
-      });
+  private _patchQuest(){
+    this._service.getById(this.currentQuest.id).pipe(takeUntilDestroyed(this._destroyRef)).subscribe(quest => {
+      this.currentQuest = quest;
+      let questUpdate = {...this.currentQuest};
+      if(this.currentBlock)
+        questUpdate.blocks.push(this.currentBlock)
+      this._service.patchQuestBlocks(questUpdate)
+        .pipe(takeUntilDestroyed(this._destroyRef))
+        .subscribe(res => {
+          if(res)
+            this._readCurrentQuestSummary();
+          else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while patching the quest blocks');
+        });
+    })
   }
   private _handleEndgameDisplay(lastChoice: string | null){
     if(this.currentBlock && lastChoice){

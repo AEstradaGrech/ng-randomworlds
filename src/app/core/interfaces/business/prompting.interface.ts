@@ -121,7 +121,7 @@ export interface QuestBlockDto{
     scene:string,
     options:string[],
     choice:string | null,
-    summary:string
+    summary:string | null
 }
 export interface CharacterProfileMock{
     id:number,
