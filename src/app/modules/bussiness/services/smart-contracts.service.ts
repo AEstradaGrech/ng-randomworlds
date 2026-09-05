@@ -16,7 +16,7 @@ import { HttpClient } from '@angular/common/http';
 import { GameData, UserLogin } from '../../shared/models/common-interfaces';
 import { Router } from '@angular/router';
 import GameSession from 'src/app/core/scripts/gameSession';
-import { PlayerGameSession } from '../models/smart-contract.interfaces';
+import { PlayerGameSession, TxError } from '../models/smart-contract.interfaces';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 
 @Injectable({
@@ -28,6 +28,8 @@ export class SmartContractsService {
   public collectionAddresses: string[] = [];
   public onPaymentReceipt: EventEmitter<any> = new EventEmitter<any>();
   public onPaymentError: EventEmitter<any> = new EventEmitter<any>();
+  public onTxReceipt: EventEmitter<any> = new EventEmitter<any>()
+  public onTxError: EventEmitter<TxError> = new EventEmitter<TxError>();
   public onAccountChanged: EventEmitter<string> = new EventEmitter<string>(); 
   public onImmutableCatalogue: EventEmitter<boolean> = new EventEmitter<boolean>();
   private _connectedAccount!:string;
@@ -200,6 +202,31 @@ export class SmartContractsService {
     let session = await this.getPlayerSession(collection, tokenId);
 
     return session && session.player !== this.connectedWallet;
+  }
+
+  public async tryWinnerWithdraw() : Promise<boolean>{
+    let gameSession:any = GameSession(this.web3);
+
+    if(!gameSession) return false;
+    
+    try{
+      let result: boolean = false;
+      await gameSession.methods.withdraw().send({from: this.connectedWallet })
+        .on('receipt',(receipt:any) => {
+          this.onTxReceipt.emit(receipt);
+          result = true;
+        })
+        .on('error', (error: any, receipt: any) => {
+          this.onTxError.emit({error: error, receipt: receipt });
+          result = false;
+        });
+      
+      return result;
+    }
+    catch(e){
+      this.onTxError.emit({error:e});
+      return false;
+    }
   }
 
   public async abandonGame(collection:string, tokenId: number) : Promise<boolean>{

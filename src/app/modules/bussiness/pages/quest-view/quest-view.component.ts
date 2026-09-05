@@ -15,6 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { ESnackAlertType, GameOutcome } from 'src/app/modules/shared/models/common-enums';
 import { SmartContractsService } from '../../services/smart-contracts.service';
+import { TxError } from '../../models/smart-contract.interfaces';
 
 
 @Component({
@@ -101,6 +102,12 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   ngOnInit(): void {
+    this._web3Service.onTxError
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((res: TxError) => {
+        console.log('-- ON TX ERROR --', res);
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, res.error, false);
+      });
     this._setupGameData();
   }
   ngOnDestroy(): void {   
@@ -497,6 +504,10 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
               if(res){
                 this._snackBar.open("Current QUEST finished! ", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
                 this._readCurrentQuestSummary();
+                if(this.gameData.gameStatus === 'COMPLETED'){
+                  this._web3Service.tryWinnerWithdraw();
+                }
+
               }
               else this._snackBar.open("An error has occured while settling the current game", undefined, { duration: 3000,panelClass: ['snack-error'], verticalPosition: 'bottom'});
             })
