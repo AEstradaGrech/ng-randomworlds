@@ -678,6 +678,7 @@ private getDefaultCurrencyTitle() : string {
       decimals: decimals
     }
     this._paymentTokens.set(symbol, tokenDetails);
+    //Si no hay ticket por redimir, se añade opcion de pago con WORDS
     if(!this.currentTicket())
       this.availableTokens.update(v => [...v, symbol]);
     

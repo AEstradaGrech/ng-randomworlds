@@ -548,4 +548,59 @@ export class SmartContractsService {
     let purchases = await this.getCustomCharactersContract(contract).methods.availablePurchases().call({from: this.connectedWallet});
     return parseInt(purchases);
   }
+
+  /*
+    To let the collection contract burn your WORDS, the token needs an allowance. The old-school way is two transactions:
+
+      1 - WORDS.approve(collection, cost) — you sign & send a tx setting the allowance (gas + MetaMask popup #1)
+      2 -collection.wordsPurchase() — which internally calls WORDS.burnFrom(you, cost) (gas + MetaMask popup #2)
+
+    'permit' (EIP-2612) replaces the approve transaction with an approve signature. 
+    You sign a message off-chain — no gas, MetaMask shows a "signature request," not a transaction — that says "I authorize collection to spend cost of my WORDS, until deadline." 
+    That signature is cryptographic proof of your authorization. The contract then submits that proof via permit(...), which sets the allowance inside the same transaction as the burn. One tx total.
+
+    > What are v, r, s?
+
+    They're the three pieces of your ECDSA signature. Every Ethereum signature is 65 bytes:
+
+      signature = r (32 bytes) + s (32 bytes) + v (1 byte)
+    
+    - r and s are the two numbers the signature math produces.
+    - v is the "recovery id" (27 or 28) that tells the EVM which of two possible keys created the signature.
+
+    Together, (v, r, s) let the contract run ecrecover and recover who signed — and check it matches the WORDS owner. permit takes them split out because the EVM's ecrecover precompile wants them as three separate arguments. Your frontend produces them like this:
+
+        const sig = await wordsToken.signTypedData(domain, types, message); // EIP-712 permit; user signs, no gas
+        const { v, r, s } = ethers.Signature.from(sig);                     // split the 65-byte sig
+        await collection.wordsPurchase(deadline, v, r, s);                  // one transaction
+
+    'deadline' is just an expiry timestamp — after it, the signature is dead (so an old permit can't be reused forever).
+
+    > Specification of the Web3 API:
+
+      Two methods are added to Web3.js version 1 that parallel the web3.eth.sign and web3.eth.personal.sign methods.
+
+      --> Signs typed data using a specific account. This account needs to be unlocked.
+        web3.eth.signTypedData(typedData, address [, callback])
+      
+      Parameters
+        Object - Domain separator and typed data to sign. Structured according to the JSON-Schema specified above in the eth_signTypedData JSON RPC call.
+        String|Number - Address to sign data with. Or an address or index of a local wallet in :ref:web3.eth.accounts.wallet <eth_accounts_wallet>.
+        Function - (optional) Optional callback, returns an error object as first parameter and the result as second.
+
+      Note: The 2. address parameter can also be an address or index from the web3.eth.accounts.wallet <eth_accounts_wallet>. It will then sign locally using the private key of this account.
+
+      Returns: Promise returns String - The signature as returned by eth_signTypedData.
+
+      Example:
+      See the eth_signTypedData JSON-API example above for the value of typedData.
+
+      web3.eth.signTypedData(typedData, "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")
+      .then(console.log);
+      > "0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b915621c"
+      
+      --> Identical to web3.eth.signTypedData except for an additional password parameter analogous to web3.eth.personal.sign.
+        web3.eth.personal.signTypedData(typedData, address, password [, callback])
+      
+    */
 }
