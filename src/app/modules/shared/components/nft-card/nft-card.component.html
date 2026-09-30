@@ -9,7 +9,7 @@
     <div class="card-body">
         <img mat-card-image class="game-card-image" [src]="model.imageEndpoint" alt="Character NFT image">
     </div>
-    <mat-card-actions class="game-card-actions"> <!--A: project btns - B: btnConfig & app-rounded btn-->
+    <mat-card-actions class="game-card-actions">
         @for(btn of cardButtons; track btn){
             <app-rounded-button 
             [id]="btn.id"
@@ -19,7 +19,7 @@
             [hoverColor]="btn.hoverColor"
             [borderColor]="btn.borderColor"
             [withSpinner]="btn.withSpinner"
-            [disabled]="btn.disabled"
+            [disabled]="btn.disabled ?? false"
             (onClickEvent)="onButtonClick($event)">
             </app-rounded-button>
         }

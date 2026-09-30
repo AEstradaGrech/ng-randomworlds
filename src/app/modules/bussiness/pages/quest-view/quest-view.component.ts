@@ -81,7 +81,9 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   public collectionLogoImg(imgUrl: string):string{
-    return replaceEndpoint(imgUrl, 'IPFS', 'ALCHEMY');
+    return imgUrl === '' ? 
+    'url(assets/images/RandomWorldsLogo.png)' :
+    replaceEndpoint(imgUrl, 'IPFS', 'ALCHEMY');
   }
 
   @HostListener('window:storage', ['$event'])

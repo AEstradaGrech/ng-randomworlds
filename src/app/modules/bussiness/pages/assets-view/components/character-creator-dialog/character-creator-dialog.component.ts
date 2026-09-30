@@ -151,7 +151,7 @@ private getDefaultCurrencyTitle() : string {
   profileImagesCount = computed(() => {
     let profile: RandomWorldsCharacter | null = this.currentProfile();
     if(profile && this.currentImage()){
-      return this.characterImages.has(profile) ? this.characterImages.get(profile)?.length : 0;
+      return this.characterImages.get(profile)?.length ?? 0;
     }
     else return 0;
   });
@@ -489,14 +489,11 @@ private getDefaultCurrencyTitle() : string {
   }
 
   onEnhanceImagePromptClick(){
-    console.log('-- on enhance image --', this.currentProfile());
     this.isLoading = true;
     this.isEnhancing = true;
-    let profile:RandomWorldsCharacter|null = this.currentProfile();
-
+    const profile:RandomWorldsCharacter|null = this.currentProfile();
     if(profile){
       this._charactersService.generateCharacterImagePrompt(profile).subscribe(res => {
-        console.log('-- on image prompt generated --', res);
         this.characterPrompts.get(profile)?.push(res.content);
         console.log(this.characterPrompts.get(profile));
         this.imagePrompts.update(v => [...this.characterPrompts.get(profile) ?? []]);
@@ -505,13 +502,17 @@ private getDefaultCurrencyTitle() : string {
         this.isEnhancing = false;
       });
     }
+    else{
+      this.isLoading = false;
+      this.isEnhancing = false;
+    }
   }
 
   onGenerateImageClick(){
     console.log('-- on generate image --', this.currentProfile);
     this.isLoading = true;
     this.isGeneratingImage = true;
-    let profile: RandomWorldsCharacter | null = this.currentProfile();
+    const profile: RandomWorldsCharacter | null = this.currentProfile();
     if(profile){
       let req: GenerateImageRequest = {
         name:'chartest',
@@ -544,6 +545,10 @@ private getDefaultCurrencyTitle() : string {
         }
         else this._notificationsService.openSnack(ESnackAlertType.ERROR, "An error has occured while generating the NFT image");
       })
+    }
+    else{
+      this.isLoading = false;
+      this.isGeneratingImage = false;
     }
   }
 

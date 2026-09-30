@@ -14,9 +14,9 @@ export class RoundedButtonComponent implements OnInit, OnChanges {
   }
 
   @Input() id: string | undefined = undefined;
-  @Input() iconName: string = '';
+  @Input() iconName: string | undefined = undefined;
   @Input() bgImageIcon:string = 'url(assets/images/MetamaskIconBrown.png)'
-  @Input() iconColor!: string;
+  @Input() iconColor: string | undefined;
   @Input() withSpinner: boolean = false;
   @Input() badgeValue!: number | null;
   @Input() disabled: boolean = false;
