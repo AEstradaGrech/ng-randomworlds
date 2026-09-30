@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core'
 import { MatTable } from '@angular/material/table'
-import { MatIconModule } from '@angular/material/icon'
-import { MatListModule } from '@angular/material/list'
 import { MatPaginatorModule } from '@angular/material/paginator'
 import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDivider } from '@angular/material/divider'
 import {MatExpansionModule} from '@angular/material/expansion'
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -29,8 +26,6 @@ import {MatBadgeModule} from '@angular/material/badge';
 @NgModule({
 declarations:[],
 imports:[
-    MatListModule,
-    MatIconModule, 
     MatTable,
     MatLabel,
     MatFormField,
@@ -39,7 +34,6 @@ imports:[
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatDivider ,
     MatSlideToggleModule,
     MatMenuModule, 
     CdkDrag,
@@ -49,8 +43,6 @@ imports:[
     MatBadgeModule
 ],
 exports:[
-    MatListModule,
-    MatIconModule,
     MatTable,
     MatLabel,
     MatFormField,
@@ -59,7 +51,6 @@ exports:[
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatDivider,
     MatExpansionModule,
     MatSlideToggleModule,
     MatDialogModule,

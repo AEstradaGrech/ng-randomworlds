@@ -530,7 +530,7 @@ export class SmartContractsService {
   }
 
   public getWalletNFTsObservable(collectionAddress:string) : Observable<WalletNFT[]>{
-    return this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/0xee6870759cbddfb12ee3a4547c35ffb667717df4/collection-address/${collectionAddress}`);
+    return this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${this.connectedWallet}/collection-address/${collectionAddress}`);
   }
 
   public async getAccountCollectionNFTs(collectionAddress:string) : Promise<WalletNFT[]>{

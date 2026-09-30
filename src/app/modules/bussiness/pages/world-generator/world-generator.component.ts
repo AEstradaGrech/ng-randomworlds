@@ -57,7 +57,20 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   private _service = inject(QuestsService);
   private _web3Service = inject(SmartContractsService);
 
-  private _disableControlEffect?: EffectRef;
+  private _disableControlEffect?: EffectRef = effect(() => {
+    if (!this.form) return;
+    const quest = this.selectedQuest();
+    // Decide whether controls should be disabled: when a quest exists and its status is not NOT_STARTED
+    const shouldDisable = !!quest ? quest.status !== 'NOT_STARTED' : false;
+    // Iterate all controls in the FormGroup and enable/disable as needed
+    Object.values(this.form.controls).forEach(ctrl => {
+      if (shouldDisable) {
+        if (!ctrl.disabled) ctrl.disable({ emitEvent: false });
+      } else {
+        if (ctrl.disabled) ctrl.enable({ emitEvent: false });
+      }
+    });
+  });
 
   private _gameData!:GameData;
   separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -175,24 +188,8 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
         genres: new FormControl(''),
         constraints: new FormControl(this.selectedConstraints),
         plot: new FormControl('', [Validators.maxLength(200)])
-        //desiredName: new FormControl(undefined, [Validators.maxLength(30)])
       });
 
-      // EFFECT --> PARA MOVIDAS CON LOGICA CAMBIO ESTADO. COMPUTED PARA COSAS READONLY
-      this._disableControlEffect = effect(() => {
-        if (!this.form) return;
-        const quest = this.selectedQuest();
-        // Decide whether controls should be disabled: when a quest exists and its status is not NOT_STARTED
-        const shouldDisable = !!quest ? quest.status !== 'NOT_STARTED' : false;
-        // Iterate all controls in the FormGroup and enable/disable as needed
-        Object.values(this.form.controls).forEach(ctrl => {
-          if (shouldDisable) {
-            if (!ctrl.disabled) ctrl.disable({ emitEvent: false });
-          } else {
-            if (ctrl.disabled) ctrl.enable({ emitEvent: false });
-          }
-        });
-      });
       // Keep the 'plot' control disabled/enabled in sync with the computed signal used by other inputs.
       if (this.formControlDisabled()) {
         this.form.controls['plot'].disable();

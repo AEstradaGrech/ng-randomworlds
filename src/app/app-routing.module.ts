@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from './core/layout/app-layout/layout.component';
-import { HomeComponent } from './modules/bussiness/pages/home/home.component';
 import { AuthLayoutComponent } from './core/layout/auth-layout/auth-layout.component';
 
 const routes: Routes = [
@@ -21,7 +20,7 @@ const routes: Routes = [
       children: [
           {
               path: 'randomworlds',
-              loadChildren: () => import('./modules/bussiness/bussiness.module').then((module) => module.BussinessModule) // luego en cada modulo configuro las rutas a comps
+              loadChildren: () => import('./modules/bussiness/bussiness.module').then((module) => module.BussinessModule)
           }
       ]
   }
