@@ -11,96 +11,88 @@
 	"factoryAddress": "0x796D0Ca607b9bCF96C6f1025e2d576820e3c5c36",
 	"collectionAddress": "0x3bCE8B8CB077Bfb6Cdcb62e1a0a6b09baDaB2a22",
 	"factoryABI": [
-		{
-			"inputs": [
-
-			],
-			"stateMutability": "nonpayable",
-			"type": "constructor"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "string",
-					"name": "tokenName",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "tokenSymbol",
-					"type": "string"
-				},
-				{
-					"internalType": "uint256",
-					"name": "mintPrice",
-					"type": "uint256"
-				},
-				{
-					"internalType": "uint256",
-					"name": "maxMints",
-					"type": "uint256"
-				}
-			],
-			"name": "deployCollection",
-			"outputs": [
-
-			],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-
-			],
-			"name": "getCatalogue",
-			"outputs": [
-				{
-					"components": [
-						{
-							"internalType": "address",
-							"name": "contractAddress",
-							"type": "address"
-						},
-						{
-							"internalType": "string",
-							"name": "name",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
-							"name": "symbol",
-							"type": "string"
-						},
-						{
-							"internalType": "uint256",
-							"name": "weiMintPrice",
-							"type": "uint256"
-						}
-					],
-					"internalType": "struct RandomCharactersFactory.CollectionInfo[]",
-					"name": "",
-					"type": "tuple[]"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [
-
-			],
-			"name": "owner",
-			"outputs": [
-				{
-					"internalType": "address",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		}
-	],
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "tokenName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "tokenSymbol",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "mintPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxMints",
+        "type": "uint256"
+      }
+    ],
+    "name": "deployCollection",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getCatalogue",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "contractAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "weiMintPrice",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct RandomCharactersFactory.CollectionInfo[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+],
 	"totalCollections": 1,
 	"collectionABI": [
 		{

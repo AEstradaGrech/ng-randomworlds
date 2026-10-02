@@ -3,6 +3,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA
 } from '@angular/material/dialog';
+import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
 
 @Component({
@@ -36,6 +37,10 @@ export class CharDetailDialogComponent implements OnInit{
           this.moods += ', ';
       }
     }
+  }
+
+  public replaceImgEndpoint(url: string) : string {
+    return replaceEndpoint(url, 'IPFS', 'ALCHEMY');
   }
   public onClose(){
     this._dialog.close();

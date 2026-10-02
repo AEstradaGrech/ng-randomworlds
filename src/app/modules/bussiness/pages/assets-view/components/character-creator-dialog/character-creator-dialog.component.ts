@@ -18,8 +18,9 @@ import { MgmtService } from 'src/app/modules/bussiness/services/mgmt.service';
 import { SmartContractsService } from 'src/app/modules/bussiness/services/smart-contracts.service';
 import { CustomCharsCatalogue, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
-import { catchError, of } from 'rxjs';
+import { catchError, defer, filter, finalize, forkJoin, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-character-creator-dialog',
@@ -159,29 +160,26 @@ private getDefaultCurrencyTitle() : string {
   characterImages: Map<RandomWorldsCharacter, GenerateImageResponse[]> = new Map<RandomWorldsCharacter, GenerateImageResponse[]>();
 
   ngOnInit(): void {
-    this.onContractLoaded.subscribe((contractAddress:string) => {
-      if(this._web3Service.connectedWallet){
-        this._mgmtService.getCurrentTicket(this._web3Service.connectedWallet, contractAddress, true)
-          .pipe(takeUntilDestroyed(this._destroyRef))
-          .subscribe(res => {
-            console.log('-- UNREDEEMED TICKET --', res);
-            if(res && !res.isRedeemed) {
-              this.currentTicket.set(res);
-              this._web3Service.getAvailableCharPurchases(contractAddress).then(res => {
-                if(res && res > 0){
-                  this.availablePurchases.update(v => res);
-                  this.availableTokens.set(["REDEEM"]);
-                  this.selectedCurrency.set(this.availableTokens()[0]);
-                  this._displayUnredeemedTicket();
-                  // ONPAYCLICK_IF_REDEEM -> GET_CURRENT_TICKET_META & REDEEM ELSE PAY
-                }
-                else this._setForPurchase(contractAddress, this.currentTicket());
-              });
-            }
-            else this._setForPurchase(contractAddress, res);
-          })
-      }
+    this.onContractLoaded.pipe(
+      filter(() => !!this._connectedWallet),
+      switchMap(address => 
+        this._ticketState$(address)
+          .pipe(
+            map(state => ({address, ...state}))
+          )
+      ),
+      switchMap(
+        ({address, ticket, purchases}) => {
+          return ticket && !ticket.isRedeemed && purchases > 0 ?
+            of(this._setForRedeem(ticket, purchases)) :
+            this._setForPurchase$(address, ticket)
+        }
+      ),
+      takeUntilDestroyed(this._destroyRef)
+    ).subscribe({ 
+      error: (err: HttpErrorResponse) => this._notificationsService.openSnack(ESnackAlertType.ERROR, `Could not load your pending ticket: ${err.message}`, true),
     });
+
     this.onTicketPurchased.subscribe((data: any) => {
       console.log('purchase transaction', data.receipt.transactionHash);
       let wallet:string | null = data.receipt.from;
@@ -218,30 +216,21 @@ private getDefaultCurrencyTitle() : string {
       })
     });
 
-    this.onTokenUploaded.subscribe(ticket => {
-      if(ticket.metaUri && ticket.mintSignature){
-        console.log('redeeming ticket w/metaUri: ', ticket.metaUri);
-        this._web3Service.redeemCustomCharNFT(this._charsContractInfo.contractAddress, ticket.metaUri, ticket.mintSignature)
-          .on('receipt', (receipt:any) => {
-            console.log('-- on etherMint receipt --', receipt);
-              this.isLoading = false;
-              this.isMinting = false;
-              if(ticket.id){
-                this._mgmtService.setTicketRedeemed(ticket.id)
-                  .pipe(takeUntilDestroyed(this._destroyRef))
-                  .subscribe(res => {
-                    this._dialogRef.close(res);   
-                  });
-              }
-              else this._dialogRef.close(ticket);
-          })
-          .on('error', (error:any, receipt:any) => {
-            console.log('-- on ether collection mint error --', error, receipt); 
-            this.isLoading = false;
-            this.isMinting = false;
-          });
-      }
-    });
+    this.onTokenUploaded.pipe(
+      filter(() => !!this._charsContractInfo),
+      finalize(() => {
+        this.isLoading = false;
+        this.isMinting = false;
+      }),
+      takeUntilDestroyed(this._destroyRef)
+    ).subscribe({
+      next: (ticket => {
+        defer(() => this._web3Service.redeemCustomCharNFT(this._charsContractInfo.contractAddress, ticket.metaUri ?? '', ticket.mintSignature ?? '')
+          .pipe('receipt'/*TODO */)
+        )
+      }),
+      error: (error: HttpErrorResponse) => this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message)
+    })
 
     let wallet = this._web3Service.connectedWallet;
     if(!wallet){
@@ -264,16 +253,21 @@ private getDefaultCurrencyTitle() : string {
     if(!this._connectedWallet){
       this._notificationsService.openSnack(ESnackAlertType.WARN, "No connected wallet found, mint service unavailable");
     }
-    this._imagesService.getAmbiences().subscribe(res => {
-      console.log('-- on ambiences response --', res);
-      this.availableAmbiences = res.data.map((item:SystemMessageDto) => item.description);
-      console.log('-- mapped ambiences --', this.availableAmbiences);
-    });
-    this._imagesService.getMoods().subscribe(res => {
-      console.log('-- on moods response --', res);
-      this.availableMoods = res.data.map((item:SystemMessageDto) => item.description);
-      console.log('-- mapped moods --', this.availableMoods);
-    });
+
+    forkJoin({
+      ambiences: this._imagesService.getAmbiences(), 
+      moods: this._imagesService.getMoods()
+    }).pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe({
+        next: ({ambiences, moods}) => {
+          this.availableAmbiences = this._mapSysMessageDescriptions(ambiences.data);
+          this.availableMoods = this._mapSysMessageDescriptions(moods.data)
+        },
+        error: (error:HttpErrorResponse) => {
+          this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while loading the ambiences and moods: ${error.message}`);
+        }
+      });
+
     this.form = this._formBuilder.group({
       name: new FormControl(''),
       age: new FormControl(''),
@@ -289,23 +283,54 @@ private getDefaultCurrencyTitle() : string {
     this._displayTabChangeAlerts("Ambiences");
   }
   
-  private _setForPurchase(contractAddress: string, invalidTicket: TicketDto | null){
-    if(invalidTicket && invalidTicket.id){
-      this._mgmtService.deleteTicket(invalidTicket.id)
-        .pipe(takeUntilDestroyed(this._destroyRef))
-        .subscribe(res => {
-          if(!res){
-            this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while deleting an invalid ticket');  
-          }
-      })
-    }
-    this.currentTicket.set(null);
-    this._setupWordsTokenDetails(contractAddress).then(response => {
-    if(response && response.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
-      this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
-    });
+  private _mapSysMessageDescriptions(data :any) : string[]{
+    return data.map((item: SystemMessageDto) => item.description);
   }
   
+  private _ticketState$(address:string) : Observable<{ticket:TicketDto | null, purchases: number}>{
+    return this._mgmtService.getCurrentTicket(this._connectedWallet!, address, true)
+      .pipe(
+        catchError((error: HttpErrorResponse) => error.status === 404 ? of(null) : throwError(() => error)),
+        switchMap(ticket => !ticket || ticket.isRedeemed ? 
+          of({ticket, purchases: 0}) :
+          defer(() => this._web3Service.getAvailableCharPurchases(address))
+            .pipe(
+              map(purchases => ({ticket, purchases}))
+            )
+        )
+      )
+  }
+
+  private _setForPurchase$(contractAddress: string, invalidTicket: TicketDto | null) : Observable<TokenDetails | null>{
+    //delete$
+    const cleanup$ = invalidTicket && invalidTicket.id ?
+     this._mgmtService.deleteTicket(invalidTicket?.id).pipe(
+      catchError(error => {
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while deleting an invalid ticket');  
+        return of(null) // No se pasa el error al resto del pipe
+      })
+    ) : of(null);
+
+    const wordsSetup$ = defer(() => this._setupWordsTokenDetails(contractAddress)).pipe(
+      tap(details => { // si hay details (llamada OK), se hace un tap y se gestiona la UI porque no hace falta devolver los details
+        if(details && details.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
+          this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
+      })
+      //si hubiese un error, caeria en el pipe principal?
+    )
+    return forkJoin([cleanup$, wordsSetup$]).pipe(
+      map(([,details]) => details)
+    )
+  }
+
+  private _setForRedeem(ticket:TicketDto, purchases: number){
+    this.currentTicket.set(ticket);
+    this.availablePurchases.update(v => purchases);
+    this.availableTokens.set(["REDEEM"]);
+    this.selectedCurrency.set(this.availableTokens()[0]);
+    this._displayUnredeemedTicket();
+  }
+
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
