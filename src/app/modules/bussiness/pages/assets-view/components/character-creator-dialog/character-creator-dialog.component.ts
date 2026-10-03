@@ -260,7 +260,7 @@ private getDefaultCurrencyTitle() : string {
      if(!this._charsContractInfo)
       throw new Error('No Characters contract info');
     return defer(() => this._web3Service.getCurrentChainId()).pipe(
-      catchError(error => throwError(() => new Error(`An error has occured while retrieving the current chain ID >> ${error.message}`))), // else throw error for display to outer stream
+      catchError(error => throwError(() => new Error(`An error has occured while retrieving the current chain ID >> ${error.message}`))),
       switchMap(chain => {
         const wallet:string | null = data.receipt.from;
         const profile: RandomWorldsCharacter | null = this.currentProfile();
@@ -277,7 +277,7 @@ private getDefaultCurrencyTitle() : string {
         }
         return this._mgmtService.uploadCustomCharacter(wallet, this._charsContractInfo.contractAddress, ticket)
           .pipe(
-            catchError(e =>  throwError(() => new Error(`An error has occured while uploading the NFT data >> ${e}`))) // else throw error for display to outer stream
+            catchError(e =>  throwError(() => new Error(`An error has occured while uploading the NFT data >> ${e}`))) 
           )
       })
     )}
@@ -341,6 +341,10 @@ private getDefaultCurrencyTitle() : string {
   }
 
   drop(event: CdkDragDrop<string[]>) {
+    if(this.selectedAmbiences.length + this.selectedMoods.length > 6){
+      this._notificationsService.openSnack(ESnackAlertType.WARN, 'You have already selected a total of 6 ambiences and moods');
+      return;
+    }
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -352,8 +356,7 @@ private getDefaultCurrencyTitle() : string {
       );
     }
   }
-  //selectedCurrency = signal<string>
-  // tabTitle=computed => currency - value
+
   onSelectedTokenChange(event: string){
     this.selectedCurrency.update(v => event);
   }
@@ -454,12 +457,10 @@ private getDefaultCurrencyTitle() : string {
     this._displayTabChangeAlerts(event.tab.textLabel);
   }
   onGenerateProfileClick(){
-    console.log('-- on generate character profile --');
     if(this.selectedAmbiences.length === 0 && this.selectedMoods.length === 0){
       this._notificationsService.openSnack(ESnackAlertType.ERROR, "Cannot create a character profile without at least one selected AMBIENCE and/or MOOD");
       return;
     }
-    
     let req: CreateCharacterRequest = {
       name: this.form.get('name')?.value.trim(),
       age: this.form.get('age')?.value.trim(),
@@ -468,20 +469,21 @@ private getDefaultCurrencyTitle() : string {
       suggestions: this.suggestbox.nativeElement.value.trim(),
       constraints: this.constraintsbox.nativeElement.value.trim().length > 0 ? [this.constraintsbox.nativeElement.value] : []
     }
-
     if(!this.isRandomGenre)
       req.constraints.push(this.form.get('isFemaleChar')?.value ? 'The generated character MUST be a female.' : 'The generated character MUST be a male.');
-    console.log('on generate profile click', req);
     this.isLoading = true;
-    this._charactersService.generateCharacterProfile(req).subscribe(res => {
-      console.log('-- on char profile response --', res);
-      if(this.showSettings)
-        this.showSettings = false;
-      
-      this._updateProfiles(res, false);
-      
-      this.isLoading = false;
-    });
+    this._charactersService.generateCharacterProfile(req)
+      .pipe(
+        finalize(() => this.isLoading = false),
+        takeUntilDestroyed(this._destroyRef)
+      ).subscribe({
+        next: res => {
+          if(this.showSettings)
+            this.showSettings = false;
+          this._updateProfiles(res, false);
+        },
+        error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while generating the character profile >> ${error.message}`)
+      });
   }
 
   public onSaveDatasetChar(){
@@ -502,10 +504,13 @@ private getDefaultCurrencyTitle() : string {
         console.log('on generate profile click', req);
         this.isLoading = true;
         this._charactersService.generateCharacterProfile(req)
-        .subscribe(res => {
-          console.log('-- on char profile response --', res);
-          this._notificationsService.push('Character saved for dataset');
-          this.isLoading = false;
+        .pipe(
+          finalize(() => this.isLoading = false),
+          takeUntilDestroyed(this._destroyRef),
+        )
+        .subscribe({
+          next: res => this._notificationsService.push('Character saved for dataset'),
+          error: error => this._notificationsService.openSnack(ESnackAlertType.WARN, `An error has occured while saving the dataset character >> ${error.message}`)
         });
     }
   }
@@ -523,31 +528,31 @@ private getDefaultCurrencyTitle() : string {
   }
 
   onEnhanceImagePromptClick(){
-    this.isLoading = true;
-    this.isEnhancing = true;
     const profile:RandomWorldsCharacter|null = this.currentProfile();
     if(profile){
-      this._charactersService.generateCharacterImagePrompt(profile).subscribe(res => {
-        this.characterPrompts.get(profile)?.push(res.content);
-        console.log(this.characterPrompts.get(profile));
-        this.imagePrompts.update(v => [...this.characterPrompts.get(profile) ?? []]);
-        this.imagepromptbox.nativeElement.value = res.content;
-        this.isLoading = false;
-        this.isEnhancing = false;
+      this.isLoading = true;
+      this.isEnhancing = true;
+      this._charactersService.generateCharacterImagePrompt(profile)
+        .pipe(
+          finalize(() => {this.isLoading = false; this.isEnhancing = false}),
+          takeUntilDestroyed(this._destroyRef)
+      ).subscribe({ 
+        next: res => {
+          this.characterPrompts.get(profile)?.push(res.content);
+          console.log(this.characterPrompts.get(profile));
+          this.imagePrompts.update(v => [...this.characterPrompts.get(profile) ?? []]);
+          this.imagepromptbox.nativeElement.value = res.content;
+        },
+        error: error => this._notificationsService.push(`An error has occured while generating the enhanced image prompt >> ${error.message}`)
       });
-    }
-    else{
-      this.isLoading = false;
-      this.isEnhancing = false;
     }
   }
 
   onGenerateImageClick(){
-    console.log('-- on generate image --', this.currentProfile);
-    this.isLoading = true;
-    this.isGeneratingImage = true;
     const profile: RandomWorldsCharacter | null = this.currentProfile();
     if(profile){
+      this.isLoading = true;
+      this.isGeneratingImage = true;
       let req: GenerateImageRequest = {
         name:'chartest',
         diffuser_name: this.diffusionSettings.current_integration_settings.current_model ?? '',
@@ -563,31 +568,27 @@ private getDefaultCurrencyTitle() : string {
         file_save: true,
         cache_diffusion_pipe: true
       }
-      this._imagesService.generate(this.diffusionSettings.current_integration_settings.name, req).subscribe(res => {
-        console.log('-- on generated image --', res);
-        this.isGeneratingImage = false;
-        this.isLoading = false;
-        if(res.length > 0){
-          let profile: RandomWorldsCharacter | null = this.currentProfile();
-          if(profile){
-            this.currentImage.set(res[0]);
-            if(this.characterImages.has(profile))
-              this.characterImages.get(profile)?.push(res[0]);
+      this._imagesService.generate(this.diffusionSettings.current_integration_settings.name, req)
+        .pipe(
+          finalize(() => { this.isGeneratingImage = false; this.isLoading = false;}),
+          takeUntilDestroyed(this._destroyRef)
+        ).subscribe({
+          next: res => {
+            if(res.length > 0){
+              this.currentImage.set(res[0]);
+              if(this.characterImages.has(profile))
+                this.characterImages.get(profile)?.push(res[0]);
 
-            else this.characterImages.set(profile,res);
-          }
-        }
-        else this._notificationsService.openSnack(ESnackAlertType.ERROR, "An error has occured while generating the NFT image");
+              else this.characterImages.set(profile,res);
+            }
+          },
+          error: error =>  this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while generating the NFT image >> ${error.message}`)
       })
     }
-    else{
-      this.isLoading = false;
-      this.isGeneratingImage = false;
-    }
+    else this._notificationsService.openSnack(ESnackAlertType.WARN, 'No character profile has been generated');
   }
 
   onCharacterGenreToggle(event: MatSlideToggleChange){
-    console.log('-- on toggle change --');
     this.isFemaleChar = event.checked;
     this.form.get('isFemaleChar')?.setValue(this.isFemaleChar);
     this._updateImageUrl(this.form.get('isFemaleChar')?.value);
@@ -611,14 +612,12 @@ private getDefaultCurrencyTitle() : string {
       this.availableMoods.push(item);
   }
   onImagePromptPageChange(event:PageEvent){
-    console.log('-- on image prompt page --', event);
     if(event.pageIndex >= this.imagePrompts().length) return;
     let prompt = this.imagePrompts()[event.pageIndex];
    
     this.imagepromptbox.nativeElement.value = prompt;
   }
   onProfilePageChange(event:PageEvent){
-    console.log('-- on profile page --',event);
     if(event.pageIndex >= this.generatedProfiles().length) return;
     let profile = this.generatedProfiles()[event.pageIndex];
     this._currentProfileIdx = event.pageIndex;
