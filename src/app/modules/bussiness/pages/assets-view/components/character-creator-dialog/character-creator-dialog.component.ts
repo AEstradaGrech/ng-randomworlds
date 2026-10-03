@@ -18,7 +18,7 @@ import { MgmtService } from 'src/app/modules/bussiness/services/mgmt.service';
 import { SmartContractsService } from 'src/app/modules/bussiness/services/smart-contracts.service';
 import { CustomCharsCatalogue, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
-import { catchError, defer, filter, finalize, forkJoin, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import { catchError, concatMap, defer, EMPTY, exhaustMap, filter, finalize, forkJoin, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -180,57 +180,26 @@ private getDefaultCurrencyTitle() : string {
       error: (err: HttpErrorResponse) => this._notificationsService.openSnack(ESnackAlertType.ERROR, `Could not load your pending ticket: ${err.message}`, true),
     });
 
-    this.onTicketPurchased.subscribe((data: any) => {
-      console.log('purchase transaction', data.receipt.transactionHash);
-      let wallet:string | null = data.receipt.from;
-      let profile: RandomWorldsCharacter | null = this.currentProfile();
-      let image: GenerateImageResponse | null = this.currentImage();
-      this._web3Service.getCurrentChainId().then(chain => {
-        if(wallet && profile && image){
-          let ticket: MintCharacterRequest = {
-            chainId: chain,
-            txHash: data.receipt.transactionHash,
-            currency: data.currency,
-            price: web3.utils.fromWei(data.price, 'ether'),
-            character: profile,
-            base64: image.base64
-          }
-          this._mgmtService.uploadCustomCharacter(wallet, this._charsContractInfo.contractAddress, ticket)
-            .pipe(catchError(e => {
-              this.isLoading = false; 
-              this.isMinting = false;
-              return of(e);
-            }))
-            .subscribe((res: TicketDto | Error) => {
-              console.log('-- on character IPFS upload completed --', res);
-              if(res as unknown as TicketDto !== undefined)
-                this.onTokenUploaded.emit(res as unknown as TicketDto);
-              else this._notificationsService.openSnack(ESnackAlertType.ERROR, `${(res as unknown as Error).message}`, true);
-          });
-        }
-        else {
-          this.isLoading = false;
-          this.isMinting = false;
-          this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while gathering wallet | profile | image values, try again');
-        }
-      })
+     this.onTicketPurchased.pipe(
+      concatMap(data => this._uploadCustomChar$(data)
+        .pipe(
+          tap(ticket => {
+            if(!ticket.metaUri || !ticket.mintSignature)
+              throw new Error('Invalid redeem data. missing contract info | metaUri | mintSignature');
+          }),
+          switchMap(ticket => this._redeemTicket$(ticket)),
+          catchError(error => { 
+            this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message);
+            // reset UI for redeem 
+            this.onContractLoaded.emit(this._charsContractInfo.contractAddress);
+            return EMPTY;
+          }),
+          finalize(() => { this.isLoading = false; this.isMinting = false;})
+        )), 
+      takeUntilDestroyed(this._destroyRef),
+    ).subscribe({ 
+      next: result => this._dialogRef.close(result)
     });
-
-    this.onTokenUploaded.pipe(
-      filter(() => !!this._charsContractInfo),
-      finalize(() => {
-        this.isLoading = false;
-        this.isMinting = false;
-      }),
-      takeUntilDestroyed(this._destroyRef)
-    ).subscribe({
-      next: (ticket => {
-        defer(() => this._web3Service.redeemCustomCharNFT(this._charsContractInfo.contractAddress, ticket.metaUri ?? '', ticket.mintSignature ?? '')
-          .pipe('receipt'/*TODO */)
-        )
-      }),
-      error: (error: HttpErrorResponse) => this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message)
-    })
 
     let wallet = this._web3Service.connectedWallet;
     if(!wallet){
@@ -287,6 +256,32 @@ private getDefaultCurrencyTitle() : string {
     return data.map((item: SystemMessageDto) => item.description);
   }
   
+  private _uploadCustomChar$(data: any) : Observable<TicketDto>{
+     if(!this._charsContractInfo)
+      throw new Error('No Characters contract info');
+    return defer(() => this._web3Service.getCurrentChainId()).pipe(
+      catchError(error => throwError(() => new Error(`An error has occured while retrieving the current chain ID >> ${error.message}`))), // else throw error for display to outer stream
+      switchMap(chain => {
+        const wallet:string | null = data.receipt.from;
+        const profile: RandomWorldsCharacter | null = this.currentProfile();
+        const image: GenerateImageResponse | null = this.currentImage();
+        if (!wallet || !profile || !image)
+          return throwError(() => new Error('Payment received, but wallet/profile/image is missing. Please retry.'));
+        let ticket: MintCharacterRequest = {
+          chainId: chain,
+          txHash: data.receipt.transactionHash,
+          currency: data.currency,
+          price: web3.utils.fromWei(data.price, 'ether'),
+          character: profile,
+          base64: image.base64
+        }
+        return this._mgmtService.uploadCustomCharacter(wallet, this._charsContractInfo.contractAddress, ticket)
+          .pipe(
+            catchError(e =>  throwError(() => new Error(`An error has occured while uploading the NFT data >> ${e}`))) // else throw error for display to outer stream
+          )
+      })
+    )}
+
   private _ticketState$(address:string) : Observable<{ticket:TicketDto | null, purchases: number}>{
     return this._mgmtService.getCurrentTicket(this._connectedWallet!, address, true)
       .pipe(
@@ -302,21 +297,18 @@ private getDefaultCurrencyTitle() : string {
   }
 
   private _setForPurchase$(contractAddress: string, invalidTicket: TicketDto | null) : Observable<TokenDetails | null>{
-    //delete$
     const cleanup$ = invalidTicket && invalidTicket.id ?
      this._mgmtService.deleteTicket(invalidTicket?.id).pipe(
       catchError(error => {
         this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while deleting an invalid ticket');  
-        return of(null) // No se pasa el error al resto del pipe
+        return of(null)
       })
     ) : of(null);
-
     const wordsSetup$ = defer(() => this._setupWordsTokenDetails(contractAddress)).pipe(
-      tap(details => { // si hay details (llamada OK), se hace un tap y se gestiona la UI porque no hace falta devolver los details
+      tap(details => {
         if(details && details.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
           this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
       })
-      //si hubiese un error, caeria en el pipe principal?
     )
     return forkJoin([cleanup$, wordsSetup$]).pipe(
       map(([,details]) => details)
@@ -329,6 +321,23 @@ private getDefaultCurrencyTitle() : string {
     this.availableTokens.set(["REDEEM"]);
     this.selectedCurrency.set(this.availableTokens()[0]);
     this._displayUnredeemedTicket();
+  }
+
+  private _redeemTicket$(ticket: TicketDto) : Observable<TicketDto>{
+    return defer(() => this._web3Service.redeemCustomCharNFT(ticket.contractAddress!, ticket.metaUri!, ticket.mintSignature!))
+      .pipe(
+        switchMap(() =>  ticket.id ? 
+          this._mgmtService.deleteTicket(ticket.id)
+          .pipe(
+            catchError(error => { 
+              this._notificationsService.openSnack(ESnackAlertType.WARN, 'Character minted, but the ticket could not be marked as redeemed');
+              return of(ticket);
+            })
+          )
+          : of(ticket)
+        ),
+        catchError(error => throwError(() => new Error(`An error has ocurred while redeeming the NFT in the smart contract >> ${error.message}`)))
+      )
   }
 
   drop(event: CdkDragDrop<string[]>) {
