@@ -491,7 +491,7 @@ export class SmartContractsService {
     }
   }
 
-  public mintCustomCharacter(contractAddress: string, paymentToken: string){
+  public customTokenPurchase(contractAddress: string, paymentToken: string){
     return this.getCustomCharactersContract(contractAddress).methods.customTokenPurchase(paymentToken).send({from: this.connectedWallet})
   }
   public async mintCustomCharacterAsync(contractAddress:string, paymentToken:string) : Promise<boolean>{

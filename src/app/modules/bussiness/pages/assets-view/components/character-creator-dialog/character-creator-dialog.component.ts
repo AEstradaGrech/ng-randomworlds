@@ -21,6 +21,7 @@ import web3 from 'web3';
 import { catchError, concatMap, defer, EMPTY, exhaustMap, filter, finalize, forkJoin, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-character-creator-dialog',
@@ -76,6 +77,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _sanitizer: DomSanitizer = inject(DomSanitizer);
   private _destroyRef: DestroyRef = inject(DestroyRef);
+  private _router: Router = inject(Router);
   private _currentImageUrl:string = '';
   private _currentProfileIdx:number = 0;
   private _charsContractInfo!: CustomCharsCatalogue;
@@ -361,38 +363,58 @@ private getDefaultCurrencyTitle() : string {
     this.selectedCurrency.update(v => event);
   }
 
-  async onSelectedTokenPay(event: string){
-    if(event !== this.selectedCurrency()){
+  onSelectedTokenPay(event: string){
+    if(!this._web3Service.connectedWallet){
+      defer(() => this._web3Service.tryMetamaskLogin())
+        .pipe(
+          takeUntilDestroyed(this._destroyRef)
+        ).subscribe({
+          next: loged => { 
+            if(!loged){
+              this._dialogRef.close();
+              this._router.navigateByUrl('');
+            }
+            else this._handlePayment(event);
+          },
+          error: error => this._router.navigateByUrl('')
+        })
+    }
+    else this._handlePayment(event); 
+  }
+
+  private _handlePayment(currency: string){
+    if(this.isMinting) return;
+    if(currency !== this.selectedCurrency()){
       this._notificationsService.openSnack(ESnackAlertType.ERROR, 'The selected currency does not match the input currency', true)
       return;
     }
     const contract: CustomCharsCatalogue | null = this._charsContractInfo;
     if(!contract) return;
-
-    if(this.selectedCurrency() !== 'ETH') {
-      if(this.selectedCurrency() === 'REDEEM') {
-        if(this.currentTicket() && this.currentTicket()?.contractAddress && this.currentTicket()?.metaUri && this.currentTicket()?.metaCid && this.currentTicket()?.mintSignature){
-          this.isMinting = true;
-          this._web3Service.redeemCustomCharNFT(this.currentTicket()?.contractAddress ?? '', this.currentTicket()?.metaUri ?? '', this.currentTicket()?.mintSignature ?? '')
-          .on('receipt', (receipt:any) => {
-            console.log('-- on etherMint receipt --', receipt);
-              this.isLoading = false;
-              this.isMinting = false;
-              this._dialogRef.close(this.currentTicket());
-          })
-          .on('error', (error:any, receipt:any) => {
-            console.log('-- on ether collection mint error --', error, receipt); 
-            this.isLoading = false;
-            this.isMinting = false;
-          });
+    if(currency !== 'ETH') {
+      if(currency === 'REDEEM') {
+        const unredeemedTicket: TicketDto | null = this.currentTicket();
+        if(!unredeemedTicket){
+          this._notificationsService.openSnack(ESnackAlertType.WARN, `No unredeemed ticket to redeem`);
+          return;
         }
+        this.isLoading = true;
+        this.isMinting = true;
+        this._redeemTicket$(unredeemedTicket) 
+          .pipe(
+            finalize(() => { this.isLoading = false; this.isMinting = false;}),
+            takeUntilDestroyed(this._destroyRef)
+          )
+          .subscribe({
+            next: redeemedTicket => this._dialogRef.close(redeemedTicket),
+            error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while redeeming the current ticket >> ${error.message}`)
+          })
       }
       else{
-        const tokenDetails: TokenDetails | undefined = this._paymentTokens.get(this.selectedCurrency());
+        const tokenDetails: TokenDetails | undefined = this._paymentTokens.get(currency);
         // Never fall through to the ETH branch when the token details are missing:
         // that would charge the user in ETH for a purchase they made in tokens.
         if(!tokenDetails){
-          this._notificationsService.openSnack(ESnackAlertType.ERROR, `No token details loaded yet for ${this.selectedCurrency()}, try again in a moment`, true);
+          this._notificationsService.openSnack(ESnackAlertType.ERROR, `No token details loaded yet for ${currency}, try again in a moment`, true);
           return;
         }
         this.isLoading = true;
@@ -400,51 +422,46 @@ private getDefaultCurrencyTitle() : string {
         // The contract wants an integer in the token's own base units - a
         // different number from the one we render in the title.
         const amount: string = this._baseUnits(contract.weiMintPrice, tokenDetails);
-        await this._web3Service.getCoinContract(this.selectedCurrency()).methods
+        defer(() => this._web3Service.getCoinContract(currency).methods
           .approve(contract.contractAddress, amount)
-          .send({from: this._web3Service.connectedWallet})
-          .on('receipt', (receipt:any) => {
-            console.log('-- on etherMint receipt --', receipt);
-            this._web3Service.mintCustomCharacter(this._charsContractInfo.contractAddress, this.selectedCurrency())
-            .on('receipt', (pur_receipt: any) => {
-              this.onTicketPurchased.emit({ currency: this.selectedCurrency(), price: amount, receipt: pur_receipt });
-            })
-            .on('error', (error:any, pur_receipt:any) => {
-              console.log('-- on ether collection mint error --', error, pur_receipt);
-              this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
-              this.isLoading = false;
+          .send({from: this._web3Service.connectedWallet}))
+          .pipe(
+            switchMap(receipt => this._customTokenPurchase$(contract.contractAddress, currency)),
+            takeUntilDestroyed(this._destroyRef)
+          ).subscribe({
+            next: purchase_receipt => this.onTicketPurchased.emit({currency: currency, price: amount, receipt: purchase_receipt}), 
+            error: error => {
+              this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 5000);
+              this.isLoading = false; 
               this.isMinting = false;
-          });
+            }
           })
-          .on('error', (error:any, receipt:any) => {
-            console.log('-- on ether collection mint error --', error, receipt);
-            this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
-            this.isLoading = false;
-            this.isMinting = false;
-          }); 
       }
     }
     else{
       this.isLoading = true;
       this.isMinting = true;
-      // Paying in ETH: weiMintPrice is already in wei, which is exactly what
-      // `value` wants. No conversion at all.
-      await this._web3Service.getCustomCharactersContract(contract.contractAddress).methods
+      defer(() => this._web3Service.getCustomCharactersContract(contract.contractAddress).methods
         .etherPurchase()
         .send({from: this._web3Service.connectedWallet, value: contract.weiMintPrice})
-        .on('receipt', (receipt:any) => {
-            console.log('-- on etherMint receipt --', receipt);
-            this.onTicketPurchased.emit({ currency: this.selectedCurrency(), price: contract.weiMintPrice, receipt: receipt })
-          })
-          .on('error', (error:any, receipt:any) => {
-            console.log('-- on ether collection mint error --', error, receipt);
-            this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error}`, true, 5000);
-            this.isLoading = false;
-            this.isMinting = false;
-          });
+      ).pipe(
+        takeUntilDestroyed(this._destroyRef)
+      ).subscribe({
+        next: receipt => this.onTicketPurchased.emit({ currency: currency, price: contract.weiMintPrice, receipt: receipt }),
+        error: error => {
+          this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error.message}`, true, 5000);
+          this.isLoading = false
+          this.isMinting = false;
+        }
+      })
     } 
   }
-
+  private _customTokenPurchase$(address: string, currency: string) : Observable<any>{
+    return defer(() => this._web3Service.customTokenPurchase(address, currency))
+      .pipe(
+        catchError(error => throwError(() => new Error(`An error has occured while minting the NFT with ${currency} >> ${error.message}`)))
+      );
+  }
 
   onShowSettings(){
     this.showSettings = true;
@@ -498,17 +515,15 @@ private getDefaultCurrencyTitle() : string {
         constraints: this.constraintsbox.nativeElement.value.trim().length > 0 ? [this.constraintsbox.nativeElement.value] : [],
         profile: profile
       }
-
       if(!this.isRandomGenre)
         req.constraints.push(this.form.get('isFemaleChar')?.value ? 'The generated character MUST be a female' : 'The generated character MUST be a male');
-        console.log('on generate profile click', req);
-        this.isLoading = true;
-        this._charactersService.generateCharacterProfile(req)
+      console.log('on generate profile click', req);
+      this.isLoading = true;
+      this._charactersService.generateCharacterProfile(req)
         .pipe(
           finalize(() => this.isLoading = false),
           takeUntilDestroyed(this._destroyRef),
-        )
-        .subscribe({
+        ).subscribe({
           next: res => this._notificationsService.push('Character saved for dataset'),
           error: error => this._notificationsService.openSnack(ESnackAlertType.WARN, `An error has occured while saving the dataset character >> ${error.message}`)
         });
