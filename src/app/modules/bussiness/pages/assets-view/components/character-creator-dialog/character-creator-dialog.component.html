@@ -47,7 +47,7 @@
             [size]="'35px'"
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
-            [disabled]="isMinting"
+            [disabled]="isMinting()"
             (click)="$event.stopPropagation();onSkipImage('left')">
           </app-rounded-button>
           <app-rounded-button [matMenuTriggerFor]="(currentImage() ? payMenu : null)"
@@ -60,7 +60,7 @@
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
             [badgeValue]="availablePurchases()"
-            [disabled]="!currentImage() || isMinting">
+            [disabled]="!currentImage() || isMinting()">
           </app-rounded-button>
           <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
             <app-token-selector-matmenu 
@@ -80,7 +80,7 @@
             [size]="'35px'"
             [hoverColor]="'var(--terciary-btn-hover)'"
             [borderColor]="'var(--terciary-btn-border)'"
-            [disabled]="isMinting"
+            [disabled]="isMinting()"
             (click)="$event.stopPropagation();onSkipImage('right')">
           </app-rounded-button>
         </div>
@@ -257,9 +257,7 @@
                     </textarea>
                 </mat-form-field>
               </mat-expansion-panel>
-          </mat-expansion-panel>
-    
-            
+          </mat-expansion-panel> 
         </mat-accordion>
         <ng-container style="display: block;" *ngIf="!showSettings">
           <div style="height: 25%; display: block; margin-top:7px;">
@@ -297,5 +295,5 @@
 </mat-tab-group>
   </mat-dialog-content>
   <mat-dialog-actions align="center">
-    <button  mat-button mat-dialog-close>Close</button>
+    <button  mat-button mat-dialog-close [disabled]="isMinting()">Close</button>
   </mat-dialog-actions>

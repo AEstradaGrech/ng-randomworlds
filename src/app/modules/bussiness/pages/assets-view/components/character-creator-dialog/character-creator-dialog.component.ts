@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, signal, computed, ElementRef, EventEmitter, inject, OnInit, ViewChild, DestroyRef } from '@angular/core';
+import { Component, signal, computed, ElementRef, EventEmitter, inject, OnInit, ViewChild, DestroyRef, effect } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -59,10 +59,16 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   currentImage = signal<GenerateImageResponse | null>(null);
   availableTokens = signal<string[]>(['ETH']);
   diffusionSettings!: ProviderSettingsDto;
-  isMinting: boolean = false;
+  //isMinting: boolean = false;
+
   selectedCurrency = signal<string>('ETH');
   availablePurchases = signal<number | null>(null);
 
+  isMinting = signal<boolean>(false);
+  blockDialog = effect(() => {
+    let minting = this.isMinting();
+    this._dialogRef.disableClose = minting ? true : false;
+  })
   readonly UNKNOWN_CHAR_IMG: string = 'assets/images/UnknownChar.png';
   readonly MALE_CHAR_IMG: string = 'assets/images/MaleChar.png';
   readonly FEMALE_CHAR_IMG: string = 'assets/images/FemaleChar.png';
@@ -195,7 +201,7 @@ private getDefaultCurrencyTitle() : string {
             this.onContractLoaded.emit(this._charsContractInfo.contractAddress);
             return EMPTY;
           }),
-          finalize(() => { this.isLoading = false; this.isMinting = false;})
+          finalize(() => { this.isLoading = false; this.isMinting.set(false);})
         )), 
       takeUntilDestroyed(this._destroyRef),
     ).subscribe({ 
@@ -371,7 +377,7 @@ private getDefaultCurrencyTitle() : string {
   }
 
   private _handlePayment(currency: string){
-    if(this.isMinting) return;
+    if(this.isMinting()) return;
     if(currency !== this.selectedCurrency()){
       this._notificationsService.openSnack(ESnackAlertType.ERROR, 'The selected currency does not match the input currency', true)
       return;
@@ -386,10 +392,10 @@ private getDefaultCurrencyTitle() : string {
           return;
         }
         this.isLoading = true;
-        this.isMinting = true;
+        this.isMinting.set(true);
         this._redeemTicket$(unredeemedTicket) 
           .pipe(
-            finalize(() => { this.isLoading = false; this.isMinting = false;}),
+            finalize(() => { this.isLoading = false; this.isMinting.set(false);}),
             takeUntilDestroyed(this._destroyRef)
           )
           .subscribe({
@@ -406,7 +412,7 @@ private getDefaultCurrencyTitle() : string {
           return;
         }
         this.isLoading = true;
-        this.isMinting = true;
+        this.isMinting.set(true);
         // The contract wants an integer in the token's own base units - a
         // different number from the one we render in the title.
         const amount: string = this._baseUnits(contract.weiMintPrice, tokenDetails);
@@ -421,14 +427,14 @@ private getDefaultCurrencyTitle() : string {
             error: error => {
               this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 5000);
               this.isLoading = false; 
-              this.isMinting = false;
+              this.isMinting.set(false);
             }
           })
       }
     }
     else{
       this.isLoading = true;
-      this.isMinting = true;
+      this.isMinting.set(true);
       defer(() => this._web3Service.getCustomCharactersContract(contract.contractAddress).methods
         .etherPurchase()
         .send({from: this._web3Service.connectedWallet, value: contract.weiMintPrice})
@@ -439,7 +445,7 @@ private getDefaultCurrencyTitle() : string {
         error: error => {
           this._notificationsService.openSnack(ESnackAlertType.ERROR, `${error.message}`, true, 5000);
           this.isLoading = false
-          this.isMinting = false;
+          this.isMinting.set(false);
         }
       })
     } 
