@@ -88,18 +88,15 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
 
   @HostListener('window:storage', ['$event'])
   onSelectedCharacterChange(event: StorageEvent){
-    console.log('-- WORLD GENERATOR >> ON CHARACTER CHANGE >> STORAGE EVENT', event);
     if(event.key === 'game-data')
       this._setupGameData();
   }
   @HostListener('window:beforeunload', ['$event']) 
   onBeforeCloseTab(event:any){
-    console.log('BEFORE UNLOAD EVENT');
     this._clearGameData();
   }
   @HostListener('window:unload', ['$event']) 
   onCloseTab(event:any){
-    console.log('BEFORE UNLOAD EVENT');
     this._clearGameData();
   }
 
@@ -515,8 +512,6 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
             })
           }
           else this._snackBar.open("An error has occured while settling the current game. Invalid signature", undefined, { duration: 3000,panelClass: ['snack-error'], verticalPosition: 'bottom'});
-          
-          //this._web3Service.settleGame()
         });
       });
   }
@@ -532,7 +527,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     }))
     .subscribe(res => {
       if(this._isValidResponse(res) && this._handleResponseStream(res) ){
-        this._isGameRecovery = false; // esto marca el init unicamente (para partidas empezadas)
+        this._isGameRecovery = false; 
         if(!this.hasFinishedQuest){
           this._handleQuestStreamEnd(res);
         }
@@ -550,7 +545,6 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   private _initializeQuest(){
-    //if(this.gameData.character && this.gameData.userPreferences && this.gameData.selectedCharacter){
       if(this.currentQuest){
       let req:InitQuestRequest = {
         questId: this.currentQuest.id,
@@ -558,7 +552,6 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         charCollectionAddress:this.currentQuest.charCollectionAddress,
         charTokenId:`${this.currentQuest.charTokenId}`
       }
-      console.log('-- init req -- ', req);
       this.hasStreamedScene = false;
       this.sceneText = "";
       this.isLoading = true;
@@ -573,7 +566,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           console.log('-- on response --', res);
           if(this._isValidResponse(res)){
             if(this._handleResponseStream(res) && this.currentBlock){
-              this._isGameRecovery = false; // esto marca el init unicamente (para partidas empezadas)
+              this._isGameRecovery = false;
               this.gameData.currentBlock++;
               this.currentBlock.id = this.gameData.currentBlock;
               this._addSceneMenuOption(this.currentBlock.id);
@@ -599,7 +592,6 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         default: break;
       }
     })
-    console.log('-- conditions --', conditions)
     let filter: SortedFilter = {
       conditions:conditions,
       page:0,
@@ -615,7 +607,6 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       return of(error);
     }))
     .subscribe(res => {
-      console.log('-- on sorted query -- response', res);
       if(this._isValidResponse(res)){
         if(res.data.length > 0){
           this.currentQuest = res.data[0];

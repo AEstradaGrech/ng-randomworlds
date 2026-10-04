@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, signal, computed, ElementRef, EventEmitter, inject, OnInit, ViewChild, DestroyRef, effect } from '@angular/core';
+import { Component, signal, computed, ElementRef, EventEmitter, inject, OnInit, ViewChild, DestroyRef, effect, HostListener } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -18,7 +18,7 @@ import { MgmtService } from 'src/app/modules/bussiness/services/mgmt.service';
 import { SmartContractsService } from 'src/app/modules/bussiness/services/smart-contracts.service';
 import { CustomCharsCatalogue, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
-import { catchError, concatMap, defer, EMPTY, exhaustMap, filter, finalize, forkJoin, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import { catchError, concatMap, defer, EMPTY, filter, finalize, forkJoin, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -355,6 +355,12 @@ private getDefaultCurrencyTitle() : string {
 
   onSelectedTokenChange(event: string){
     this.selectedCurrency.update(v => event);
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  public onWindowClose(event: any){
+    if(this.isMinting())
+      event?.preventDefault()
   }
 
   onSelectedTokenPay(event: string){
