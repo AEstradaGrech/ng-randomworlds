@@ -201,23 +201,23 @@ private getDefaultCurrencyTitle() : string {
     ).subscribe({ 
       next: result => this._dialogRef.close(result)
     });
-
     let wallet = this._web3Service.connectedWallet;
-    if(!wallet){
-      this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No wallet connected', true);
-      this._dialogRef.close();
-    }
-    this._web3Service.getCustomCharsCatalogue().then(cat => {
-      if(!cat) {
-        this._notificationsService.openSnack(ESnackAlertType.ERROR, 'No Immutable Characters Contract deployed. Cannot mint NFT', true, 5000);
-        this._dialogRef.close();
-      }
-      this._charsContractInfo = cat;
-      this._notificationsService.openSnack(ESnackAlertType.SUCCESS, `Current Characters contract: ${cat.name}`, true, 5000);
-      this.selectedCurrency.update(v => 'ETH');
-      this.onContractLoaded.emit(cat.contractAddress);
-    });
-
+    if(!wallet)
+      this._dialogRef.close('No wallet connected');
+    defer(() => this._web3Service.getCustomCharsCatalogue())
+      .pipe(
+        takeUntilDestroyed(this._destroyRef)
+      ).subscribe({
+        next: cat => {
+          this._charsContractInfo = cat;
+          this._notificationsService.push(`Current Characters contract: ${cat.name}`, 5000);
+          this.selectedCurrency.update(v => 'ETH');
+          this.onContractLoaded.emit(cat.contractAddress);
+        },
+        error: error => {
+          setTimeout(() => this._dialogRef.close('No Immutable Characters Contract deployed. Cannot mint NFT'), 1000);
+        }
+      })
     this._currentImageUrl = this.isFemaleChar ? this.FEMALE_CHAR_IMG : this.MALE_CHAR_IMG;
     this._connectedWallet = this.data.connectedWallet;
     if(!this._connectedWallet){
@@ -308,7 +308,7 @@ private getDefaultCurrencyTitle() : string {
     const wordsSetup$ = defer(() => this._setupWordsTokenDetails(contractAddress)).pipe(
       tap(details => {
         if(details && details.tokenContract === this._paymentTokens.get("WORDS")?.tokenContract)
-          this._notificationsService.openSnack(ESnackAlertType.WARN, 'WORDS token enabled', false);
+          this._notificationsService.push('WORDS token enabled', 3000);
       })
     )
     return forkJoin([cleanup$, wordsSetup$]).pipe(

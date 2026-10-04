@@ -12,6 +12,7 @@ import { ALCHEMY_ENDPOINT, defaultNftCardButtons, endpointByTag, IPFS_ENDPOINT, 
 import { CharacterCreatorDialogComponent } from './components/character-creator-dialog/character-creator-dialog.component';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
+import { TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
 
 /**
  * Signature every handler passed to the #collectionsInfo template must satisfy,
@@ -348,13 +349,14 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
     console.log('-- on create character click --');
     this._dialog.open(CharacterCreatorDialogComponent, { data: {connectedWallet: this._smartContractsService.connectedWallet }})
       .afterClosed()
-      .subscribe(result => {
-        if(true){
+      .subscribe((result:TicketDto | string) => {
+        if(result && typeof result !== "string"){ 
           this.selectCustomCharsCollection();
           setTimeout(() => {this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created");}, 2000);
           this._getCustomCharacters();
           //refresh NFTs
         }
+        else this._notificationsService.push(result as string, 3000);
     })
   }
 
