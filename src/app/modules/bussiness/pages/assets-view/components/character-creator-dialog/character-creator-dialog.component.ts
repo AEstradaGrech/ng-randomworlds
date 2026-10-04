@@ -83,7 +83,6 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _charsContractInfo!: CustomCharsCatalogue;
   private _paymentTokens: Map<string, TokenDetails> = new Map<string, TokenDetails>();
   private onContractLoaded: EventEmitter<string> = new EventEmitter<string>();
-  private onTokenUploaded: EventEmitter<TicketDto> = new EventEmitter<TicketDto>();
   private onTicketPurchased: EventEmitter<any> = new EventEmitter<any>();
 
   public get charImageUrl(): string{
@@ -342,21 +341,10 @@ private getDefaultCurrencyTitle() : string {
       )
   }
 
-  drop(event: CdkDragDrop<string[]>) {
-    if(this.selectedAmbiences.length + this.selectedMoods.length > 6){
-      this._notificationsService.openSnack(ESnackAlertType.WARN, 'You have already selected a total of 6 ambiences and moods');
-      return;
-    }
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
-    }
+  public canDropElement = (): boolean => this.selectedAmbiences.length + this.selectedMoods.length < 6;
+  
+  public notifyDropFail(baseMessage:string){
+    this._notificationsService.openSnack(ESnackAlertType.WARN, `${baseMessage}. You have already selected 6 moods and ambiences`, false, 5000);
   }
 
   onSelectedTokenChange(event: string){
@@ -693,10 +681,10 @@ private getDefaultCurrencyTitle() : string {
   private _displayTabChangeAlerts(tabLabel: string){
     switch(tabLabel){
       case("Ambiences"):
-        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Select at least one AMBIENCE style and up to five (counting up the MOODS too)');  
+        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Select at least one AMBIENCE style and up to six (counting up the MOODS too)');  
       break;
       case("Moods"):
-        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Select at least one MOOD style and up to five (counting up the AMBIENCES too)');
+        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Select at least one MOOD style and up to six (counting up the AMBIENCES too)');
         break;
       case("Character"):
         if(this.selectedAmbiences.length == 0 && this.selectedMoods.length == 0){

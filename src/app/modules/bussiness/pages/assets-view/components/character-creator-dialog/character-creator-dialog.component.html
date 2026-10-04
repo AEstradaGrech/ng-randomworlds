@@ -11,7 +11,9 @@
           [boxTwoTitle]="'Selected'",
           [boxOneItems]="availableAmbiences"
           [boxTwoItems]="selectedAmbiences"
-          [textColor]="'var(--primary-btn-hover)'">
+          [textColor]="'var(--primary-btn-hover)'"
+          [dropValidationFn]="canDropElement"
+          (onDropValidationFail)="notifyDropFail($event)">
         </app-drag-and-drop> 
       </div> 
     </mat-tab>
@@ -22,7 +24,9 @@
           [boxTwoTitle]="'Selected'",
           [boxOneItems]="availableMoods"
           [boxTwoItems]="selectedMoods"
-          [textColor]="'var(--primary-btn-hover)'">
+          [textColor]="'var(--primary-btn-hover)'"
+          [dropValidationFn]="canDropElement"
+          (onDropValidationFail)="notifyDropFail($event)">
         </app-drag-and-drop>  
       </div> 
     </mat-tab>

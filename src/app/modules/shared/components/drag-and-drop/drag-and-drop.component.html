@@ -9,7 +9,7 @@
     [cdkDropListConnectedTo]="[boxTwoList]"
     class="dnd-list"
     [style.--item-bg-color]="itemBgColor"
-    (cdkDropListDropped)="drop($event)"
+    (cdkDropListDropped)="drop($event, false)"
   >
     @for (item of boxOneItems; track item) {
       <div class="dnd-option-box" cdkDrag
@@ -31,7 +31,7 @@
     [cdkDropListConnectedTo]="[boxOneList]"
     class="dnd-list"
     [style.--item-bg-color]="itemBgColor"
-    (cdkDropListDropped)="drop($event)"
+    (cdkDropListDropped)="drop($event, true)"
   >
     @for (item of boxTwoItems; track item) {
       <div class="dnd-option-box" cdkDrag 

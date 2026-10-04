@@ -7,7 +7,6 @@ import WordsCoin from 'src/app/core/scripts/wordsCoin';
 import Web3 from 'web3';
 import Factory from 'src/app/core/scripts/immutableFactory';
 import Collection from 'src/app/core/scripts/immutableCollection';
-import RagCharsCollection from 'src/app/core/scripts/ragCharsCollection';
 import CustomChars from 'src/app/core/scripts/customCharacters';
 import CustomCharsFactory from 'src/app/core/scripts/customCharsFactory';
 import { firstValueFrom, Observable } from 'rxjs';
@@ -18,7 +17,7 @@ import { Router } from '@angular/router';
 import GameSession from 'src/app/core/scripts/gameSession';
 import { PlayerGameSession, TxError } from '../models/smart-contract.interfaces';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
-
+import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
@@ -33,21 +32,19 @@ export class SmartContractsService {
   public onAccountChanged: EventEmitter<string> = new EventEmitter<string>(); 
   public onImmutableCatalogue: EventEmitter<boolean> = new EventEmitter<boolean>();
   private _connectedAccount!:string;
-  private _baseUrl:string = 'http://localhost:9000/randomworlds'
+  private _baseUrl:string = environment.baseUrl;
   private _router: Router = inject(Router);
   private _ngZone: NgZone = inject(NgZone);
+
   public get connectedWallet(): string | null{
     return this._connectedAccount;
   }
 
   constructor(@Inject(DOCUMENT) private document: Document, private http:HttpClient) { 
-    console.log('-- smarts constructor --');
     this.web3 = Web3Provider(this.document);
     this.factory = Factory(this.web3);
     this.getConnectedAccounts().then(res => {
-      console.log('-- smarts connected observable --', res);
       if(res.length <= 0){
-        console.log('-- no accounts connected with MetaMask browser extension --');
         this._router.navigateByUrl('');
         return;
       }
@@ -416,6 +413,7 @@ export class SmartContractsService {
     
       return await Promise.race([promise, timeoutPromise]) as Promise<T>;
   }
+
   public async getCharacterMetadata(metaUri: string): Promise<CharacterMetadata>{
     let metadata = await firstValueFrom(this.http.get<any>(replaceEndpoint(metaUri, 'IPFS', 'ALCHEMY')));
     let profile = await firstValueFrom(this.http.get<CharacterProfile>(`${this._baseUrl}/blockchain/character/decrypt/${metadata.encrypted_profile}`))
@@ -447,78 +445,12 @@ export class SmartContractsService {
         return true;
     }
     catch(error){
-      console.log('-- ether mint error --',error)
-      return false;
-    }
-  }
-  public async mintCharacter(contractAddress:string, paymentToken:string, price:string, model: string, collectorAddress: string) : Promise<boolean>{
-    let tokenContract = this.getCoinContract(paymentToken);
-    if(tokenContract){
-      try{
-        let accounts = await this.getConnectedAccounts();
-        console.log('price', price);
-        console.log('account', accounts[0]);
-        console.log('pay params: ', contractAddress, paymentToken, model, collectorAddress);
-        await tokenContract.methods.approve(contractAddress, price).send({from:accounts[0]});
-        await this.getCollectionContract(contractAddress).methods.customTokenMint(collectorAddress, model, paymentToken).send({from:accounts[0],gas:'7000000'})
-        return true;
-      }
-      catch(error){
-        console.log(error);
-      }
-    }
-    return false;
-  }
-  
-  public async etherMintCustomCharacter(contractAddress:string, price:number) : Promise<boolean>{
-    try{
-      await this.getCustomCharactersContract(contractAddress).methods.etherPurchase()
-        .send({from: this.connectedWallet, value: Web3.utils.toWei(price, 'ether')})
-        .on('receipt', (receipt:any) => {
-          console.log('-- on etherMint receipt --', receipt);
-          this.onPaymentReceipt.emit(receipt);
-        })
-        .on('error', (error:any, receipt:any) => {
-          console.log('-- on ether collection mint error --', error, receipt);
-          this.onPaymentError.emit({ error: error, receipt: receipt});
-          throw new Error(`${error}`);
-	      });
-        return true;
-    }
-    catch(error){
-      console.log('-- ether mint error --',error)
       return false;
     }
   }
 
   public customTokenPurchase(contractAddress: string, paymentToken: string){
     return this.getCustomCharactersContract(contractAddress).methods.customTokenPurchase(paymentToken).send({from: this.connectedWallet})
-  }
-  public async mintCustomCharacterAsync(contractAddress:string, paymentToken:string) : Promise<boolean>{
-    let tokenContract = this.getCoinContract(paymentToken);
-    if(tokenContract){
-      try{
-        console.log('pay params: ', contractAddress, paymentToken, this.connectedWallet);
-        await this.getCustomCharactersContract(contractAddress).methods
-          .customTokenPurchase(paymentToken)
-          .send({from:this.connectedWallet, gas:'7000000'})
-          .on('receipt', (receipt:any) => {
-            console.log('-- on etherMint receipt --', receipt);
-            this.onPaymentReceipt.emit(receipt);
-          })
-          .on('error', (error:any, receipt:any) => {
-            console.log('-- on ether collection mint error --', error, receipt);
-            this.onPaymentError.emit({ error: error, receipt: receipt});
-            throw new Error(`${error}`);
-          });
-        return true;
-      }
-      catch(error){
-        console.log(error);
-        return false;
-      }
-    }
-    return false;
   }
 
   public async getWalletNFTs(address:string) : Promise<any>{
