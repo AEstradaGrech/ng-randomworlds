@@ -7,16 +7,16 @@ import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-m
 import { GameData, QueryCondition, SortedFilter } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router'
 import { QuestsService } from '../../services/quests.service';
-import { FinalOptionsResponse, QuestBlockDto, QuestCharacter, NewQuestRequest, QuestPreferences, RandomQuestDto, InitQuestRequest, EndGameRequest } from 'src/app/core/interfaces/business/prompting.interface';
+import { FinalOptionsResponse, QuestBlockDto, QuestCharacter, NewQuestRequest, QuestPreferences, RandomQuestDto, InitQuestRequest, EndGameRequest, SceneOptionsResponse } from 'src/app/core/interfaces/business/prompting.interface';
 import { SideNavbarComponent } from 'src/app/modules/shared/components/side-navbar/side-navbar.component';
-import { catchError, finalize, Observable, of, switchMap, throwError } from 'rxjs';
+import { catchError, defer, filter, finalize, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { ESnackAlertType, GameOutcome } from 'src/app/modules/shared/models/common-enums';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { TxError } from '../../models/smart-contract.interfaces';
-
+import { PlayerGameSession } from '../../models/smart-contract.interfaces';
+import { HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-quest-view',
@@ -43,7 +43,6 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   choicesText!:string;
   streamedText!:string;
   isLoading:boolean = false;
-  hasStreamedScene:boolean = false;
   actionsBarConfig:Array<TreeMenuItem> = [...questsViewSidebarConfig];
   panelStateR = 'hidden';
   panelStateL = 'hidden';
@@ -95,17 +94,13 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   onBeforeCloseTab(event:any){
     this._clearGameData();
   }
+  
   @HostListener('window:unload', ['$event']) 
   onCloseTab(event:any){
     this._clearGameData();
   }
 
   ngOnInit(): void {
-    this._web3Service.onTxError
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((res: TxError) => {
-        this._notificationsService.openSnack(ESnackAlertType.ERROR, res.error, false);
-      });
     this._setupGameData();
   }
 
@@ -118,41 +113,379 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       this._setForNewGame();
       return;
     }
+    if(this.currentBlock !== null && this.currentBlock.options.length === 0){
+      this._switchMenu("Story");
+      this.isLoading = true;
+      //something went wrong after the scene text stream. Generate options and preserve the scene text
+      if(this.currentQuest.blocks.length === 0){
+        this._completeInitialization$(this._getInitRequest())
+        .pipe(
+          finalize(() => this.isLoading = false),
+          takeUntilDestroyed(this._destroyRef)
+        ).subscribe({
+          error: error => {
+            this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 5000)
+            this.gameData.gameStatus = 'READY';
+            this.btnTxt = 'BEGIN';
+          }
+        })
+      }
+      else{
+        
+        this._generateBlock$()
+          .pipe(
+            finalize(() => this.isLoading = false),
+            takeUntilDestroyed(this._destroyRef)
+          ).subscribe({
+            error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 3000)
+          });
+      }
+    }
     if(this.didGameInit && this.hasGameOngoing && this.currentBlock){
       if(!this.selectedChoice || this.selectedChoice === '' ){
         this._snackBar.open("You must pick a choice from the available to continue", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
         return;
       }
-      if(this.selectedChoice){
-        let taggedOption = this.currentBlock.options.find(x => x.includes(this.selectedChoice ?? ''));
-        if(taggedOption)
-          this.selectedChoice = taggedOption;
-        if(this.currentQuest.blocks.filter(x => x.id === this.currentBlock?.id).length > 0){
-          let block = this.currentQuest.blocks.find(x => x.id === this.currentBlock?.id);
-          if(block)
-            block.choice = this.selectedChoice;
-        }
-        else {
-          this.currentBlock.choice=this.selectedChoice;
-          this.currentQuest.blocks.push(this.currentBlock);
-        }
-        this._handleQuest();
+      // if the selectedChoice is the BAD_CHOICE, recover the original tagged option to be parsed in the backend
+      let taggedOption = this.currentBlock.options.find(x => x.includes(this.selectedChoice ?? ''));
+      if(taggedOption)
+        this.selectedChoice = taggedOption;
+      // if the current block already exists (game recovery), update it
+      if(this.currentQuest.blocks.filter(x => x.id === this.currentBlock?.id).length > 0){
+        let block = this.currentQuest.blocks.find(x => x.id === this.currentBlock?.id);
+        if(block)
+          block.choice = this.selectedChoice;
       }
+      else { //otherwise add it
+        this.currentBlock.choice=this.selectedChoice;
+        this.currentQuest.blocks.push(this.currentBlock);
+      }
+      this._handleQuest();
+      
     }
     else this._initializeQuest();
   }
 
-  onOpenBtnClick(btn:string){
-    if(btn === 'left'){
+  public onOpenBtnClick(btn:string){
+    if(btn === 'left')
       this.panelStateL = (this.panelStateL === 'visible') ? 'hidden' : 'visible';
-    }else{
-      this.panelStateR = (this.panelStateR === 'visible') ? 'hidden' : 'visible';
-    }
+    
+    else this.panelStateR = (this.panelStateR === 'visible') ? 'hidden' : 'visible';
   }
+
   public onMenuSelect(event:TreeMenuItem){
     this._switchMenu(event.name);
   }
+
+  private _initializeQuest(){
+    if(this.currentQuest){
+      let req:InitQuestRequest = this._getInitRequest();
+      this.sceneText = "";
+      this.isLoading = true;
+      this.gameData.gameStatus = 'INITIALIZING';
+      this._service.initQuestStream(req)
+        .pipe(
+          tap(ev => this._updateStreamText(ev)),
+          filter(ev => ev.type === HttpEventType.Response),
+          tap(() => this._onStreamEnd()),
+          switchMap(res => this._completeInitialization$(req)),
+          finalize(() => this.isLoading = false),
+          takeUntilDestroyed(this._destroyRef)
+        )
+        .subscribe({
+          error: error => {
+            this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 5000)
+            this.gameData.gameStatus = 'READY';
+            this.btnTxt = 'BEGIN';
+          }
+        })
+    } 
+  }
+
+  private _getInitRequest() : InitQuestRequest{
+    return {
+      questId: this.currentQuest.id,
+      username:this.gameData.username,
+      charCollectionAddress:this.currentQuest.charCollectionAddress,
+      charTokenId:`${this.currentQuest.charTokenId}`
+    }
+  }
+  private _handleQuest(){ 
+    const blockBackup = this.currentBlock;
+    this.currentBlock = null;
+    this.isLoading = true;
+    this._switchMenu("Story");
+    this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0], this._isGameRecovery && this.currentQuest.blocks.length > 1)
+    .pipe(
+      tap(ev => this._updateStreamText(ev)),
+      filter(ev => ev.type === HttpEventType.Response),
+      tap(res => this._onStreamEnd()),
+      switchMap(res =>
+        this.currentQuest.blocks.length < this.currentQuest.maxBlocks -1 ? 
+        this._generateBlock$() :
+        this._handleQuestEnd$()),
+      finalize(() => this.isLoading = false),
+      takeUntilDestroyed(this._destroyRef)
+    )
+    .subscribe({
+      next: res => {
+        if(this.hasFinishedQuest){
+          this.btnTxt = 'PLAY AGAIN';
+        }
+      },
+      error: error => { 
+        this.currentBlock = blockBackup;
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 3000);
+      }
+    })
+  }
+
+  private _completeInitialization$(req:InitQuestRequest) : Observable<RandomQuestDto>{
+    let conditions:QueryCondition[] = []
+    const vars = Object.keys(req);
+    vars.forEach((v:string) => {
+      switch(v){
+        case("charTokenId"):
+          conditions.push({field:v, value:req[v] as any});
+          break;
+        case("username"):
+        case("charCollectionAddress"):
+          conditions.push({field:v, value:req[v]} as any)
+        break;
+        default: break;
+      }
+    })
+    let filter: SortedFilter = {
+      conditions:conditions,
+      page:0,
+      page_size:1,
+      sort_var:'creationDate',
+      is_descending:true
+    }
+    return this._service.sortedQuery(filter) 
+      .pipe(
+        catchError(error => throwError(() => new Error(`An error has occured while retrieving the new Quest >> ${error.message}`))),
+        tap(res =>{
+          if(res.data.length == 0)
+            throw new Error('No current quest found');  
+          this.currentQuest = res.data[0];
+          this.gameData.gameSessionId = this.currentQuest.id;
+          localStorage.setItem('game-data', JSON.stringify(this.gameData));
+        }),
+        switchMap(() => this._generateSceneOptions$()), 
+        switchMap(() => this._updateQuestData$(this.gameData.gameSessionId, 'ONGOING', true))
+      )
+  }
+
+  private _generateBlock$() : Observable<RandomQuestDto>{
+    const observable = this.currentQuest.blocks.length < this.currentQuest.maxBlocks -2 ?
+      this._generateSceneOptions$() : this._generateFinalSceneOptions$()
+      return observable.pipe(
+        switchMap(res => this._patchQuestBlocks$())
+      )
+  }
+
+  private _generateSceneOptions$() : Observable<QuestBlockDto>{
+    return this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
+      .pipe(
+        filter(() => !!this.currentBlock),
+        map(res => this._onBlockOptionsGenerated(res))
+      )
+  }
   
+  private _generateFinalSceneOptions$() : Observable<QuestBlockDto>{
+    return this._service.generateFinalOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
+      .pipe(
+        filter(() => !!this.currentBlock),
+        map(res => this._onFinalOptionsGenerated(res)) 
+      )
+  }
+
+  private _handleQuestEnd$() : Observable<RandomQuestDto>{
+    if(!this.currentBlock)
+      throw new Error(`An error has occured while ending the quest. No current block found`); 
+    this._handleEndgameDisplay(this.currentQuest.blocks.slice(-1)[0].choice); 
+    this.currentQuest.blocks.push(this.currentBlock);
+    this.currentChoices = [];
+    this.currentBlock = null;
+    return defer(() => this._web3Service.getPlayerSession(this.currentQuest.charCollectionAddress, parseInt(this.currentQuest.charTokenId)))
+      .pipe(
+        catchError(error => throwError(() => `An error has occured while retrieving the game session data >> ${error.message}`)),
+        switchMap(session => this._endGame$(session))
+      )
+  }
+
+  private _endGame$(session: PlayerGameSession) : Observable<RandomQuestDto>{
+    let endGameReq: EndGameRequest = {
+      contract: session.contract,
+      wallet: session.player,
+      collection: this.currentQuest.charCollectionAddress,
+      tokenId: parseInt(this.currentQuest.charTokenId),
+      chainId: session.chainId,
+      epoch: session.epoch,
+      outcome: this._gameStatusToOutcome(this.gameData.gameStatus),
+      finalBlock: this.currentQuest.blocks.slice(-1)[0]
+    }
+    return this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, endGameReq) 
+      .pipe(
+        catchError(error => throwError(() => new Error(`An error has occured while ending the quest >> ${error.message}`))), 
+        tap(res => { 
+          if(!res.signature || res.signature === '')
+            throw new Error(`An error has occured while settling the current game. Invalid signature`);
+          this.currentQuest = res;
+        }),
+        switchMap(res => this._settleGame$(res, endGameReq.outcome, res.signature ?? '')), 
+        switchMap(res => this._tryWithraw$(res, endGameReq.outcome)) 
+      );
+  }
+
+  private _settleGame$(quest: RandomQuestDto, outcome: number, signature: string) : Observable<RandomQuestDto>{
+      return defer(() => this._web3Service.settleGame(this.currentQuest.charCollectionAddress, parseInt(quest.charTokenId), outcome, signature)) 
+        .pipe(
+          map(res => { 
+            if(!res)
+              throw Error('An error has occured while settling the current game');
+            this._snackBar.open("Current QUEST finished! ", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+            this._readCurrentQuestSummary();
+            return quest;
+          })
+        )
+  }
+
+  private _tryWithraw$(currentQuest: RandomQuestDto, outcome: number) : Observable<RandomQuestDto>{
+    // skip attempt if there is no reward to withdraw or the quest status is no valid
+    return outcome !== GameOutcome.WIN? 
+      of(currentQuest) : this.hasFinishedQuest ?
+      defer(() => this._web3Service.tryQuestRewardWithdraw())
+        .pipe(
+          catchError(error => throwError(() => new Error(`An error has occured while trying to withdraw the game reward >> ${error.error}`))), 
+          map(receipt => currentQuest) 
+        ) : of(currentQuest)
+  }
+
+  private _setOngoingSession(){
+    this.isLoading = true;
+    this._service.getById(this.gameData.gameSessionId)
+    .pipe(
+      tap(res => this.currentQuest = res),
+      switchMap(res => {
+        if(this.currentQuest.blocks.length > 0){
+          this.currentBlock = this.currentQuest.blocks.slice(-1)[0];
+          this.sceneText = this.currentBlock.scene;
+          this.currentChoices = this._shuffledFinalOptions([...this._getSanitizedOptions(this.currentBlock.options)]);
+          this.gameData.currentBlock = this.currentQuest.blocks.length;
+          this.currentQuest.blocks.forEach(x => {
+            this._addSceneMenuOption(x.id);
+            this.storyText += `${x.summary}\n\n`
+          });
+          this.currentQuest.blocks = this.currentQuest.blocks.filter(b => b.id !== this.currentBlock?.id);
+          return of(res);
+        }
+        else {
+          this._switchMenu("Intro");
+          return this.currentQuest.status === 'INITIALIZING' ? 
+            this._updateQuestData$(this.currentQuest.id, 'REINITIALIZING', false)
+              .pipe(
+                catchError(error => throwError(() => `An error has occured while recovering an UNINITIALIZED quest >> ${error.message}`))
+              ) : of(res);
+          }
+      }),
+      finalize(() => this.isLoading = false),
+      takeUntilDestroyed(this._destroyRef)
+    )
+    .subscribe({ 
+      next: res => {
+        this.currentQuest = res;
+        this.gameData.gameStatus = this.currentQuest.status;
+        this._isGameRecovery = true;
+        if(this.hasFinishedQuest)
+          this.btnTxt = "PLAY AGAIN";
+      },
+      error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, error)
+    })
+  }
+
+  private _updateStreamText(res: any){
+    this.streamedText = res["partialText"];
+    if(this.streamedText)
+        this.sceneText = this.streamedText; 
+  }
+  private _onStreamEnd(){
+    this.gameData.currentBlock++;
+    this.currentBlock = {
+      id: this.gameData.currentBlock,
+      scene:this.sceneText,
+      options: [],
+      choice:"",
+      summary:""
+    }
+    localStorage.setItem('game-data', JSON.stringify(this.gameData));
+    this._addSceneMenuOption(this.currentBlock.id);
+  }
+
+  private _onBlockOptionsGenerated(response: SceneOptionsResponse) : QuestBlockDto{
+    if(!this.currentBlock)
+      throw Error('An error has occured while processing the generated scene options >> no current block found');
+    this.currentBlock.options = [...response.options];
+    this.currentChoices = [...this.currentBlock.options];
+    this.currentBlock.options.push(`${response.bad_choice} <<BAD_CHOICE>>`);
+    this.currentChoices.push(response.bad_choice);
+    this.currentChoices = this._shuffledFinalOptions([...this.currentChoices]);
+    this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+    return this.currentBlock;
+  }
+
+  private _onFinalOptionsGenerated(response: FinalOptionsResponse) : QuestBlockDto{
+    if(!this.currentBlock)
+      throw Error('An error has occured while processing the generated scene options >> no current block found');
+   
+    let finalOptions: string[] = this._shuffledFinalOptions([
+      response.happy_end_choice,
+      response.uncertain_end_choice,
+      response.game_over_choice
+    ])
+    this.currentChoices = finalOptions;
+    this.currentBlock.options = [
+      `${response.happy_end_choice} <<HAPPY>>`,
+      `${response.uncertain_end_choice} <<UNCERTAIN>>`,
+      `${response.game_over_choice} <<GAME_OVER>>`
+    ];
+    return this.currentBlock;
+  }
+  //Sets the quest status and updates the block options in the backend. Init & End only
+  private _updateQuestData$(sessionId: string, status: string, updateBlocks: boolean) : Observable<RandomQuestDto>{
+    return this._service.setQuestStatus(sessionId, status)
+      .pipe(
+        catchError(error => throwError(() => error)),
+        tap(res => {
+          this.currentQuest = res;
+          this.gameData.gameStatus = this.currentQuest.status;
+          localStorage.setItem('game-data', JSON.stringify(this.gameData));
+        }),
+        switchMap(res => updateBlocks ? this._patchQuestBlocks$() : of(res))
+      )
+  }
+
+  private _patchQuestBlocks$() : Observable<RandomQuestDto>{
+    return this._service.getById(this.currentQuest.id)
+      .pipe(
+        filter(() => !!this.currentBlock),
+        catchError(error => throwError(() => new Error(`An error has occured while retrieving the current quest >> ${error.message}`))),
+        switchMap(res => {
+          const questUpdate = { ...res, blocks: [...res.blocks] };
+          if(this.currentBlock)
+            questUpdate.blocks.push(this.currentBlock);
+          return this._service.patchQuestBlocks(questUpdate);
+        }),
+        tap(res => this.currentQuest = res)
+      )
+  }
+
+  private _getGameData():GameData | null{
+    if(!isPlatformBrowser(this.platformId)) return null;
+    let gameDataCache = localStorage.getItem('game-data')
+    return gameDataCache ? JSON.parse(gameDataCache) : null;
+  }
   private _setupGameData() {
     this.sceneText = '';
     this.storyText = '';
@@ -196,7 +529,19 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     }
   }
 
-  private _isValidGameData(data: GameData){
+  private _shuffledFinalOptions(options: string[], selected: string[] = []) : string[]{
+    if(options.length == 0) return selected;
+    
+    let option:string = options[this._getRandomInt(options.length)];
+    if(option)
+    {
+      selected.push(option);
+      options = options.filter(x => x !== option);
+    }
+    return this._shuffledFinalOptions(options, selected);
+  }
+
+    private _isValidGameData(data: GameData){
     if(data.gameType !== 'quest') return false;
     if(!data.character) return false;
     if(!data.selectedCharacter) return false;
@@ -204,7 +549,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     return true;
   }
 
-    private _clearGameData(){
+  private _clearGameData(){
     // Skip on the SERVER only (no localStorage on Node). ngOnDestroy runs during
     // SSR teardown, so without this the server render crashes. Note the `!`:
     // the browser MUST run this, or the cross-tab lock never clears.
@@ -300,400 +645,11 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       error: error => this._notificationsService.openSnack(ESnackAlertType.WARN, error.message, true, 3000)
     })
   }
-  private _handleResponseStream(res:any) : boolean{
-    if(res.status === 200){  
-      this.currentBlock = {
-        id: 0,//this.currentQuest ? this.currentQuest.blocks.length + 1 : 1, //Esto es para in memory historic (pag.data) pero es una ñapa. #TODO: if Blocks > 10
-        scene:this.sceneText,
-        options: [],
-        choice:"",
-        summary:""
-      }
-      return true;
-    }
-    this.streamedText = res["partialText"];
-    if(this.streamedText)
-        this.sceneText = this.streamedText; 
-    return false;
-  }
-
-  private _setOngoingSession(){
-      this.isLoading = true;
-      this._service.getById(this.gameData.gameSessionId)
-      .pipe(
-        //_setOngoingSession$(res: randomWorldsDto)
-        finalize(() => this.isLoading = false),
-        takeUntilDestroyed(this._destroyRef)
-      )
-      .subscribe(res => {
-        if(!this._isValidResponse(res)) return;
-        this.currentQuest = res;
-        if(this.currentQuest.blocks.length > 0){
-          this.currentBlock = this.currentQuest.blocks.slice(-1)[0];
-          this.sceneText = this.currentBlock.scene;
-          this.currentChoices = this._shuffledFinalOptions([...this._getSanitizedOptions(this.currentBlock.options)]);
-          this.gameData.currentBlock = this.currentQuest.blocks.length;
-          this.currentQuest.blocks.forEach(x => {
-            this._addSceneMenuOption(x.id);
-            this.storyText += `${x.summary}\n\n`
-          });
-          this.currentQuest.blocks = this.currentQuest.blocks.filter(b => b.id !== this.currentBlock?.id);
-        }
-        else {
-          this._switchMenu("Intro");
-          if(this.currentQuest.status === 'INITIALIZING')
-            this._service.setQuestStatus(this.currentQuest.id, 'REINITIALIZING')
-              .pipe(takeUntilDestroyed(this._destroyRef))
-              .subscribe(res => {
-                if(!this._isValidResponse(res))
-                  this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while recovering an UNINITIALIZED quest');
-              });
-        }
-        // --------------------------------------------------------
-        this.gameData.gameStatus = this.currentQuest.status;
-        this._isGameRecovery = true;
-        if(this.hasFinishedQuest)
-          this.btnTxt = "PLAY AGAIN";
-      })
-  }
-  private _setForNewGame(){
-    this.sceneText = '';
-    this.storyText = '';
-    this.gameData.gameSessionId = '';
-    this.actionsBarConfig = [...questsViewSidebarConfig];
-    this.currentBlock = null;
-    this.currentChoices = [];
-    this.btnTxt = "BEGIN";
-    this.gameData.gameStatus = 'READY';
-    this.gameData.currentBlock = 0;
-  }
-  private _handleQuestStreamEnd(res:any){
-    if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks -1){
-      if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks -2)
-        this._generateDefaultSceneOptions();
-      else this._generateFinalSceneOptions();
-    }
-    else{
-      console.log('-- ON BLOCK LIMIT REACHED >> LAST CHOICE -->', this.currentQuest.blocks.slice(-1)[0].choice);
-      this._handleEndgameDisplay(this.currentQuest.blocks.slice(-1)[0].choice);
-      this._handleQuestEnd();
-    }
-  }
-
-  private _generateDefaultSceneOptions(){
-    this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
-      .pipe(
-        finalize(() => this.isLoading = false),
-        takeUntilDestroyed(this._destroyRef)
-      )
-      .subscribe({
-        next: res => {
-          if(!this._isValidResponse(res)) return; 
-          if(this.currentBlock && res.options.length >0){
-            this.gameData.currentBlock++;
-            localStorage.setItem('game-data', JSON.stringify(this.gameData));
-            this.currentBlock.id = this.gameData.currentBlock;
-            this.currentBlock.options = [...res.options];
-            let badTag = "<<BAD_CHOICE>>"
-            this.currentBlock.options.push(`${res.bad_choice} ${badTag}`);
-            this.currentChoices = [...res.options];
-            this.currentChoices.push(res.bad_choice);
-            this.currentChoices = this._shuffledFinalOptions([...this.currentChoices]);
-            this._addSceneMenuOption(this.currentBlock.id);
-            this._patchQuest();
-          }
-        },
-        error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 3000)
-      }) 
-  }
-
-  private _generateFinalSceneOptions(){
-    this._service.generateFinalOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
-      .pipe(
-        finalize(() => this.isLoading = false),
-        takeUntilDestroyed(this._destroyRef)
-      )
-      .subscribe({
-        next: res => {
-          if(!this._isValidResponse(res)) return; 
-          if(this.currentBlock && res as FinalOptionsResponse){
-            this.gameData.currentBlock++;
-            localStorage.setItem('game-data', JSON.stringify(this.gameData));
-            this.currentBlock.id = this.gameData.currentBlock;
-            let finalOptions: string[] = this._shuffledFinalOptions([
-              res.happy_end_choice,
-              res.uncertain_end_choice,
-              res.game_over_choice
-            ])
-            this.currentChoices = finalOptions;
-            this.currentBlock.options = [
-              `${res.happy_end_choice} <<HAPPY>>`,
-              `${res.uncertain_end_choice} <<UNCERTAIN>>`,
-              `${res.game_over_choice} <<GAME_OVER>>`
-            ];
-            
-            this._addSceneMenuOption(this.currentBlock.id);
-            this._patchQuest();
-          }
-        },
-        error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 5000)
-      }) 
-  }
-
-  private _shuffledFinalOptions(options: string[], selected: string[] = []) : string[]{
-    if(options.length == 0) return selected;
-    
-    let option:string = options[this._getRandomInt(options.length)];
-    if(option)
-    {
-      selected.push(option);
-      options = options.filter(x => x !== option);
-    }
-    return this._shuffledFinalOptions(options, selected);
-  }
   //max is exclusive
   private _getRandomInt(max:number, min: number = 0) : number{
     min = Math.floor(min)
     max = Math.floor(max)
     return Math.round(Math.random() * (max - min + 1) + min);
-  }
-  private _handleQuestEnd(){
-    if(!this.currentBlock) return;
-    this.gameData.currentBlock++;
-    localStorage.setItem('game-data', JSON.stringify(this.gameData));
-    this.currentBlock.id = this.gameData.currentBlock;
-    this.currentChoices = [];
-    this._addSceneMenuOption(this.currentBlock.id);
-    this.btnTxt = 'PLAY AGAIN';
-    this.currentQuest.blocks.push(this.currentBlock);
-    this.currentBlock = null;
-    switch(this.gameData.gameStatus){
-      case('COMPLETED'):
-        this._snackBar.open("QUEST FINISHED!", undefined, { duration: 3500,panelClass: ['snack-success'], verticalPosition: 'bottom'});
-      break;
-      case('FAILED'):
-        this._snackBar.open("GAME OVER", undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-      break;
-      case('UNCERTAIN'):
-        this._snackBar.open("TO BE CONTINUED...", undefined, { duration: 3500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
-      break;
-      default:
-        break;
-    }
-
-    this._web3Service.getPlayerSession(this.currentQuest.charCollectionAddress, parseInt(this.currentQuest.charTokenId))
-      .then(session => {
-        let endGameReq: EndGameRequest = {
-          contract: session.contract,
-          wallet: session.player,
-          collection: this.currentQuest.charCollectionAddress,
-          tokenId: parseInt(this.currentQuest.charTokenId),
-          chainId: session.chainId,
-          epoch: session.epoch,
-          outcome: this._gameStatusToOutcome(this.gameData.gameStatus),
-          finalBlock: this.currentQuest.blocks.slice(-1)[0]
-        }
-        this._service.endQuest(this.currentQuest.id, this.gameData.gameStatus, endGameReq)
-          .pipe(catchError(error => {
-            this.isLoading = false;
-            return of(error);
-          }))
-          .subscribe(res => {
-            this.isLoading=false; 
-            if(!this._isValidResponse(res)) return;
-            this.currentQuest = res;
-            if(res.signature && res.signature !== ''){
-              this._web3Service.settleGame(this.currentQuest.charCollectionAddress, parseInt(this.currentQuest.charTokenId), endGameReq.outcome, res.signature)
-              .then(res => {
-                if(res){
-                  this._snackBar.open("Current QUEST finished! ", undefined, { duration: 3000,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
-                  this._readCurrentQuestSummary();
-                  if(this.gameData.gameStatus === 'COMPLETED'){
-                    this._web3Service.tryWinnerWithdraw();
-                  }
-
-                }
-                else this._snackBar.open("An error has occured while settling the current game", undefined, { duration: 3000,panelClass: ['snack-error'], verticalPosition: 'bottom'});
-              })
-            }
-            else this._snackBar.open("An error has occured while settling the current game. Invalid signature", undefined, { duration: 3000,panelClass: ['snack-error'], verticalPosition: 'bottom'});
-          });
-        });
-  }
-  private _handleQuest(){ 
-    this.currentBlock = null;
-    this.isLoading = true;
-    this.hasStreamedScene = false;
-    this._switchMenu("Story");
-    this._service.handleQuestStream(this.currentQuest.id, this.currentQuest.blocks.slice(-1)[0], this._isGameRecovery && this.currentQuest.blocks.length > 1)
-    .pipe(
-      finalize(() => this.isLoading = false),
-      takeUntilDestroyed(this._destroyRef)
-    )
-    .subscribe({
-      next: res => {
-        if(this._isValidResponse(res) && this._handleResponseStream(res) ){
-            this._isGameRecovery = false; 
-            if(!this.hasFinishedQuest){
-              this._handleQuestStreamEnd(res);
-            }
-            else{
-              this._handleQuestEnd();
-            }
-        }
-      },
-      error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 3000)
-    })
-  }
-
-  private _getGameData():GameData | null{
-      if(!isPlatformBrowser(this.platformId)) return null;
-      let gameDataCache = localStorage.getItem('game-data')
-      return gameDataCache ? JSON.parse(gameDataCache) : null;
-  }
-
-  private _initializeQuest(){
-      if(this.currentQuest){
-      let req:InitQuestRequest = {
-        questId: this.currentQuest.id,
-        username:this.gameData.username,
-        charCollectionAddress:this.currentQuest.charCollectionAddress,
-        charTokenId:`${this.currentQuest.charTokenId}`
-      }
-      this.hasStreamedScene = false;
-      this.sceneText = "";
-      this.isLoading = true;
-      this.gameData.gameStatus = 'INITIALIZING';
-      this._service.initQuestStream(req)
-        .pipe(
-          finalize(() => this.isLoading = false),
-          takeUntilDestroyed(this._destroyRef)
-        )
-        .subscribe({
-          next: res => {
-            if(this._isValidResponse(res)){
-              if(this._handleResponseStream(res) && this.currentBlock){
-                this._isGameRecovery = false;
-                this.gameData.currentBlock++;
-                this.currentBlock.id = this.gameData.currentBlock;
-                this._addSceneMenuOption(this.currentBlock.id);
-                this.btnTxt = "SUBMIT";
-                this._completeInitialization(req);
-              }
-            }
-          },
-          error: error => {
-            this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 5000)
-            this.gameData.gameStatus = 'READY';
-          }
-        })
-    } 
-  }
-  private _completeInitialization(req:InitQuestRequest){
-    let conditions:QueryCondition[] = []
-    const vars = Object.keys(req);
-    vars.forEach((v:string) => {
-      switch(v){
-        case("charTokenId"):
-          conditions.push({field:v, value:req[v] as any});
-          break;
-        case("username"):
-        case("charCollectionAddress"):
-          conditions.push({field:v, value:req[v]} as any)
-        break;
-        default: break;
-      }
-    })
-    let filter: SortedFilter = {
-      conditions:conditions,
-      page:0,
-      page_size:1,
-      sort_var:'creationDate',
-      is_descending:true
-    }
-    this._service.sortedQuery(filter)
-    .pipe(
-      finalize(() => this.isLoading = false),
-      takeUntilDestroyed(this._destroyRef)
-      catchError(error => {
-      this.isLoading = false;
-      this.gameData.gameStatus = 'READY';
-      this.btnTxt = "BEGIN";
-      return of(error);
-    }))
-    .subscribe(res => {
-      if(this._isValidResponse(res)){
-        if(res.data.length > 0){
-          this.currentQuest = res.data[0];
-          this.gameData.gameSessionId = this.currentQuest.id;
-          localStorage.setItem('game-data', JSON.stringify(this.gameData));
-          console.log('game-data',this.gameData);
-          if(this.currentQuest.blocks.length < this.currentQuest.maxBlocks){
-            this._service.generateSceneOptions({id:this.gameData.gameSessionId, scene:this.sceneText})
-            .pipe(catchError(error => {
-              this.isLoading = false;
-              this.gameData.gameStatus = 'READY';
-              this.btnTxt = "BEGIN";
-              return of(error);
-            }))
-            .subscribe(res => {
-              this.isLoading=false;
-              if(!this._isValidResponse(res)) return; 
-              if(this.currentBlock){
-                this.currentBlock.options = [...res.options];
-                this.currentChoices = [...this.currentBlock.options];
-                this.currentBlock.options.push(`${res.bad_choice} <<BAD_CHOICE>>`);
-                this.currentChoices.push(res.bad_choice);
-                this.currentChoices = this._shuffledFinalOptions([...this.currentChoices]);
-                this._snackBar.open("Select your choice!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
-                this._service.setQuestStatus(this.gameData.gameSessionId, 'ONGOING')
-                .pipe(catchError(error => {
-                  this.isLoading = false;
-                  this.gameData.gameStatus = 'READY';
-                  this.btnTxt = "BEGIN";
-                  return of(error);
-                }))
-                .subscribe(res => {
-                  this.currentQuest = res;
-                  this.gameData.gameStatus = this.currentQuest.status;
-                  localStorage.setItem('game-data', JSON.stringify(this.gameData));
-                  this._patchQuest();
-                  console.log('-- current intro --', this.currentQuest.intro);
-                })
-              }
-            })
-          }
-          else{
-            console.log('-- ON BLOCK LIMIT REACHED >> LAST CHOICE -->', this.currentQuest.blocks.slice(-1)[0].choice);
-            this._handleEndgameDisplay(this.currentQuest.blocks.slice(-1)[0].choice);
-            this._handleQuestEnd();
-            //save block
-          }
-        }
-        else this._snackBar.open("An error has occured while retrieving the new generated Quest", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});   
-      }
-    })
-  }
-
-  private _patchQuest(){
-    this._service.getById(this.currentQuest.id)
-      .pipe(
-        switchMap(quest => this._patchQuestBlocks$(quest)),
-        takeUntilDestroyed(this._destroyRef)
-      ).subscribe({
-        error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while patching the quest blocks >> ${error.message}`)
-      });
-  }
-
-  private _patchQuestBlocks$(quest:RandomQuestDto) : Observable<RandomQuestDto>{
-    this.currentQuest = quest;
-    let questUpdate = {...this.currentQuest};
-    if(this.currentBlock)
-      questUpdate.blocks.push(this.currentBlock)
-    return this._service.patchQuestBlocks(quest)
-      .pipe(
-        catchError(error => throwError(() => new Error(`An error has occured while patching the quest blocks >> ${error.message}`)))
-      )
   }
   private _handleEndgameDisplay(lastChoice: string | null){
     if(this.currentBlock && lastChoice){
@@ -722,8 +678,23 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this.currentQuest.status = 'UNCERTAIN';
         this._setEndgameIcon('UNCERTAIN');
       }
+      switch(this.gameData.gameStatus){
+        case('COMPLETED'):
+          this._snackBar.open("QUEST FINISHED!", undefined, { duration: 3500,panelClass: ['snack-success'], verticalPosition: 'bottom'});
+        break;
+        case('FAILED'):
+          this._snackBar.open("GAME OVER", undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'});
+        break;
+        case('UNCERTAIN'):
+          this._snackBar.open("TO BE CONTINUED...", undefined, { duration: 3500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+        break;
+        default:
+          break;
+      }
+      this.btnTxt = 'PLAY AGAIN';
     }
   }
+
   private _setEndgameIcon(status:string){
     switch(status){
       case('FAILED'):
@@ -737,6 +708,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this.endgameIcon = 'mood';
     }
   }
+
   private _addSceneMenuOption(sceneId:number){
     this.actionsBarConfig.push(new TreeMenuItem(`Scene ${sceneId}`, 2, undefined, false, false, true, undefined))
   }
@@ -766,6 +738,7 @@ CONSTRAINTS: ${data.constraints ?? 'NONE'}
 
 SUGGESTION: ${data.suggestion ?? 'NONE'}`
   }
+
   private _formatCharacterData(data: QuestCharacter):string{
     return `
 NAME: ${data.name}
@@ -783,5 +756,17 @@ MOTIVATIONS: ${data.motivations}
 ICONIC MOMENT: ${data.iconicMoment}
 
 REMARKABLE COMMENT: ${data.comment}`
+  }
+
+  private _setForNewGame(){
+    this.sceneText = '';
+    this.storyText = '';
+    this.gameData.gameSessionId = '';
+    this.actionsBarConfig = [...questsViewSidebarConfig];
+    this.currentBlock = null;
+    this.currentChoices = [];
+    this.btnTxt = "BEGIN";
+    this.gameData.gameStatus = 'READY';
+    this.gameData.currentBlock = 0;
   }
 }

@@ -174,13 +174,15 @@ export class SmartContractsService {
   public async startGame(collection:string, tokenId: number) : Promise<boolean>{
     let gameSession: any = GameSession(this.web3);
     
-    if(!gameSession) return false;
+    if(!gameSession)
+      throw new Error('Unable to load the Game Session contract');
 
     let entryFee = await gameSession.methods.entryFee().call();
 
     let isAllowedCollection = await gameSession.methods.allowedCollections(collection).call();
 
-    if(!isAllowedCollection) return false;
+    if(!isAllowedCollection)
+      throw new Error(`The character collection contract does not have the right game contract permissions`);
     
     await gameSession.methods.startGame(collection, tokenId as number).send({from: this.connectedWallet, value: BigInt(entryFee)});
 
@@ -192,7 +194,8 @@ export class SmartContractsService {
   public async settleGame(collection: string, tokenId: number, outcome: number, signature: string) : Promise<boolean>{
     let gameSession: any = GameSession(this.web3);
     
-    if(!gameSession) return false;
+    if(!gameSession)
+      throw new Error('Unable to load the Game Session contract');
 
     await gameSession.methods.settle(collection, tokenId, outcome, signature).send({ from: this.connectedWallet });
 
@@ -201,29 +204,13 @@ export class SmartContractsService {
     return session && session.player !== this.connectedWallet;
   }
 
-  public async tryWinnerWithdraw() : Promise<boolean>{
+  public async tryQuestRewardWithdraw() : Promise<any>{
     let gameSession:any = GameSession(this.web3);
 
-    if(!gameSession) return false;
+    if(!gameSession)
+      throw new Error('Unable to load the Game Session contract');
     
-    try{
-      let result: boolean = false;
-      await gameSession.methods.withdraw().send({from: this.connectedWallet })
-        .on('receipt',(receipt:any) => {
-          this.onTxReceipt.emit(receipt);
-          result = true;
-        })
-        .on('error', (error: any, receipt: any) => {
-          this.onTxError.emit({error: error, receipt: receipt });
-          result = false;
-        });
-      
-      return result;
-    }
-    catch(e){
-      this.onTxError.emit({error:e});
-      return false;
-    }
+    return await gameSession.methods.withdraw().send({from: this.connectedWallet })
   }
 
   public async abandonGame(collection:string, tokenId: number) : Promise<boolean>{
