@@ -200,7 +200,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
           name: model.metadata.name,
           imageEndpoint: model.image,
           metadata: model.metadata,
-          price: parseFloat(web3(this.document)?.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
+          price: parseFloat(web3()?.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
         }
       cfg.data = {model:detailModel, showContractData:true};
     }
@@ -213,7 +213,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
           name: model.metadata.name,
           metadata: model.metadata,
           imageEndpoint: model.image,
-          price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
+          price: parseFloat(web3()?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
           mints:modelInfo.mints,
           maxMints:modelInfo.maxMints,
         }

@@ -9,7 +9,6 @@ import { GameData, NftCardClickAction, RoundedButtonConfig } from 'src/app/modul
 import { Router } from '@angular/router';
 import {ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { defaultNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
-import { NotificationService } from 'src/app/modules/shared/services/notification.service';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 
 @Component({
@@ -133,7 +132,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
           name: model.metadata.name,
           metadata: model.metadata,
           imageEndpoint: model.image,
-          price: parseFloat(web3(this.document)?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
+          price: parseFloat(web3()?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
           mints:modelInfo.mints,
           maxMints:modelInfo.maxMints,
         }
@@ -145,7 +144,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
           name: model.metadata.name,
           imageEndpoint: model.image,
           metadata: model.metadata,
-          price: parseFloat(web3(this.document)?.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
+          price: parseFloat(web3()?.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
       }
       cfg.data = {model:catModel, showContractData:false};
     }

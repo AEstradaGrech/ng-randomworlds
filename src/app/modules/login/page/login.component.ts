@@ -1,12 +1,26 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, computed, signal, OnInit, inject } from '@angular/core';
 import { AuthService } from '../../../core/services/auth/auth.service';
-import { LoginCredentialsDto } from '../../../core/interfaces/auth/credentials.interface';
-import { UserLogin } from '../../../modules/shared/models/common-interfaces'
 import { Router } from '@angular/router';
-import Web3 from 'web3';
-import { DOCUMENT } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UserLogin, AppWallet, WalletId } from 'src/app/core/interfaces/auth/credentials.interface';
+import { WalletDiscoveryService } from '../../shared/services/wallet-discovery.service';
+import { WINDOW } from 'src/app/core/constants/window';
+
+interface World {
+  id: string;
+  name: string;
+  genre: string;
+  image: string;
+  glow: string;
+}
+
+const assetImagesPath:string = 'assets/images';
+// // TODO: autoUpdate (como carusel) --> setTimeout(() => _generateImage(const 'login prompt Image' (|| usar ImagenBase para diffusion nueva imagen).map(res => World [cómo genero el glow? agent?])))
+const WORLDS: World[] = [
+  { id: 'desierto', name: 'El desierto de las dos lunas', genre: 'Ciencia ficción', image: `${assetImagesPath}/login_desierto.svg`, glow: '#f7b46a' },
+  { id: 'bosque', name: 'El bosque del castillo', genre: 'Fantasía oscura', image: `${assetImagesPath}/login_bosque.svg`, glow: '#c3ead7' },
+];
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -14,80 +28,53 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class LoginComponent implements OnInit {
   
-  public working:boolean = false;
-  public error:string = '';
-  public maxUserLength: number = 30;
-  public maxPassLength: number = 30;
-
-  private window: any;
+  private readonly _window = inject(WINDOW);
   private _snackBar = inject(MatSnackBar)
-  constructor(@Inject(DOCUMENT) private document: Document,private fb: FormBuilder, private authService: AuthService, private router: Router){
-    this.window = this.document.defaultView;
+  private readonly _router = inject(Router);
+  private readonly _walletDiscovery = inject(WalletDiscoveryService);
+  private readonly _authService = inject(AuthService)
+  protected readonly worldIndex = signal(Math.floor(Math.random() * WORLDS.length));
+  protected readonly world = computed(() => WORLDS[this.worldIndex()]);
+
+  protected readonly connecting = signal<WalletId | null>(null);
+  protected readonly error = signal<string | null>(null);
+
+  public get wallets(): AppWallet[]{
+    return this._walletDiscovery.wallets;
   }
-
-  public loginForm!: FormGroup;
-
   ngOnInit(): void {
-    this.loginForm = this.fb.group({
-      userId: ['', [Validators.required]],
-      password: ['', [Validators.required]]
-    })
-    //let account = web3.ether.getAccounts()
+    this._authService.logout();
   }
 
-  public getError(controlName:string, errorType:string) {
-    let hasError: boolean = false;
-    const control = this.loginForm.get(controlName);
-    if(control && control.touched && control.errors != null)
-      hasError = errorType in control.errors ? true : false;
-    return hasError;
+  protected readonly installed = computed(() =>  ({
+    metamask: this._walletDiscovery.metamask(),
+    phantom: !!this._window?.phantom?.solana?.isPhantom,
+  }));
+
+  protected nextWorld(): void {
+    this.worldIndex.update(i => (i + 1) % WORLDS.length);
   }
 
-  public onSubmit(){
-    console.log('LOGIN SUBMIT');
-    let creds:LoginCredentialsDto={
-      userId: this.loginForm.get('userId')?.value,
-      password: this.loginForm.get('password')?.value
-    }
-    this.router.navigateByUrl('randomworlds/home');
-    // this.authService.login(creds).subscribe(response =>{
-    //   //notify errors ||
-    //   // request UserDto w/roles
-    //   // redirect to 'home' | 'admin-page'
-     
-    // })
-  }
-
-  //https://docs.moralis.com/authentication-api/evm/how-to-sign-in-with-metamask-angular
-  //https://second-pocket-shoot-73.hashnode.dev/how-to-build-a-web3-login-with-web3js-library
-  //https://dev.to/macaoblog/angular-web3-10hg <-- (failed) service
-  public async onMetamaskLogin(){
-    console.log('-- on metamask login --')
-    try{
-      if (this.window.ethereum) {
-        this.window.web3 = new Web3(this.window.ethereum);
-        await this.window.ethereum.enable();
-        let accounts = await this.window.web3.eth.getAccounts()
-        console.log('--accounts--', accounts);
-        if(accounts.length <= 0){
-          this._snackBar.open("An error has occured while loging with MetaMask", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
-          return;
+  protected async connect(wallet: AppWallet): Promise<void> {
+    this.error.set(null);
+    this.connecting.set(wallet.id);
+    try {
+      let logedIn = await this._authService.loginWith(wallet.name);
+      if(logedIn){
+        const creds: UserLogin | null = JSON.parse(localStorage.getItem('user-login') ?? '');
+        if(creds && creds.provider === wallet.name && creds.username){
+          this._snackBar.open("Welcome to the Random Worlds!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
+          localStorage.removeItem('game-data');
+          await new Promise(resolve => setTimeout(resolve, 1200));
+          this._router.navigateByUrl('randomworlds/home');
         }
-        let login:UserLogin = {
-          provider:'metamask',
-          username:accounts[0]
-        }
-        localStorage.setItem('user-login', JSON.stringify(login))
-        this._snackBar.open("Welcome to the Random Worlds!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'})
-        localStorage.removeItem('game-data')
-        this.router.navigateByUrl('randomworlds/home');
-        //// 5. check if user is already logged in and update the global userWalletAddress variable
-        //window.userWalletAddress = window.localStorage.getItem("userWalletAddress");
+        else this.error.set("An error has occured while loging. Invalid credentials. Try again");
       }
-    }catch(error){
-      console.log('-- on error --', error)
-      this._snackBar.open("An error has occured while loging with MetaMask", undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
+      else this._snackBar.open(`An error has occured while loging with ${wallet.name}`, undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
+    } catch {
+      this.error.set(`No se pudo conectar con ${wallet.name}. Comprueba que la extensión está desbloqueada y vuelve a intentarlo.`);
+    } finally {
+      this.connecting.set(null);
     }
-    
   }
 }

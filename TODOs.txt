@@ -1,0 +1,8 @@
+1 - autenticación real. Guardar la dirección en localStorage solo demuestra que alguien escribió una dirección, no que sea suya. 
+Cualquiera puede abrir la consola, poner la dirección de otro y entrar. 
+Lo correcto es Sign-In with Ethereum (EIP-4361): tu backend genera un mensaje con un nonce, 
+la wallet lo firma y el backend verifica la firma antes de emitir una sesión. Como el juego vende NFTs, esto no es opcional.
+
+el flujo completo: nonce en el backend, mensaje con formato SIWE, firma en la wallet, verificación y sesión.
+
+2 - WalletDiscoveryService & Web3LoginService & SmartContracts service (separar)

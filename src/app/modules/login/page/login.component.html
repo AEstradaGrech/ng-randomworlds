@@ -1,20 +1,61 @@
-<div class="w-100 h-100 jc-center ai-center">
-    <div class="box-login flex">
-        <div class="h-100 flex-2 flex column jc-center ai-center bg-img"></div>
-        <div class="flex-0 flex column jc-start padding-30">
-            <app-rounded-button 
-                        [id]="'mm-login'"
-                        [iconName]=""
-                        [bgImageIcon]="'url(assets/images/MetamaskIconBrown.png)'"
-                        [backgroundColor]="'#8b986c'"
-                        [hoverColor]="'var(--primary-btn-hover)'"
-                        [borderColor]="'var(--primary-btn-border)'"
-                        [disabled]="working"
-                        (onClickEvent)="onMetamaskLogin()"
-                        >
-                    </app-rounded-button>
-        </div>
-        
-    </div>
-</div>
+<main class="login" [style.--glow]="world().glow">
 
+  <figure class="art">
+   
+    @for (w of [world()]; track w.id) {
+      <img [src]="w.image" [alt]="'Un viajero ante un portal de piedra. Al otro lado: ' + w.name" />
+    }
+    <figcaption class="art-caption">
+      <span class="label">Random world</span>
+      <span class="world-name">{{ world().name }}</span>
+      <span class="genre">{{ world().genre }}</span>
+    </figcaption>
+    <button type="button" class="reroll" (click)="nextWorld()">Other world <span aria-hidden="true">↻</span></button>
+  </figure>
+
+  <section class="panel" aria-labelledby="login-title">
+    <div class="panel-inner">
+      <p class="label">Random interactive stories with your NFT</p>
+      <h1 id="login-title" class="wordmark">Random<span>Worlds</span></h1>
+      <p class="pitch">You choose, AI generates the story.</p>
+
+      <div class="wallets">
+        @for (w of wallets; track w.id) {
+          @if (installed()[w.id]) {
+            <button
+              type="button"
+              class="wallet"
+              (click)="connect(w)"
+              [disabled]="connecting() !== null"
+              [attr.aria-busy]="connecting() === w.id">
+              <img class="wallet-icon" [src]="w.icon" alt="" />
+              <span class="wallet-text">
+                <span class="wallet-name">
+                  {{ connecting() === w.id ? 'Waiting for ' + w.name + '…' : 'Connect with ' + w.name }}
+                </span>
+                <span class="wallet-chain">{{ w.chain }}</span>
+              </span>
+              <span class="wallet-arrow" aria-hidden="true">→</span>
+            </button>
+          } @else {
+            <a class="wallet is-missing" [href]="w.installUrl" target="_blank" rel="noopener">
+              <img class="wallet-icon" [src]="w.icon" alt="" />
+              <span class="wallet-text">
+                <span class="wallet-name">Install {{ w.name }}</span>
+                <span class="wallet-chain">{{ w.chain }} · no detected</span>
+              </span>
+              <span class="wallet-arrow" aria-hidden="true">↗</span>
+            </a>
+          }
+        }
+      </div>
+
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+
+      <p class="fine">We only use your public wallet address to sign in. We'll never ask for your seed phrase or private key.</p>
+    </div>
+  </section>
+
+</main>

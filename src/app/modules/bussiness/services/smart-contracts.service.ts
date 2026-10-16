@@ -12,12 +12,13 @@ import CustomCharsFactory from 'src/app/core/scripts/customCharsFactory';
 import { firstValueFrom, Observable } from 'rxjs';
 import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT, CharacterMetadata, CharacterProfile } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
-import { GameData, UserLogin } from '../../shared/models/common-interfaces';
+import { GameData } from '../../shared/models/common-interfaces';
 import { Router } from '@angular/router';
 import GameSession from 'src/app/core/scripts/gameSession';
 import { PlayerGameSession, TxError } from '../models/smart-contract.interfaces';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { environment } from 'src/environments/environment';
+import { UserLogin } from 'src/app/core/interfaces/auth/credentials.interface';
 @Injectable({
   providedIn: 'root'
 })
@@ -41,7 +42,7 @@ export class SmartContractsService {
   }
 
   constructor(@Inject(DOCUMENT) private document: Document, private http:HttpClient) { 
-    this.web3 = Web3Provider(this.document);
+    this.web3 = Web3Provider();
     this.factory = Factory(this.web3);
     this.getConnectedAccounts().then(res => {
       if(res.length <= 0){

@@ -1,32 +1,235 @@
-.box-login{
-    height: 360px;
-    width: 620px;
-    background-color: #00000063;
-    border-radius: 6px;
-    position: relative;
-    box-shadow: rgba(60,64,67,0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 6px 2px;
+// Fuentes: añade esto al <head> de src/index.html
+// <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Hanken+Grotesk:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+
+:host {
+  --night: #0c0b10;
+  --panel: #111018;
+  --line: rgb(255 255 255 / .08);
+  --fg: #efeae0;
+  --soft: #b8b2a5;
+  --muted: #7c776c;
+  --danger: #f19b8f;
+  --f-display: 'Gloock', Georgia, serif;
+  --f-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --f-label: 'Geist Mono', ui-monospace, monospace;
+
+  display: block;
+  min-height: 100dvh;
+  background: var(--night);
+  color: var(--fg);
+  font-family: var(--f-body);
+  -webkit-font-smoothing: antialiased;
 }
 
-.bg-img{
-    border-bottom-left-radius: 6px;
-    border-top-left-radius: 6px;
-    background: url('/assets/images/MetaMask-Logo.png');
-    background-position: center;
-    background-size: cover;
+// Dos columnas: ilustración a sangre y panel con las wallets
+.login {
+  --glow: #f7b46a; // lo sobrescribe [style.--glow] con el color del mundo activo
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  min-height: 100dvh;
+  width: 100vw;
 }
 
-.metamask-btn{
+// ---------- Ilustración ----------
+.art {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  background: #07070b;
+
+  img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    background-color: transparent;
-    background: url('/assets/images/MetaMask-Logo.png') ;
-    background-position: center;
-    background-size: cover;
-    border-block-width: 1px;
-    border-block-color: #64cb03;
-    border-radius: 13px;
-    margin: 40px 0px 15px 0px
-}
-.metamask-btn:hover {
-    background-color: #c3ff89; /* Change this value as needed */
+    object-fit: cover;          // rellena sin deformar, recorta lo que sobre
+    object-position: 50% 42%;   // al recortar, prioriza el portal y el personaje
+    animation: settle 1.4s cubic-bezier(.2, .7, .2, 1) both;
   }
+
+  // Funde el borde de la imagen con el panel: sin corte duro entre columnas
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to right, transparent 72%, var(--panel));
+  }
+}
+
+@keyframes settle {
+  from { transform: scale(1.06); opacity: .3; }
+}
+
+.art-caption {
+  position: absolute;
+  z-index: 1;
+  left: 28px;
+  bottom: 28px;
+  display: grid;
+  gap: 4px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgb(12 11 16 / .55);
+  backdrop-filter: blur(12px);
+}
+.world-name { font: 400 20px/1.15 var(--f-display); }
+.genre { color: var(--soft); font-size: 13px; }
+
+.reroll {
+  position: absolute;
+  z-index: 1;
+  top: 24px;
+  left: 24px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgb(12 11 16 / .45);
+  backdrop-filter: blur(12px);
+  color: var(--fg);
+  font: 500 10.5px/1 var(--f-label);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+
+  &:hover { border-color: var(--glow); color: var(--glow); }
+  &:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; }
+}
+
+// ---------- Panel ----------
+.panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(32px, 6vw, 80px) clamp(24px, 5vw, 72px);
+  background: var(--panel);
+}
+
+.panel-inner {
+  width: 100%;
+  max-width: 400px;
+  animation: rise .8s .15s cubic-bezier(.2, .7, .2, 1) both;
+}
+
+@keyframes rise {
+  from { transform: translateY(12px); opacity: 0; }
+}
+
+.label {
+  margin: 0;
+  font: 500 10.5px/1.4 var(--f-label);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--glow);
+  transition: color .4s;
+}
+
+.wordmark {
+  margin: 14px 0 18px;
+  font: 400 clamp(44px, 5vw, 64px)/.95 var(--f-display);
+  letter-spacing: -.02em;
+
+  span { color: var(--glow); transition: color .4s; }
+}
+
+.pitch {
+  margin: 0 0 40px;
+  max-width: 30ch;
+  color: var(--soft);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.wallets { display: grid; gap: 10px; }
+
+.wallet {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box; // el <a> y el <button> miden lo mismo
+  width: 100%;
+  padding: 12px 18px 12px 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgb(255 255 255 / .03);
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color .2s, background-color .2s;
+
+  &:hover:not(:disabled) {
+    border-color: color-mix(in oklab, var(--glow) 60%, transparent);
+    background: color-mix(in oklab, var(--glow) 7%, transparent);
+
+    .wallet-arrow { transform: translateX(3px); color: var(--glow); }
+  }
+  &:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; }
+  &:disabled { cursor: progress; opacity: .5; }
+  &[aria-busy='true'] { opacity: 1; border-color: color-mix(in oklab, var(--glow) 60%, transparent); }
+
+  &.is-missing { border-style: dashed; background: transparent; }
+  &.is-missing .wallet-name { color: var(--soft); }
+}
+
+.wallet-icon {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+  background: rgb(255 255 255 / .06);
+  object-fit: contain;
+}
+.wallet-text { min-width: 0; }
+.wallet-name { display: block; font-size: 15px; font-weight: 500; }
+.wallet-chain {
+  display: block;
+  font: 400 10.5px/1.7 var(--f-label);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.wallet-arrow { color: var(--muted); transition: transform .25s, color .2s; }
+
+// Mientras conecta, la flecha se convierte en un spinner
+.wallet[aria-busy='true'] .wallet-arrow {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--line);
+  border-top-color: var(--glow);
+  border-radius: 50%;
+  color: transparent;
+  overflow: hidden;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error { margin: 16px 0 0; color: var(--danger); font-size: 14px; }
+
+.fine {
+  margin: 32px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+// ---------- Móvil: la ilustración pasa a ser una cabecera ----------
+@media (max-width: 900px) {
+  .login {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 48svh auto;
+  }
+  .art::after { background: linear-gradient(to bottom, transparent 62%, var(--panel)); }
+  .art-caption { left: 16px; bottom: 20px; }
+  .reroll { top: 16px; left: 16px; }
+  .panel { align-items: flex-start; padding-top: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

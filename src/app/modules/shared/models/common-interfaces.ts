@@ -1,6 +1,6 @@
 import { MatBadgePosition, MatBadgeSize } from "@angular/material/badge"
-import { CharacterProfileMock, QuestCharacter, QuestPreferences } from "src/app/core/interfaces/business/prompting.interface"
-import { AssetModel, WalletNFT } from "src/app/core/interfaces/business/smart-contract.interface"
+import { QuestCharacter, QuestPreferences } from "src/app/core/interfaces/business/prompting.interface"
+import { AssetModel } from "src/app/core/interfaces/business/smart-contract.interface"
 import { EAppButtons } from "./common-enums"
 
 export interface QueryFilter{
@@ -25,10 +25,6 @@ export interface CollectionResponse<T>{
     total_pages:number | null
 }
 
-export interface UserLogin{
-    provider:string //metamask
-    username:string //connectedWallet
-}
 
 export interface GameData{
     username:string,
