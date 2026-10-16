@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
     try {
       let logedIn = await this._authService.loginWith(wallet.name);
       if(logedIn){
-        const creds: UserLogin | null = JSON.parse(localStorage.getItem('user-login') ?? '');
+        const creds: UserLogin | null = this._authService.userLogin();
         if(creds && creds.provider === wallet.name && creds.username){
           this._snackBar.open("Welcome to the Random Worlds!", undefined, { duration: 2500,panelClass: ['snack-success-login'], verticalPosition: 'bottom'});
           localStorage.removeItem('game-data');

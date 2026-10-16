@@ -22,7 +22,6 @@ export class WalletDiscoveryService {
     if(!this._window) return;
     const onProviderAnnounce = (event: Event) => {
       const { detail } = event as CustomEvent<EIP6963ProviderDetail>;
-      console.log('-- ON PROVIDER ANNOUNCE --', detail);
       this._providers.update(list => list.some(p => p.info.uuid === detail.info.uuid) ? list : [...list, detail]);
     }
     this._window.addEventListener('eip6963:announceProvider', onProviderAnnounce);
@@ -31,7 +30,8 @@ export class WalletDiscoveryService {
   }
 
   public getProvider(name: string) : EIP6963ProviderDetail | null{
-    const provider = this.providers().find(p => p.info.name === name);
+    // this will trigger the AuthService.ProviderEvents effect
+    const provider = this._providers().find(p => p.info.name === name);
     return provider ? provider : null
   }
 }

@@ -104,7 +104,7 @@ export class SmartContractsService {
                 currentBlock:0,
                 isLocked: false
               };
-              localStorage.setItem('game-data', JSON.stringify(data))
+
               localStorage.setItem('game-data', JSON.stringify(data));
               this.onAccountChanged.emit(this._connectedAccount);
             }
