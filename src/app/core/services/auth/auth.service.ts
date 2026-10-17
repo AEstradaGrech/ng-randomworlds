@@ -1,14 +1,14 @@
-import { DestroyRef, inject, Injectable, NgZone, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, NgZone, signal } from '@angular/core';
 
-import { Observable, Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { WINDOW } from '../../constants/window';
 import { EIP1193Provider, UserLogin } from '../../interfaces/auth/credentials.interface';
 import { WalletDiscoveryService } from 'src/app/modules/shared/services/wallet-discovery.service';
 import Web3 from 'web3';
 import { Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable({
@@ -21,25 +21,89 @@ export class AuthService {
     if(loggedUser){
       const providerDetail = this.walletDiscovery.getProvider(loggedUser.provider);
       if(providerDetail)
-        this.watch(providerDetail.provider);
+        this._watch(providerDetail.provider);
     }
 
   }
 
   public onAccountChange: Subject<string> = new Subject<string>(); 
   public userLogin = signal<UserLogin | null>(this._readStoredLogin());
+  public currentProvider = computed<EIP1193Provider | null>(() => {
+    const userLogin: UserLogin | null = this.userLogin();
+    if(userLogin){
+      const providerDetail = this.walletDiscovery.getProvider(userLogin.provider);
+      return providerDetail ? providerDetail.provider : null;
+    }
+    return null;
+  })
+
   private readonly _window = inject(WINDOW);
   private readonly walletDiscovery = inject(WalletDiscoveryService);
   private _router: Router = inject(Router);
   private _zone: NgZone = inject(NgZone);
-  private _destroyRef: DestroyRef = inject(DestroyRef);
-  private authUrl:string = ''
 
-  private watched: EIP1193Provider | null = null;
+  private _watched: EIP1193Provider | null = null;
 
+  
+  public async loginWith(provider: string): Promise<boolean>{
+    if(!this._window) return false;
+    const providerDetail = this.walletDiscovery.getProvider(provider);
+    if(providerDetail){
+      const web3 = new Web3(providerDetail.provider);
+      const [address] = await web3.eth.requestAccounts();
+      if (!address) return false;
+      // At this point the user has connected his wallet but 
+      // the login is not signed (not verified, no JWT, no expiration)
+      // Setting the user login updates the 'currentProvider' computed signal
+      // which is required to get the 'currentChainId', which is required to
+      // sign the login and generate the JWT
+      this._storeUserLogin(address, provider);
+      if(await this.sign(address))
+        return true;
+      // if the backend signing fails, the login is deleted and 
+      // the loginWith method returns false
+      else localStorage.removeItem('user-login');
+    }
+    return false;
+  } 
+
+    //TODO
+  public async sign(address: string) : Promise<boolean>{
+    try{
+      const creds: UserLogin | null = this._readStoredLogin();
+      if(!creds) return false;
+      const web3 = this._web3FromProvider();
+      const chainId = await this.getConnectedChainId();
+      const siweAddress = web3.utils.toChecksumAddress(address);
+      const { nonce } = await firstValueFrom(this.http.get<{ nonce: string }>(`${environment.baseUrl}/blockchain/auth/nonce/${siweAddress}`));
+      const siweMessage = this._buildSiweMessage({ address: siweAddress, chainId, nonce });
+      const signature = await web3.eth.personal.sign(siweMessage, siweAddress, '');
+      const recoveredAddress = await firstValueFrom(this.http.post(`${environment.baseUrl}/blockchain/auth/verify`, { siweMessage, signature }));
+      return recoveredAddress && recoveredAddress === siweAddress;
+    }catch(error){
+      throw new Error(`An error has occured while verifying the login: ${error}`);
+    }
+  }
+
+  public logout(){
+    const creds: UserLogin | null = JSON.parse('user-login');
+    if(creds)
+      this._revokeWalletPermission(creds.provider);
+    localStorage.removeItem('user-login');
+    localStorage.removeItem('game-data');
+  }
+
+  public async getConnectedAccounts() : Promise<string[]>{
+    return !this._watched ? [] :  await new Web3(this._watched).eth.getAccounts();
+  }
+
+  public async getConnectedChainId() : Promise<number>{
+    const web3 = this._web3FromProvider();
+    return Number(await web3.eth.net.getId());
+  }
   // Función flecha guardada en una propiedad: siempre es la MISMA referencia
   // (removeListener la necesita) y el `this` apunta al servicio.
-  private readonly onAccountsChanged = (accounts: string[]) => {
+  private readonly _onAccountsChanged = (accounts: string[]) => {
     this._zone.run(() => {
       const current = this.userLogin();
       if(!current || !accounts.length){
@@ -70,55 +134,17 @@ export class AuthService {
       this.onAccountChange.next(accounts[0]);
     });
   };
-  
-  public async loginWith(provider: string): Promise<boolean>{
-    if(!this._window) return false;
-    const providerDetail = this.walletDiscovery.getProvider(provider);
-    if(providerDetail){
-      const web3 = new Web3(providerDetail.provider);
-      const [address] = await web3.eth.requestAccounts();
-      if (!address) return false;
-      let creds: UserLogin = {
-        provider: provider,
-        username: address
-      }
-      localStorage.setItem('user-login', JSON.stringify(creds));
-      return true;
-    }
-    return false;
-  } 
 
-  public logout(){
-    const creds: UserLogin | null = JSON.parse('user-login');
-    if(creds)
-      this._revokeWalletPermission(creds.provider);
-    localStorage.removeItem('user-login');
-    localStorage.removeItem('game-data');
+  private _watch(provider: EIP1193Provider): void {
+    if (this._watched === provider) return;
+    this._unwatch();
+    provider.on('accountsChanged', this._onAccountsChanged);
+    this._watched = provider;
   }
 
-  public async getConnectedAccounts() : Promise<string[]>{
-    return !this.watched ? [] :  await new Web3(this.watched).eth.getAccounts();
-  }
-
-  //TODO
-  public sign(credentials: UserLogin) : Observable<boolean>{
-    return this.http.post<boolean>(this.authUrl, credentials)
-                    .pipe(response => {
-                       //store 
-                       return response
-                    });
-  }
-  
-  private watch(provider: EIP1193Provider): void {
-    if (this.watched === provider) return;
-    this.unwatch();
-    provider.on('accountsChanged', this.onAccountsChanged);
-    this.watched = provider;
-  }
-
-  private unwatch(): void {
-    this.watched?.removeListener('accountsChanged', this.onAccountsChanged);
-    this.watched = null;
+  private _unwatch(): void {
+    this._watched?.removeListener('accountsChanged', this._onAccountsChanged);
+    this._watched = null;
   }
 
   private async _revokeWalletPermission(providerName: string){
@@ -135,11 +161,42 @@ export class AuthService {
     }
   }
 
+  //Gets a web3 instance for the current (loged) provider
+  private _web3FromProvider() : Web3{
+    const provider = this.currentProvider();
+    if(!provider)
+      throw new Error('No connected provider found');
+    return new Web3(provider);
+  }
+
+  private _storeUserLogin(wallet:string, provider:string){
+    let creds: UserLogin = {
+      provider: provider,
+      username: wallet
+    }
+    localStorage.setItem('user-login', JSON.stringify(creds));
+  }
+
   private _readStoredLogin(): UserLogin | null {
     try {
       return JSON.parse(localStorage.getItem('user-login') ?? 'null');
     } catch {
       return null;
     }
+  }
+
+  private _buildSiweMessage(p: { address: string; chainId: number; nonce: string }): string {
+    return [
+      `${location.host} wants you to sign in with your Ethereum account:`,
+      p.address,
+      '',
+      'Sign in to RandomWorlds.',
+      '',
+      `URI: ${location.origin}`,
+      'Version: 1',
+      `Chain ID: ${p.chainId}`,
+      `Nonce: ${p.nonce}`,
+      `Issued At: ${new Date().toISOString()}`,
+    ].join('\n');
   }
 }

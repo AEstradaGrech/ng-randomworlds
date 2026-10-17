@@ -1,6 +1,7 @@
 import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { WINDOW } from 'src/app/core/constants/window';
-import { AppWallet, EIP6963ProviderDetail } from 'src/app/core/interfaces/auth/credentials.interface';
+import { AppWallet, EIP6963ProviderDetail, UserLogin } from 'src/app/core/interfaces/auth/credentials.interface';
+import Web3 from 'web3';
 
 
 @Injectable({
@@ -13,7 +14,7 @@ export class WalletDiscoveryService {
   
   readonly providers = this._providers.asReadonly();
   readonly metamask = computed(() => this._providers().find(p => p.info.rdns === 'io.metamask') ?? null);
-  
+
   public readonly wallets: AppWallet[] = [
     { id: 'metamask', name: 'MetaMask', chain: 'Ethereum', icon: 'assets/images/MetamaskIconBrown.png', installUrl: 'https://metamask.io/download/' },
     { id: 'phantom', name: 'Phantom', chain: 'Solana', icon: 'assets/images/phantom.svg', installUrl: 'https://phantom.com/' },
