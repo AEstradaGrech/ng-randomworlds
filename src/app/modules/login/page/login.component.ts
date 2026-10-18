@@ -15,10 +15,10 @@ interface World {
 }
 
 const assetImagesPath:string = 'assets/images';
-// // TODO: autoUpdate (como carusel) --> setTimeout(() => _generateImage(const 'login prompt Image' (|| usar ImagenBase para diffusion nueva imagen).map(res => World [cómo genero el glow? agent?])))
+// // TODO: autoUpdate py-diff
 const WORLDS: World[] = [
-  { id: 'desierto', name: 'El desierto de las dos lunas', genre: 'Ciencia ficción', image: `${assetImagesPath}/login_desierto.svg`, glow: '#f7b46a' },
-  { id: 'bosque', name: 'El bosque del castillo', genre: 'Fantasía oscura', image: `${assetImagesPath}/login_bosque.svg`, glow: '#c3ead7' },
+  { id: 'desert', name: 'Arrakis', genre: 'Science Fiction', image: `${assetImagesPath}/login_desierto.svg`, glow: '#f7b46a' },
+  { id: 'forest', name: 'Uffrith', genre: 'Dark Fantasy', image: `${assetImagesPath}/login_bosque.svg`, glow: '#c3ead7' },
 ];
 
 @Component({

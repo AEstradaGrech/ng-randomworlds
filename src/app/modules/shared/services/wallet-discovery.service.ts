@@ -17,7 +17,7 @@ export class WalletDiscoveryService {
 
   public readonly wallets: AppWallet[] = [
     { id: 'metamask', name: 'MetaMask', chain: 'Ethereum', icon: 'assets/images/MetamaskIconBrown.png', installUrl: 'https://metamask.io/download/' },
-    { id: 'phantom', name: 'Phantom', chain: 'Solana', icon: 'assets/images/phantom.svg', installUrl: 'https://phantom.com/' },
+    // #TODO{ id: 'phantom', name: 'Phantom', chain: 'Solana', icon: 'assets/images/phantom.svg', installUrl: 'https://phantom.com/' },
   ];
   constructor() { 
     if(!this._window) return;
