@@ -24,3 +24,13 @@ export interface UserLogin{
     provider:string //wallet provider
     username:string //connectedWallet
 }
+
+export interface LoginSignRequest{
+  domain:string,
+  chainId: number,
+  address: string,
+  nonce: string,
+  issuedAt: string,
+  message:string,
+  signature:string
+}

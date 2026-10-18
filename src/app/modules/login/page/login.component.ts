@@ -73,6 +73,7 @@ export class LoginComponent implements OnInit {
       else this._snackBar.open(`An error has occured while loging with ${wallet.name}`, undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
     } catch {
       this.error.set(`No se pudo conectar con ${wallet.name}. Comprueba que la extensión está desbloqueada y vuelve a intentarlo.`);
+      this._authService.logout();
     } finally {
       this.connecting.set(null);
     }

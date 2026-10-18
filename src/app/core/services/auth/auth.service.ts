@@ -3,7 +3,7 @@ import { computed, DestroyRef, inject, Injectable, NgZone, signal } from '@angul
 import { firstValueFrom, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { WINDOW } from '../../constants/window';
-import { EIP1193Provider, UserLogin } from '../../interfaces/auth/credentials.interface';
+import { EIP1193Provider, LoginSignRequest, UserLogin } from '../../interfaces/auth/credentials.interface';
 import { WalletDiscoveryService } from 'src/app/modules/shared/services/wallet-discovery.service';
 import Web3 from 'web3';
 import { Router } from '@angular/router';
@@ -67,7 +67,6 @@ export class AuthService {
     return false;
   } 
 
-    //TODO
   public async sign(address: string) : Promise<boolean>{
     try{
       const creds: UserLogin | null = this._readStoredLogin();
@@ -76,9 +75,20 @@ export class AuthService {
       const chainId = await this.getConnectedChainId();
       const siweAddress = web3.utils.toChecksumAddress(address);
       const { nonce } = await firstValueFrom(this.http.get<{ nonce: string }>(`${environment.baseUrl}/blockchain/auth/nonce/${siweAddress}`));
-      const siweMessage = this._buildSiweMessage({ address: siweAddress, chainId, nonce });
-      const signature = await web3.eth.personal.sign(siweMessage, siweAddress, '');
-      const recoveredAddress = await firstValueFrom(this.http.post(`${environment.baseUrl}/blockchain/auth/verify`, { siweMessage, signature }));
+      const verifyRequest: LoginSignRequest = {
+        domain: environment.domain,
+        address:siweAddress,
+        chainId: chainId,
+        nonce: nonce,
+        issuedAt: new Date().toISOString(),
+        message:'',
+        signature: ''
+      }
+      const siweMessage = this._buildSiweMessage(verifyRequest);
+      verifyRequest.message = siweMessage;
+      // trigger provider popup to sign
+      verifyRequest.signature = await web3.eth.personal.sign(siweMessage, siweAddress, '');
+      const recoveredAddress = await firstValueFrom(this.http.post(`${environment.baseUrl}/blockchain/auth/verify`, verifyRequest));
       return recoveredAddress && recoveredAddress === siweAddress;
     }catch(error){
       throw new Error(`An error has occured while verifying the login: ${error}`);
@@ -86,11 +96,12 @@ export class AuthService {
   }
 
   public logout(){
-    const creds: UserLogin | null = JSON.parse('user-login');
+    const creds: UserLogin | null = JSON.parse(localStorage.getItem('user-login') ?? '');
     if(creds)
       this._revokeWalletPermission(creds.provider);
     localStorage.removeItem('user-login');
     localStorage.removeItem('game-data');
+    this.userLogin.set(null);
   }
 
   public async getConnectedAccounts() : Promise<string[]>{
@@ -101,8 +112,8 @@ export class AuthService {
     const web3 = this._web3FromProvider();
     return Number(await web3.eth.net.getId());
   }
-  // Función flecha guardada en una propiedad: siempre es la MISMA referencia
-  // (removeListener la necesita) y el `this` apunta al servicio.
+
+  // arrow function for removeListener 
   private readonly _onAccountsChanged = (accounts: string[]) => {
     this._zone.run(() => {
       const current = this.userLogin();
@@ -175,6 +186,7 @@ export class AuthService {
       username: wallet
     }
     localStorage.setItem('user-login', JSON.stringify(creds));
+    this.userLogin.set(creds);
   }
 
   private _readStoredLogin(): UserLogin | null {
@@ -185,18 +197,19 @@ export class AuthService {
     }
   }
 
-  private _buildSiweMessage(p: { address: string; chainId: number; nonce: string }): string {
+  // EIP-191
+  private _buildSiweMessage(data: LoginSignRequest): string {
     return [
       `${location.host} wants you to sign in with your Ethereum account:`,
-      p.address,
+      data.address,
       '',
       'Sign in to RandomWorlds.',
       '',
       `URI: ${location.origin}`,
       'Version: 1',
-      `Chain ID: ${p.chainId}`,
-      `Nonce: ${p.nonce}`,
-      `Issued At: ${new Date().toISOString()}`,
+      `Chain ID: ${data.chainId}`,
+      `Nonce: ${data.nonce}`,
+      `Issued At: ${data.issuedAt}`,
     ].join('\n');
   }
 }
