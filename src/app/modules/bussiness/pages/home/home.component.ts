@@ -23,6 +23,22 @@ export class HomeComponent implements OnInit{
   private _snackBar = inject(MatSnackBar)
   private _authService = inject(AuthService)
   web3provider!:any;
+
+  questDesc = `<p>
+                  Join and explore a random world that has been generated according to your preferences and the style of
+                  your selected character and play endless adventures with the help of the AI Game Master
+              </p>
+              <p>
+                  In this mode you start at a random place of your generated world and you have to prompt
+                  your desired actions in order to view, explore and interact with the environment and the
+                  other game characters.
+                  <br>
+                  <br>
+                  Discover an infinite random world with endless random adventures to play with your
+                  preferred characters and aqcuire different skills and items in your journeys to
+                  upgrade your character and unlock different game possibilities
+              </p>`
+
   constructor(@Inject(DOCUMENT) private document: Document){}
   ngOnInit(): void {
     let data = localStorage.getItem('game-data');

@@ -1,0 +1,14 @@
+<mat-card class="game-card">
+    <mat-card-header class="card-header">
+        <div mat-card-avatar class="header-image"></div>
+        <mat-card-title class="card-title">{{title}}</mat-card-title>
+        <mat-card-subtitle class="card-subtitle">{{subtitle}}</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image class="game-card-image" src="/assets/images/City_2.png" alt="game-mode-image-2">
+    <mat-card-content class="game-card-content">
+        <div [innerHtml]="description | safeHtml"></div>
+    </mat-card-content>
+    <mat-card-actions class="game-card-actions">
+    <button mat-stroked-button class="begin-btn" (click)="onBeginClick('adventure')">BEGIN</button>
+    </mat-card-actions>
+</mat-card>

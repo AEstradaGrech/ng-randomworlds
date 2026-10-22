@@ -1,0 +1,53 @@
+:host{
+    display: contents;
+}
+.game-card{
+    width: 40%;
+    margin: 0px 50px 0px 50px;
+}
+.card-header{
+    display: flex; 
+    justify-content:flex-start;
+    align-items:center;
+}
+.game-card-content{
+    color:#6b6b6c;
+    font-size:13px;
+    
+}
+.begin-btn{
+    width: 20%;
+    color: var(--primary-color);
+    border-color: rgb(175 239 24)
+}
+.begin-btn:hover{
+    width: 20%;
+    color: #ffffff;
+    border-color: rgb(245, 247, 243);
+    background-color: var(--primary-btn-hover);
+}
+.game-card-actions{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-title{
+    color:var(--primary-color);
+}
+.card-subtitle{
+    font-style: oblique;
+    color: #c3c3c5;
+    font-weight: 300;
+}
+
+.header-image {
+    background-image: url('/assets/images/City_1.png');
+    background-size: cover;
+    margin-bottom: 0px;
+}
+
+.game-card-image{
+    margin:10px 10px 15px 10px;
+    border-radius: 10px;
+}

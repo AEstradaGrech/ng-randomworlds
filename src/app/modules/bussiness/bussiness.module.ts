@@ -17,7 +17,6 @@ import { AssetsViewComponent } from './pages/assets-view/assets-view.component';
 import { CharacterCreatorDialogComponent } from './pages/assets-view/components/character-creator-dialog/character-creator-dialog.component';
 
 
-
 @NgModule({
     declarations: [
         HomeComponent,
