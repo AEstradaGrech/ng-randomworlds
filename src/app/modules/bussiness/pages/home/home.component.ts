@@ -7,6 +7,7 @@ import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { DOCUMENT } from '@angular/common';
 import web3 from 'src/app/core/scripts/web3'
 import { SmartContractsService } from '../../services/smart-contracts.service';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 
 @Component({
@@ -20,7 +21,7 @@ export class HomeComponent implements OnInit{
   imagesService = inject(ImagesService)
   router = inject(Router)
   private _snackBar = inject(MatSnackBar)
-  private _smartContractsService = inject(SmartContractsService)
+  private _authService = inject(AuthService)
   web3provider!:any;
   constructor(@Inject(DOCUMENT) private document: Document){}
   ngOnInit(): void {
@@ -30,12 +31,9 @@ export class HomeComponent implements OnInit{
     
   }
   async onBeginClick(gameType:string){
-    if(!this._smartContractsService.connectedWallet){
-      let isIn:boolean = await this._smartContractsService.tryMetamaskLogin();
-      if(!isIn){
+    if(!this._authService.userLogin()){
         this.router.navigateByUrl('');
         return;
-      }
     }
     let data = localStorage.getItem('game-data');
     let gameData: GameData | null = data ? JSON.parse(data) : null;

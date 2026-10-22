@@ -1,0 +1,39 @@
+<section class="screen-container">
+    <section style="display:block; align-items: center; margin:33px 7px 33px 12px">
+        <div class="buttons-wrapper" [style.--btns-position]="'flex-start'">
+            <div class="btns-grid-cell" [style.--content-position]="'flex-start'">
+                <ng-content select=".upper-buttons-l"></ng-content>
+            </div>
+        </div>
+        <div class="buttons-wrapper" [style.--btns-position]="'center'">
+            <div class="btns-grid-cell"  [style.--content-position]="'center'">
+                <ng-content select=".mid-buttons-l"></ng-content>
+            </div>
+        </div>
+        <div class="buttons-wrapper" [style.--btns-position]="'flex-end'">
+            <div class="btns-grid-cell" [style.--content-position]="'flex-end'">
+                <ng-content select=".lower-buttons-l"></ng-content>
+            </div>
+        </div>
+    </section>
+    <section class="shell-screen shadow">
+        <ng-content select=".shell-content"></ng-content>
+    </section>
+    <section style="display:block; align-items: center; margin:33px 12px 33px 7px">
+        <div class="buttons-wrapper" [style.--btns-position]="'flex-start'">
+            <div class="btns-grid-cell" [style.--content-position]="'flex-start'">
+                <ng-content select=".upper-buttons-r"></ng-content>
+            </div>
+        </div>
+        <div class="buttons-wrapper" [style.--btns-position]="'center'">
+            <div class="btns-grid-cell"  [style.--content-position]="'center'">
+                <ng-content select=".mid-buttons-r"></ng-content>
+            </div>
+        </div>
+        <div class="buttons-wrapper" [style.--btns-position]="'flex-end'">
+            <div class="btns-grid-cell" [style.--content-position]="'flex-end'">
+                <ng-content select=".lower-buttons-r"></ng-content>
+            </div>
+        </div>
+    </section>
+</section>
