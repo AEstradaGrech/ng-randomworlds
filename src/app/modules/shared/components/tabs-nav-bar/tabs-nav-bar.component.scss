@@ -14,14 +14,14 @@
     align-items: center;
     justify-content: center;
     color:#ffffff;
-    background: #99c531;
+    background: #0d111c;
     display: block;
 }
 
 .cell-btn:hover{
     font-weight: 500;
-    background-color: #ffffff;
-    color:#90cc05;
+    background-color: #1b2034;
+    color:#ffffff;
     display: block;
 }
 .cell-btn:active{
@@ -31,7 +31,7 @@
     background-color: #ffffff;
 }
 .active-cell-content{
-    color: #90cc05 !important;
+    color: #111018 !important;
 }
 .tab-icon{
     padding-left: 15px;
@@ -49,19 +49,19 @@
     align-content: center;
 }
 .list-item-content:hover{
-    color: #90cc05;
+    color: #ffffff;
 }
 .list-item-content:active{
-    color: #90cc05;
+    color: #111018;
 }
 .list-item-content:focus{
-    color: #90cc05;
+    color: #111018;
 }
 .list-link{
     box-shadow: rgba(20, 20, 20, 0.2) 0px 0px 0px 1px, rgba(0, 0, 0, 0.10) 0px 1px 0px 0px
 }
 .list-link:hover{
-    color: #90cc05;
+    color: #111018;
 }
 .disabled{
     color: #3c3c3c;

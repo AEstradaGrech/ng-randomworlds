@@ -1,9 +1,9 @@
 
 
 :root{
-  --primary-btn-color: #ffffff;
-  --primary-btn-hover: #99c531;
-  --primary-btn-border: rgb(175 239 24);
+    --primary-btn-color: #ffffff;
+    --primary-btn-hover: #0d111c;
+    --primary-btn-border: rgb(13 17 28);
   --secondary-btn-hover: #dbbd0e;
   --secondary-btn-border: rgb(239, 217, 24);
   --terciary-btn-hover: orange;
@@ -14,7 +14,9 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
   color: #e7e5e5;
   height: 100vh;
-  background: linear-gradient(160deg, rgba(255,255,255,1) 35%, rgb(166 237 0) 100%); //rgb(166 237 0)
+  background: linear-gradient(160deg, rgba(255,255,255,1) 35%, #111018 100%);
+
+  //background: linear-gradient(345deg, rgb(50 61 88) 35%, #111018 100%); //rgb(166 237 0)
 }
 * {
   box-sizing: border-box;
