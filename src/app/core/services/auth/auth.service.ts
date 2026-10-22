@@ -95,10 +95,15 @@ export class AuthService {
     }
   }
 
-  public logout(){
-    const creds: UserLogin | null = JSON.parse(localStorage.getItem('user-login') ?? '');
-    if(creds)
-      this._revokeWalletPermission(creds.provider);
+  public logout(provider:string | null = null){
+    const loginData = localStorage.getItem('user-login');
+    if(loginData){
+      const creds: UserLogin | null = JSON.parse(loginData);
+      if(creds)
+        this._revokeWalletPermission(creds.provider);
+    }
+    if(provider)
+      this._revokeWalletPermission(provider);
     localStorage.removeItem('user-login');
     localStorage.removeItem('game-data');
     this.userLogin.set(null);

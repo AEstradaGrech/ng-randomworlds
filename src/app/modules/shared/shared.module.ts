@@ -11,6 +11,7 @@ import { NotificationsComponent } from './components/notification/notification.c
 import { DragAndDropComponent } from './components/drag-and-drop/drag-and-drop.component';
 import { TokenSelectorMatmenuComponent } from './components/token-selector-matmenu/token-selector-matmenu.component';
 import { ShellModule } from './shell.module';
+import { AppShellComponent } from './components/app-shell/app-shell.component';
 
 @NgModule({
     //components, directives, and pipes that belong exclusively to this particular module
@@ -22,7 +23,8 @@ import { ShellModule } from './shell.module';
         RoundedButtonComponent, 
         NotificationsComponent,
         DragAndDropComponent, 
-        TokenSelectorMatmenuComponent
+        TokenSelectorMatmenuComponent, 
+        AppShellComponent
     ],
     imports:[
         FormsModule, 
@@ -43,7 +45,8 @@ import { ShellModule } from './shell.module';
         NftVisorComponent,
         RoundedButtonComponent,
         DragAndDropComponent,
-        TokenSelectorMatmenuComponent
+        TokenSelectorMatmenuComponent,
+        AppShellComponent
     ],
     //A provider is an instruction to the Dependency Injection system on how to obtain a value for a dependency.
     providers:[]

@@ -1,4 +1,4 @@
-import { Component, computed, signal, OnInit, inject } from '@angular/core';
+import { Component, computed, signal, OnInit, inject, HostListener } from '@angular/core';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -38,9 +38,15 @@ export class LoginComponent implements OnInit {
 
   protected readonly connecting = signal<WalletId | null>(null);
   protected readonly error = signal<string | null>(null);
-
+  private _selectedWallet:string | null = null; 
   public get wallets(): AppWallet[]{
     return this._walletDiscovery.wallets;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  public onWindowClose(event: any){
+    if(this._selectedWallet)
+      this._authService.logout(this._selectedWallet);
   }
   ngOnInit(): void {
     this._authService.logout();
@@ -58,6 +64,7 @@ export class LoginComponent implements OnInit {
   protected async connect(wallet: AppWallet): Promise<void> {
     this.error.set(null);
     this.connecting.set(wallet.id);
+    this._selectedWallet = wallet.name;
     try {
       let logedIn = await this._authService.loginWith(wallet.name);
       if(logedIn){
@@ -73,9 +80,10 @@ export class LoginComponent implements OnInit {
       else this._snackBar.open(`An error has occured while loging with ${wallet.name}`, undefined, { duration: 2500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
     } catch {
       this.error.set(`No se pudo conectar con ${wallet.name}. Comprueba que la extensión está desbloqueada y vuelve a intentarlo.`);
-      this._authService.logout();
+      this._authService.logout(this._selectedWallet);
     } finally {
       this.connecting.set(null);
+      this._selectedWallet = null;
     }
   }
 }
