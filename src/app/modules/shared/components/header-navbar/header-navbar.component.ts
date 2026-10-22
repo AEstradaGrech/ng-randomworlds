@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { NavBarTab } from '../tabs-nav-bar/nav-bar-tab.model';
 import { Router } from '@angular/router';
 import { TabsNavBarComponent } from '../tabs-nav-bar/tabs-nav-bar.component';
@@ -10,15 +10,23 @@ import { TabsNavBarComponent } from '../tabs-nav-bar/tabs-nav-bar.component';
   styleUrl: './header-navbar.component.scss'
 })
 export class HeaderNavbarComponent implements OnInit {
+  private readonly DEFAULT_LOGO = 'assets/images/RandomWorldsLogo.png';
   @ViewChild('navTabs') navTabs!: TabsNavBarComponent
   @Input() config!: Array<NavBarTab>;
   @Input() height: string = '240px'
   @Input() withLogo: boolean = true;
+  @Input() logoUrl:string | null = null;
+
   @Output() onTabClicked: EventEmitter<NavBarTab> = new EventEmitter<NavBarTab>()
-  constructor(private router:Router){}
+  
+  logoImage = signal<string>(this.DEFAULT_LOGO);
+  router:Router = inject(Router);
   
   ngOnInit(): void {
-    
+    if(this.withLogo && this.logoUrl){
+      const logo = this.logoUrl;
+      this.logoImage.update(v => v = logo);
+    }
   }
 
   public onTabClick(selected: NavBarTab)

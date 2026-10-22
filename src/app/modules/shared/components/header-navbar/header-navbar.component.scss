@@ -1,7 +1,10 @@
 .logo{
-    width: auto;
+   width: auto;
     height: inherit;
-    padding: 3px 12px 6px 12px;
+    border-radius: 100px;
+    object-fit:contain;          // rellena sin deformar, recorta lo que sobre
+    object-position: 50% 42%;   // al recortar, prioriza el portal y el personaje
+    padding: 2px 3px 3px 3px;
 }
 .tabs-menu{
     width: inherit;
