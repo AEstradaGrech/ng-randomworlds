@@ -1,4 +1,7 @@
-
+:host{
+    display: block;
+    height: 94vh;
+}
 
 .collection-card-ethscan-txt{
     color: var(--primary-color); 
@@ -34,6 +37,9 @@
 }
 
 .sidenav-div{
+    .sidenav{
+        width: 22%;
+    }
     .mat-drawer-container{
         background-color: transparent;
     }
