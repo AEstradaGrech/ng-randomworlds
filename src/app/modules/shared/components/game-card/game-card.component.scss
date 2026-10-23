@@ -2,7 +2,10 @@
     display: contents;
 }
 .game-card{
-    width: 40%;
+    max-width: 25%;
+    width: 25%;
+    height: 65%;
+    max-height: 65%;
     margin: 0px 50px 0px 50px;
 }
 .card-header{
@@ -13,7 +16,9 @@
 .game-card-content{
     color:#6b6b6c;
     font-size:13px;
-    
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
 }
 .begin-btn{
     width: 20%;
@@ -47,7 +52,28 @@
     margin-bottom: 0px;
 }
 
+.img-container{
+    height: 55%;
+    img{
+        margin:10px 10px 15px 10px;
+        border-radius: 10px;
+        position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;          // rellena sin deformar, recorta lo que sobre
+    object-position: 50% 42%;   // al recortar, prioriza el portal y el personaje
+    }
+}
 .game-card-image{
     margin:10px 10px 15px 10px;
     border-radius: 10px;
+    height: 55%;
+    min-height: 55%;
+    max-height: 55%;
+}
+
+.game-description{
+    overflow-y: scroll;
+    scrollbar-width: none;
 }
