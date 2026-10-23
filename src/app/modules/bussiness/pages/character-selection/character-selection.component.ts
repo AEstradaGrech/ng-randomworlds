@@ -32,7 +32,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
 
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
 
-  constructor(@Inject(DOCUMENT) private document:Document){
+  constructor(){
     super();
   }
 

@@ -3,7 +3,7 @@
   <figure class="art">
    
     @for (w of [world()]; track w.id) {
-      <img [src]="w.image" [alt]="'Un viajero ante un portal de piedra. Al otro lado: ' + w.name" />
+      <img [src]="w.image" [alt]="'Portal to ' + w.name" />
     }
     <figcaption class="art-caption">
       <span class="label">Random world</span>

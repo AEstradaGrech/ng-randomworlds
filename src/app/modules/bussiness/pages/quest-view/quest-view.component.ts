@@ -532,7 +532,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   private _shuffledFinalOptions(options: string[], selected: string[] = []) : string[]{
     if(options.length == 0) return selected;
     
-    let option:string = options[this._getRandomInt(options.length)];
+    let option:string = options[this._getRandomInt(options.length -1)];
     if(option)
     {
       selected.push(option);
@@ -645,11 +645,8 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       error: error => this._notificationsService.openSnack(ESnackAlertType.WARN, error.message, true, 3000)
     })
   }
-  //max is exclusive
-  private _getRandomInt(max:number, min: number = 0) : number{
-    min = Math.floor(min)
-    max = Math.floor(max)
-    return Math.round(Math.random() * (max - min + 1) + min);
+  private _getRandomInt(max:number, min:number=0) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   private _handleEndgameDisplay(lastChoice: string | null){
     if(this.currentBlock && lastChoice){

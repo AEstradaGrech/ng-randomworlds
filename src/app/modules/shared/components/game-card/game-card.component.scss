@@ -71,9 +71,27 @@
     height: 55%;
     min-height: 55%;
     max-height: 55%;
+    animation: slideshow 15s ease-in-out infinite;
+    //animation: slide 15s infinite;
 }
 
 .game-description{
     overflow-y: scroll;
     scrollbar-width: none;
+}
+
+@keyframes slideshow {
+  0%, 33% { background-image: url('/assets/images/City_1.png'); }
+  34%, 66% { background-image: url('/assets/images/City_2.png'); }
+  67%, 100% { background-image: url('/assets/images/City_1.png'); }
+}
+
+@keyframes setimage {
+  from { transform: scale(1.06); opacity: .3; }
+}
+
+@keyframes slide {
+  0%, 30% { transform: translateX(0); }
+  40%, 70% { transform: translateX(-100%); }
+  80%, 100% { transform: translateX(-200%); }
 }

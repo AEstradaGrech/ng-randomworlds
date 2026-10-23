@@ -46,15 +46,15 @@ export class HomeComponent implements OnInit{
       this._setGameData('quest');
     
   }
-  async onBeginClick(gameType:string){
+  async onBeginClick(gameMode:string){
     if(!this._authService.userLogin()){
-        this.router.navigateByUrl('');
+        this.router.navigateByUrl('/auth/login');
         return;
     }
     let data = localStorage.getItem('game-data');
     let gameData: GameData | null = data ? JSON.parse(data) : null;
     
-    switch(gameType){
+    switch(gameMode){
       case('quest'):
         if(gameData && gameData.selectedCharacter){
           if(gameData.character)
