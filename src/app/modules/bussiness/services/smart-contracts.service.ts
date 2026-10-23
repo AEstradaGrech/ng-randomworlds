@@ -1,30 +1,29 @@
-import { EventEmitter, inject, Inject, Injectable, NgZone } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import Web3Provider from 'src/app/core/scripts/web3';
-import Kaka from 'src/app/core/scripts/kakaCoin';
-import Crap from 'src/app/core/scripts/crapCoin';
+import { EventEmitter, inject, Injectable} from '@angular/core';
 import WordsCoin from 'src/app/core/scripts/wordsCoin';
 import Web3 from 'web3';
-import Factory from 'src/app/core/scripts/immutableFactory';
 import Collection from 'src/app/core/scripts/immutableCollection';
 import CustomChars from 'src/app/core/scripts/customCharacters';
 import CustomCharsFactory from 'src/app/core/scripts/customCharsFactory';
 import { firstValueFrom, Observable } from 'rxjs';
 import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT, CharacterMetadata, CharacterProfile } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
-import { GameData } from '../../shared/models/common-interfaces';
-import { Router } from '@angular/router';
 import GameSession from 'src/app/core/scripts/gameSession';
 import { PlayerGameSession, TxError } from '../models/smart-contract.interfaces';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { environment } from 'src/environments/environment';
-import { UserLogin } from 'src/app/core/interfaces/auth/credentials.interface';
+import web3 from 'src/app/core/scripts/web3';
+import { WalletDiscoveryService } from '../../shared/services/wallet-discovery.service';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
+import immutableFactory from 'src/app/core/scripts/immutableFactory';
+
 @Injectable({
   providedIn: 'root'
 })
 export class SmartContractsService {
-  public web3!:any;
-  public factory:any;
+
+  public web3!: Web3;
+  public immutableFactory:any;
   public collectionAddresses: string[] = [];
   public onPaymentReceipt: EventEmitter<any> = new EventEmitter<any>();
   public onPaymentError: EventEmitter<any> = new EventEmitter<any>();
@@ -32,56 +31,34 @@ export class SmartContractsService {
   public onTxError: EventEmitter<TxError> = new EventEmitter<TxError>();
   public onAccountChanged: EventEmitter<string> = new EventEmitter<string>(); 
   public onImmutableCatalogue: EventEmitter<boolean> = new EventEmitter<boolean>();
-  private _connectedAccount!:string;
   private _baseUrl:string = environment.baseUrl;
-  private _router: Router = inject(Router);
-  private _ngZone: NgZone = inject(NgZone);
+
+  public authService:AuthService = inject(AuthService);
+  public walletDiscoveryService: WalletDiscoveryService = inject(WalletDiscoveryService);
+  public router: Router = inject(Router);
 
   public get connectedWallet(): string | null{
-    return this._connectedAccount;
+    const user = this.authService.userLogin();
+    return user ? user.username : null;
   }
 
-  constructor(@Inject(DOCUMENT) private document: Document, private http:HttpClient) { 
-    
+  constructor(private http:HttpClient) { 
+    let w3 = web3();
+    if(!w3){
+      this.router.navigateByUrl('/login');
+      return;
+    }
+    else this.web3 = w3;
+    this.immutableFactory = immutableFactory(this.web3);
     this.getCollectionsCatalogue().then(res => {
-      console.log('--contract address--',this.factory._address)
+      console.log('--contract address--',this.immutableFactory._address)
       this.collectionAddresses = res;
       console.log('-- factory cats --', this.collectionAddresses);
       this.onImmutableCatalogue.emit(true);
     })
   }
   
-  public async tryMetamaskLogin() : Promise<boolean>{
-    try{
-      let window:any = this.document.defaultView;
-      if(!window) return false;
-      if(!window.ethereum) return false;
-      window.web3 = new Web3(window.ethereum);
-      await window.ethereum.enable();
-      let accounts = await window.web3.eth.getAccounts()
-      if(accounts.length <= 0){
-        console.log('-- no accounts connected with MetaMask browser extension --');
-        return false;
-      }
-      this._connectedAccount = accounts[0];
-      let login:UserLogin = {
-        provider:'metamask',
-        username:this._connectedAccount
-      }
-      let currentLogin: UserLogin | undefined = JSON.parse(localStorage.getItem('user-login') ?? '');
-      if(currentLogin && currentLogin.username !== this._connectedAccount){
-        localStorage.setItem('user-login', JSON.stringify(login));
-        this._router.navigateByUrl('randomworlds/home');
-        return true;
-      }
-      localStorage.setItem('user-login', JSON.stringify(login));
-      return true;
-    }
-    catch (error) {
-      console.log('on login error', error);
-      return false;
-    }
-  }
+
   public isAssetLocked(contract:string, isCustom: boolean, tokenId: number) : Promise<boolean>{
     return isCustom ? 
       this.getCustomCharactersContract(contract).methods.locked(tokenId).call() :
@@ -155,7 +132,7 @@ export class SmartContractsService {
 
     let gameSession: any = GameSession(this.web3);
 
-    let chainId: number = await this.getCurrentChainId();
+    let chainId: number = await this.authService.getConnectedChainId();
 
     let address: string = await gameSession._address;
 
@@ -193,11 +170,7 @@ export class SmartContractsService {
   }
 
   public getCoinContract(symbol:string) : any {
-    switch(symbol){
-      case('KAKA'):
-        return Kaka(this.web3);
-      case('CRAP'):
-        return Crap(this.web3);
+    switch(symbol.toUpperCase()){
       case('WORDS'):
         return WordsCoin(this.web3);
       default:break;
@@ -205,14 +178,8 @@ export class SmartContractsService {
     return 
   }
 
-  public async getCurrentChainId() : Promise<number>{
-    return Number(await this.web3.eth.net.getId());
-  }
-  public async getConnectedAccounts() : Promise<any[]>{
-    return await this.web3.eth.getAccounts();
-  }
   public async getCollectionsCatalogue(): Promise<any[]>{
-    return await this.factory.methods.getCatalogue().call();
+    return await this.immutableFactory.methods.getCatalogue().call();
   }
   public async getCustomCharsCatalogue() : Promise<CustomCharsCatalogue>{
     let cats = await this.getCustomCharactersFactory().methods.getCatalogue().call();
@@ -337,7 +304,7 @@ export class SmartContractsService {
 
   public async etherMintCharacter(contractAddress:string, model: string, price:number, collectorAddress: string) : Promise<boolean>{
     try{
-      let accounts = await this.getConnectedAccounts();
+      let accounts = await this.authService.getConnectedAccounts();
       let weiPrice = Web3.utils.toWei(price.toString(), 'ether');
       await this.getCollectionContract(contractAddress).methods.etherMint(collectorAddress, model)
         .send({from: accounts[0], value: BigInt(weiPrice)})
@@ -374,7 +341,7 @@ export class SmartContractsService {
   }
 
   public async getAccountCollectionNFTs(collectionAddress:string) : Promise<WalletNFT[]>{
-    return await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${this._connectedAccount}/collection-address/${collectionAddress.toLocaleLowerCase()}`));
+    return await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${this.connectedWallet}/collection-address/${collectionAddress.toLocaleLowerCase()}`));
   }
 
   public decodeHexString(value: string) : string {

@@ -22,6 +22,7 @@ import { catchError, concatMap, defer, EMPTY, filter, finalize, forkJoin, map, O
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
   selector: 'app-character-creator-dialog',
@@ -76,6 +77,7 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   public currentTicket = signal<TicketDto | null>(null);
   private _connectedWallet!: string;
   private _dialogRef: MatDialogRef<CharacterCreatorDialogComponent> = inject(MatDialogRef<CharacterCreatorDialogComponent>);
+  private _authService:AuthService = inject(AuthService);
   private _mgmtService: MgmtService = inject(MgmtService);
   private _imagesService: ImagesService = inject(ImagesService);
   private _charactersService: QuestsService = inject(QuestsService); // TODO: CharactersService
@@ -83,7 +85,6 @@ export class CharacterCreatorDialogComponent extends BaseComponent implements On
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _sanitizer: DomSanitizer = inject(DomSanitizer);
   private _destroyRef: DestroyRef = inject(DestroyRef);
-  private _router: Router = inject(Router);
   private _currentImageUrl:string = '';
   private _currentProfileIdx:number = 0;
   private _charsContractInfo!: CustomCharsCatalogue;
@@ -266,7 +267,7 @@ private getDefaultCurrencyTitle() : string {
   private _uploadCustomChar$(data: any) : Observable<TicketDto>{
      if(!this._charsContractInfo)
       throw new Error('No Characters contract info');
-    return defer(() => this._web3Service.getCurrentChainId()).pipe(
+    return defer(() => this._authService.getConnectedChainId()).pipe(
       catchError(error => throwError(() => new Error(`An error has occured while retrieving the current chain ID >> ${error.message}`))),
       switchMap(chain => {
         const wallet:string | null = data.receipt.from;
@@ -364,22 +365,25 @@ private getDefaultCurrencyTitle() : string {
   }
 
   onSelectedTokenPay(event: string){
-    if(!this._web3Service.connectedWallet){
-      defer(() => this._web3Service.tryMetamaskLogin())
-        .pipe(
-          takeUntilDestroyed(this._destroyRef)
-        ).subscribe({
-          next: loged => { 
-            if(!loged){
-              this._dialogRef.close();
-              this._router.navigateByUrl('');
-            }
-            else this._handlePayment(event);
-          },
-          error: error => this._router.navigateByUrl('')
-        })
-    }
-    else this._handlePayment(event); 
+    // if(!this._web3Service.connectedWallet){
+    //   const userCreds = this._authService.userLogin();
+      
+    //   defer(() => this._authService.loginWith())
+    //     .pipe(
+    //       takeUntilDestroyed(this._destroyRef)
+    //     ).subscribe({
+    //       next: loged => { 
+    //         if(!loged){
+    //           this._dialogRef.close();
+    //           this._router.navigateByUrl('');
+    //         }
+    //         else this._handlePayment(event);
+    //       },
+    //       error: error => this._router.navigateByUrl('')
+    //     })
+    // }
+    //else 
+    this._handlePayment(event); 
   }
 
   private _handlePayment(currency: string){

@@ -8,6 +8,7 @@ import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-marketplace',
@@ -24,19 +25,17 @@ export class MarketplaceComponent implements OnInit{
   public selectedToken:string = 'ETH';
   public selectedPrice:string = '--'
   private _paymentTokens: Map<string,TokenDetails> = new Map<string, TokenDetails>();
-
+  private _router:Router = inject(Router);
   ngOnInit(): void {
     this._smartContractsService.getCollectionsCatalogue().then(items => {
       items.forEach(item => {
         this._smartContractsService.getCollectionSummary(item).then(summary => {
-          console.log('summary', summary);
           this._setupCatalogueModels(summary);
         })
       })
     });
   }
   public onCharSelect(model:CatalogueModel){
-    console.log('-- on char select --', model);
     let cfg = new MatDialogConfig();
     cfg.data = {model:model, showContractData:true}
     cfg.height = '90vh';
@@ -44,7 +43,6 @@ export class MarketplaceComponent implements OnInit{
     this._dialog.open(CharDetailDialogComponent, cfg)
   }
   public onTokenSelect(change:MatRadioChange, model:CatalogueModel){
-    console.log(change);
     this._updateSelectedPrice(change.value, model);
   }
   private _updateSelectedPrice(selectedToken:string, model: CatalogueModel){
@@ -58,8 +56,12 @@ export class MarketplaceComponent implements OnInit{
     this._updateSelectedPrice(this.selectedToken, model);
   }
   public async onPayClick(model:CatalogueModel){
-    let connectedAccounts = await this._smartContractsService.getConnectedAccounts();
-    console.log('-- ether mint from account --', connectedAccounts[0]);
+    const account = this._smartContractsService.connectedWallet;
+    if(!account){
+      this._snackBar.open("No connected wallet found, redirecting to login", undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
+      setTimeout(() => this._router.navigateByUrl('/auth/login'), 2000);
+      return;
+    }
     this.loading = true;  
     if(this.selectedToken !== 'ETH'){
       let tokenDetails = this._paymentTokens.get(this.selectedToken);
@@ -69,11 +71,11 @@ export class MarketplaceComponent implements OnInit{
         try{
           await this._smartContractsService.getCoinContract(this.selectedToken).methods
             .approve(model.contractAddress, weiPrice * tokenDetails.multiplier)
-            .send({from: this._smartContractsService.connectedWallet});
+            .send({from: account});
           
           await this._smartContractsService.getCollectionContract(model.contractAddress).methods
-            .customTokenMint(this._smartContractsService.connectedWallet, model.fileName, this.selectedToken)
-            .send({from:this._smartContractsService.connectedWallet, gas:'7000000'});
+            .customTokenMint(account, model.fileName, this.selectedToken)
+            .send({from:account, gas:'7000000'});
         }catch(error){
           console.log(error)
         }
@@ -81,7 +83,7 @@ export class MarketplaceComponent implements OnInit{
       else this._snackBar.open(`No token details found for token ${this.selectedToken}`, undefined, { duration: 3500,panelClass: ['snack-warning'], verticalPosition: 'bottom'})
     }
     else{
-      if(await this._smartContractsService.etherMintCharacter(model.contractAddress, model.fileName, model.price, connectedAccounts[0])){
+      if(await this._smartContractsService.etherMintCharacter(model.contractAddress, model.fileName, model.price, account)){
         this._snackBar.open("Thanks for buying!", undefined, { duration: 2500,panelClass: ['snack-success'], verticalPosition: 'bottom'})
       }
       else{
@@ -90,9 +92,7 @@ export class MarketplaceComponent implements OnInit{
     }
     this.loading = false;
   }
-  public onCardButtonClicked(event:any){
-    console.log('-- on card button click --', event);
-  }
+
   private _setupCatalogueModels(summary:any){
     summary.models.forEach((model:string) => {
       this._smartContractsService.getModelInfo(model, summary.address).then(modelInfo => {
