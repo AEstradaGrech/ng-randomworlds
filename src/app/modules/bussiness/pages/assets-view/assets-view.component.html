@@ -3,13 +3,13 @@
         <mat-sidenav #sidenav (keydown.escape)="closeSidenav()" disableClose class="sidenav">
                 <div style="display: flex; align-items: center; justify-content:center; margin:15px 25px 15px 0px">
                     <button class="close-sidenav-btn" (click)="closeSidenav()">
-                        <mat-icon style="margin-top: 6px; font-size: 20px !important; color: #99c531;"
+                        <mat-icon style="margin-top: 6px; font-size: 20px !important;"
                             aria-hidden="false" 
                             aria-label="Collections sidenav view"
                             fontIcon="keyboard_arrow_left"></mat-icon>
                     </button>
                 </div>
-                <mat-accordion class="example-headers-align">
+                <mat-accordion class="collections-accordion">
                     @if(customCharsCollection) {
                         <ng-container *ngTemplateOutlet="collectionsInfo; context:{
                             expanded: selectedContractAddress() === customCharsCollection.contractAddress,
@@ -144,8 +144,8 @@
             <img style="width: 25%; margin: 5px 5px 5px 5px; padding-top: 5px; padding-bottom: 5px; border-radius: 15px !important;" [src]="image" alt="Collection logo">
         </mat-expansion-panel-header>
         <div style="display: flex;">
-            <div style="width: 75%;">
-                <p style="color: #99c531; padding-top: 15px;">{{description}}</p>
+            <div style="padding-top: 15px; width: 75%;">
+                <p><span class="collection-card-ethscan-txt">{{description}}</span></p>
             </div>
             <div class="col-sel-div">
                 <app-rounded-button 

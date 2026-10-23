@@ -1,27 +1,18 @@
 
 
-.collection-card-title{
-    color:#99c531;
-    font-size: 16px;
-    display: flex;
-    justify-content: center;
-}
-.collection-card-subtitle{
-    font-style: oblique;
-    color: #c3c3c5;
-    font-weight: 100;
-    font-size: 11px;
-    padding: 0px 15px 0px 15px;
+.collection-card-ethscan-txt{
+    color: var(--primary-color); 
+    padding-top: 15px;
 }
 .collection-card-content{
     margin: 5px 2px 5px 2px;
-    color: #99c531;
+    color: var(--primary-color);
     font-weight: 200;
     font-size: 14px;
 }
 .payment-card-content{
     margin: 5px 2px 5px 2px;
-    color: #99c531;
+    color: var(--primary-color);
     font-weight: 200;
     font-size: 14px;
     display:flex;
@@ -30,7 +21,7 @@
 
 .lockedchar-card-content{
     margin: 5px 2px 5px 2px;
-    color: #99c531;
+    color: var(--primary-color);
     font-weight: 200;
     font-size: 14px;
     display:flex;
@@ -54,37 +45,19 @@
     right: 0;
   }
 
-.view-cols-btn{
-    height: 5%;
-    margin:0px 10px 0px 10px;
-    border-radius: 100px;
-    background-color: #ffffff;
-    border-color: rgb(175 239 24) !important;
-}
-
-.view-cols-btn:hover{
-    border: transparent;
-    border-radius: 100px;
-    padding:3px 7px 3px 7px;
-    background-color: #99c531;
-    color: #ffffff;
-    .mat-icon{
-        color: #ffffff !important;
-    }
-}
 .close-sidenav-btn{
     height: 5%;
     margin:0px 10px 0px 10px;
     border-radius: 100px;
     background-color: #ffffff;
-    border-color: rgb(175 239 24) !important;
+    border-color: var(--primary-color);
 }
 
 .close-sidenav-btn:hover{
     border: transparent;
     border-radius: 100px;
     padding:3px 7px 3px 7px;
-    background-color: #99c531;
+    background-color: var(--primary-color);
     color: #ffffff;
     .mat-icon{
         color: #ffffff !important;
@@ -106,7 +79,7 @@
     }
 }
 .col-title{
-    color: #99c531;
+    color: var(--primary-color);
     font-weight: 500;
     padding-bottom: 10px;
 }
@@ -122,14 +95,14 @@
     padding-right: 25px;
     padding-left: 25px;
 }
-.example-headers-align .mat-expansion-panel-header-description {
+.collections-accordion .mat-expansion-panel-header-description {
     justify-content: space-between;
     align-items: center;
-  }
+}
   
-  .example-headers-align .mat-mdc-form-field + .mat-mdc-form-field {
-    margin-left: 8px;
-  }
+.collections-accordion .mat-mdc-form-field + .mat-mdc-form-field {
+margin-left: 8px;
+}
 
   .col-sel-div{
     width: 25%;
@@ -138,29 +111,4 @@
     align-items: center;
   }
 
-.col-sel-btn{
-    height: 59%;
-    margin:0px 10px 0px 10px;
-    border-radius: 100px;
-    background-color: #ffffff;
-    border-color: rgb(175 239 24) !important;
-}
 
-.col-sel-btn:hover{
-    border: transparent;
-    border-radius: 100px;
-    padding:0px 8px 0px 8px;
-    background-color: #99c531;
-    color: #ffffff;
-    .mat-icon{
-        color: #ffffff !important;
-    }
-}
-
-.invisible-btn{
-    margin:0px 10px 0px 10px;
-    color: transparent !important;
-    border-radius: 100px;
-    background-color: transparent;
-    border-color: transparent !important;
-}
