@@ -4,6 +4,7 @@ import { TreeMenuItem } from '../../../modules/shared/components/tree-menu/tree-
 import { NavBarTab } from '../../../modules/shared/components/tabs-nav-bar/nav-bar-tab.model';
 import { mainNavBarConfig } from '../../constants/configs/header-navbar';
 import { HeaderNavbarComponent } from 'src/app/modules/shared/components/header-navbar/header-navbar.component';
+import { NavBarComponent } from 'src/app/modules/shared/components/nav-bar/nav-bar.component';
 
 
 @Component({
@@ -13,10 +14,10 @@ import { HeaderNavbarComponent } from 'src/app/modules/shared/components/header-
 })
 export class LayoutComponent implements AfterViewInit {
 
-  @ViewChild('navbar') navbar!: HeaderNavbarComponent 
+  //@ViewChild('navbar') navbar!: HeaderNavbarComponent 
+  @ViewChild('navbar') navbar!: NavBarComponent;
   ngAfterViewInit(): void {
-    this.navbar.getTabsComponent().forceActive('Play')
-    console.log('setting tab active')
+    this.navbar.forceActiveTab('Play'); // TODO: active tab from url
   }
 
 

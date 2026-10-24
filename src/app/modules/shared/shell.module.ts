@@ -9,6 +9,7 @@ import { TreeMenuComponent } from './components/tree-menu/tree-menu.component';
 import { AppLogoComponent } from './components/app-logo/app-logo.component';
 import { TabsNavBarComponent } from './components/tabs-nav-bar/tabs-nav-bar.component';
 import { SideNavbarComponent } from './components/side-navbar/side-navbar.component';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { SideNavbarComponent } from './components/side-navbar/side-navbar.compon
         TreeMenuComponent,
         AppLogoComponent, 
         TabsNavBarComponent, 
-        SideNavbarComponent
+        SideNavbarComponent,
+        NavBarComponent
     ],
     imports: [
         CommonModule,
@@ -36,7 +38,8 @@ import { SideNavbarComponent } from './components/side-navbar/side-navbar.compon
         TreeMenuComponent,
         AppLogoComponent, 
         TabsNavBarComponent, 
-        SideNavbarComponent
+        SideNavbarComponent,
+        NavBarComponent
     ]
 })
 

@@ -14,6 +14,7 @@ import { ShellModule } from './shell.module';
 import { AppShellComponent } from './components/app-shell/app-shell.component';
 import { GameCardComponent } from './components/game-card/game-card.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
+import { ImageCardComponent } from './components/image-card/image-card.component';
 
 @NgModule({
     //components, directives, and pipes that belong exclusively to this particular module
@@ -28,7 +29,8 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
         TokenSelectorMatmenuComponent, 
         AppShellComponent, 
         GameCardComponent,
-        SafeHtmlPipe
+        SafeHtmlPipe,
+        ImageCardComponent
     ],
     imports:[
         FormsModule, 
@@ -52,7 +54,8 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
         TokenSelectorMatmenuComponent,
         AppShellComponent,
         GameCardComponent,
-        SafeHtmlPipe
+        SafeHtmlPipe,
+        ImageCardComponent
     ],
     //A provider is an instruction to the Dependency Injection system on how to obtain a value for a dependency.
     providers:[]

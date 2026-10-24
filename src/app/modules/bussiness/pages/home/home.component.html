@@ -1,82 +1,444 @@
-<!-- <div class="card-container shadow">
-    <div class="img-container ">
-        <mat-card class="game-card" appearance="outlined">
-            <mat-card-header>
-              <div mat-card-avatar class="game-card-header-image-l"></div>
-              <mat-card-title class="game-card-title">Quest Mode</mat-card-title>
-              <mat-card-subtitle class="game-card-subtitle">Choose your own adventure style quest</mat-card-subtitle>
-            </mat-card-header>
-            <img mat-card-image class="game-card-image" src="/assets/images/City_1.png" alt="game-mode-image-1">
-            <mat-card-content class="game-card-content">
-              <p>
-                In Quest Mode you can play an adventure in a random world with your selected character. The genre of the story
-                and the generated lore depends on your selected character and your the settings you choose at the beginning
-                of the adventure.
-              </p>
-              <p>
-                In this mode all the adventures begin in a tavern of the generated world, where you will be able to start different
-                quests with the guidance of the AI Game Master.
-                <br>
-                The game follows a 'Choose your own adventure' style in which the Game Master will present you an scenario with
-                up to four possible actions to choose from, and progress in your
-                story in order to complete your Quest and save your progression or die trying!
-              </p>
-            </mat-card-content>
-            <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="begin-btn" (click)="onBeginClick('quest')">BEGIN</button>
-            </mat-card-actions>
-          </mat-card>
-          <mat-card class="game-card" appearance="outlined">
-            <mat-card-header>
-              <div mat-card-avatar class="game-card-header-image-r"></div>
-              <mat-card-title class="game-card-title">Adventure Mode</mat-card-title>
-              <mat-card-subtitle class="game-card-subtitle">Open world RPG</mat-card-subtitle>
-            </mat-card-header>
-            <img mat-card-image class="game-card-image" src="/assets/images/City_2.png" alt="game-mode-image-2">
-            <mat-card-content class="game-card-content">
-                <p>
-                    Join and explore a random world that has been generated according to your preferences and the style of
-                    your selected character and play endless adventures with the help of the AI Game Master
-                </p>
-                <p>
-                    In this mode you start at a random place of your generated world and you have to prompt
-                    your desired actions in order to view, explore and interact with the environment and the
-                    other game characters.
-                    <br>
-                    <br>
-                    Discover an infinite random world with endless random adventures to play with your
-                    preferred characters and aqcuire different skills and items in your journeys to
-                    upgrade your character and unlock different game possibilities
-                </p>
-            </mat-card-content>
-            <mat-card-actions class="game-card-actions">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head>
+<body>
+  <title>Home RandomWorlds</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Hanken+Grotesk:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+  <style>
+  /* Layout: la app a escala en una "pantalla" de alto fijo (nav + marco con scroll propio) y, debajo, las decisiones de diseño con su código */
+  :root {
+    --night: #0b0a0f;
+    --panel: #12111a;
+    --surface: #1a1824;
+    --line: rgb(255 255 255 / .08);
+    --line-2: rgb(255 255 255 / .14);
+    --fg: #efeae0;
+    --soft: #b8b2a5;
+    --muted: #7c776c;
+    --ember: #f0883e;
+    --teal: #7fc8b4;
+    --danger: #e5564b;
+    --f-display: "Gloock", Georgia, serif;
+    --f-body: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+    --f-label: "Geist Mono", ui-monospace, Menlo, monospace;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+    color-scheme: dark;
+  }
 
-              <button mat-stroked-button class="begin-btn" (click)="onBeginClick('adventure')">BEGIN</button>
-            </mat-card-actions>
-          </mat-card>
-    </div>
-</div> -->
-<app-shell>
-  <app-game-card class="shell-content"
-    [title]="'Quest Mode'"
-    [subtitle]="'CHOOSE. PLAY. SURVIVE'"
-    [gameMode]="'quest'"
-    [description]="questDesc"
-    [images]="['/assets/images/City_2.png', '/assets/images/City_1.png']"
-    (onButtonClick)="onBeginClick($event)"
-  ></app-game-card>
-    <app-game-card class="shell-content"
-    [title]="'Adventure Mode'"
-    [subtitle]="'PLAY. DISCOVER. LEVEL UP'"
-    [description]="questDesc + questDesc"
-    [gameMode]="'adventure'"
-    (onButtonClick)="onBeginClick($event)"
-  ></app-game-card>
-    <!-- <app-game-card class="shell-content"
-    [title]="'Quest Mode'"
-    [subtitle]="'CHOOSE. PLAY. SURVIVE'"
-    [description]="questDesc"
-  ></app-game-card> -->
+  body {
+    background: var(--night);
+    color: var(--fg);
+    font: 16px/1.6 var(--f-body);
+    -webkit-font-smoothing: antialiased;
+  }
 
-</app-shell>
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 48px 88px;
+  }
 
+  .label {
+    font: 500 10.5px/1.4 var(--f-label);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ember);
+  }
+
+  /* ---------- Cabecera de la propuesta ---------- */
+  .intro { display: grid; gap: 16px; max-width: 760px; margin-bottom: 36px; }
+  .intro h1 {
+    margin: 0;
+    font: 400 clamp(36px, 5.4vw, 60px)/1 var(--f-display);
+    letter-spacing: -.02em;
+    text-wrap: balance;
+  }
+  .intro h1 span { color: var(--ember); }
+  .lead { margin: 0; color: var(--soft); font-size: 18px; max-width: 62ch; }
+
+  /* ============================================================
+    LA APP (lo que propongo)
+    ============================================================ */
+  .screen {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);  /* nav + marco que ocupa el resto */
+    /* height: clamp(620px, 86vh, 820px); */
+    height: 96vh;
+    width: 98vw;
+    justify-self: center;
+    background: var(--night);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px -40px rgb(0 0 0 / .8);
+  }
+
+  
+
+  /* ---------- Marco fijo con scroll interno ---------- */
+  .frame {
+    position: relative;
+    isolation: isolate;
+    margin: 0 12px 12px;
+    overflow: auto;              /* el scroll vive aquí, no en la página */
+    background:
+      radial-gradient(120% 70% at 20% 0%, rgb(240 136 62 / .07), transparent 60%),
+      var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    scrollbar-color: var(--line-2) transparent;
+  }
+  .grain {                       /* grano, como en la caja de Mastra */
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+  }
+
+  .frame-inner { padding: clamp(20px, 3.5vw, 40px); }
+
+  .frame-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
+    margin-bottom: 28px;
+  }
+  .frame-head h1 {
+    margin: 8px 0 0;
+    font: 400 clamp(28px, 3.4vw, 40px)/1.05 var(--f-display);
+    letter-spacing: -.015em;
+    text-wrap: balance;
+  }
+  .frame-head p { margin: 0; color: var(--muted); font-size: 14px; }
+
+  /* ---------- Grid de tarjetas ---------- */
+  .modes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 20px;
+  }
+
+  /* ---------- Tarjeta de modo de juego ---------- */
+  .mode {
+    --glow: var(--ember);
+    position: relative;          /* referencia del enlace estirado */
+    isolation: isolate;          /* las capas con z-index: -1 se quedan dentro de la tarjeta */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;   /* el texto, abajo, SIN posicionarlo */
+    aspect-ratio: 4 / 5;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #07070b;
+    box-shadow: inset 0 0 0 1px var(--line);
+    transition: box-shadow .35s var(--ease), transform .35s var(--ease);
+  }
+  .mode:hover,
+  .mode:has(.mode-link:focus-visible) {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--glow) 70%, transparent),
+      0 24px 60px -28px color-mix(in oklab, var(--glow) 55%, transparent);
+    transform: translateY(-3px);
+  }
+  .mode:has(.mode-link:focus-visible) { outline: 2px solid var(--glow); outline-offset: 3px; }
+
+  /* Slides: apilados, solo el activo es opaco */
+  .slide {
+    position: absolute;
+    z-index: -1;                 /* debajo del texto */
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1);
+    transition: opacity 1.2s ease, transform 0s 1.2s;   /* al salir: funde y luego resetea el zoom */
+  }
+  .slide.is-active {
+    opacity: 1;
+    transform: scale(1.08);
+    transition: opacity 1.2s ease, transform 9s linear;  /* al entrar: funde y hace zoom lento */
+  }
+
+  /* Velo para que el texto se lea sobre cualquier imagen */
+  .mode::after {
+    content: "";
+    position: absolute;
+    z-index: -1;                 /* encima de las imágenes, debajo del texto */
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(to top, rgb(8 7 11 / .96) 0%, rgb(8 7 11 / .75) 30%, rgb(8 7 11 / 0) 62%),
+      linear-gradient(to bottom, rgb(8 7 11 / .55), rgb(8 7 11 / 0) 22%);
+  }
+
+  .mode-body {                    /* sin position: así el ::after del enlace se mide contra .mode */
+    display: grid;
+    gap: 8px;
+    padding: 22px;
+  }
+  .mode-body .label { color: var(--glow); }
+  .mode-title {
+    margin: 0;
+    font: 400 clamp(28px, 2.6vw, 34px)/1 var(--f-display);
+    letter-spacing: -.015em;
+  }
+  .mode-link { color: inherit; text-decoration: none; outline: none; }
+  .mode-link::after {             /* stretched link: toda la tarjeta es el enlace */
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .mode-pitch { margin: 0; color: var(--soft); font-size: 15px; line-height: 1.45; max-width: 32ch; }
+  .mode-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .mode-meta { font: 400 10.5px/1.4 var(--f-label); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .mode-cta { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; color: var(--fg); }
+  .mode-cta .arrow { color: var(--glow); transition: transform .3s var(--ease); }
+  .mode:hover .mode-cta .arrow,
+  .mode:has(.mode-link:focus-visible) .mode-cta .arrow { transform: translateX(4px); }
+
+  /* Indicadores de progreso: son botones, quedan POR ENCIMA del enlace estirado */
+  .progress {
+    position: absolute;
+    z-index: 3;
+    top: 16px; left: 18px; right: 18px;
+    display: flex;
+    gap: 6px;
+  }
+  .seg {
+    appearance: none;
+    flex: 1;
+    height: 18px;             /* área de clic cómoda; la barra visible es el span */
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .seg span {
+    position: relative;
+    display: block;
+    height: 3px;
+    border-radius: 3px;
+    background: rgb(255 255 255 / .22);
+    overflow: hidden;
+  }
+  .seg span::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--fg);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .seg.is-done span::after { transform: scaleX(1); }
+  .seg.is-active span::after { animation: fill var(--dur, 6000ms) linear forwards; }
+  .seg:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; border-radius: 4px; }
+  @keyframes fill { to { transform: scaleX(1); } }
+
+  /* Pausa al pasar el ratón o con foco: como el temporizador ES la animación, se pausa todo */
+  .mode:hover .seg.is-active span::after,
+  .mode:focus-within .seg.is-active span::after { animation-play-state: paused; }
+
+  /* ---------- Estado "en desarrollo" ---------- */
+  .mode.is-locked .slide { filter: grayscale(.9) brightness(.55); transform: none; }
+  .mode.is-locked .mode-title { color: var(--soft); }
+  .mode.is-locked .mode-body .label { color: var(--muted); }
+  .mode.is-locked:hover { transform: none; box-shadow: inset 0 0 0 1px var(--line); }
+  .lock {
+    position: absolute;
+    z-index: 2;
+    top: 18px; right: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 11px;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    background: rgb(8 7 11 / .55);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    font: 500 10.5px/1 var(--f-label);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--soft);
+  }
+  .lock svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+
+  /* ============================================================
+    DECISIONES
+    ============================================================ */
+  .lessons { margin-top: 80px; }
+  .lesson {
+    display: grid;
+    grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+    gap: 24px 56px;
+    padding-block: 48px;
+    border-top: 1px solid var(--line);
+  }
+  .lesson-text { min-width: 0; }
+  .lesson h2 {
+    margin: 12px 0 16px;
+    font: 400 30px/1.1 var(--f-display);
+    letter-spacing: -.01em;
+    text-wrap: balance;
+  }
+  .lesson p { margin: 0 0 12px; color: var(--soft); max-width: 54ch; }
+  .lesson p code, .outro code {
+    font: .85em var(--f-label);
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: rgb(255 255 255 / .06);
+    color: var(--fg);
+  }
+  .lesson p strong { color: var(--fg); font-weight: 600; }
+  .codes { display: grid; gap: 12px; min-width: 0; align-content: start; }
+  pre.code {
+    margin: 0;
+    padding: 20px 22px;
+    overflow-x: auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    font: 400 12.5px/1.7 var(--f-label);
+    color: var(--soft);
+    tab-size: 2;
+  }
+  .cmt { color: var(--muted); }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .swatch {
+    display: grid;
+    gap: 6px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+  .chip { height: 56px; border-radius: 9px; box-shadow: inset 0 0 0 1px var(--line); }
+  .swatch b { font-weight: 500; font-size: 14px; }
+  .swatch span { font: 400 11px/1.4 var(--f-label); color: var(--muted); }
+
+  .verdict {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 10px;
+    margin: 18px 0 4px;
+  }
+  .verdict div {
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+  .verdict b { display: block; margin-bottom: 4px; font-weight: 600; font-size: 14px; }
+  .verdict p { margin: 0; font-size: 14px; }
+
+  .outro { border-top: 1px solid var(--line); padding-top: 40px; color: var(--muted); max-width: 70ch; margin: 0; }
+
+  /* ---------- Móvil ---------- */
+  @media (max-width: 860px) {
+    .lesson { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .screen { height: 82vh; border-radius: 16px; }
+    .nav { gap: 14px; padding: 0 12px; }
+    .wordmark { font-size: 18px; }
+    .tabs { -webkit-mask-image: linear-gradient(to right, #000 80%, transparent); mask-image: linear-gradient(to right, #000 80%, transparent); }
+    .wallet .addr-full { display: none; }
+    .frame { margin: 0 6px 6px; }
+    .mode { aspect-ratio: 3 / 4; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+    .slide.is-active { transform: none; }
+    .seg.is-active span::after { animation: none; transform: scaleX(1); }  /* sin avance automático */
+  }
+  </style>
+
+
+  <!-- ===================== LA APP ===================== -->
+  <div class="screen">
+    <main class="frame" id="play">
+      <div class="grain" aria-hidden="true"></div>
+      <div class="frame-inner">
+        <div class="frame-head">
+          <div>
+            <span class="label">Choose a game mode</span>
+            <h1>Where does your story begin?</h1>
+          </div>
+          <p>2 modes available · more in development</p>
+        </div>
+
+        <div class="modes">
+
+          <!-- <article class="mode" data-slideshow style="--glow: var(--ember)">
+            <img class="slide is-active" src="img/city_1.webp" alt="">
+            <img class="slide" src="img/mobb_1.webp" alt="">
+            <div class="progress" aria-label="Images"></div>
+            <div class="mode-body">
+              <span class="label">Choose your own adventure</span>
+              <h2 class="mode-title"><a class="mode-link" href="#quest">Quest Mode</a></h2>
+              <p class="mode-pitch">Start in a tavern, take a quest and pick one of four paths each scene. Finish it or die trying.</p>
+              <div class="mode-foot">
+                <span class="mode-meta">Guided · 4 choices per scene</span>
+                <span class="mode-cta" aria-hidden="true">Begin <span class="arrow">→</span></span>
+              </div>
+            </div>
+          </article>
+
+          <article class="mode" data-slideshow style="--glow: var(--teal)">
+            <img class="slide is-active" src="img/city_2.webp" alt="">
+            <img class="slide" src="img/mobb_2.webp" alt="">
+            <div class="progress" aria-label="Images"></div>
+            <div class="mode-body">
+              <span class="label">Open world RPG</span>
+              <h2 class="mode-title"><a class="mode-link" href="#adventure">Adventure Mode</a></h2>
+              <p class="mode-pitch">Explore a world generated for your character. Type what you do; the Game Master answers.</p>
+              <div class="mode-foot">
+                <span class="mode-meta">Free prompt · Endless</span>
+                <span class="mode-cta" aria-hidden="true">Begin <span class="arrow">→</span></span>
+              </div>
+            </div>
+          </article>
+
+          <article class="mode is-locked" aria-disabled="true">
+            <img class="slide is-active" src="img/walpurgistermeteor.webp" alt="">
+            <span class="lock"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1.2"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>In development</span>
+            <div class="mode-body">
+              <span class="label">Coming soon</span>
+              <h2 class="mode-title">New mode</h2>
+              <p class="mode-pitch">A new way to play is being forged. Your characters will be ready for it.</p>
+              <div class="mode-foot">
+                <span class="mode-meta">Stay tuned</span>
+              </div>
+            </div>
+          </article> -->
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+
+</body>
+</html>

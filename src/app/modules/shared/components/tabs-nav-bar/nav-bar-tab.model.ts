@@ -15,5 +15,6 @@ export class NavBarTab{
         this.disabled = disabled;
         this.isActive = false;
         this.matIcon = matIcon;
+        this.onClickSub.subscribe(value => this.isActive = this.name === value);
     }
 }

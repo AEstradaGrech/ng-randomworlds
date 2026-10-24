@@ -1,0 +1,17 @@
+<nav class="nav" aria-label="Main">
+    <a class="wordmark" [routerLink]="'randomworlds/home'">Random<span>Worlds</span></a>
+    <div class="tabs">
+        @for(tab of tabs; track tab){
+            <a class="tab" [routerLink]="tab.link" (click)="onTabClick(tab)">{{tab.name}}</a>    
+        }
+        <!-- <a class="tab" href="#play" aria-current="page">Play</a>
+        <a class="tab" href="#chat">Chat</a>
+        <a class="tab" href="#assets">Assets</a>
+        <a class="tab" href="#marketplace">Marketplace</a> -->
+    </div>
+    <button type="button" class="wallet" title="Connected with MetaMask · Ethereum">
+    <span class="chain-dot" aria-hidden="true"></span>
+    <span class="addr-full">{{connectedWallet()}}</span>
+    <!-- <span class="chev" aria-hidden="true">▾</span> -->
+    </button>
+</nav>
