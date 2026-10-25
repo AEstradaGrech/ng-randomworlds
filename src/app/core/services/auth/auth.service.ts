@@ -1,6 +1,6 @@
 import { computed, DestroyRef, inject, Injectable, NgZone, signal } from '@angular/core';
 
-import { firstValueFrom, Subject } from 'rxjs';
+import { defer, firstValueFrom, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { WINDOW } from '../../constants/window';
 import { EIP1193Provider, LoginSignRequest, UserLogin } from '../../interfaces/auth/credentials.interface';
@@ -9,6 +9,7 @@ import Web3 from 'web3';
 import { Router } from '@angular/router';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { environment } from 'src/environments/environment';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Injectable({
@@ -41,7 +42,7 @@ export class AuthService {
   private readonly walletDiscovery = inject(WalletDiscoveryService);
   private _router: Router = inject(Router);
   private _zone: NgZone = inject(NgZone);
-
+  private _destroyRef = inject(DestroyRef);
   private _watched: EIP1193Provider | null = null;
 
   
@@ -128,31 +129,37 @@ export class AuthService {
       }
 
       if (accounts[0].toLowerCase() === current.username.toLowerCase()) return;
-
-      current.username = accounts[0];
-      this.userLogin.set(current);
-      localStorage.setItem('user-login', JSON.stringify(current));
-      let data: GameData ={
-        username: current.username,
-        gameType:'',
-        gameStatus: "READY",
-        charname:'',
-        selectedCharacter:undefined,
-        character:undefined,
-        isRandomCharacter:false,
-        gameSessionId:'',
-        userPreferences:undefined,
-        intro:"",
-        currentBlock:0,
-        isLocked: false
-      };
-      localStorage.setItem('game-data', JSON.stringify(data));
-      this.onAccountChange.next(accounts[0]);
+      defer(() => this.sign(accounts[0]))
+        .pipe(takeUntilDestroyed(this._destroyRef))
+        .subscribe({
+          next: res => {
+            current.username = accounts[0];
+            this.userLogin.set(current);
+            localStorage.setItem('user-login', JSON.stringify(current));
+            let data: GameData ={
+              username: current.username,
+              gameType:'',
+              gameStatus: "READY",
+              charname:'',
+              selectedCharacter:undefined,
+              character:undefined,
+              isRandomCharacter:false,
+              gameSessionId:'',
+              userPreferences:undefined,
+              intro:"",
+              currentBlock:0,
+              isLocked: false
+            };
+            localStorage.setItem('game-data', JSON.stringify(data));
+            this.onAccountChange.next(accounts[0]);
+          }, 
+          error: error => this.logout()
+        });
     });
   };
 
   private _watch(provider: EIP1193Provider): void {
-    if (this._watched === provider) return;
+    if (this._watched && this._watched === provider) return;
     this._unwatch();
     provider.on('accountsChanged', this._onAccountsChanged);
     this._watched = provider;
