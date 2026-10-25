@@ -1,22 +1,17 @@
-<article class="mode" data-slideshow style="--glow: var(--ember)">
-    <app-slideshow [images]="images" [withProgress]=withProgress [interval]="imageUpdateInterval">
-
+<article class="mode" data-slideshow [style.--glow] = "glowColor">
+    <app-slideshow 
+        [images]="images" 
+        [withProgress]=withProgress 
+        [interval]="imageUpdateInterval">
     </app-slideshow>
-    <!-- <img class="slide is-active" src="assets/images/City_1.png" alt="">
-    <img class="slide" src="assets/images/Mobb_1.png" alt="">
-    <div class="progress" aria-label="Images"></div> -->
     <div class="mode-body">
-        <!-- IF SUBTITLE-->
-        <span class="label">Choose your own adventure</span>
+        <span *ngIf="subtitle && subtitle !== ''" class="label">{{subtitle}}</span>
         <!-- @input for link & @Input for TITLE-->
-        <h2 class="mode-title"><a class="mode-link" href="#quest">Quest Mode</a></h2>
-        <!-- IF DESC-->
-        <p class="mode-pitch">Start in a tavern, take a quest and pick one of four paths each scene. Finish it or die trying.</p>
+        <h2 *ngIf="title && title !== ''" class="mode-title"><a class="mode-link" href="#quest">{{title}}</a></h2>
+        <p *ngIf="description && description !== ''" class="mode-pitch">{{description}}</p>
         <div class="mode-foot">
-        <!-- IF LOW DETAILS-->
-        <span class="mode-meta">Guided · 4 choices per scene</span>
-        <!-- @Input for BTN TXT-->
-        <span class="mode-cta" aria-hidden="true">Begin <span class="arrow">→</span></span>
+        <span *ngIf="footerText && footerText !== ''" class="mode-meta">{{footerText}}</span>
+        <span *ngIf="actionText && actionText !== ''" class="mode-cta" aria-hidden="true">{{actionText}} <span class="arrow">→</span></span>
         </div>
     </div>
 </article>

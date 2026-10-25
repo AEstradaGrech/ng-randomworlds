@@ -10,12 +10,14 @@ export class ImageCardComponent implements OnInit {
     @Input() withProgress: boolean = true;
     @Input() title!:string;
     @Input() subtitle!:string;
-    @Input() images: string[] = [];
+    @Input() images:string[] = [];
     @Input() description!:string;
+    @Input() footerText!:string;
+    @Input() actionText!:string;
     @Input() gameMode!:string;
     @Input() imageUpdateInterval:number = 6000;
     @Input() withIntervalOffset:boolean = true;
-
+    @Input() glowColor = 'var(--ember)';
     @Output() onImageClick: EventEmitter<string> = new EventEmitter<string>();
     
     private readonly defaultImages = defaultImages;

@@ -13,9 +13,21 @@
         </div>
 
         <div class="modes">
-          <app-image-card></app-image-card>
-          <app-image-card></app-image-card>
-
+          <app-image-card
+            [title]="'Quest Mode'"
+            [subtitle]="'Choose your own adventure'"
+            [description]="'Start in a random place and choose your paths each scene. Finish it or die trying.'"
+            [footerText]="'Guided · 3-4 choices per scene'"
+            [actionText]="'PLAY'"
+          ></app-image-card>
+          <app-image-card
+            [title]="'Adventure Mode'"
+            [subtitle]="'Open world (text) RPG'"
+            [description]="'Explore a world generated for your character. Type what you do; the Game Master answers.'"
+            [footerText]="'Free prompt · Endless'"
+            [actionText]="'PLAY'"
+            [glowColor]="'var(--teal)'"
+          ></app-image-card>
           
           <!-- <article class="mode" data-slideshow style="--glow: var(--ember)">
             <img class="slide is-active" src="img/city_1.webp" alt="">

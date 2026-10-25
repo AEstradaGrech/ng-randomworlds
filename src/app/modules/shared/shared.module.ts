@@ -12,7 +12,6 @@ import { DragAndDropComponent } from './components/drag-and-drop/drag-and-drop.c
 import { TokenSelectorMatmenuComponent } from './components/token-selector-matmenu/token-selector-matmenu.component';
 import { ShellModule } from './shell.module';
 import { AppShellComponent } from './components/app-shell/app-shell.component';
-import { GameCardComponent } from './components/game-card/game-card.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { ImageCardComponent } from './components/image-card/image-card.component';
 import { SlideshowComponent } from './components/slideshow/slideshow.component';
@@ -29,7 +28,6 @@ import { SlideshowComponent } from './components/slideshow/slideshow.component';
         DragAndDropComponent, 
         TokenSelectorMatmenuComponent, 
         AppShellComponent, 
-        GameCardComponent,
         SafeHtmlPipe,
         ImageCardComponent,
         SlideshowComponent
@@ -55,7 +53,6 @@ import { SlideshowComponent } from './components/slideshow/slideshow.component';
         DragAndDropComponent,
         TokenSelectorMatmenuComponent,
         AppShellComponent,
-        GameCardComponent,
         SafeHtmlPipe,
         ImageCardComponent,
         SlideshowComponent
