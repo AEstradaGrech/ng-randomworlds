@@ -2,6 +2,8 @@
     <div class="w-100 h-100">
         <!-- <app-header-navbar #navbar [config]="headBarConfig" [height]="'85px'" [withLogo]="true"></app-header-navbar>     -->
         <app-nav-bar #navbar [tabs]="headBarConfig"></app-nav-bar>
-        <router-outlet></router-outlet>
+        <main class="view">
+<router-outlet></router-outlet>
+        </main>
     </div>
 </div>

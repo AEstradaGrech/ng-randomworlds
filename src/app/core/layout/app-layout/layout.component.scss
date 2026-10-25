@@ -1,0 +1,12 @@
+:host {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr); // nav + resto
+  height: 100dvh;
+}
+
+.view {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;  // las vistas SIN marco hacen scroll aquí, como una página normal
+}

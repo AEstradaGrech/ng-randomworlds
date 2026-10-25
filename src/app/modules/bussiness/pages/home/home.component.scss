@@ -1,81 +1,103 @@
-:host{
-    display: block;
-    height: 94vh;
+:host  { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.screen {
+    min-height: 0; 
+    display: flex; 
+    flex-direction: column;
+    grid-template-rows: auto minmax(0, 1fr);  /* nav + marco que ocupa el resto */
+    /* height: clamp(620px, 86vh, 820px); */
+    height: 94dvh;
+    width: 98dvw;
+    justify-self: center;
+    background: var(--night);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px -40px rgb(0 0 0 / .8);
+  }
+
+  
+
+  /* ---------- Marco fijo con scroll interno ---------- */
+.frame {
+  flex: 1;
+  min-height: 0;     /* permite que sea más bajo que su contenido → scroll interno*/
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+    position: relative;
+    isolation: isolate;
+    margin: 12px 12px 12px;
+    overflow: auto;              /* el scroll vive aquí, no en la página */
+    background:
+      radial-gradient(120% 70% at 20% 0%, rgb(240 136 62 / .07), transparent 60%),
+      var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    scrollbar-color: var(--line-2) transparent;
+  /* margen, fondo, borde…*/
 }
 
-.home-img{
-    width: 40%;
-    height: 40%;
-    padding: 15px 25px 15px 25px;
-    border-radius: 15px;
-}
-.img-container{
-    width: 90%;
-    height: 100%;
-    margin: 15px 15px 15px 15px;
-    border-radius: 15px;
-    display: flex !important;
-    justify-content: right;
-    padding: 10px 0px 10px 0px;
-    justify-content: center;
-    align-items: center;
-}
-.card-container{
-    // display: flex !important;
-    // justify-content: center;
-    //overflow: hidden;
-    // width: 100vw;
-    // height: 90%;
+  .grain {                       /* grano, como en la caja de Mastra */
     position: absolute;
-    width: 100%;
-    height: 90%;
-    margin: 15px 15px 15px 15px;
-    border-radius: 15px;
-}
-
-.game-card {
-    max-width: 40%;
-    margin: 0px 50px 0px 50px;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
   }
 
-.game-card-header-image-l {
-    background-image: url('/assets/images/City_1.png');
-    background-size: cover;
-  }
-
-.game-card-header-image-r {
-    background-image: url('/assets/images/City_2.png');
-    background-size: cover;
-  }
-
-.game-card-image{
-    margin:3px 7px 15px 7px
-  }
-.game-card-content{
-    color:#6b6b6c;
-    font-size:13px;
-}
-.begin-btn{
-    width: 20%;
-    color: #99c531 !important;
-    border-color: rgb(175 239 24) !important;
-}
-.begin-btn:hover{
-    width: 20%;
-    color: #ffffff !important;
-    border-color: rgb(245, 247, 243) !important;
-    background-color: #99c531 !important;
-}
-.game-card-actions{
-    justify-content: center;
-    align-items: center;
+.frame-inner {
+  flex: 1;           /* SIN min-height: 0: si el contenido no cabe, crece y el marco hace scroll*/
+  display: flex;
+  flex-direction: column;
+  padding: clamp(20px, 3.5vw, 40px);
 }
 
-.game-card-title{
-    color:#99c531;
+  .frame-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
+    margin-bottom: 28px;
+  }
+  .frame-head h1 {
+    margin: 8px 0 0;
+    font: 400 clamp(28px, 3.4vw, 40px)/1.05 var(--f-display);
+    letter-spacing: -.015em;
+    text-wrap: balance;
+  }
+  .frame-head p { margin: 0; color: var(--muted); font-size: 14px; }
+
+  /* ---------- Grid de tarjetas ---------- */
+.modes {
+  flex: 1;           /* lo que deja la cabecera*/
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  grid-auto-rows: minmax(420px, 1fr);
+  gap: 25px;
 }
-.game-card-subtitle{
-    font-style: oblique;
-    color: #c3c3c5;
-    font-weight: 300;
-}
+
+
+
+  /* ---------- Móvil ---------- */
+  @media (max-width: 860px) {
+    .lesson { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .screen { height: 91vh; border-radius: 16px; }
+    .nav { gap: 14px; padding: 0 12px; }
+    .wordmark { font-size: 18px; }
+    .tabs { -webkit-mask-image: linear-gradient(to right, #000 80%, transparent); mask-image: linear-gradient(to right, #000 80%, transparent); }
+    .wallet .addr-full { display: none; }
+    .frame { margin: 0 6px 6px; }
+    .mode { aspect-ratio: 3 / 4; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+    .slide.is-active { transform: none; }
+    .seg.is-active span::after { animation: none; transform: scaleX(1); }  /* sin avance automático */
+  }
