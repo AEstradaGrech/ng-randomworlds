@@ -1,7 +1,10 @@
 <article class="mode" data-slideshow style="--glow: var(--ember)">
-    <img class="slide is-active" src="assets/images/City_1.png" alt="">
+    <app-slideshow [images]="images" [withProgress]=withProgress>
+
+    </app-slideshow>
+    <!-- <img class="slide is-active" src="assets/images/City_1.png" alt="">
     <img class="slide" src="assets/images/Mobb_1.png" alt="">
-    <div class="progress" aria-label="Images"></div>
+    <div class="progress" aria-label="Images"></div> -->
     <div class="mode-body">
         <!-- IF SUBTITLE-->
         <span class="label">Choose your own adventure</span>

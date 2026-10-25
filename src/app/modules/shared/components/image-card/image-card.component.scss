@@ -26,23 +26,6 @@
   }
   .mode:has(.mode-link:focus-visible) { outline: 2px solid var(--glow); outline-offset: 3px; }
 
-  /* Slides: apilados, solo el activo es opaco */
-  .slide {
-    position: absolute;
-    z-index: -1;                 /* debajo del texto */
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    transform: scale(1);
-    transition: opacity 1.2s ease, transform 0s 1.2s;   /* al salir: funde y luego resetea el zoom */
-  }
-  .slide.is-active {
-    opacity: 1;
-    transform: scale(1.08);
-    transition: opacity 1.2s ease, transform 9s linear;  /* al entrar: funde y hace zoom lento */
-  }
 
   /* Velo para que el texto se lea sobre cualquier imagen */
   .mode::after {
@@ -89,44 +72,6 @@
   .mode-cta .arrow { color: var(--glow); transition: transform .3s var(--ease); }
   .mode:hover .mode-cta .arrow,
   .mode:has(.mode-link:focus-visible) .mode-cta .arrow { transform: translateX(4px); }
-
-  /* Indicadores de progreso: son botones, quedan POR ENCIMA del enlace estirado */
-  .progress {
-    position: absolute;
-    z-index: 3;
-    top: 16px; left: 18px; right: 18px;
-    display: flex;
-    gap: 6px;
-  }
-  .seg {
-    appearance: none;
-    flex: 1;
-    height: 18px;             /* área de clic cómoda; la barra visible es el span */
-    padding: 0;
-    border: 0;
-    background: none;
-    cursor: pointer;
-  }
-  .seg span {
-    position: relative;
-    display: block;
-    height: 3px;
-    border-radius: 3px;
-    background: rgb(255 255 255 / .22);
-    overflow: hidden;
-  }
-  .seg span::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--fg);
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-  .seg.is-done span::after { transform: scaleX(1); }
-  .seg.is-active span::after { animation: fill var(--dur, 6000ms) linear forwards; }
-  .seg:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; border-radius: 4px; }
-  @keyframes fill { to { transform: scaleX(1); } }
 
   /* Pausa al pasar el ratón o con foco: como el temporizador ES la animación, se pausa todo */
   .mode:hover .seg.is-active span::after,

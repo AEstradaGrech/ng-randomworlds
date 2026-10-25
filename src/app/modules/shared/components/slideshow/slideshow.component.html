@@ -1,0 +1,19 @@
+@for (src of images(); track src; let i = $index) {
+      <img class="slide" [class.is-active]="i === index()" [src]="src" alt=""
+           [attr.loading]="i === 0 ? 'eager' : 'lazy'" />
+    }
+    @if (images().length > 1 && withProgress) {
+      <div class="progress">
+        @for (src of images(); track src; let i = $index) {
+          <button type="button" class="seg"
+                  [class.is-done]="i < index()"
+                  [class.is-active]="i === index()"
+                  [style.--dur.ms]="interval()"
+                  [attr.aria-label]="'Show image ' + (i + 1)"
+                  [attr.aria-current]="i === index()"
+                  (click)="index.set(i)">
+            <span (animationend)="next()"></span>
+          </button>
+        }
+      </div>
+    }
