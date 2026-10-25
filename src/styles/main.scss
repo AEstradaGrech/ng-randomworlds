@@ -9,6 +9,20 @@
   --secondary-btn-border: rgb(239, 217, 24);
   --terciary-btn-hover: orange;
   --terciary-btn-border: orange;
+  --night: #0b0a0f;
+    --panel: #12111a;
+    --surface: #1a1824;
+    --line: rgb(255 255 255 / .08);
+    --line-2: rgb(255 255 255 / .14);
+    --fg: #efeae0;
+    --ember: #f0883e;
+    --teal: #7fc8b4;
+    --danger: #e5564b;
+    --f-display: "Gloock", Georgia, serif;
+    --f-body: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+    --f-label: "Geist Mono", ui-monospace, Menlo, monospace;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+    color-scheme: dark;
 }
 body {
   margin: 0;
@@ -19,6 +33,28 @@ body {
 
   //background: linear-gradient(345deg, rgb(50 61 88) 35%, #111018 100%); //rgb(166 237 0)
 }
+
+  body {
+    background: var(--night);
+    color: var(--fg);
+    font: 16px/1.6 var(--f-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 48px 88px;
+  }
+
+  .label {
+    font: 500 10.5px/1.4 var(--f-label);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ember);
+  }
 * {
   box-sizing: border-box;
 }
@@ -244,8 +280,8 @@ h2 {
   margin:0px 0px 15px 0px !important;
 }
 .snack-success{
-  --mdc-snackbar-container-color: #4cb804  !important;
-  --mdc-snackbar-supporting-text-color: #e0e0e0;
+  --mdc-snackbar-container-color: var(--teal)  !important;
+  --mdc-snackbar-supporting-text-color: #ffffff;
   --mdc-snackbar-supporting-text-font-weight:bold;
   margin:0px 0px 15px 0px !important;
 }
@@ -255,8 +291,8 @@ h2 {
   margin:0px 0px 15px 0px !important;
 }
 .snack-success-login{
-  --mdc-snackbar-container-color: #ffffff  !important;
-  --mdc-snackbar-supporting-text-color: #4cb804;
+  --mdc-snackbar-container-color: var(--night)  !important;
+  --mdc-snackbar-supporting-text-color: var(--teal);
   --mdc-snackbar-supporting-text-font-weight:bold;
   margin:0px 0px 15px 0px !important;
   .mat-mdc-snack-bar-container{
