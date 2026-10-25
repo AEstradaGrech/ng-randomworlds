@@ -14,12 +14,20 @@ export class ImageCardComponent implements OnInit {
     @Input() description!:string;
     @Input() gameMode!:string;
     @Input() imageUpdateInterval:number = 6000;
+    @Input() withIntervalOffset:boolean = true;
 
     @Output() onImageClick: EventEmitter<string> = new EventEmitter<string>();
     
     private readonly defaultImages = defaultImages;
     
     ngOnInit(): void {
+      if(this.withIntervalOffset){
+        let offset = this.imageUpdateInterval * 10 / 100;
+        this.imageUpdateInterval = Math.random() * 100 > 50 ? 
+        this.imageUpdateInterval + offset : 
+        this.imageUpdateInterval - offset;
+        console.log(this.imageUpdateInterval);
+      }
       if(this.images.length === 0){
         if(this.withProgress && this.defaultImages.length >= 2){
           if(this.defaultImages.length > 2)
