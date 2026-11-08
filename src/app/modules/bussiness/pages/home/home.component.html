@@ -19,6 +19,7 @@
             [description]="'Start in a random place and choose your paths each scene. Finish it or die trying.'"
             [footerText]="'Guided · 3-4 choices per scene'"
             [actionText]="'PLAY'"
+            (onCardClick)="onBeginClick($event)"
           ></app-image-card>
           <app-image-card
             [title]="'Adventure Mode'"
@@ -28,6 +29,7 @@
             [actionText]="'PLAY'"
             [glowColor]="'var(--teal)'"
             [isLocked]="true"
+            (onCardClick)="onBeginClick($event)"
           ></app-image-card>
         </div>
       </div>

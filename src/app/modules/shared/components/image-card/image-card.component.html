@@ -8,10 +8,11 @@
         [interval]="imageUpdateInterval"
         [locked]="isLocked">
     </app-slideshow>
-    
     <div class="mode-body">
         <span *ngIf="subtitle && subtitle !== ''" class="label">{{subtitle}}</span>
-        <h1 *ngIf="title && title !== ''" class="mode-title"><a class="mode-link" href="#quest">{{title}}</a></h1>
+        <h1 *ngIf="title && title !== ''" class="mode-title">
+            <a class="mode-link" (click)="onCardClicked()">{{title}}</a>
+        </h1>
         <p *ngIf="description && description !== ''" class="mode-pitch">{{description}}</p>
         <div class="mode-foot">
         <span *ngIf="footerText && footerText !== ''" class="mode-meta">{{footerText}}</span>

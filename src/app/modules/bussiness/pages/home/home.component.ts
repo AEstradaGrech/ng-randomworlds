@@ -36,7 +36,7 @@ export class HomeComponent implements OnInit{
     let gameData: GameData | null = data ? JSON.parse(data) : null;
     
     switch(gameMode){
-      case('quest'):
+      case('Quest Mode'):
         if(gameData && gameData.selectedCharacter){
           if(gameData.character)
             this.router.navigateByUrl('randomworlds/game/quest');
@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit{
           this.router.navigateByUrl('randomworlds/character/select');
         }
         break;
-      case('adventure'):
+      case('Adventure Mode'):
         localStorage.setItem('game-type', 'adventure');
         this.router.navigateByUrl('randomworlds/character/select');
         break;

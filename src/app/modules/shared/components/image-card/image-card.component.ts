@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { defaultImages, getRandomInt, lockedGameModeImage } from 'src/app/core/constants/configs/game-cards';
 
 @Component({
@@ -19,10 +20,11 @@ export class ImageCardComponent implements OnInit {
     @Input() withIntervalOffset:boolean = true;
     @Input() glowColor = 'var(--ember)';
     @Input() isLocked = false;
-    @Output() onImageClick: EventEmitter<string> = new EventEmitter<string>();
+    @Input() routeLink:string | null = null;
+    @Output() onCardClick: EventEmitter<string> = new EventEmitter<string>();
     
     private readonly defaultImages = defaultImages;
-    
+    private readonly _router:Router = inject(Router);
     ngOnInit(): void {
       if(this.withIntervalOffset){
         let offset = this.imageUpdateInterval * 30 / 100;
@@ -45,6 +47,12 @@ export class ImageCardComponent implements OnInit {
       else this.images = this.images.length > 0 ? [this.images[0]] : [lockedGameModeImage];
     }
     
+    public onCardClicked(){
+      if(this.isLocked) return;
+      if(this.routeLink)
+        this._router.navigateByUrl(this.routeLink);
+      this.onCardClick.emit(this.title);
+    }
 
     private _getRandomImages(maxImgs: number, available: string[], selected: string[]) : string[]{
       if(selected.length === maxImgs) return selected;
