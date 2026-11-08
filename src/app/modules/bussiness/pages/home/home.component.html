@@ -1,38 +1,37 @@
 
-  <!-- ===================== LA APP ===================== -->
-  <div class="screen">
-    <main class="frame" id="play">
-      <div class="grain" aria-hidden="true"></div>
-      <div class="frame-inner">
-        <div class="frame-head">
-          <div>
-            <span class="label">Choose a game mode</span>
-            <h1>Where does your story begin?</h1>
-          </div>
-          <p>1 mode available · more in development</p>
+<div class="screen">
+  <main class="frame" id="play">
+    <div class="grain" aria-hidden="true"></div>
+    <div class="frame-inner">
+      <div class="frame-head">
+        <div>
+          <span class="label">Choose a game mode</span>
+          <h1>Where does your story begin?</h1>
         </div>
-
-        <div class="modes">
-          <app-image-card
-            [title]="'Quest Mode'"
-            [subtitle]="'Choose your own adventure'"
-            [description]="'Start in a random place and choose your paths each scene. Finish it or die trying.'"
-            [footerText]="'Guided · 3-4 choices per scene'"
-            [actionText]="'PLAY'"
-            (onCardClick)="onBeginClick($event)"
-          ></app-image-card>
-          <app-image-card
-            [title]="'Adventure Mode'"
-            [subtitle]="'Open world (text) RPG'"
-            [description]="'Explore a world generated for your character. Type what you do; the Game Master answers.'"
-            [footerText]="'Free prompt · Endless'"
-            [actionText]="'PLAY'"
-            [glowColor]="'var(--teal)'"
-            [isLocked]="true"
-            (onCardClick)="onBeginClick($event)"
-          ></app-image-card>
-        </div>
+        <p>1 mode available · more in development</p>
       </div>
-    </main>
-  </div>
+
+      <div class="modes">
+        <app-image-card
+          [title]="'Quest Mode'"
+          [subtitle]="'Choose your own adventure'"
+          [description]="'Start in a random place and choose your paths each scene. Finish it or die trying.'"
+          [footerText]="'Guided · 3-4 choices per scene'"
+          [actionText]="'PLAY'"
+          (onCardClick)="onBeginClick($event)"
+        ></app-image-card>
+        <app-image-card
+          [title]="'Adventure Mode'"
+          [subtitle]="'Open world (text) RPG'"
+          [description]="'Explore a world generated for your character. Type what you do; the Game Master answers.'"
+          [footerText]="'Free prompt · Endless'"
+          [actionText]="'PLAY'"
+          [glowColor]="'var(--teal)'"
+          [isLocked]="true"
+          (onCardClick)="onBeginClick($event)"
+        ></app-image-card>
+      </div>
+    </div>
+  </main>
+</div>
 

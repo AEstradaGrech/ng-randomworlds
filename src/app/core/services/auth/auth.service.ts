@@ -90,6 +90,7 @@ export class AuthService {
       // trigger provider popup to sign
       verifyRequest.signature = await web3.eth.personal.sign(siweMessage, siweAddress, '');
       const recoveredAddress = await firstValueFrom(this.http.post(`${environment.baseUrl}/blockchain/auth/verify`, verifyRequest));
+      console.log('signed addres', creds.username);
       return recoveredAddress && recoveredAddress === siweAddress;
     }catch(error){
       throw new Error(`An error has occured while verifying the login: ${error}`);
@@ -129,6 +130,7 @@ export class AuthService {
       }
 
       if (accounts[0].toLowerCase() === current.username.toLowerCase()) return;
+      this._storeUserLogin(accounts[0], current.provider);
       defer(() => this.sign(accounts[0]))
         .pipe(takeUntilDestroyed(this._destroyRef))
         .subscribe({

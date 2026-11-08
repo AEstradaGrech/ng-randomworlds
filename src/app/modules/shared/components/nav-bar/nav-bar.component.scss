@@ -60,7 +60,7 @@
     color: var(--fg);
     font: 500 12px/1 var(--f-label);
     letter-spacing: .02em;
-    cursor: pointer;
+    cursor:default;
     transition: border-color .2s;
   }
   .wallet:hover { border-color: var(--line-2); }
