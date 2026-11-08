@@ -2,7 +2,7 @@
       <img class="slide" [class.is-active]="i === index()" [src]="src" alt=""
            [attr.loading]="i === 0 ? 'eager' : 'lazy'" />
     }
-    @if (images().length > 1 && withProgress) {
+    @if (images().length > 1 && withProgress()) {
       <div class="progress">
         @for (src of images(); track src; let i = $index) {
           <button type="button" class="seg"
