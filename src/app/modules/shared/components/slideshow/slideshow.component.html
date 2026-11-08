@@ -1,8 +1,12 @@
 @for (src of images(); track src; let i = $index) {
-      <img class="slide" [class.is-active]="i === index()" [src]="src" alt=""
-           [attr.loading]="i === 0 ? 'eager' : 'lazy'" />
+      <img class="slide" 
+        [class.is-active]="i === index()" 
+        [src]="src" 
+        alt="" 
+        [attr.loading]="i === 0 ? 'eager' : 'lazy'" 
+        [ngClass]="{'is-locked': locked()}"/>
     }
-    @if (images().length > 1 && withProgress()) {
+    @if (images().length > 1 && withProgress() && !locked()) {
       <div class="progress">
         @for (src of images(); track src; let i = $index) {
           <button type="button" class="seg"

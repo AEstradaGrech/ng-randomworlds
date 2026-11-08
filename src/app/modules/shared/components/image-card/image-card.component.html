@@ -1,17 +1,21 @@
-<article class="mode" data-slideshow [style.--glow] = "glowColor">
+<article class="mode is-locked" data-slideshow [style.--glow] = "glowColor" [ngClass]="{'is-locked': true}">
+    @if(isLocked){
+        <span class="lock"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1.2"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>In development</span>
+    }
     <app-slideshow 
         [images]="images" 
         [withProgress]=withProgress 
-        [interval]="imageUpdateInterval">
+        [interval]="imageUpdateInterval"
+        [locked]="isLocked">
     </app-slideshow>
+    
     <div class="mode-body">
         <span *ngIf="subtitle && subtitle !== ''" class="label">{{subtitle}}</span>
-        <!-- @input for link & @Input for TITLE-->
         <h2 *ngIf="title && title !== ''" class="mode-title"><a class="mode-link" href="#quest">{{title}}</a></h2>
         <p *ngIf="description && description !== ''" class="mode-pitch">{{description}}</p>
         <div class="mode-foot">
         <span *ngIf="footerText && footerText !== ''" class="mode-meta">{{footerText}}</span>
-        <span *ngIf="actionText && actionText !== ''" class="mode-cta" aria-hidden="true">{{actionText}} <span class="arrow">→</span></span>
+        <span *ngIf="actionText && actionText !== '' && !isLocked" class="mode-cta" aria-hidden="true">{{actionText}} <span class="arrow">→</span></span>
         </div>
     </div>
 </article>

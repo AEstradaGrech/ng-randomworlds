@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { defaultImages, getRandomInt } from 'src/app/core/constants/configs/game-cards';
+import { defaultImages, getRandomInt, lockedGameModeImage } from 'src/app/core/constants/configs/game-cards';
 
 @Component({
   selector: 'app-image-card',
@@ -18,19 +18,21 @@ export class ImageCardComponent implements OnInit {
     @Input() imageUpdateInterval:number = 6000;
     @Input() withIntervalOffset:boolean = true;
     @Input() glowColor = 'var(--ember)';
+    @Input() isLocked = false;
     @Output() onImageClick: EventEmitter<string> = new EventEmitter<string>();
     
     private readonly defaultImages = defaultImages;
     
     ngOnInit(): void {
       if(this.withIntervalOffset){
-        let offset = this.imageUpdateInterval * 10 / 100;
+        let offset = this.imageUpdateInterval * 30 / 100;
+        offset = getRandomInt(offset, offset * 0.25);
         this.imageUpdateInterval = Math.random() * 100 > 50 ? 
         this.imageUpdateInterval + offset : 
         this.imageUpdateInterval - offset;
-        console.log(this.imageUpdateInterval);
       }
-      if(this.images.length === 0){
+      if(!this.isLocked){
+        if(this.images.length === 0){
         if(this.withProgress && this.defaultImages.length >= 2){
           if(this.defaultImages.length > 2)
             this.images = this._getRandomImages(getRandomInt(this.defaultImages.length -1, 2), this.defaultImages, []); 
@@ -40,6 +42,8 @@ export class ImageCardComponent implements OnInit {
         }
         else this.images = [this.defaultImages[getRandomInt(this.defaultImages.length - 1)]];
       }
+      else this.images = this.images.length > 0 ? [this.images[0]] : [lockedGameModeImage];
+    }
     
 
     private _getRandomImages(maxImgs: number, available: string[], selected: string[]) : string[]{
