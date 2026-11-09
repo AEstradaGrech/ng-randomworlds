@@ -365,24 +365,6 @@ private getDefaultCurrencyTitle() : string {
   }
 
   onSelectedTokenPay(event: string){
-    // if(!this._web3Service.connectedWallet){
-    //   const userCreds = this._authService.userLogin();
-      
-    //   defer(() => this._authService.loginWith())
-    //     .pipe(
-    //       takeUntilDestroyed(this._destroyRef)
-    //     ).subscribe({
-    //       next: loged => { 
-    //         if(!loged){
-    //           this._dialogRef.close();
-    //           this._router.navigateByUrl('');
-    //         }
-    //         else this._handlePayment(event);
-    //       },
-    //       error: error => this._router.navigateByUrl('')
-    //     })
-    // }
-    //else 
     this._handlePayment(event); 
   }
 

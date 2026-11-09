@@ -8,13 +8,17 @@ import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar'
 })
 export class NotificationsComponent {
   messages: string[] = [];
-  position:string = 'auto';
+  iconName:string = 'close';
   constructor(public snackBarRef: MatSnackBarRef<NotificationsComponent>,
     @Inject(MAT_SNACK_BAR_DATA) public data: any) {
     this.messages = this.data.messages;
+    if(this.data.icon)
+      this.iconName = this.data.icon;
   }
 
-  removeMessage(message: string) {
+  removeMessage(message: string, triggerNotify:boolean = false) {
+    if(triggerNotify && this.data.onIconClick)
+      this.data.onIconClick(this.iconName);
     this.messages.splice(this.messages.indexOf(message), 1);
     if (this.messages.length === 0) {
         this.snackBarRef.dismiss();

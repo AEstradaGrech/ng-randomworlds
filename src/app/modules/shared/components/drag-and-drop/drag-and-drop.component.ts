@@ -17,7 +17,6 @@ export class DragAndDropComponent {
   @Output() onDropValidationFail: EventEmitter<string> = new EventEmitter<string>();
   
   drop(event: CdkDragDrop<string[]>, validateDrop: boolean ) {
-    console.log('-- on drop --')
       if (event.previousContainer === event.container) {
         moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       } else {

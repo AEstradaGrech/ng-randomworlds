@@ -25,11 +25,17 @@ export class LayoutComponent implements AfterViewInit {
   
   ngAfterViewInit(): void {
     this.navbar.forceActiveTab('Play'); // TODO: active tab from url
+    this._notificationService.onAlertIconClicked
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe(iconName => {
+        if(iconName === 'refresh')
+          this.authService.refreshSession();
+      })
     this.authService.onSessionTimeoutWarn
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe(warn =>{
         if(warn)
-          this._notificationService.push('Your session is about to expire, refresh it to keep playing', this.authService.expireTimeout);
+          this._notificationService.push('Your session is about to expire, refresh it to keep playing', this.authService.expireTimeout, null, null, 'refresh');
       })
   }
 
