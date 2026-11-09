@@ -34,3 +34,8 @@ export interface LoginSignRequest{
   message:string,
   signature:string
 }
+
+export interface SessionDto{
+  address:string,
+  expires_in:number
+}

@@ -1,15 +1,16 @@
-import { computed, DestroyRef, inject, Injectable, NgZone, signal } from '@angular/core';
+import { computed, DestroyRef, effect, inject, Injectable, NgZone, PLATFORM_ID, signal } from '@angular/core';
 
 import { defer, firstValueFrom, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { WINDOW } from '../../constants/window';
-import { EIP1193Provider, LoginSignRequest, UserLogin } from '../../interfaces/auth/credentials.interface';
+import { EIP1193Provider, LoginSignRequest, SessionDto, UserLogin } from '../../interfaces/auth/credentials.interface';
 import { WalletDiscoveryService } from 'src/app/modules/shared/services/wallet-discovery.service';
 import Web3 from 'web3';
 import { Router } from '@angular/router';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { environment } from 'src/environments/environment';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { isPlatformBrowser } from '@angular/common';
 
 
 @Injectable({
@@ -18,6 +19,20 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class AuthService {
 
   constructor(private http:HttpClient) { 
+    if (!isPlatformBrowser(inject(PLATFORM_ID))) return;
+    effect((onCleanup) => {
+      const exp = this.expiresAt();
+      if (!exp) return; 
+
+      const now = Date.now();
+      const warnTimer = setTimeout(() => this.sessionExpiring.set(true), Math.max(0, exp - now - this.WARN_BEFORE_MS));
+      const endTimer = setTimeout(() => this._onSessionExpired(), Math.max(0, exp - now));
+
+      onCleanup(() => {
+        clearTimeout(warnTimer);
+        clearTimeout(endTimer);
+      });
+  });
     const loggedUser = this.userLogin();
     if(loggedUser){
       const providerDetail = this.walletDiscovery.getProvider(loggedUser.provider);
@@ -44,7 +59,9 @@ export class AuthService {
   private _zone: NgZone = inject(NgZone);
   private _destroyRef = inject(DestroyRef);
   private _watched: EIP1193Provider | null = null;
-
+  readonly expiresAt = signal<number | null>(null);   
+  readonly sessionExpiring = signal(false);           
+  private readonly WARN_BEFORE_MS = 3 * 60_000;       
   
   public async loginWith(provider: string): Promise<boolean>{
     if(!this._window) return false;
@@ -60,7 +77,7 @@ export class AuthService {
       // sign the login and generate the JWT
       this._storeUserLogin(address, provider);
       if(await this.sign(address))
-        return true;
+        return await this.loadSession();
       // if the backend signing fails, the login is deleted and 
       // the loginWith method returns false
       else localStorage.removeItem('user-login');
@@ -109,6 +126,7 @@ export class AuthService {
     localStorage.removeItem('user-login');
     localStorage.removeItem('game-data');
     this.userLogin.set(null);
+    this.expiresAt.set(null);
   }
 
   public async getConnectedAccounts() : Promise<string[]>{
@@ -120,6 +138,30 @@ export class AuthService {
     return Number(await web3.eth.net.getId());
   }
 
+  public async loadSession(): Promise<boolean> {
+    try {
+      const session = await firstValueFrom(
+        this.http.get<SessionDto>(`${environment.baseUrl}/blockchain/auth/session`));
+      this.expiresAt.set(Date.now() + session.expires_in * 1000);
+      this.sessionExpiring.set(false);
+      return true;
+    } catch {
+      this.logout();
+      return false;
+    }
+  }
+
+  public async refreshSession(): Promise<boolean> {
+    const address = this.userLogin()?.username;
+    if (!address) return false;
+    // Nueva firma SIWE → el backend pone una cookie nueva → pedimos la nueva caducidad
+    return (await this.sign(address)) && (await this.loadSession());
+  }
+
+  private _onSessionExpired(): void {
+    this.logout();
+    void this._router.navigateByUrl('/auth/login');
+  }
   // arrow function for removeListener 
   private readonly _onAccountsChanged = (accounts: string[]) => {
     this._zone.run(() => {
@@ -226,4 +268,5 @@ export class AuthService {
       `Issued At: ${data.issuedAt}`,
     ].join('\n');
   }
+  
 }

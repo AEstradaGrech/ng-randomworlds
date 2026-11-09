@@ -2,3 +2,9 @@
 <main class="view">
     <router-outlet></router-outlet>
 </main>
+@if (authService.sessionExpiring()) {
+  <div class="session-banner" role="alert">
+    Your session expires soon.
+    <button type="button" (click)="authService.refreshSession()">Sign again</button>
+  </div>
+}
