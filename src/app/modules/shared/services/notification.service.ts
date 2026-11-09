@@ -3,6 +3,7 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarRef, MatSnackBar
 import { NotificationsComponent } from '../components/notification/notification.component';
 import { ESnackAlertType } from '../models/common-enums';
 
+export type AlertHeight = 'top' | 'center' | 'bottom';
 @Injectable({
   providedIn: 'root'
 })
@@ -21,12 +22,13 @@ export class NotificationService {
     this._verticalPosition = vPos;
     this._duration = duration;
   }
-  public push(message: string, duration: number | null = null): void {
+  public push(message: string, duration: number | null = null, height: AlertHeight | null = null, hPos: MatSnackBarHorizontalPosition | null = null): void {
     this._messages.push(message);
     if (!this._snackBarIsDisplayed) {
         this._snackBarRef = this._snackBar.openFromComponent(NotificationsComponent, {
-            horizontalPosition: this._horizontalPosition,
-            verticalPosition: this._verticalPosition,
+            horizontalPosition: hPos ?? this._horizontalPosition,
+            verticalPosition: height && height !== 'center' ? height : this._verticalPosition,
+            panelClass:['rw-alert', `rw-alert--${height}`],
             data: {
                 messages: this._messages,
                 duration: duration ?? this._duration,

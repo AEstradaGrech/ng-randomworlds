@@ -25,7 +25,10 @@ export class AuthService {
       if (!exp) return; 
 
       const now = Date.now();
-      const warnTimer = setTimeout(() => this.sessionExpiring.set(true), Math.max(0, exp - now - this.WARN_BEFORE_MS));
+      const warnTimer = setTimeout(() => {
+        this.sessionExpiring.set(true)
+        this.onSessionTimeoutWarn.next(true);
+      }, Math.max(0, exp - now - this.WARN_BEFORE_MS));
       const endTimer = setTimeout(() => this._onSessionExpired(), Math.max(0, exp - now));
 
       onCleanup(() => {
@@ -42,6 +45,7 @@ export class AuthService {
 
   }
 
+  public onSessionTimeoutWarn: Subject<boolean> = new Subject<boolean>();
   public onAccountChange: Subject<string> = new Subject<string>(); 
   public userLogin = signal<UserLogin | null>(this._readStoredLogin());
   public currentProvider = computed<EIP1193Provider | null>(() => {
@@ -61,8 +65,11 @@ export class AuthService {
   private _watched: EIP1193Provider | null = null;
   readonly expiresAt = signal<number | null>(null);   
   readonly sessionExpiring = signal(false);           
-  private readonly WARN_BEFORE_MS = 3 * 60_000;       
+  private readonly WARN_BEFORE_MS = 1 * 60_000;       
   
+  public get expireTimeout(): number{
+    return this.WARN_BEFORE_MS;
+  }
   public async loginWith(provider: string): Promise<boolean>{
     if(!this._window) return false;
     const providerDetail = this.walletDiscovery.getProvider(provider);

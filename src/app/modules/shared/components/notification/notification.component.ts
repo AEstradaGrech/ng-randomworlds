@@ -7,8 +7,8 @@ import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar'
   styleUrl: './notification.component.scss'
 })
 export class NotificationsComponent {
-messages: string[] = [];
-
+  messages: string[] = [];
+  position:string = 'auto';
   constructor(public snackBarRef: MatSnackBarRef<NotificationsComponent>,
     @Inject(MAT_SNACK_BAR_DATA) public data: any) {
     this.messages = this.data.messages;

@@ -318,3 +318,7 @@ h2 {
 .mat-mdc-row:nth-child(even){
   background-color: #eeeeee;
 }
+
+.cdk-overlay-pane:has(> .rw-alert--center){
+  align-self: center;
+}

@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserLogin, AppWallet, WalletId } from 'src/app/core/interfaces/auth/credentials.interface';
 import { WalletDiscoveryService } from '../../shared/services/wallet-discovery.service';
 import { WINDOW } from 'src/app/core/constants/window';
+import { NotificationService } from '../../shared/services/notification.service';
 
 interface World {
   id: string;
@@ -33,11 +34,11 @@ export class LoginComponent implements OnInit {
   private readonly _router = inject(Router);
   private readonly _walletDiscovery = inject(WalletDiscoveryService);
   private readonly _authService = inject(AuthService)
-  protected readonly worldIndex = signal(Math.floor(Math.random() * WORLDS.length));
-  protected readonly world = computed(() => WORLDS[this.worldIndex()]);
-
-  protected readonly connecting = signal<WalletId | null>(null);
-  protected readonly error = signal<string | null>(null);
+  private readonly worldIndex = signal(Math.floor(Math.random() * WORLDS.length));
+  public readonly world = computed(() => WORLDS[this.worldIndex()]);
+  private readonly _notificationService = inject(NotificationService);
+  public readonly connecting = signal<WalletId | null>(null);
+  public readonly error = signal<string | null>(null);
   private _selectedWallet:string | null = null; 
   public get wallets(): AppWallet[]{
     return this._walletDiscovery.wallets;
