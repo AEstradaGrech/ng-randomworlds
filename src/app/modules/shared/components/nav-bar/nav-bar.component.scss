@@ -13,7 +13,7 @@
     color: var(--fg);
     text-decoration: none;
   }
-  .wordmark span { color: var(--ember); }
+  .wordmark span { color: var(--teal); }
 
   .tabs {
     display: flex;
@@ -35,7 +35,7 @@
     transition: color .2s, background-color .2s;
   }
   .tab:hover { color: var(--fg); background: rgb(255 255 255 / .04); }
-  .tab:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .tab:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
   .tab[aria-current="page"] { color: var(--fg); }
   .tab[aria-current="page"]::after {
     content: "";
@@ -43,8 +43,8 @@
     left: 14px; right: 14px; bottom: -11px;
     height: 2px;
     border-radius: 2px;
-    background: var(--ember);
-    box-shadow: 0 0 12px var(--ember);
+    background: var(--teal);
+    box-shadow: 0 0 12px var(--teal);
   }
 
   .wallet {
@@ -64,7 +64,7 @@
     transition: border-color .2s;
   }
   .wallet:hover { border-color: var(--line-2); }
-  .wallet:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .wallet:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
   .chain-dot {
     width: 8px; height: 8px;
     border-radius: 50%;

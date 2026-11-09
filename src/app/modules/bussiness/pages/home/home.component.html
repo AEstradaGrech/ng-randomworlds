@@ -18,6 +18,7 @@
           [description]="'Start in a random place and choose your paths each scene. Finish it or die trying.'"
           [footerText]="'Guided · 3-4 choices per scene'"
           [actionText]="'PLAY'"
+          [glowColor]="'var(--teal)'"
           (onCardClick)="onBeginClick($event)"
         ></app-image-card>
         <app-image-card
@@ -26,7 +27,7 @@
           [description]="'Explore a world generated for your character. Type what you do; the Game Master answers.'"
           [footerText]="'Free prompt · Endless'"
           [actionText]="'PLAY'"
-          [glowColor]="'var(--teal)'"
+          [glowColor]="'var(--fuchsia)'"
           [isLocked]="true"
           (onCardClick)="onBeginClick($event)"
         ></app-image-card>

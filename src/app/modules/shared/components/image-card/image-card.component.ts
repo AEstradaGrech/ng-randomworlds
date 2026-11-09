@@ -18,7 +18,7 @@ export class ImageCardComponent implements OnInit {
     @Input() gameMode!:string;
     @Input() imageUpdateInterval:number = 6000;
     @Input() withIntervalOffset:boolean = true;
-    @Input() glowColor = 'var(--ember)';
+    @Input() glowColor = 'var(--teal)';
     @Input() isLocked = false;
     @Input() routeLink:string | null = null;
     @Output() onCardClick: EventEmitter<string> = new EventEmitter<string>();

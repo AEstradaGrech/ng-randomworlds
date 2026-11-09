@@ -1,4 +1,4 @@
-<article class="mode is-locked" data-slideshow [style.--glow] = "glowColor" [ngClass]="{'is-locked': true}">
+<article class="mode" data-slideshow [style.--glow] = "glowColor" [ngClass]="{'is-locked': isLocked}">
     @if(isLocked){
         <span class="lock"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1.2"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>In development</span>
     }

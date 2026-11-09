@@ -1,109 +1,171 @@
-
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
+@use 'sass:map';
 @use '@angular/material' as mat;
-// Plus imports for other components in your app.
-
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
+ 
 @include mat.core();
+ 
 
-$ng-seed-primary: (
-  50: #f1f1f1,
-  100: #a7e8f4,
-  200: #75dbed,
-  300: #36cae5,
-  400: #1cc1e0,
-  500: #111018,
-  600: #1693aa,
-  700: #127b8f,
-  800: #0f6473,
-  900: #0b4c58,
-  A100: #defaff,
-  A200: #78eaff,
-  A400: #1bd4f6,
-  A700: #16c2e2,
+$rw-text-dark: #0b0a0f;   
+$rw-text-light: #efeae0;  
+ 
+$rw-teal: (
+  50: #f0f8f6,
+  100: #d9eee8,
+  200: #bfe4da,
+  300: #a5d8ca,
+  400: #92d0bf,
+  500: #7fc8b4,
+  600: #6fad9d,
+  700: #5f9386,
+  800: #4e786f,
+  900: #3c5a54,
+  A100: #baebdd,
+  A200: #84dec6,
+  A400: #5ed4b4,
+  A700: #4fba9f,
   contrast: (
-    50: black,
-    100: black,
-    200: black,
-    300: black,
-    400: black,
-    500: white,
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-    A100: black,
-    A200: black,
-    A400: black,
-    A700: white
+    50: $rw-text-dark,   // 18.3:1
+    100: $rw-text-dark,   // 16.3:1
+    200: $rw-text-dark,   // 14.3:1
+    300: $rw-text-dark,   // 12.5:1
+    400: $rw-text-dark,   // 11.3:1
+    500: $rw-text-dark,   // 10.2:1
+    600: $rw-text-dark,   // 7.7:1
+    700: $rw-text-dark,   // 5.6:1
+    800: $rw-text-light,   // 4.1:1
+    900: $rw-text-light,   // 6.3:1
+    A100: $rw-text-dark,   // 15.0:1
+    A200: $rw-text-dark,   // 12.5:1
+    A400: $rw-text-dark,   // 10.9:1
+    A700: $rw-text-dark,   // 8.4:1
   )
 );
-$ng-seed-secondary: (
-  50: black,
-  100: #ffffff,
-  200: #f3fbfc,
-  300: #b2e192,
-  400: #9fdcea,
-  500: #86d3e5,
-  600: #0b0025,
-  700: #54c1da,
-  800: #3ab8d5,
-  900: #111018,
-  A100: #ffffff,
-  A200: #ffffff,
-  A400: #a9e7f5,
-  A700: #98dded,
+ 
+$rw-fuchsia: (
+  50: #fbf0fb,
+  100: #f6d9f4,
+  200: #f0bfec,
+  300: #e9a5e5,
+  400: #e592e0,
+  500: #e07fda,
+  600: #c26fbe,
+  700: #a45ea1,
+  800: #874e85,
+  900: #643b64,
+  A100: #f6bdf2,
+  A200: #f186ea,
+  A400: #ec5ee3,
+  A700: #cc51c6,
   contrast: (
-    50: black,
-    100: black,
-    200: black,
-    300: black,
-    400: black,
-    500: #b0f116,
-    600: #b0f116,
-    700: #b0f116,
-    800: #b0f116,
-    900: #b0f116,
-    A100: black,
-    A200: black,
-    A400: black,
-    A700: #b0f116
+    50: $rw-text-dark,   // 17.8:1
+    100: $rw-text-dark,   // 15.1:1
+    200: $rw-text-dark,   // 12.5:1
+    300: $rw-text-dark,   // 10.4:1
+    400: $rw-text-dark,   // 8.9:1
+    500: $rw-text-dark,   // 7.7:1
+    600: $rw-text-dark,   // 5.9:1
+    700: $rw-text-dark,   // 4.4:1
+    800: $rw-text-light,   // 5.1:1
+    900: $rw-text-light,   // 7.4:1
+    A100: $rw-text-dark,   // 12.7:1
+    A200: $rw-text-dark,   // 8.8:1
+    A400: $rw-text-dark,   // 6.9:1
+    A700: $rw-text-dark,   // 5.2:1
   )
 );
+ 
+$rw-blood: (
+  50: #fce8eb,
+  100: #f7c5ce,
+  200: #f29eac,
+  300: #ec778c,
+  400: #e85a73,
+  500: #e43d5a,
+  600: #c63650,
+  700: #a72f45,
+  800: #89283a,
+  900: #661f2e,
+  A100: #fa94a6,
+  A200: #f94968,
+  A400: #f7153d,
+  A700: #d01b3c,
+  contrast: (
+    50: $rw-text-dark,   // 16.8:1
+    100: $rw-text-dark,   // 13.0:1
+    200: $rw-text-dark,   // 9.6:1
+    300: $rw-text-dark,   // 7.1:1
+    400: $rw-text-dark,   // 5.8:1
+    500: $rw-text-dark,   // 4.8:1
+    600: $rw-text-light,   // 4.3:1
+    700: $rw-text-light,   // 5.6:1
+    800: $rw-text-light,   // 7.2:1
+    900: $rw-text-light,   // 9.7:1
+    A100: $rw-text-dark,   // 9.2:1
+    A200: $rw-text-dark,   // 5.8:1
+    A400: $rw-text-dark,   // 4.8:1
+    A700: $rw-text-light,   // 4.5:1
+  )
+);
+ 
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$ng-randomworlds-primary: mat.define-palette($ng-seed-primary);
-$ng-randomworlds-secondary: mat.define-palette($ng-seed-secondary, A200, A100, A400);
+$rw-primary: mat.define-palette($rw-teal, 500, 300, 700);
+$rw-accent:  mat.define-palette($rw-fuchsia, 500, 300, 700);
+$rw-warn:    mat.define-palette($rw-blood, 500, 300, 700);
+ 
 
-// The warn palette is optional (defaults to red).
-$ng-randomworlds-warn: mat.define-palette(mat.$red-palette);
-
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
-$ng-randomworlds-theme: mat.define-light-theme((
-  color: (
-    primary: $ng-randomworlds-primary,
-    accent: $ng-randomworlds-secondary,
-    warn: $ng-randomworlds-warn,
-  ),
-  typography: mat.define-typography-config(),
-  density: 0
+$rw-background: map.merge(mat.$dark-theme-background-palette, (
+  status-bar:               #0b0a0f,
+  app-bar:                  #12111a,
+  background:               #0b0a0f,
+  card:                     #12111a,
+  dialog:                   #12111a,
+  tooltip:                  #1a1824,
+  raised-button:            #1a1824,
+  selected-button:          #1a1824,
+  selected-disabled-button: #12111a,
+  unselected-chip:          #1a1824,
+  disabled-button-toggle:   #12111a,
+  hover:                    rgba(255, 255, 255, 0.04),
+  focused-button:           rgba(255, 255, 255, 0.08),
+  disabled-button:          rgba(255, 255, 255, 0.08),
+  disabled-list-option:     rgba(255, 255, 255, 0.08),
 ));
+ 
+$rw-foreground: map.merge(mat.$dark-theme-foreground-palette, (
+  base:           $rw-text-light,
+  text:           $rw-text-light,
+  secondary-text: rgba(239, 234, 224, 0.70),
+  hint-text:      rgba(239, 234, 224, 0.50),
+  disabled-text:  rgba(239, 234, 224, 0.38),
+  icon:           rgba(239, 234, 224, 0.70),
+  icons:          rgba(239, 234, 224, 0.70),
+  divider:        rgba(255, 255, 255, 0.08),   // = --line
+  dividers:       rgba(255, 255, 255, 0.08),
+));
+ 
 
+$rw-theme: mat.define-dark-theme((
+  color: (
+    primary: $rw-primary,
+    accent: $rw-accent,
+    warn: $rw-warn,
+  ),
+  typography: mat.define-typography-config(
+    $font-family: '"Hanken Grotesk", system-ui, -apple-system, sans-serif',
+  ),
+  density: 0,
+));
+ 
 
- //$my-app-primary: mat-palette($ng-seed-primary, 700, 400, 500);
-// $my-app-accent: mat-palette($ng-seed-primary);
-// $my-app-warn: mat-palette($mat-red);
-// $my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
-// $my-app-theme: mat-dark-theme($my-app-primary, $my-app-accent, $my-app-warn);
-
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include mat.all-component-themes($ng-randomworlds-theme);
+$rw-theme: map.deep-merge($rw-theme, (
+  color: (background: $rw-background, foreground: $rw-foreground),
+  background: $rw-background,
+  foreground: $rw-foreground,
+));
+ 
+@include mat.all-component-themes($rw-theme);
+ 
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: #1a1824;
+  --mdc-snackbar-supporting-text-color: #efeae0;
+  --mat-snack-bar-button-color: #7fc8b4;
+}
