@@ -130,7 +130,7 @@
     </mat-sidenav-container>
   </div>
   <ng-template #collectionsInfo let-expanded="expanded" let-name="name" let-symbol="symbol" let-token="token" let-address="address" let-description="description" let-total="total" let-image="image" let-item="item" let-open="open">
-    <mat-expansion-panel style="margin: 7px 0px 7px 0px;"  [expanded]="expanded" (opened)="open(item)" hideToggle>
+    <mat-expansion-panel class="collection-panel"  [expanded]="expanded" (opened)="open(item)" hideToggle>
         <mat-expansion-panel-header [collapsedHeight]="'10%'" [expandedHeight]="'10%'" style="padding: 0px 0px 0px 0px !important">
             <div style="display: block; width: 80%; margin: 15px 10px 5px 15px">
                 <mat-panel-title class="col-title"> {{name}} </mat-panel-title>

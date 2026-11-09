@@ -4,12 +4,12 @@
 }
 
 .collection-card-ethscan-txt{
-    color: var(--primary-color); 
+    //color: var(--primary-color); 
     padding-top: 15px;
 }
 .collection-card-content{
     margin: 5px 2px 5px 2px;
-    color: var(--primary-color);
+    //color: var(--primary-color);
     font-weight: 200;
     font-size: 14px;
 }
@@ -55,15 +55,15 @@
     height: 5%;
     margin:0px 10px 0px 10px;
     border-radius: 100px;
-    background-color: #ffffff;
-    border-color: var(--primary-color);
+    background-color: var(--faded-ice);
+    border-color: var(--fuchsia);
 }
 
 .close-sidenav-btn:hover{
     border: transparent;
     border-radius: 100px;
     padding:3px 7px 3px 7px;
-    background-color: var(--primary-color);
+    background-color: var(--teal);
     color: #ffffff;
     .mat-icon{
         color: #ffffff !important;
@@ -92,7 +92,7 @@
 .col-subtitle{
     font-size: 12px;
     font-style: italic;
-    color: #a3a3a3;
+    //color: #a3a3a3;
     font-weight: 300;
     display: contents;
 }
@@ -106,15 +106,19 @@
     align-items: center;
 }
   
-.collections-accordion .mat-mdc-form-field + .mat-mdc-form-field {
-margin-left: 8px;
+.collections-accordion .mat-mdc-form-field {
+    margin-left: 8px;
 }
 
-  .col-sel-div{
+.col-sel-div{
     width: 25%;
     justify-content: center;
     display: flex;
     align-items: center;
-  }
+}
 
+.collection-panel{
+    margin: 7px 0px 7px 0px;
+    background-color: var(--surface);
+  }
 

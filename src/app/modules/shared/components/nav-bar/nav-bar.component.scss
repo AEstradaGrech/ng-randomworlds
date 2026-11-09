@@ -34,10 +34,10 @@
     text-decoration: none;
     transition: color .2s, background-color .2s;
   }
-  .tab:hover { color: var(--fg); background: rgb(71 134 192 / 17%); }
+  .tab:hover { color: var(--fg); background: var(--faded-ice); }
   .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; }
   .tab:active { background: var(--teal); }
-  .tab:focus:not(:active) { background: rgb(71 134 192 / 17%); }
+  .tab:focus:not(:active) { background: var(--faded-ice); }
   
   .tab[aria-current="page"] { color: var(--fg); }
   .tab[aria-current="page"]::after {
