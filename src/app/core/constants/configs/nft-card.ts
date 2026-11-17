@@ -6,16 +6,16 @@ export const defaultNftCardButtons: RoundedButtonConfig[] = [
         id: EAppButtons.VIEW,
         iconName: 'visibility',
         color: 'var(--primary-btn-color)',
-        hoverColor: 'var(--primary-btn-hover)',
-        borderColor: 'var(--primary-btn-border)',
+        hoverColor: 'var(--teal)',
+        borderColor: 'var(--teal)',
         withSpinner: false
     },
     {
         id: EAppButtons.SELECT,
         iconName: 'check',
         color: 'var(--primary-btn-color)',
-        hoverColor: 'var(--primary-btn-hover)',
-        borderColor: 'var(--primary-btn-border)',
+        hoverColor: 'var(--fuchsia)',
+        borderColor: 'var(--fuchsia)',
         withSpinner: false
     }
 ]
