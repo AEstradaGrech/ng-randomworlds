@@ -11,7 +11,7 @@ import GameSession from 'src/app/core/scripts/gameSession';
 import { PlayerGameSession, TxError } from '../models/smart-contract.interfaces';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { environment } from 'src/environments/environment';
-import web3 from 'src/app/core/scripts/web3';
+import { injectWeb3 } from 'src/app/core/scripts/web3';
 import { WalletDiscoveryService } from '../../shared/services/wallet-discovery.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -22,7 +22,7 @@ import immutableFactory from 'src/app/core/scripts/immutableFactory';
 })
 export class SmartContractsService {
 
-  public web3!: Web3;
+  private _web3 = injectWeb3();
   public immutableFactory:any;
   public collectionAddresses: string[] = [];
   public onPaymentReceipt: EventEmitter<any> = new EventEmitter<any>();
@@ -37,23 +37,20 @@ export class SmartContractsService {
   public walletDiscoveryService: WalletDiscoveryService = inject(WalletDiscoveryService);
   public router: Router = inject(Router);
 
+  public get web3() : Web3{
+    const web3 = this._web3();
+    if(!web3) throw Error('No web3 instance found');
+    return web3;
+  }
   public get connectedWallet(): string | null{
     const user = this.authService.userLogin();
     return user ? user.username : null;
   }
 
   constructor(private http:HttpClient) { 
-    let w3 = web3();
-    if(!w3){
-      this.router.navigateByUrl('/login');
-      return;
-    }
-    else this.web3 = w3;
-    this.immutableFactory = immutableFactory(this.web3);
+   this.immutableFactory = immutableFactory(this.web3);
     this.getCollectionsCatalogue().then(res => {
-      console.log('--contract address--',this.immutableFactory._address)
       this.collectionAddresses = res;
-      console.log('-- factory cats --', this.collectionAddresses);
       this.onImmutableCatalogue.emit(true);
     })
   }
@@ -70,6 +67,7 @@ export class SmartContractsService {
       this.getCollectionContract(contract).methods.lockedUntil(tokenId).call();
   }
   public async startGame(collection:string, tokenId: number) : Promise<boolean>{
+    
     let gameSession: any = GameSession(this.web3);
     
     if(!gameSession)
@@ -113,7 +111,7 @@ export class SmartContractsService {
 
   public async abandonGame(collection:string, tokenId: number) : Promise<boolean>{
     let gameSession: any = GameSession(this.web3);
-    
+  
     if(!gameSession) return false;
 
     let session = await this.getPlayerSession(collection, tokenId);
@@ -345,7 +343,7 @@ export class SmartContractsService {
   }
 
   public decodeHexString(value: string) : string {
-    return this.web3.utils.hexToAscii(value);
+    return Web3.utils.hexToAscii(value);
   }
 
   public redeemCustomCharNFT(contract:string, metaUri: string, mintSignature: string){

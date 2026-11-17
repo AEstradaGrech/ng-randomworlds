@@ -65,7 +65,7 @@ export class AuthService {
   private _watched: EIP1193Provider | null = null;
   readonly expiresAt = signal<number | null>(null);   
   readonly sessionExpiring = signal(false);           
-  private readonly WARN_BEFORE_MS = 1 * 60_000;       
+  private readonly WARN_BEFORE_MS = 3 * 60_000;       
   
   public get expireTimeout(): number{
     return this.WARN_BEFORE_MS;
@@ -99,7 +99,7 @@ export class AuthService {
       const web3 = this._web3FromProvider();
       const chainId = await this.getConnectedChainId();
       const siweAddress = web3.utils.toChecksumAddress(address);
-      const { nonce } = await firstValueFrom(this.http.get<{ nonce: string }>(`${environment.baseUrl}/blockchain/auth/nonce/${siweAddress}`));
+      const { nonce } = await firstValueFrom(this.http.get<{ nonce: string }>(`${environment.baseUrl}/auth/nonce/${siweAddress}`));
       const verifyRequest: LoginSignRequest = {
         domain: environment.domain,
         address:siweAddress,
@@ -113,7 +113,7 @@ export class AuthService {
       verifyRequest.message = siweMessage;
       // trigger provider popup to sign
       verifyRequest.signature = await web3.eth.personal.sign(siweMessage, siweAddress, '');
-      const recoveredAddress = await firstValueFrom(this.http.post(`${environment.baseUrl}/blockchain/auth/verify`, verifyRequest));
+      const recoveredAddress = await firstValueFrom(this.http.post(`${environment.baseUrl}/auth/verify`, verifyRequest));
       console.log('signed addres', creds.username);
       return recoveredAddress && recoveredAddress === siweAddress;
     }catch(error){
@@ -148,7 +148,7 @@ export class AuthService {
   public async loadSession(): Promise<boolean> {
     try {
       const session = await firstValueFrom(
-        this.http.get<SessionDto>(`${environment.baseUrl}/blockchain/auth/session`));
+        this.http.get<SessionDto>(`${environment.baseUrl}/auth/session`));
       this.expiresAt.set(Date.now() + session.expires_in * 1000);
       this.sessionExpiring.set(false);
       return true;

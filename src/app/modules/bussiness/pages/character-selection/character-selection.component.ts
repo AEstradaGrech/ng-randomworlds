@@ -1,15 +1,14 @@
 import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef, signal } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, CollectionSummary, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
-import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
-import web3 from 'src/app/core/scripts/web3';
 import { GameData, NftCardClickAction, RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router';
 import {ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { defaultNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
+import Web3 from 'web3';
 
 @Component({
   selector: 'app-character-selection',
@@ -28,8 +27,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   private _dialog:MatDialog = inject(MatDialog);
   private _router:Router = inject(Router);
-
-
+ 
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
 
   constructor(){
@@ -132,7 +130,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
           name: model.metadata.name,
           metadata: model.metadata,
           imageEndpoint: model.image,
-          price: parseFloat(web3()?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
+          price: parseFloat(Web3.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
           mints:modelInfo.mints,
           maxMints:modelInfo.maxMints,
         }
@@ -144,7 +142,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
           name: model.metadata.name,
           imageEndpoint: model.image,
           metadata: model.metadata,
-          price: parseFloat(web3()?.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
+          price: parseFloat(Web3.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
       }
       cfg.data = {model:catModel, showContractData:false};
     }

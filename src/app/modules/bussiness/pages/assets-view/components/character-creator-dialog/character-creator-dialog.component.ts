@@ -1,4 +1,3 @@
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, signal, computed, ElementRef, EventEmitter, inject, OnInit, ViewChild, DestroyRef, effect, HostListener } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
@@ -21,7 +20,6 @@ import web3 from 'web3';
 import { catchError, concatMap, defer, EMPTY, filter, finalize, forkJoin, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({

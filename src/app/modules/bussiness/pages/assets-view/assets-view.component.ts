@@ -6,13 +6,15 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
-import web3 from 'src/app/core/scripts/web3';
+import { injectWeb3 } from 'src/app/core/scripts/web3';
 import { AssetCardButtonState, GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
-import { ALCHEMY_ENDPOINT, defaultNftCardButtons, endpointByTag, IPFS_ENDPOINT, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
+import { defaultNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { CharacterCreatorDialogComponent } from './components/character-creator-dialog/character-creator-dialog.component';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
+import Web3 from 'web3';
 
 /**
  * Signature every handler passed to the #collectionsInfo template must satisfy,
@@ -33,6 +35,9 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   private _ngZone:NgZone = inject(NgZone);
   private _destroyRef:DestroyRef = inject(DestroyRef);
+  private _authService: AuthService = inject(AuthService);
+  private _web3 = injectWeb3();
+  
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   public collections: AssetsCollection[] = []
   public currentCollection!: AssetsCollection | null;
@@ -73,6 +78,9 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
   constructor(@Inject(DOCUMENT) private document:Document) { super();}
 
   ngOnInit(): void {
+    
+    this._authService.getConnectedAccounts().then(accs => console.log('-- CONNECTED ACCOUNTS --', accs));
+
     this.onCollectionLoaded.subscribe(data => {
       console.log('-- on collection loaded --', data);
       if(data.assets.length === 0) return;
@@ -200,7 +208,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
           name: model.metadata.name,
           imageEndpoint: model.image,
           metadata: model.metadata,
-          price: parseFloat(web3()?.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
+          price: parseFloat(Web3.utils.fromWei(this.customCharsCollection.weiMintPrice.toString(),'ether') ?? '0')
         }
       cfg.data = {model:detailModel, showContractData:true};
     }
@@ -213,7 +221,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
           name: model.metadata.name,
           metadata: model.metadata,
           imageEndpoint: model.image,
-          price: parseFloat(web3()?.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
+          price: parseFloat(Web3.utils.fromWei(modelInfo.price.toString(),'ether') ?? '0'),
           mints:modelInfo.mints,
           maxMints:modelInfo.maxMints,
         }
