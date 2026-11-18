@@ -2,7 +2,7 @@ import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef, 
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, CollectionSummary, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
+import { CharDetailDialogComponent, CHAR_DETAIL_DIALOG_SIZE } from '../char-detail-dialog/char-detail-dialog.component';
 import { GameData, NftCardClickAction, RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router';
 import {ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
@@ -118,8 +118,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
   public async onViewClick(model:AssetModel){
     console.log('-- on view click',model);
     let cfg = new MatDialogConfig();
-    cfg.height = '90vh';
-    cfg.width = '1100px';
+    Object.assign(cfg, CHAR_DETAIL_DIALOG_SIZE);
     
     if(!this.customCharsCollection || model.contractAddress !== this.customCharsCollection.contractAddress) {
       let collection = this.collections.filter(x => x.address.toLowerCase() === model.contractAddress.toLowerCase())[0]

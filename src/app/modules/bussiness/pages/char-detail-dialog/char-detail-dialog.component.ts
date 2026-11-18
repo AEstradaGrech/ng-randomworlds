@@ -1,10 +1,19 @@
 import { Component, inject, OnInit } from '@angular/core';
 import {
+  MatDialogConfig,
   MatDialogRef,
   MAT_DIALOG_DATA
 } from '@angular/material/dialog';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
+
+/** Tamaño común para todos los sitios que abren el diálogo */
+export const CHAR_DETAIL_DIALOG_SIZE: Partial<MatDialogConfig> = {
+  width: 'min(1100px, 92vw)',  // tamaño natural, pero nunca más que la pantalla
+  maxWidth: '92vw',            // Material limita por defecto a 80vw
+  maxHeight: '90dvh',
+  autoFocus: false,
+};
 
 @Component({
   selector: 'app-char-detail-dialog',
@@ -26,16 +35,8 @@ export class CharDetailDialogComponent implements OnInit{
     console.log('-- on char detail dialog init --');
     this.metadata = this.data.model.metadata;
     if(this.metadata){
-      for(let i=0; i<this.metadata.profile.ambiences.length; i++){
-        this.ambiences += this.metadata.profile.ambiences[i];
-        if(i !== this.metadata.profile.ambiences.length - 1)
-          this.ambiences += ', ';
-      }
-      for(let i=0; i<this.metadata.profile.moods.length; i++){
-        this.moods += this.metadata.profile.moods[i];
-        if(i !== this.metadata.profile.moods.length - 1)
-          this.moods += ', ';
-      }
+      this.ambiences = this.metadata.profile.ambiences.join(', ');
+      this.moods = this.metadata.profile.moods.join(', ');
     }
   }
 

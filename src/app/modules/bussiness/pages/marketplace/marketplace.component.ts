@@ -3,7 +3,7 @@ import { SmartContractsService } from '../../services/smart-contracts.service';
 import { CatalogueModel, CharacterMetadata, CharacterProfile, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
+import { CharDetailDialogComponent, CHAR_DETAIL_DIALOG_SIZE } from '../char-detail-dialog/char-detail-dialog.component';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
@@ -38,8 +38,7 @@ export class MarketplaceComponent implements OnInit{
   public onCharSelect(model:CatalogueModel){
     let cfg = new MatDialogConfig();
     cfg.data = {model:model, showContractData:true}
-    cfg.height = '90vh';
-    cfg.width = '1100px';
+    Object.assign(cfg, CHAR_DETAIL_DIALOG_SIZE);
     this._dialog.open(CharDetailDialogComponent, cfg)
   }
   public onTokenSelect(change:MatRadioChange, model:CatalogueModel){

@@ -5,7 +5,7 @@ import { AssetModel, AssetsCollection, CustomCharsCollection, NftDetailModel } f
 import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { CharDetailDialogComponent } from '../char-detail-dialog/char-detail-dialog.component';
+import { CharDetailDialogComponent, CHAR_DETAIL_DIALOG_SIZE } from '../char-detail-dialog/char-detail-dialog.component';
 import { injectWeb3 } from 'src/app/core/scripts/web3';
 import { AssetCardButtonState, GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 import { defaultNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
@@ -199,7 +199,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
   }
   public async onViewClick(model:AssetModel){
     let cfg = new MatDialogConfig();
-    cfg.width = '40%';
+    Object.assign(cfg, CHAR_DETAIL_DIALOG_SIZE);
     if(this.customCharsCollection && model.contractAddress === this.customCharsCollection.contractAddress){
       let detailModel: NftDetailModel = {
           name: model.metadata.name,

@@ -1,59 +1,59 @@
+<div class="char-detail" *ngIf="metadata">
 
- 
-    <mat-dialog-content class="dialog-content">
-        <mat-card class="game-card" appearance="outlined" *ngIf="metadata">
-            <mat-card-header class="game-card-header">
-              <div class="header-titles">
-                <mat-card-title class="game-card-title">"{{data.model.name}}"</mat-card-title>
-                <mat-card-subtitle class="game-card-subtitle">Age: "{{metadata.profile.age}}"</mat-card-subtitle>
-              </div>
-              <mat-divider vertical="true"></mat-divider>
-              <div class="header-data" [ngClass]="{'w-60': data.showContractData === false}">
-                <p>Ambience: {{ambiences}}</p>
-                <p>Mood: {{moods}}</p>
-              </div>
-           
-                <mat-divider *ngIf="data.showContractData" vertical="true"></mat-divider>
-                <div *ngIf="data.showContractData" class="header-contract-data">
-                  <p class="contract-data-row">Rarity: {{tokenRarity}}</p>
-                  <p class="contract-data-row">Price: {{data.model.price}} ETH</p>
-                  <p *ngIf="data.model.mints" class="contract-data-row">Mints: {{data.model.mints | nanToNum}} of {{data.model.maxMints}}</p>
-                </div>
-    
-              </mat-card-header>
-              <mat-divider vertical="false"></mat-divider>
-            <div class="card-body">
-                <img mat-card-image class="game-card-image" [src]="replaceImgEndpoint(data.model.imageEndpoint)" alt="Photo of a RandomWorlds character">
-                <mat-card-content class="game-card-content">
-                  <p>
-                    Appereance:<br> "{{metadata.profile.appereance}}""
-                  </p>
-                  <p>
-                    Background:<br> "{{metadata.profile.background}}""
-                  </p>
-                  <p>
-                    Personality:<br> "{{metadata.profile.personality}}""
-                  </p>
-                  <p>
-                    Motivations:<br> "{{metadata.profile.motivations}}""
-                  </p>
-                  <p>
-                    Iconic Moment:<br> "{{metadata.profile.iconicMoment}}""
-                  </p>
-                  <p>
-                    Comment:<br> "{{metadata.profile.comment}}""
-                  </p>
-                  <p>
-                    Ambiences:<br> "{{metadata.profile.ambiences}}""
-                  </p>
-                  <p>
-                    Moods:<br> "{{metadata.profile.moods}}""
-                  </p>
-                </mat-card-content>
-            </div>
-            <mat-divider vertical="false"></mat-divider>
-            <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="close-btn" mat-dialog-close>CLOSE</button>
-            </mat-card-actions>
-          </mat-card>
-    </mat-dialog-content>
+  <!-- Cabecera: nombre · ambiente y estado de ánimo · datos del contrato -->
+  <header class="char-head">
+    <div class="head-block head-titles">
+      <h2 mat-dialog-title class="char-name">{{ data.model.name }}</h2>
+      <span class="char-age">Age: {{ metadata.profile.age }}</span>
+    </div>
+
+    <div class="head-block head-data">
+      <p>Ambience: {{ ambiences }}</p>
+      <p>Mood: {{ moods }}</p>
+    </div>
+
+    <div *ngIf="data.showContractData" class="head-block head-contract">
+      <p>Rarity: {{ tokenRarity }}</p>
+      <p>Price: {{ data.model.price }} ETH</p>
+      <p *ngIf="data.model.mints">Mints: {{ data.model.mints | nanToNum }} of {{ data.model.maxMints }}</p>
+    </div>
+  </header>
+
+  <!-- Cuerpo: retrato | historia. En diálogos estrechos se apila -->
+  <div class="char-body">
+    <img class="char-img"
+         [src]="replaceImgEndpoint(data.model.imageEndpoint)"
+         [alt]="'Portrait of ' + data.model.name">
+
+    <dl class="char-lore">
+      <dt>Appearance</dt>
+      <dd>{{ metadata.profile.appereance }}</dd>
+
+      <dt>Background</dt>
+      <dd>{{ metadata.profile.background }}</dd>
+
+      <dt>Personality</dt>
+      <dd>{{ metadata.profile.personality }}</dd>
+
+      <dt>Motivations</dt>
+      <dd>{{ metadata.profile.motivations }}</dd>
+
+      <dt>Iconic moment</dt>
+      <dd>{{ metadata.profile.iconicMoment }}</dd>
+
+      <dt>Comment</dt>
+      <dd class="char-quote">“{{ metadata.profile.comment }}”</dd>
+
+      <dt>Ambiences</dt>
+      <dd>{{ ambiences }}</dd>
+
+      <dt>Moods</dt>
+      <dd>{{ moods }}</dd>
+    </dl>
+  </div>
+
+  <footer class="char-actions">
+    <button mat-stroked-button class="close-btn" mat-dialog-close>CLOSE</button>
+  </footer>
+
+</div>
