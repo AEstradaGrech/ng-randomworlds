@@ -7,10 +7,10 @@ import {
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
 
-/** Tamaño común para todos los sitios que abren el diálogo */
+
 export const CHAR_DETAIL_DIALOG_SIZE: Partial<MatDialogConfig> = {
-  width: 'min(1100px, 92vw)',  // tamaño natural, pero nunca más que la pantalla
-  maxWidth: '92vw',            // Material limita por defecto a 80vw
+  width: 'min(1100px, 92vw)',  
+  maxWidth: '92vw',            
   maxHeight: '90dvh',
   autoFocus: false,
 };

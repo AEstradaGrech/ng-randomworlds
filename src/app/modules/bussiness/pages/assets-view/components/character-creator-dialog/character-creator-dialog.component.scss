@@ -20,6 +20,16 @@
   justify-content: center;
   align-items: center;
   color: var(--primary-btn-hover);
+  h2{
+    font-size:large;
+    margin: 7px;
+    color: var(--fuchsia);
+  }
+  h3{
+    font-style: italic;
+    font-size: medium;
+    margin: 7px;
+  }
 }
 
 /* This is the area that must absorb all the leftover vertical space. */

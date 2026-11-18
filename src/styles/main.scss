@@ -51,12 +51,12 @@
   box-sizing: border-box;
 }
 h1 {
-  font-size: 19px !important;
-  font-weight: 400 !important;
+  font-size: 19px;
+  font-weight: 400;
 }
 h2 {
-  font-size: 16px !important;
-  font-weight: 500 !important;
+  font-size: 16px;
+  font-weight: 500;
 }
 .flex {
   display: flex;
@@ -313,4 +313,8 @@ h2 {
 
 .cdk-overlay-pane:has(> .rw-alert--center){
   align-self: center;
+}
+
+.char-creator-dialog-box{
+  --mdc-dialog-container-shape: 15px;
 }

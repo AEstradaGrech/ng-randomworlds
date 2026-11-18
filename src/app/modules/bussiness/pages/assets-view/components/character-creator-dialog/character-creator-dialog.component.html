@@ -1,6 +1,6 @@
 <mat-dialog-content class="header-titles">
-   <h2 [style.margin]="'0px 0px 10px'">Create and mint your own Character</h2>
-   <h3 [style.font-style]="'italic'">Select at least one Ambience and one Mood, add optional traits and generate your image</h3>
+   <h2>Create and mint your own Character</h2>
+   <h3>Select at least one Ambience and one Mood, add optional traits and generate your image</h3>
 </mat-dialog-content>
 <mat-dialog-content class="tabs-dialog-content">
   <mat-tab-group class="dialog-tabs" (selectedTabChange)="onTabChange($event)">
@@ -11,7 +11,8 @@
           [boxTwoTitle]="'Selected'",
           [boxOneItems]="availableAmbiences"
           [boxTwoItems]="selectedAmbiences"
-          [textColor]="'var(--primary-btn-hover)'"
+          [textColor]="'var(--fuchsia)'"
+          [itemBgColor]="'var(--panel)'"
           [dropValidationFn]="canDropElement"
           (onDropValidationFail)="notifyDropFail($event)">
         </app-drag-and-drop> 
@@ -24,7 +25,8 @@
           [boxTwoTitle]="'Selected'",
           [boxOneItems]="availableMoods"
           [boxTwoItems]="selectedMoods"
-          [textColor]="'var(--primary-btn-hover)'"
+          [textColor]="'var(--fuchsia)'"
+          [itemBgColor]="'var(--panel)'"
           [dropValidationFn]="canDropElement"
           (onDropValidationFail)="notifyDropFail($event)">
         </app-drag-and-drop>  

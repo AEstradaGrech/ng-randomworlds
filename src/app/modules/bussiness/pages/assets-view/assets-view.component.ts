@@ -352,7 +352,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
   }
   public onCreateCharacterClick(){
     console.log('-- on create character click --');
-    this._dialog.open(CharacterCreatorDialogComponent, { data: {connectedWallet: this._smartContractsService.connectedWallet }})
+    this._dialog.open(CharacterCreatorDialogComponent, { 
+      data: {connectedWallet: this._smartContractsService.connectedWallet },
+      panelClass: ['char-creator-dialog-box']
+    })
       .afterClosed()
       .subscribe((result:TicketDto | string) => {
         if(result && typeof result !== "string"){ 
