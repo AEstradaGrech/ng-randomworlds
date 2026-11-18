@@ -1,8 +1,8 @@
 
  
-    <mat-dialog-content style="display: contents; justify-content: center; padding: 10px 15px 0px 5px; ">
+    <mat-dialog-content class="dialog-content">
         <mat-card class="game-card" appearance="outlined" *ngIf="metadata">
-            <mat-card-header style="justify-content: space-evenly; padding-top: 0px !important;">
+            <mat-card-header class="game-card-header">
               <div class="header-titles">
                 <mat-card-title class="game-card-title">"{{data.model.name}}"</mat-card-title>
                 <mat-card-subtitle class="game-card-subtitle">Age: "{{metadata.profile.age}}"</mat-card-subtitle>
@@ -52,8 +52,8 @@
                 </mat-card-content>
             </div>
             <mat-divider vertical="false"></mat-divider>
-            <mat-card-actions style="display: flex; align-items: end; justify-content: center;">
-              <button mat-stroked-button  class="close-btn" (click)="onClose()">CLOSE</button>
+            <mat-card-actions class="game-card-actions">
+              <button mat-stroked-button class="close-btn" (click)="onClose()">CLOSE</button>
             </mat-card-actions>
           </mat-card>
     </mat-dialog-content>

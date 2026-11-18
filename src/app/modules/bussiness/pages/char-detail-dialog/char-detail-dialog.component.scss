@@ -1,14 +1,50 @@
-.card-container{
-    display: flex !important;
-    justify-content: center;
+
+.mat-mdc-card-header {
+    padding: 0px;
+}
+.dialog-content{
+    display: contents; 
+    justify-content: center; 
+    padding: 10px 15px 0px 5px; 
 }
 
 .game-card {
-    // width: 98%;
-    // height: 98%;
     margin: 10px 10px 10px 10px;
 }
 
+.game-card-header{
+    justify-content: space-evenly; 
+    padding-top: 0px; //!important;
+}
+.game-card-title{
+    color:var(--teal);
+}
+.game-card-subtitle{
+    font-style: oblique;
+    color: #c3c3c5;
+    font-weight: 300;
+}
+.header-titles{
+    width: 40%;
+    padding: 10px 15px;
+}
+.header-data{
+    font-size: 14px;
+    width: 40%;
+    padding: 10px 15px;
+    font-weight: 300;
+}
+.header-contract-data{
+    font-size:12px;
+    width: 20%;
+    padding-top: 0px;
+    text-align: end;
+    font-weight: 400;
+    padding: 10px 15px;
+}
+.card-body{
+    display: flex;
+}
 .game-card-image{
     border-radius: 15px !important;
     margin: 20px 7px 10px 7px;
@@ -32,21 +68,9 @@
     background-color: var(--fuchsia);
 }
 .game-card-actions{
+    display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.game-card-title{
-    color:var(--teal);
-}
-.game-card-subtitle{
-    font-style: oblique;
-    color: #c3c3c5;
-    font-weight: 300;
-}
-
-.card-body{
-    display: flex;
 }
 
 .dialog-container{
@@ -67,25 +91,6 @@
     color: #ffffff;
     border-color: var(--teal);
     background-color: var(--teal);
-}
-
-.header-titles{
-    width: 40%;
-    padding-top: 5px;
-}
-.header-data{
-    font-size: 14px;
-    width: 40%;
-    padding-top: 5px;
-    padding-left: 7px;
-    font-weight: 300;
-}
-.header-contract-data{
-    font-size:12px;
-    width: 20%;
-    padding-top: 0px;
-    text-align: end;
-    font-weight: 400;
 }
 
 .w-60{
