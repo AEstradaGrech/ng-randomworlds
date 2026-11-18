@@ -226,10 +226,9 @@
                 <mat-form-field class="chat-screen" 
                   [style.font-size]="'16px'" 
                   [style.--chatbox-color]="'rgb(0 0 0 / 68%)'">
-                    <!-- <mat-label *ngIf="label !== ''" [style.color]="fontColor"></mat-label> -->
                     <textarea #suggestbox
                       class="preferences-textarea"
-                      [style.color]="'#3dd73d'"
+                      [style.color]="'var(--teal)'"
                       matInput
                       cdkTextareaAutosize
                       #autosize="cdkTextareaAutosize"
@@ -252,10 +251,9 @@
                 <mat-form-field class="chat-screen" 
                   [style.font-size]="'16px'" 
                   [style.--chatbox-color]="'rgb(0 0 0 / 68%)'">
-                    <!-- <mat-label *ngIf="label !== ''" [style.color]="fontColor"></mat-label> -->
                     <textarea #constraintsbox
                       class="preferences-textarea"
-                      [style.color]="'#3dd73d'"
+                      [style.color]="'var(--teal)'"
                       matInput
                       cdkTextareaAutosize
                       #autosize="cdkTextareaAutosize"
