@@ -53,12 +53,12 @@
                 [projectedButtonsTemplate]="[sellButton, lockButton]">
                 <ng-template #sellButton let-model="model">  
                     <app-rounded-button [matMenuTriggerFor]="(model.isInGame ? null :payMenu)" 
-                                [id]="'sell'"
-                                [iconName]="'payment'"
-                                [hoverColor]="'var(--payment)'"
-                                [borderColor]="'var(--payment-border)'"
-                                [disabled]="loading || model.isInGame"
-                                >
+                        [id]="'sell'"
+                        [iconName]="'payment'"
+                        [hoverColor]="'var(--payment)'"
+                        [borderColor]="'var(--payment-border)'"
+                        [disabled]="loading || model.isInGame"
+                        >
                     </app-rounded-button>
                     <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
                         <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
@@ -76,12 +76,12 @@
                 <ng-template #lockButton let-model="model"> 
                     @if(model.isLocked){
                         <app-rounded-button [matMenuTriggerFor]="unlockMenu"
-                                [id]="'unlock'"
-                                [iconName]="'lock'"
-                                [hoverColor]="'red'"
-                                [borderColor]="'red'"
-                                [disabled]="loading"
-                                >
+                            [id]="'unlock'"
+                            [iconName]="'lock'"
+                            [hoverColor]="'red'"
+                            [borderColor]="'red'"
+                            [disabled]="loading"
+                            >
                         </app-rounded-button>
                         <mat-menu #unlockMenu="matMenu" yPosition="above" xPosition="after">
                             <mat-card style="margin: 0px 5px" appearance="outlined">

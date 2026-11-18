@@ -45,8 +45,8 @@
             [id]="'skip_img_l'"
             [iconName]="'keyboard_arrow_left'"
             [size]="'35px'"
-            [hoverColor]="'var(--terciary-btn-hover)'"
-            [borderColor]="'var(--terciary-btn-border)'"
+            [hoverColor]="'var(--primary-btn-hover)'"
+            [borderColor]="'var(--primary-btn-border)'"
             [disabled]="isMinting()"
             (click)="$event.stopPropagation();onSkipImage('left')">
           </app-rounded-button>
@@ -57,8 +57,8 @@
             [id]="'mint_nft'"
             [iconName]="'payment'"
             [size]="'35px'"
-            [hoverColor]="'var(--terciary-btn-hover)'"
-            [borderColor]="'var(--terciary-btn-border)'"
+            [hoverColor]="'var(--primary-btn-hover)'"
+            [borderColor]="'var(--primary-btn-border)'"
             [badgeValue]="availablePurchases()"
             [disabled]="!currentImage() || isMinting()">
           </app-rounded-button>
@@ -78,8 +78,8 @@
             [id]="'skip_img_r'"
             [iconName]="'keyboard_arrow_right'"
             [size]="'35px'"
-            [hoverColor]="'var(--terciary-btn-hover)'"
-            [borderColor]="'var(--terciary-btn-border)'"
+            [hoverColor]="'var(--primary-btn-hover)'"
+            [borderColor]="'var(--primary-btn-border)'"
             [disabled]="isMinting()"
             (click)="$event.stopPropagation();onSkipImage('right')">
           </app-rounded-button>
@@ -104,8 +104,8 @@
                 [id]="'generate_image'"
                 [iconName]="'person'"
                 [size]="'35px'"
-                [hoverColor]="'var(--terciary-btn-hover)'"
-                [borderColor]="'var(--terciary-btn-border)'"
+                [hoverColor]="'var(--primary-btn-hover)'"
+                [borderColor]="'var(--primary-btn-border)'"
                 [disabled]="!currentProfile() || isLoading || currentTicket() !== null"
                 [withSpinner]="isLoading && isGeneratingImage"
                 (click)="$event.stopPropagation();onGenerateImageClick()">
@@ -116,8 +116,8 @@
                 [id]="'save'"
                 [iconName]="'edit'"
                 [size]="'35px'"
-                [hoverColor]="'var(--terciary-btn-hover)'"
-                [borderColor]="'var(--terciary-btn-border)'"
+                [hoverColor]="'var(--primary-btn-hover)'"
+                [borderColor]="'var(--primary-btn-border)'"
                 [disabled]="!currentProfile() || isLoading || currentTicket()"
                 [withSpinner]="isLoading && isEnhancing"
                 (click)="$event.stopPropagation();onSaveDatasetChar()">
@@ -128,8 +128,8 @@
                 [id]="'generate_image'"
                 [iconName]="'edit'"
                 [size]="'35px'"
-                [hoverColor]="'var(--terciary-btn-hover)'"
-                [borderColor]="'var(--terciary-btn-border)'"
+                [hoverColor]="'var(--primary-btn-hover)'"
+                [borderColor]="'var(--primary-btn-border)'"
                 [disabled]="!currentProfile() || isLoading || currentTicket() !== null"
                 [withSpinner]="isLoading && isEnhancing"
                 (click)="$event.stopPropagation();onEnhanceImagePromptClick()">

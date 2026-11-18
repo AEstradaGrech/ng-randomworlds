@@ -4,12 +4,10 @@
 }
 
 .collection-card-ethscan-txt{
-    //color: var(--primary-color); 
     padding-top: 15px;
 }
 .collection-card-content{
     margin: 5px 2px 5px 2px;
-    //color: var(--primary-color);
     font-weight: 200;
     font-size: 14px;
 }
@@ -55,14 +53,14 @@
     height: 5%;
     margin:0px 10px 0px 10px;
     border-radius: 100px;
-    background-color: var(--faded-ice);
+    background-color: var(--surface);
     border-color: var(--fuchsia);
 }
 
 .close-sidenav-btn:hover{
     border: transparent;
     border-radius: 100px;
-    padding:3px 7px 3px 7px;
+    padding:2px 7px 2px 7px;
     background-color: var(--teal);
     color: #ffffff;
     .mat-icon{

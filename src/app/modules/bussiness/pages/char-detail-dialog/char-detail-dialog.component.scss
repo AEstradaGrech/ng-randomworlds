@@ -22,14 +22,14 @@
 }
 .begin-btn{
     width: 20%;
-    color: #99c531 !important;
-    border-color: rgb(175 239 24) !important;
+    color: var(--surface);
+    border-color: var(--fuchsia);
 }
 .begin-btn:hover{
     width: 20%;
     color: #ffffff !important;
-    border-color: rgb(245, 247, 243) !important;
-    background-color: #99c531 !important;
+    border-color: var(--ice);
+    background-color: var(--fuchsia);
 }
 .game-card-actions{
     justify-content: center;
@@ -37,7 +37,7 @@
 }
 
 .game-card-title{
-    color:#99c531;
+    color:var(--teal);
 }
 .game-card-subtitle{
     font-style: oblique;
@@ -53,16 +53,22 @@
   overflow-y: hidden;
 }
 
+.mat-mdc-outlined-button:not(:disabled) {
+    color: var(--fuchsia);
+    border-color: var(--fuchsia);
+    background-color: var(--surface);
+}
 .close-btn{
     width: 20%;
-    color: #99c531 !important;
-    border-color: rgb(175 239 24) !important;
+    color: var(--fuchsia);
+    border-color: var(--fuchsia);
+    background-color: var(--surface);
 }
 .close-btn:hover{
     width: 20%;
-    color: #ffffff !important;
-    border-color: rgb(245, 247, 243) !important;
-    background-color: #99c531 !important;
+    color: #ffffff;
+    border-color: var(--teal);
+    background-color: var(--teal);
 }
 
 .header-titles{
