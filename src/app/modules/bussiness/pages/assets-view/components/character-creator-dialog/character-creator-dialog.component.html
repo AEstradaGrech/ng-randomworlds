@@ -47,8 +47,8 @@
             [id]="'skip_img_l'"
             [iconName]="'keyboard_arrow_left'"
             [size]="'35px'"
-            [hoverColor]="'var(--primary-btn-hover)'"
-            [borderColor]="'var(--primary-btn-border)'"
+            [hoverColor]="'var(--fuchsia)'"
+            [borderColor]="'var(--fuchsia)'"
             [disabled]="isMinting()"
             (click)="$event.stopPropagation();onSkipImage('left')">
           </app-rounded-button>
@@ -59,8 +59,8 @@
             [id]="'mint_nft'"
             [iconName]="'payment'"
             [size]="'35px'"
-            [hoverColor]="'var(--primary-btn-hover)'"
-            [borderColor]="'var(--primary-btn-border)'"
+            [hoverColor]="'var(--payment)'"
+            [borderColor]="'var(--payment-border)'"
             [badgeValue]="availablePurchases()"
             [disabled]="!currentImage() || isMinting()">
           </app-rounded-button>
@@ -70,6 +70,11 @@
             [title]="tokenSelectorTitle()"
             [paymentTokens]="availableTokens()"
             [withDefaultEth]="false"
+            [textColor]="'var(--teal)'"
+            [selectorColor]="'var(--fuchsia)'"
+            [selectorHoverColor]="'var(--teal)'"
+            [buttonTextColor]="'var(--payment)'"
+            [buttonBorderColor]="'var(--payment-border)'"
             (onTokenChanged)="onSelectedTokenChange($event)",
             (onTokenSelected)="onSelectedTokenPay($event)"
             >
@@ -80,8 +85,8 @@
             [id]="'skip_img_r'"
             [iconName]="'keyboard_arrow_right'"
             [size]="'35px'"
-            [hoverColor]="'var(--primary-btn-hover)'"
-            [borderColor]="'var(--primary-btn-border)'"
+            [hoverColor]="'var(--fuchsia)'"
+            [borderColor]="'var(--fuchsia)'"
             [disabled]="isMinting()"
             (click)="$event.stopPropagation();onSkipImage('right')">
           </app-rounded-button>
@@ -94,9 +99,10 @@
             (opened)="onShowSettings()" 
             (closed)="onHideSettings()" 
             [expanded]="showSettings && !isLoading" 
-            [disabled]="isLoading">
+            [disabled]="isLoading"
+            [style.background-color]="'var(--panel)'">
             <mat-expansion-panel-header>
-              <mat-panel-description>
+              <mat-panel-description class="traits-header">
                 Character Traits
               </mat-panel-description>
               <app-rounded-button
@@ -106,8 +112,8 @@
                 [id]="'generate_image'"
                 [iconName]="'person'"
                 [size]="'35px'"
-                [hoverColor]="'var(--primary-btn-hover)'"
-                [borderColor]="'var(--primary-btn-border)'"
+                [hoverColor]="'var(--fuchsia)'"
+                [borderColor]="'var(--fuchsia)'"
                 [disabled]="!currentProfile() || isLoading || currentTicket() !== null"
                 [withSpinner]="isLoading && isGeneratingImage"
                 (click)="$event.stopPropagation();onGenerateImageClick()">
@@ -211,7 +217,7 @@
                 [disabled]="true" 
                 [hideToggle]="true" 
                 [expanded]="true" 
-                [style.background-color]="'white'">
+                [style.background-color]="'var(--surface)'">
                 <mat-expansion-panel-header class="prompt-expansion-panel-header">
                     <mat-panel-description >
                       Preferences                  
@@ -237,7 +243,7 @@
                 [disabled]="true" 
                 [hideToggle]="true" 
                 [expanded]="true" 
-                [style.background-color]="'white'">
+                [style.background-color]="'var(--surface)'">
                 <mat-expansion-panel-header class="prompt-expansion-panel-header">
                     <mat-panel-description >
                       Constraints                  

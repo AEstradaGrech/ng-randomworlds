@@ -23,6 +23,8 @@ export class RoundedButtonComponent implements OnInit, OnChanges {
   @Input() hoverColor: string = 'var(--primary-btn-hover)';
   @Input() backgroundColor: string = 'var(--primary-btn-color)';
   @Input() borderColor: string = 'var(--primary-btn-border)';
+  @Input() disabledColor: string = 'var(--disabled-btn-color)';
+  @Input() disabledBgColor: string = 'var(--disabled-btn-bg-color)';
   @Input() size: string = '40px';
   @Input() margin: string = '5px';
   @Output() onClickEvent: EventEmitter<string> = new EventEmitter<string>();

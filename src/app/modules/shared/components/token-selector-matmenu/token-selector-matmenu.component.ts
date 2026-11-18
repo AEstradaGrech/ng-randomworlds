@@ -14,6 +14,12 @@ export class TokenSelectorMatmenuComponent implements OnChanges{
   @Input() buttonText:string = 'BUY';
   @Input() paymentTokens: string[] = ['ETH'];
   @Input() withDefaultEth: boolean = true;
+  @Input() textColor:string = 'black';
+  @Input() buttonTextColor: string = 'black';
+  @Input() buttonBorderColor: string = 'black';
+  @Input() selectorColor:string = 'black';
+  @Input() selectorHoverColor: string = 'grey';
+  
   @Output() onTokenChanged: EventEmitter<string> = new EventEmitter<string>();
   @Output() onTokenSelected: EventEmitter<string> = new EventEmitter<string>();
   public selectedToken:string = 'ETH';
