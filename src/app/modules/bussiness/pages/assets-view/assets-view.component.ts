@@ -82,7 +82,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
     this._authService.getConnectedAccounts().then(accs => console.log('-- CONNECTED ACCOUNTS --', accs));
 
     this.onCollectionLoaded.subscribe(data => {
-      console.log('-- on collection loaded --', data);
       if(data.assets.length === 0) return;
       data.assets.forEach(asset => {
         this._smartContractsService.isAssetLocked(data.address, data.isCustom, asset.tokenId)
@@ -199,10 +198,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
     window.open(`https://testnets.opensea.io/assets/sepolia/${model.contractAddress}/${model.tokenId}`, "_blank");
   }
   public async onViewClick(model:AssetModel){
-    console.log('-- on view click',model);
     let cfg = new MatDialogConfig();
-    cfg.height = '90vh';
-    cfg.width = '1100px';
+    cfg.width = '40%';
     if(this.customCharsCollection && model.contractAddress === this.customCharsCollection.contractAddress){
       let detailModel: NftDetailModel = {
           name: model.metadata.name,

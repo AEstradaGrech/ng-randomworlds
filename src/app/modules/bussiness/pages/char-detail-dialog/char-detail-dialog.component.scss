@@ -4,9 +4,9 @@
 }
 
 .game-card {
-    width: 98%;
-    height: 98%;
-    margin: 12px 0px 0px 10px;
+    // width: 98%;
+    // height: 98%;
+    margin: 10px 10px 10px 10px;
 }
 
 .game-card-image{
@@ -53,16 +53,14 @@
   overflow-y: hidden;
 }
 
-.mat-mdc-outlined-button:not(:disabled) {
-    color: var(--fuchsia);
-    border-color: var(--fuchsia);
-    background-color: var(--surface);
-}
+
 .close-btn{
     width: 20%;
     color: var(--fuchsia);
     border-color: var(--fuchsia);
     background-color: var(--surface);
+    --mat-outlined-button-state-layer-color: var(--surface);              // capa de hover/focus/pulsado
+    --mat-outlined-button-ripple-color: rgb(224 127 218 / 0.16);
 }
 .close-btn:hover{
     width: 20%;
