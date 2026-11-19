@@ -135,7 +135,13 @@
                 </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button (click)="onGenerateClick()" [disabled]="isLoading || isCharLocked()" [ngClass]="{ 'begin-btn': !isCharLocked(), 'disabled-btn': isCharLocked()}">
+              <button mat-stroked-button 
+                (click)="onGenerateClick()" 
+                [disabled]="isLoading || isCharLocked()" 
+                [ngClass]="{ 
+                  'begin-btn': !isCharLocked(),
+                  'btn-colors': !isCharLocked(),
+                  'disabled-btn': isCharLocked()}">
                 <div class="w-100 h-100 flex jc-center ai-center padding-6 absolute">
                   <mat-spinner *ngIf="isLoading" diameter="32"></mat-spinner>
                 </div>  
@@ -152,8 +158,8 @@
                 <mat-card-subtitle class="game-card-subtitle">Click Play to begin this Quest</mat-card-subtitle>
               </mat-card-header>
               <mat-card-actions class="game-card-actions">
-                <button mat-stroked-button class="quest-card-btn" (click)="onReviewQuestClick(quest)">REVIEW</button>
-                <button mat-stroked-button class="quest-card-btn" (click)="onPlayQuestClick(quest)">{{(isCharLocked() ? 'CONTINUE' : 'PLAY')}}</button>
+                <button mat-stroked-button class="quest-card-btn btn-colors" (click)="onReviewQuestClick(quest)">REVIEW</button>
+                <button mat-stroked-button class="quest-card-btn btn-colors" (click)="onPlayQuestClick(quest)">{{(isCharLocked() ? 'CONTINUE' : 'PLAY')}}</button>
               </mat-card-actions>   
             </mat-card>
           </ng-container>    
