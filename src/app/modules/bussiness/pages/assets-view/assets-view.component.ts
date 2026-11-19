@@ -133,30 +133,34 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     return replaceEndpoint(imageUrl, replaced, provider);
   }
 
-  private _getAssetsCollection(address:string) : Observable<AssetsCollection>{
+  private _getImmutableCollection$(address:string) : Observable<AssetsCollection>{
+    let immutableCol:AssetsCollection; 
     return defer(() => this._smartContractsService.getCollectionSummary(address))
       .pipe(
         catchError(error => {throw new Error(`An error has occured while retrieving the CollectionSummary for address ${address} >> ${error.error}`)}),
         map(res => {
-          let collection:AssetsCollection = {summary:res, assets:[]};
-          this.collections.push(collection);
-          return collection;
+          immutableCol ={summary:res, assets:[]};
+          this.collections.push(immutableCol);
+          return immutableCol;
         }),
-        switchMap(collection => this._getCollectionNFTs(collection))
-      )
-  }
-  private _getCollectionNFTs(collection:AssetsCollection) : Observable<AssetsCollection>{
-    return defer(() => this._smartContractsService.getAccountCollectionNFTs(collection.summary.address))
-    .pipe(
-        catchError(error => {throw new Error(`An error has occured while retrieving the Wallet NFTs for address collection ${collection.summary.address} >> ${error.error}`)}),
+        switchMap(collection => this._getCollectionNFTs$(collection.summary.address, collection.summary.logoImage)),
         map(assets => {
-          collection.assets = assets.map((nft:any) => {
-            let asset:AssetModel = {...nft, collectionLogoUrl: `url(${collection.summary.logoImage})`}
-            return asset;
-          });
-          return collection;
+          immutableCol.assets = assets;
+          return immutableCol;
         })
       )
+  }
+  private _getCollectionNFTs$(address:string, collectionImage: string | null = null) : Observable<AssetModel[]>{
+    return defer(() => this._smartContractsService.getAccountCollectionNFTs(address))
+      .pipe(
+          catchError(error => {throw new Error(`An error has occured while retrieving the Wallet NFTs for address collection ${address} >> ${error.error}`)}),
+          map(assets => {
+            return assets.map((nft:any) => {
+              let asset:AssetModel = {...nft, collectionLogoUrl: collectionImage ? `url(${collectionImage})` : `url('assets/images/MetamaskIconBrown.png')`}
+              return asset;
+            });
+          })
+        )
   }
 
   private _getAccountAssets() {
@@ -168,7 +172,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       .pipe(
         switchMap(cat => from(cat)),
         concatMap(address => 
-          this._getAssetsCollection(address)
+          this._getImmutableCollection$(address)
             .pipe(
               catchError(error => {
                 this._notificationsService.push(`Collection: ${address} failed to initialize >> ERROR: ${error.message}`); 
@@ -180,11 +184,13 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       )
       .subscribe({
         next: collection => {
-          if (!this.currentCollection) {                           // la primera que termina
+          if(collection){
+            if (!this.currentCollection) {                           
             this.currentCollection = collection;
             this.currentCollectionLogoUrl = `url(${collection.summary.logoImage})`;
           }
           this.onCollectionLoaded.emit({address: collection.summary.address, isCustom: false, assets: collection.assets });
+          }
         },
         error: error => this._notificationsService.push(`An error has occured while loading the Immutable Collections catalogue: ${error.message}`),
         complete: () => {
@@ -195,27 +201,20 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
         }
       })
 
-    this._smartContractsService.getCustomCharsCatalogue().then(cat => {
-      this._ngZone.run(() => {
-        if(cat) {
-          this.customCharsCollection = {...cat, assets:[]};
-          this._getCustomCharacters();
-        }
-      })
-    });
-  }
-
-  private _getCustomCharacters(){
-    if(this.customCharsCollection){
-      this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress)
-        .then(walletNFTs => {
-          console.log('-- on col wallet resp --', walletNFTs)
-          if(walletNFTs.length > 0){
+      defer(() => this._smartContractsService.getCustomCharsCatalogue())
+        .pipe(
+          map(cat => {
+            this.customCharsCollection = {...cat, assets:[]}
+            return this.customCharsCollection;
+          }),
+          switchMap(customCol => this._getCollectionNFTs$(customCol.contractAddress)),
+          runInZone(this._ngZone),
+          takeUntilDestroyed(this._destroyRef)
+        )
+        .subscribe({
+          next: assets => {
             if(this.customCharsCollection){
-              this.customCharsCollection.assets = walletNFTs.map((nft:any) => {
-                let asset:AssetModel = {...nft, collectionLogoUrl: `url('assets/images/MetamaskIconBrown.png')`}
-                return asset;
-              });
+              this.customCharsCollection.assets = assets;
               this.onCollectionLoaded.emit({address: this.customCharsCollection.contractAddress, isCustom: false, assets: this.customCharsCollection.assets });
               if(this._visorType === 'grid')
                 this.onVisorTypeChange('grid');
@@ -227,12 +226,12 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
                 }
               }, 3000);
             }
-          }
-          else{
+          },
+          error: error => {
+            this._notificationsService.push(`An error has occured while loading the Custom Characters data: ${error.message}`);
             this.customCharsCollection = null;
           }
         })
-    }
   }
 
   public onViewCollectionClick(address:string){
@@ -405,13 +404,28 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
         if(result && typeof result !== "string"){ 
           this.selectCustomCharsCollection();
           setTimeout(() => {this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created");}, 2000);
-          this._getCustomCharacters();
-          //refresh NFTs
+          this._refreshCustomCharacters();
         }
         else this._notificationsService.push(result as string, 3000);
     })
   }
 
+  private _refreshCustomCharacters(){
+    if(this.customCharsCollection){
+       this._getCollectionNFTs$(this.customCharsCollection.contractAddress)
+        .pipe(
+          runInZone(this._ngZone),
+          takeUntilDestroyed(this._destroyRef)
+        )
+        .subscribe({
+          next: assets => {
+            if(this.customCharsCollection)
+              this.customCharsCollection.assets = assets;
+          },
+          error: error => this._notificationsService.openSnack(ESnackAlertType.WARN, 'An error has occured while refreshing the Custom Characters data')
+        })
+    }
+  }
   public onCardSelected(asset: AssetModel){
     console.log('-- on select click --', asset);
     let data = localStorage.getItem('game-data');
