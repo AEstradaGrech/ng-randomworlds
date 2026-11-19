@@ -11,9 +11,13 @@
             </mat-card-header>
             <mat-card-content class="game-card-content">
               <mat-accordion multi="false">
-                <mat-expansion-panel (opened)="onShowSettings(true)" (closed)="onShowSettings(false)" [expanded]="showSettings==='visible'">
+                <mat-expansion-panel 
+                  (opened)="onShowSettings(true)" 
+                  (closed)="onShowSettings(false)" 
+                  [expanded]="showSettings==='visible'"
+                  [style.background-color]="'var(--surface)'">
                   <mat-expansion-panel-header>
-                    <mat-panel-title>
+                    <mat-panel-title [style.color]="'var(--teal)'">
                         {{metadata.profile.name}}
                     </mat-panel-title>
                     <mat-panel-description style="justify-content: center;">
@@ -112,12 +116,7 @@
                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                           (matChipInputTokenEnd)="addConstraint($event)"/>
                       </mat-form-field>
-                      <!-- <mat-slide-toggle class="form-control"[checked]="isRandomCharacter" (change)="onUseRandomCharToggle($event)">Use Random Character</mat-slide-toggle>
-                      <mat-form-field class="form-control" *ngIf="isRandomCharacter">
-                        <mat-label>Desired Name</mat-label>
-                        <input matInput [disabled]="formControlDisabled()" type="text" placeholder="Character name..." formControlName="desiredName">
-                      </mat-form-field> -->
-                      <mat-expansion-panel>
+                      <mat-expansion-panel [style.background-color]="'var(--panel)'">
                         <mat-expansion-panel-header style="height: 35px;">
                           <mat-panel-description style="justify-content: center;">
                             Plot suggestion
