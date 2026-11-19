@@ -6,6 +6,7 @@ import { ESnackAlertType } from "../../shared/models/common-enums";
 
 export const hasAssetsGuard: CanActivateFn = async(route, state) =>{
     const notificationsService = inject(NotificationService);
+    notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Checking assets...');
     const smartContractsService = inject(SmartContractsService);
     const assets = await smartContractsService.getWalletNFTs();
     let canActivate = assets.length > 0;

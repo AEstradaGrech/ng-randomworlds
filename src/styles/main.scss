@@ -27,6 +27,26 @@
     --disabled-btn-color: rgb(63 58 58);
     --disabled-btn-bg-color: var(--faded-ice);
 }
+.text-btn-colors{
+    --mdc-outlined-button-outline-color: var(--fuchsia);
+    --mdc-outlined-button-label-text-color: var(--fuchsia);
+    &.danger{
+      --mdc-outlined-button-outline-color: var(--danger);
+      --mdc-outlined-button-label-text-color: var(--danger);
+    }
+    &.all-teal{
+      --mdc-outlined-button-outline-color: var(--teal);
+      --mdc-outlined-button-label-text-color: var(--teal);
+    }
+}
+.text-btn-colors:hover{
+    --mdc-outlined-button-label-text-color: #ffffff;
+    --mdc-outlined-button-outline-color: #ffffff;
+    background-color: var(--teal);
+    &.danger{
+      background-color: var(--danger);
+    }
+}
 
   body {
     background: var(--night);

@@ -50,15 +50,7 @@
 .begin-btn:hover{
     width: 20%;
 }
-.btn-colors{
-    --mdc-outlined-button-outline-color: var(--fuchsia);
-    --mdc-outlined-button-label-text-color: var(--fuchsia);
-}
-.btn-colors:hover{
-    --mdc-outlined-button-label-text-color: #ffffff;
-    --mdc-outlined-button-outline-color: #ffffff;
-    background-color: var(--teal);
-}
+
 .game-card-actions{
     justify-content: center;
     align-items: center;

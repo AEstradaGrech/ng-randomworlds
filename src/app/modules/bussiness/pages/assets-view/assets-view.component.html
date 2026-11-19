@@ -98,8 +98,14 @@
                                     }
                                 </mat-card-content>
                                 <mat-card-actions style="display: flex; justify-content: center;">
-                                    <button mat-stroked-button class="pay-btn" (click)="onUnlockAssetClick(model)">{{model.isInGame ? 'ABANDON' : 'UNLOCK'}}</button>
-                                    <button *ngIf="model.isInGame" mat-stroked-button class="pay-btn" (click)="onCardSelected(model)"> CONTINUE </button>
+                                    <button mat-stroked-button 
+                                        class="text-btn-colors danger" 
+                                        (click)="onUnlockAssetClick(model)">{{model.isInGame ? 'ABANDON' : 'UNLOCK'}}
+                                    </button>
+                                    <button *ngIf="model.isInGame" mat-stroked-button 
+                                        class="text-btn-colors all-teal" 
+                                        (click)="onCardSelected(model)"> CONTINUE 
+                                    </button>
                                 </mat-card-actions>
                             </mat-card>
                         </mat-menu>
