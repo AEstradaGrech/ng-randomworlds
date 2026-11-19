@@ -6,7 +6,6 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent, CHAR_DETAIL_DIALOG_SIZE } from '../char-detail-dialog/char-detail-dialog.component';
-import { injectWeb3 } from 'src/app/core/scripts/web3';
 import { AssetCardButtonState, GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
 import { defaultNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { CharacterCreatorDialogComponent } from './components/character-creator-dialog/character-creator-dialog.component';
@@ -15,6 +14,7 @@ import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/comm
 import { TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import Web3 from 'web3';
+import { defer } from 'rxjs';
 
 /**
  * Signature every handler passed to the #collectionsInfo template must satisfy,
@@ -31,12 +31,11 @@ export interface LoadedCollection {
   templateUrl: './assets-view.component.html',
   styleUrl: './assets-view.component.scss'
 })
-export class AssetsViewComponent extends BaseComponent implements OnInit{
+export class AssetsViewComponent extends BaseComponent implements OnInit, AfterViewInit{
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   private _ngZone:NgZone = inject(NgZone);
   private _destroyRef:DestroyRef = inject(DestroyRef);
   private _authService: AuthService = inject(AuthService);
-  private _web3 = injectWeb3();
   
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   public collections: AssetsCollection[] = []
@@ -75,7 +74,18 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
 
-  constructor(@Inject(DOCUMENT) private document:Document) { super();}
+  constructor() { super();}
+
+  ngAfterViewInit(): void {
+    defer(() => this._smartContractsService.getWalletNFTs())
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe({
+        next: assets => {
+          if(assets.length === 0)
+            this._notificationsService.push('You don\'t have any NFT to play the game. Generate one in the Character Generator or buy one in the Marketplace', this._authService.expireTimeout, 'center');
+        }
+      })
+  }
 
   ngOnInit(): void {
     
@@ -106,7 +116,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit{
     // takeUntilDestroyed: without it, every past visit to this route leaves a live
     // subscription. A stale, off-screen instance would then also run _getAccountAssets
     // on account-change and update ITS OWN detached signal - so the visible view never moves.
-    this._smartContractsService.onAccountChanged
+    this._authService.onAccountChange
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe(newAccount => {
         this._notificationsService.openSnack(ESnackAlertType.WARN, `Refreshing for account: ${newAccount}`, true, 3000);

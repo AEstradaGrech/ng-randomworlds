@@ -9,6 +9,7 @@ import {ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { defaultNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import Web3 from 'web3';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
   selector: 'app-character-selection',
@@ -19,7 +20,6 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
   
   @ViewChild('sellButton') sellButton!: TemplateRef<any>;
   
-  private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   public assets = signal<AssetModel[]>([]);
   public collections:CollectionSummary[]=[];
   public customCharsCollection!: CustomCharsCollection | null;
@@ -27,7 +27,9 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   private _dialog:MatDialog = inject(MatDialog);
   private _router:Router = inject(Router);
- 
+  private _smartContractsService:SmartContractsService = inject(SmartContractsService);
+  private _authService:AuthService = inject(AuthService);
+  
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
 
   constructor(){
@@ -36,7 +38,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
 
   ngOnInit(): void {
     this._getCharactersData();
-    this._smartContractsService.onAccountChanged.subscribe(newAddress => {
+    this._authService.onAccountChange.subscribe(newAddress => {
       this._getCharactersData();
       this._notificationsService.openSnack(ESnackAlertType.WARN, `Refreshing view for address: ${newAddress}`);
     })

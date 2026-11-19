@@ -1,5 +1,5 @@
 <div *ngFor="let message of messages" class="custom-snack-bar d-flex flex-column align-items-center" [style.--alert-position]="'center'">
-    <mat-icon>error</mat-icon>
+    <mat-icon [style.padding-right]="'35px'">error</mat-icon>
     <span class="message-container">{{ message }}</span>
     <button mat-icon-button (click)="removeMessage(message, true)" [style.color]="'var(--teal)'">
         <mat-icon>{{iconName}}</mat-icon>

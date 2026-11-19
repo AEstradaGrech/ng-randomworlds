@@ -6,6 +6,7 @@ import { WorldGeneratorComponent } from "./pages/world-generator/world-generator
 import { QuestViewComponent } from "./pages/quest-view/quest-view.component";
 import { MarketplaceComponent } from "./pages/marketplace/marketplace.component";
 import { AssetsViewComponent } from "./pages/assets-view/assets-view.component";
+import { hasAssetsGuard } from "./guards/assets.guard";
 
 const routes: Routes =[
     {
@@ -19,11 +20,13 @@ const routes: Routes =[
     },
     {
         path: 'character/select',
-        component: CharacterSelectionComponent
+        component: CharacterSelectionComponent,
+        canActivate: [hasAssetsGuard]
     }, 
     {
         path: 'world/generator',
-        component: WorldGeneratorComponent
+        component: WorldGeneratorComponent,
+        canActivate: [hasAssetsGuard]
     },
     {
         path: 'game/quest',
@@ -31,7 +34,7 @@ const routes: Routes =[
     },
     {
         path: 'assets',
-        component: AssetsViewComponent
+        component: AssetsViewComponent,
     },
     {
         path: 'marketplace',

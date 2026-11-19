@@ -4,7 +4,7 @@ import Web3 from 'web3';
 import Collection from 'src/app/core/scripts/immutableCollection';
 import CustomChars from 'src/app/core/scripts/customCharacters';
 import CustomCharsFactory from 'src/app/core/scripts/customCharsFactory';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, forkJoin, Observable } from 'rxjs';
 import { CustomCharsCatalogue, CollectionSummary, ModelInfo, TokenDetails, WalletNFT, CharacterMetadata, CharacterProfile } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { HttpClient } from '@angular/common/http';
 import GameSession from 'src/app/core/scripts/gameSession';
@@ -29,7 +29,6 @@ export class SmartContractsService {
   public onPaymentError: EventEmitter<any> = new EventEmitter<any>();
   public onTxReceipt: EventEmitter<any> = new EventEmitter<any>()
   public onTxError: EventEmitter<TxError> = new EventEmitter<TxError>();
-  public onAccountChanged: EventEmitter<string> = new EventEmitter<string>(); 
   public onImmutableCatalogue: EventEmitter<boolean> = new EventEmitter<boolean>();
   private _baseUrl:string = environment.baseUrl;
 
@@ -326,16 +325,34 @@ export class SmartContractsService {
     return this.getCustomCharactersContract(contractAddress).methods.customTokenPurchase(paymentToken).send({from: this.connectedWallet})
   }
 
-  public async getWalletNFTs(address:string) : Promise<any>{
-    return await this.http.get<any>(`${this._baseUrl}/wallet-nfts/${address}`)
+  public async getWalletNFTs(address:string | null = null) : Promise<any>{
+    
+    const queriedAddress: string | null = address ?? this.connectedWallet;
+
+    if(!queriedAddress) throw new Error('No address to query found');
+
+    let addresses: string[] = await this.getCollectionsCatalogue();
+    console.log('WALLET NFT >> COLLECTIONS', addresses);
+    let customCollection = await this.getCustomCharsCatalogue();
+    if(customCollection)
+      addresses.push(customCollection.contractAddress);
+
+    console.log('WALLET NFT >> CUSTOM COLS', customCollection);
+    let walletNFTs: WalletNFT[] = [];
+    for(let i = 0; i <addresses.length; i++){
+      let colNFTs = await this.getWalletCollectionNFTs(queriedAddress, addresses[i]);
+      if(colNFTs)
+        walletNFTs = [...walletNFTs, ...colNFTs];
+    }
+    return walletNFTs;
   }
 
   public async getWalletCollectionNFTs(address:string, collectionAddress:string) : Promise<any>{
     return await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${address}/collection-address/${collectionAddress}`));
   }
 
-  public getWalletNFTsObservable(collectionAddress:string) : Observable<WalletNFT[]>{
-    return this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${this.connectedWallet}/collection-address/${collectionAddress}`);
+  public getWalletNFTsObservable(collectionAddress:string, address:string | null) : Observable<WalletNFT[]>{
+    return this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${address ?? this.connectedWallet}/collection-address/${collectionAddress}`);
   }
 
   public async getAccountCollectionNFTs(collectionAddress:string) : Promise<WalletNFT[]>{
