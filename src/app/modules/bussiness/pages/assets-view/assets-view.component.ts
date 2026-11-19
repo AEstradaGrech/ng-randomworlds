@@ -1,9 +1,8 @@
-import { Component, signal, inject, OnInit, ViewChild, Inject, ElementRef, NgZone, DestroyRef, AfterViewInit, EventEmitter } from '@angular/core';
+import { Component, signal, inject, OnInit, ViewChild, ElementRef, NgZone, DestroyRef, AfterViewInit, EventEmitter } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, CustomCharsCollection, NftDetailModel } from 'src/app/core/interfaces/business/smart-contract.interface';
-import { MatSidenav } from '@angular/material/sidenav';
-import { DOCUMENT } from '@angular/common';
+import { AssetModel, AssetsCollection, CollectionSummary, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { MatSidenav } from '@angular/material/sidenav'; 
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent, CHAR_DETAIL_DIALOG_SIZE } from '../char-detail-dialog/char-detail-dialog.component';
 import { AssetCardButtonState, GameData, NftCardClickAction, RoundedButtonConfig, ScrollState } from 'src/app/modules/shared/models/common-interfaces';
@@ -14,7 +13,8 @@ import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/comm
 import { TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import Web3 from 'web3';
-import { defer } from 'rxjs';
+import { catchError, concatMap, defer, EMPTY, finalize, from, map, Observable, of, switchMap, tap } from 'rxjs';
+import { runInZone } from 'src/app/core/utilities/runInZone.operator';
 
 /**
  * Signature every handler passed to the #collectionsInfo template must satisfy,
@@ -93,9 +93,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   }
 
   ngOnInit(): void {
-    
-    this._authService.getConnectedAccounts().then(accs => console.log('-- CONNECTED ACCOUNTS --', accs));
-
+  
     this.onCollectionLoaded.subscribe(data => {
       if(data.assets.length === 0) return;
       data.assets.forEach(asset => {
@@ -135,38 +133,68 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     return replaceEndpoint(imageUrl, replaced, provider);
   }
 
+  private _getAssetsCollection(address:string) : Observable<AssetsCollection>{
+    return defer(() => this._smartContractsService.getCollectionSummary(address))
+      .pipe(
+        catchError(error => {throw new Error(`An error has occured while retrieving the CollectionSummary for address ${address} >> ${error.error}`)}),
+        map(res => {
+          let collection:AssetsCollection = {summary:res, assets:[]};
+          this.collections.push(collection);
+          return collection;
+        }),
+        switchMap(collection => this._getCollectionNFTs(collection))
+      )
+  }
+  private _getCollectionNFTs(collection:AssetsCollection) : Observable<AssetsCollection>{
+    return defer(() => this._smartContractsService.getAccountCollectionNFTs(collection.summary.address))
+    .pipe(
+        catchError(error => {throw new Error(`An error has occured while retrieving the Wallet NFTs for address collection ${collection.summary.address} >> ${error.error}`)}),
+        map(assets => {
+          collection.assets = assets.map((nft:any) => {
+            let asset:AssetModel = {...nft, collectionLogoUrl: `url(${collection.summary.logoImage})`}
+            return asset;
+          });
+          return collection;
+        })
+      )
+  }
+
   private _getAccountAssets() {
     this._didInit = false;
     this.currentCollection = null;
     this.customCharsCollection = null;
     this.collections = [];
-    this._smartContractsService.getCollectionsCatalogue().then(cat => {
-      cat.forEach(address => {
-        this._smartContractsService.getCollectionSummary(address).then(summary => {
-          this._ngZone.run(() => {
-            console.log('summary', summary);
-            let collection:AssetsCollection = {summary:summary, assets:[]};
-            this.collections.push(collection);
-            this._smartContractsService.getAccountCollectionNFTs(summary.address).then(walletNFTs => {
-              console.log('-- on col wallet resp --', walletNFTs);
-              this._ngZone.run(() => {
-                collection.assets = walletNFTs.map((nft:any) => {
-                  let asset:AssetModel = {...nft, collectionLogoUrl: `url(${summary.logoImage})`}
-                  return asset;
-                });
-                this.onCollectionLoaded.emit({address: collection.summary.address, isCustom: false, assets: collection.assets });
-                if(!this.currentCollection){
-                  this._didInit = true;
-                  this.currentCollection = collection;
-                  this.currentCollectionLogoUrl = `url(${this.currentCollection.summary.logoImage}`;
-                  this.selectCollection(this.currentCollection);
-                }
-              })
-            })
-          })
-        })
+    defer(() => this._smartContractsService.getCollectionsCatalogue())
+      .pipe(
+        switchMap(cat => from(cat)),
+        concatMap(address => 
+          this._getAssetsCollection(address)
+            .pipe(
+              catchError(error => {
+                this._notificationsService.push(`Collection: ${address} failed to initialize >> ERROR: ${error.message}`); 
+                return EMPTY;})
+            )
+        ),
+        runInZone(this._ngZone),
+        takeUntilDestroyed(this._destroyRef)
+      )
+      .subscribe({
+        next: collection => {
+          if (!this.currentCollection) {                           // la primera que termina
+            this.currentCollection = collection;
+            this.currentCollectionLogoUrl = `url(${collection.summary.logoImage})`;
+          }
+          this.onCollectionLoaded.emit({address: collection.summary.address, isCustom: false, assets: collection.assets });
+        },
+        error: error => this._notificationsService.push(`An error has occured while loading the Immutable Collections catalogue: ${error.message}`),
+        complete: () => {
+          if(this.currentCollection){
+            this._didInit = true;
+            this.selectCollection(this.currentCollection);
+          }
+        }
       })
-    });
+
     this._smartContractsService.getCustomCharsCatalogue().then(cat => {
       this._ngZone.run(() => {
         if(cat) {
@@ -176,6 +204,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       })
     });
   }
+
   private _getCustomCharacters(){
     if(this.customCharsCollection){
       this._smartContractsService.getAccountCollectionNFTs(this.customCharsCollection.contractAddress)

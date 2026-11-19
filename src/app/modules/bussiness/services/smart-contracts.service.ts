@@ -11,7 +11,7 @@ import GameSession from 'src/app/core/scripts/gameSession';
 import { PlayerGameSession, TxError } from '../models/smart-contract.interfaces';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { environment } from 'src/environments/environment';
-import { injectWeb3 } from 'src/app/core/scripts/web3';
+import { injectWeb3 } from 'src/app/core/utilities/web3';
 import { WalletDiscoveryService } from '../../shared/services/wallet-discovery.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -175,7 +175,7 @@ export class SmartContractsService {
     return 
   }
 
-  public async getCollectionsCatalogue(): Promise<any[]>{
+  public async getCollectionsCatalogue(): Promise<string[]>{
     return await this.immutableFactory.methods.getCatalogue().call();
   }
   public async getCustomCharsCatalogue() : Promise<CustomCharsCatalogue>{
