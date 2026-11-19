@@ -25,23 +25,29 @@ export class NotificationService {
     this._verticalPosition = vPos;
     this._duration = duration;
   }
-  public push(message: string, duration: number | null = null, height: AlertHeight | null = null, hPos: MatSnackBarHorizontalPosition | null = null, icon: string | null = null): void {
+  // duration null = defaultService timeout | setup() timeout
+  // duration <= 0 = permanent alert
+  // icon null | empty = no alert icon
+  public push(message: string, duration: number | null = null, height: AlertHeight | null = null, hPos: MatSnackBarHorizontalPosition | null = null, icon: string | null = 'close'): void {
     this._messages.push(message);
     if (!this._snackBarIsDisplayed) {
-        this._snackBarRef = this._snackBar.openFromComponent(NotificationsComponent, {
-            horizontalPosition: hPos ?? this._horizontalPosition,
-            verticalPosition: height && height !== 'center' ? height : this._verticalPosition,
-            panelClass:['rw-alert', `rw-alert--${height??this._verticalPosition}`],
-            data: {
-                messages: this._messages,
-                duration: duration ?? this._duration,
-                icon: icon,
-                onIconClick: this.onAlertIconClick
-            }
-        });
-        this._snackBarIsDisplayed = true;
+      let alertDuration = duration ?? this._duration;
+      this._snackBarRef = this._snackBar.openFromComponent(NotificationsComponent, {
+          horizontalPosition: hPos ?? this._horizontalPosition,
+          verticalPosition: height && height !== 'center' ? height : this._verticalPosition,
+          panelClass:['rw-alert', `rw-alert--${height??this._verticalPosition}`],
+          data: {
+              messages: this._messages,
+              duration: alertDuration,
+              icon: icon,
+              permanent: alertDuration <= 0,
+              onIconClick: this.onAlertIconClick
+          }
+      });
+      this._snackBarIsDisplayed = true;
     }
-    setTimeout(() => this._snackBarRef.instance.removeMessage(message), duration ?? this._duration);
+    if(!(duration && duration <= 0))
+      setTimeout(() => this._snackBarRef.instance.removeMessage(message), duration ?? this._duration);
     this._snackBarRef.afterDismissed().subscribe(() => {
         this._snackBarIsDisplayed = false;
     });

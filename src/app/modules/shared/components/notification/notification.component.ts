@@ -8,20 +8,24 @@ import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar'
 })
 export class NotificationsComponent {
   messages: string[] = [];
-  iconName:string = 'close';
-  constructor(public snackBarRef: MatSnackBarRef<NotificationsComponent>,
-    @Inject(MAT_SNACK_BAR_DATA) public data: any) {
+  iconName:string = ''; // No icon displayed
+  permanent: boolean = false; // cannot be removed on iconClick
+  constructor(public snackBarRef: MatSnackBarRef<NotificationsComponent>, @Inject(MAT_SNACK_BAR_DATA) public data: any) {
+    console.log('ON NOTIFICATION');
     this.messages = this.data.messages;
     if(this.data.icon)
       this.iconName = this.data.icon;
+    this.permanent = this.data.permanent;
   }
 
   removeMessage(message: string, triggerNotify:boolean = false) {
     if(triggerNotify && this.data.onIconClick)
       this.data.onIconClick(this.iconName);
-    this.messages.splice(this.messages.indexOf(message), 1);
-    if (this.messages.length === 0) {
-        this.snackBarRef.dismiss();
+    if(!this.permanent){
+      this.messages.splice(this.messages.indexOf(message), 1);
+      if (this.messages.length === 0) {
+          this.snackBarRef.dismiss();
+      }
     }
   }
 }

@@ -82,7 +82,12 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       .subscribe({
         next: assets => {
           if(assets.length === 0)
-            this._notificationsService.push('You don\'t have any NFT to play the game. Generate one in the Character Generator or buy one in the Marketplace', this._authService.expireTimeout, 'center');
+            this._notificationsService.push(
+            'You don\'t have any NFT to play the game. Generate one in the Character Generator or buy one in the Marketplace', 
+            /*permanent*/0, 
+            'center',
+            null,
+            null);
         }
       })
   }
