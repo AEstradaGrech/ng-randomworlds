@@ -51,7 +51,9 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   public quests:any[] = []
   public showSettings:string = 'visible';
   public isRandomCharacter:boolean = false;
-  public isLoading:boolean = false;
+  public isLoading = signal<boolean>(false);
+  public isStartingGame = signal<boolean>(false);
+  public actionLoading = computed(() => { return this.isLoading() || this.isStartingGame() });
   public currentIntro:string = ''
   private _fb:FormBuilder = inject(FormBuilder);
   private _router = inject(Router);
@@ -328,10 +330,10 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
       }
       console.log('-- intro req --', introReq);
       this.filteredGenres = [...this.filteredGenres, ...this.selectedGenres];
-      this.isLoading = true;
+      this.isLoading.set(true);
       this._service.generateIntro(introReq)
         .pipe(
-          finalize(() => this.isLoading = false),
+          finalize(() => this.isLoading.set(false)),
           takeUntilDestroyed(this._destroyRef)
         )
         .subscribe({
@@ -352,6 +354,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   }
   public onPlayQuestClick(quest: any){
     if(quest.status === 'NOT_STARTED'){
+      this.isStartingGame.set(true);
       this._gameData.character = quest.data.character;
       this._gameData.intro = quest.data.intro;
       this._gameData.userPreferences = quest.preferences;
@@ -359,6 +362,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
       this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Starting game');
       defer(() => this._web3Service.startGame(this._gameData.selectedCharacter?.contractAddress ?? '', this._gameData.selectedCharacter?.tokenId ?? -1))
         .pipe(
+          finalize(() => this.isStartingGame.set(false)),
           takeUntilDestroyed(this._destroyRef)
         )
         .subscribe({
