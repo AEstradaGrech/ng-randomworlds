@@ -63,14 +63,17 @@
 }
 .begin-btn{
     width: 20%;
-    color: #99c531 !important;
-    border-color: rgb(175 239 24) !important;
+    
 }
-.begin-btn:hover{
-    width: 20%;
-    color: #ffffff !important;
-    border-color: rgb(245, 247, 243) !important;
-    background-color: #99c531 !important;
+.game-card-divider{
+    --mat-divider-color: var(--fuchsia);
+    margin: 10px 15px 5px 25px;
+}
+.game-status-icon{
+    color: var(--teal); 
+    font-size: 50px !important; 
+    height: 50px !important; 
+    width: 50px !important;
 }
 .game-card-actions{
     justify-content: center;
@@ -78,11 +81,11 @@
 }
 
 .game-card-title{
-    color:#99c531;
+    color:var(--teal);
 }
 .game-card-subtitle{
     font-style: oblique;
-    color: #c3c3c5;
+    color: var(--fuchsia);
     font-weight: 300;
 }
 
@@ -92,7 +95,7 @@
     color: #ffffff;
 }
 .expand-btn{
-    background-color: #c3ff36;
+    background-color: var(--teal);
     height: 100%;
     width: 100%;
     padding: 0px 0px 0px 0px !important;
@@ -134,7 +137,7 @@
     height: 100%;
 }
 .actions-display{
-    background-color: #ffffff; 
+    background-color: var(--panel); 
     color: black; 
     border-radius: 7px;
     width: 95%;

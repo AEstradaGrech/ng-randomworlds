@@ -15,7 +15,7 @@
             </div>
             <div class="char-display" [@panelStateL]="panelStateL" [ngStyle]="{'background-image': charImageUrl}"></div>
         </div>
-        <mat-divider vertical="true"></mat-divider>
+
         <mat-card class="game-card" appearance="outlined">
             <mat-card-header>
               <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': this.gameData.selectedCharacter ? collectionLogoImg(this.gameData.selectedCharacter.collectionLogoUrl) : collectionLogoImg('')}"></div>
@@ -28,48 +28,43 @@
                 <div class="text-container">
                     <textarea #scenebox readonly class="text-area">{{sceneText}}</textarea>
                 </div>
-                <mat-divider style="margin: 10px 15px 5px 25px; color:#74fa26" vertical="false"></mat-divider>
+                <mat-divider class="game-card-divider" vertical="false"></mat-divider>
                 <div class="loading">
                     <mat-spinner *ngIf="isLoading" diameter="50"></mat-spinner>
                     <mat-icon 
                         *ngIf="!isLoading && !hasFinishedQuest"
-                        style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
+                        class="game-status-icon"
                         aria-hidden="false" 
                         aria-label="Play icon" 
                         fontIcon="play_circle_fill"
                   ></mat-icon>
                   <ng-container *ngIf="!isLoading && hasFinishedQuest" [ngSwitch]="gameData.gameStatus">
                     <mat-icon  *ngSwitchCase="'COMPLETED'"
-                        style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
+                        class="game-status-icon"
                         aria-hidden="false" 
                         aria-label="Play icon" 
                         fontIcon="mood"
                     ></mat-icon>
                     <mat-icon  *ngSwitchCase="'FAILED'"
-                        style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
+                        class="game-status-icon"
                         aria-hidden="false" 
                         aria-label="Play icon" 
                         fontIcon="mood_bad"
                     ></mat-icon>
                     <mat-icon *ngSwitchCase="'UNCERTAIN'"
-                        style="color: #b5f02b; font-size: 50px !important; height: 50px !important; width: 50px !important;"
+                        class="game-status-icon"
                         aria-hidden="false" 
                         aria-label="Play icon" 
                         fontIcon="sentiment_neutral"
                     ></mat-icon>
                   </ng-container>
-                  
                 </div>
-                
                 <div *ngIf="currentBlock && !isLoading" class="choices-table">
                     <table mat-table [dataSource]="currentChoices" class="mat-elevation-z8 demo-table">
-                       
-                        <!-- Name Column -->
                         <ng-container matColumnDef="choices">
                           <th mat-header-cell *matHeaderCellDef>Choices</th>
                           <td mat-cell *matCellDef="let element">{{element}}</td>
                         </ng-container>
-                        <!-- <tr mat-header-row *matHeaderRowDef="['choices']"></tr> -->
                         <tr
                             mat-row
                             (click)="selectedChoice = row"
@@ -80,10 +75,10 @@
                 </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="begin-btn" (click)="onSubmit()" [disabled]="currentBlock && sceneText !== currentBlock.scene && !hasFinishedQuest">{{btnTxt}}</button>
+              <button mat-stroked-button class="begin-btn text-btn-colors" (click)="onSubmit()" [disabled]="currentBlock && sceneText !== currentBlock.scene && !hasFinishedQuest">{{btnTxt}}</button>
             </mat-card-actions>
         </mat-card>
-        <mat-divider vertical="true"></mat-divider>
+        
         <div class="expandable-r">
             <div class="actions-display" [@panelStateR]="panelStateR">
                 <app-side-bar #sideBar [width]="'100%'" [config]="actionsBarConfig" (onSelect)="onMenuSelect($event)"></app-side-bar>
