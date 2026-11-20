@@ -16,6 +16,7 @@ import { WalletDiscoveryService } from '../../shared/services/wallet-discovery.s
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import immutableFactory from 'src/app/core/scripts/immutableFactory';
+import { checkAddresses } from 'src/app/core/utilities/addressComparator';
 
 @Injectable({
   providedIn: 'root'
@@ -69,7 +70,7 @@ export class SmartContractsService {
     
     if(!this.connectedWallet)
       throw new Error('No connected wallet found');
-    
+
     let gameSession: any = GameSession(this.web3);
     
     if(!gameSession)
@@ -86,7 +87,10 @@ export class SmartContractsService {
 
     let session = await this.getPlayerSession(collection, tokenId);
 
-    return session && session.player === this.connectedWallet;
+    console.log('STARTED SESSION',session);
+    let allFine =  session && checkAddresses(session.player, this.connectedWallet);
+    console.log('ALL FINE: ', allFine);
+    return session && checkAddresses(session.player, this.connectedWallet);
   }
 
   public async settleGame(collection: string, tokenId: number, outcome: number, signature: string) : Promise<boolean>{
