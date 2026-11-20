@@ -67,6 +67,9 @@ export class SmartContractsService {
   }
   public async startGame(collection:string, tokenId: number) : Promise<boolean>{
     
+    if(!this.connectedWallet)
+      throw new Error('No connected wallet found');
+    
     let gameSession: any = GameSession(this.web3);
     
     if(!gameSession)

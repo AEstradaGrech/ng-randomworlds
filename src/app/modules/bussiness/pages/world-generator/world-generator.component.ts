@@ -1,4 +1,4 @@
-import { Component, inject, OnInit,  ElementRef, ViewChild, HostListener, signal, computed, effect, EffectRef, } from '@angular/core';
+import { Component, inject, OnInit,  ElementRef, ViewChild, HostListener, signal, computed, effect, EffectRef, DestroyRef, } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router'
@@ -15,6 +15,8 @@ import { BaseComponent } from 'src/app/modules/shared/components/base.component'
 import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { defer, finalize } from 'rxjs';
 
 @Component({
   selector: 'app-world-generator',
@@ -56,7 +58,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   private _snackBar = inject(MatSnackBar);
   private _service = inject(QuestsService);
   private _web3Service = inject(SmartContractsService);
-
+  private _destroyRef = inject(DestroyRef);
   private _disableControlEffect?: EffectRef = effect(() => {
     if (!this.form) return;
     const quest = this.selectedQuest();
@@ -141,30 +143,34 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
             this._gameData.selectedCharacter.tokenId, 
             this._gameData.selectedCharacter.contractAddress, 
             this._gameData.selectedCharacter.ownerAddress)
-            .subscribe(res => {
-              if(res){
-                console.log('-- RECOVERED SESSION --', res);
-                this._notificationsService.openSnack(ESnackAlertType.WARN, 'Recovering Game for selected character', true, 3000);
-                this._gameData.gameSessionId = res.id;
-                this._gameData.gameStatus = res.status;
-                this._gameData.intro = res.intro ?? '';
-                this._gameData.character = this._gameData.selectedCharacter?.metadata.profile as QuestCharacter;
-                this._gameData.userPreferences = res.preferences;
-                localStorage.setItem('game-data', JSON.stringify(this._gameData));
-                console.log('-- RETRIEVED GAME DATA --', this._gameData);
-                this.quests.push({id: this.quests.length + 1, data: res, preferences: res.preferences, asset: this.selectedCharacter(), status: res.status})
-                this.currentIntro = `CHARACTER:\n${res.character}\nINTRO SCENE:\n\n${res.intro}`;
-                this.selectedQuest.set(this.quests.slice(-1));
-                // keep 'plot' control in sync with disabled state when recovering an ongoing quest
-                if (this.form) {
-                  if (this.formControlDisabled()) {
-                    this.form.controls['plot'].disable();
-                  } else {
-                    this.form.controls['plot'].enable();
+            .pipe(
+              takeUntilDestroyed(this._destroyRef)
+            )
+            .subscribe({
+              next: res => {
+                if(res){
+                  this._notificationsService.openSnack(ESnackAlertType.WARN, 'Recovering Game for selected character', true, 3000);
+                  this._gameData.gameSessionId = res.id;
+                  this._gameData.gameStatus = res.status;
+                  this._gameData.intro = res.intro ?? '';
+                  this._gameData.character = this._gameData.selectedCharacter?.metadata.profile as QuestCharacter;
+                  this._gameData.userPreferences = res.preferences;
+                  localStorage.setItem('game-data', JSON.stringify(this._gameData));
+                  this.quests.push({id: this.quests.length + 1, data: res, preferences: res.preferences, asset: this.selectedCharacter(), status: res.status})
+                  this.currentIntro = `CHARACTER:\n${res.character}\nINTRO SCENE:\n\n${res.intro}`;
+                  this.selectedQuest.set(this.quests.slice(-1));
+                  // keep 'plot' control in sync with disabled state when recovering an ongoing quest
+                  if (this.form) {
+                    if (this.formControlDisabled()) {
+                      this.form.controls['plot'].disable();
+                    } else {
+                      this.form.controls['plot'].enable();
+                    }
                   }
+                  this.onShowSettings(false);
                 }
-                this.onShowSettings(false);
-              }
+              },
+              error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while recovering the current game session: ${error.message}`)
             });
           //try get current session for character 
           // _setOngoingOption()
@@ -304,10 +310,8 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
       return gameDataCache ? JSON.parse(gameDataCache) : null;
   }
   public onGenerateClick(){
-    console.log('-- onGenerate --')
     let character = this.selectedCharacter();
     if(!character) return;
-    console.log('-- form val --',this.form.getRawValue())
     let formValues = this.form.getRawValue();
     let preferences:QuestPreferences = {
       ambiences: formValues.ambiences,
@@ -320,28 +324,29 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
     if(this._hasValidPreferences(preferences)){
       let introReq: QuestIntroRequest = {
         character:this.isRandomCharacter ? null : character.metadata.profile as QuestCharacter ?? null,
-        useRandomCharacter:this.isRandomCharacter, //formControl
-        desiredName:this.isRandomCharacter ? formValues.desiredName : "", //formControl
         preferences:preferences
       }
       console.log('-- intro req --', introReq);
       this.filteredGenres = [...this.filteredGenres, ...this.selectedGenres];
       this.isLoading = true;
-      this._service.generateIntro(introReq).subscribe(res => {
-        console.log('-- on intro response --', res)
-        //add to array
-        this.isLoading = false;
-        this.showSettings = 'hidden';
-        if(this.quests.length == 2){
-          this.quests = this.quests.slice(-1)
-          this.quests[0].id = 1
-        }
-        this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences, asset: this.selectedCharacter(), status: 'NOT_STARTED'})
-        this.currentIntro = `CHARACTER:\n${this._formatCharacterData(res.character)}\nINTRO SCENE:\n\n${res.intro}`;
-        this.selectedQuest.set(this.quests.slice(-1));
-        //
+      this._service.generateIntro(introReq)
+        .pipe(
+          finalize(() => this.isLoading = false),
+          takeUntilDestroyed(this._destroyRef)
+        )
+        .subscribe({
+          next:res => {
+            this.showSettings = 'hidden';
+            if(this.quests.length == 2){
+              this.quests = this.quests.slice(-1)
+              this.quests[0].id = 1
+            }
+            this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences, asset: this.selectedCharacter(), status: 'NOT_STARTED'})
+            this.currentIntro = `CHARACTER:\n${this._formatCharacterData(res.character)}\nINTRO SCENE:\n\n${res.intro}`;
+            this.selectedQuest.set(this.quests.slice(-1));
+        },
+        error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while generating the quest preferences: ${error.message}`)
       })
-      //TODO: generat Lore w/AssTeam. Add to gameData | userPrefs
     }
     
   }
@@ -351,12 +356,22 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
       this._gameData.intro = quest.data.intro;
       this._gameData.userPreferences = quest.preferences;
       localStorage.setItem('game-data', JSON.stringify(this._gameData));
-      this._web3Service.startGame(this._gameData.selectedCharacter?.contractAddress ?? '', this._gameData.selectedCharacter?.tokenId ?? -1)
-        .then(res => {
-          if(res)
-            this._router.navigateByUrl('randomworlds/game/quest');
-      });
-    }
+      this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Starting game');
+      defer(() => this._web3Service.startGame(this._gameData.selectedCharacter?.contractAddress ?? '', this._gameData.selectedCharacter?.tokenId ?? -1))
+        .pipe(
+          takeUntilDestroyed(this._destroyRef)
+        )
+        .subscribe({
+          next:res => {
+            if(res)
+              this._router.navigateByUrl('randomworlds/game/quest');
+            
+            else this._notificationsService.openSnack(ESnackAlertType.WARN, 'An error has occured while starting the game: contract session address does not match the connected wallet') 
+          },
+          error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while starting the game: ${error.message}`)
+        });
+      }
+    
     else this._router.navigateByUrl('randomworlds/game/quest');
   }
   public onReviewQuestClick(quest:any){
@@ -369,17 +384,12 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
       this.selectedMoods = [...quest.preferences.moods];
       this.selectedGenres = [...quest.preferences.genres];
       this.selectedConstraints = [...quest.preferences.constraints];
-      // para cada array --> handle filtered... (comparar con gameData.character (source of truth)) #TODO 
-      // this.isRandomCharacter = quest.data.isRandomCharacter;
-      // if(this.isRandomCharacter)
-      //   this.form.controls["desiredName"].setValue(quest.character.name);
       this.form = this._fb.group({
         ambiences: new FormControl(this.selectedAmbiences),
         moods: new FormControl(this.selectedMoods),
         genres: new FormControl(this.selectedGenres),
         constraints: new FormControl(this.selectedConstraints),
-        plot: new FormControl(quest.preferences.suggestion, [Validators.maxLength(200)]),
-        desiredName: new FormControl(quest.character.name, [Validators.maxLength(30)])
+        plot: new FormControl(quest.preferences.suggestion, [Validators.maxLength(200)])
       })
     }
     else{

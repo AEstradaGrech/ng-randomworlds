@@ -18,9 +18,7 @@ export interface SaveDatasetCharacter extends CreateCharacterRequest{
 
 export interface QuestIntroRequest {
     character: QuestCharacter | null,
-    preferences: QuestPreferences,
-    desiredName:string | null,
-    useRandomCharacter: boolean
+    preferences: QuestPreferences
 }
 export interface QuestIntroResponse{
     intro:string,
