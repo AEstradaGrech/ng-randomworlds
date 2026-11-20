@@ -33,9 +33,13 @@ export interface QuestPreferences{
     constraints: string[],
     suggestion: string,
 }
+export interface GeneratedQuestData{
+    intro:string,
+    character: QuestCharacter | string
+}
 export interface GeneratedQuest{
     id:number,
-    data: QuestCharacter | RandomQuestDto,
+    data: GeneratedQuestData,
     preferences: QuestPreferences | string,
     asset: AssetModel | null,
     status:string

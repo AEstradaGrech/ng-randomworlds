@@ -8,7 +8,7 @@ import {MatChipInputEvent} from '@angular/material/chips';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { QuestsService } from '../../services/quests.service';
-import { GeneratedQuest, QuestCharacter, QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
+import { GeneratedQuest, GeneratedQuestData, QuestCharacter, QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { AssetModel, CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -33,16 +33,6 @@ import { defer, finalize, Subject } from 'rxjs';
 })
 export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   
-  /* (https://www.premiumbeat.com/blog/guide-to-basic-film-genres/#the-basic-film-genres)
-  Action
-  Comedy
-  Drama
-  Fantasy
-  Horror
-  Mystery = Thirller = Suspense (si se quiere https://diymfa.com/reading/mystery-thriller-suspense-label-matter/)
-  Romance
-  Thriller
-  */
   public selectedAmbiences: string[] = []
   public selectedMoods: string[]=[]
   public selectedGenres: string[]=[]
@@ -160,7 +150,8 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
                   this._gameData.character = this._gameData.selectedCharacter?.metadata.profile as QuestCharacter;
                   this._gameData.userPreferences = res.preferences;
                   localStorage.setItem('game-data', JSON.stringify(this._gameData));
-                  this.quests.push({id: this.quests.length + 1, data: res, preferences: res.preferences, asset: this.selectedCharacter(), status: res.status})
+                  let data: GeneratedQuestData = { intro: res.intro ?? '', character: res.character };
+                  this.quests.push({id: this.quests.length + 1, data: data, preferences: res.preferences, asset: this.selectedCharacter(), status: res.status})
                   this.currentIntro = `CHARACTER:\n${res.character}\nINTRO SCENE:\n\n${res.intro}`;
                   this.selectedQuest.set(this.quests.slice(-1));
                   // keep 'plot' control in sync with disabled state when recovering an ongoing quest
@@ -345,7 +336,8 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
               this.quests = this.quests.slice(-1)
               this.quests[0].id = 1
             }
-            this.quests.push({id: this.quests.length + 1, data: res.character, preferences: introReq.preferences, asset: this.selectedCharacter(), status: 'NOT_STARTED'})
+            let data: GeneratedQuestData = { intro: res.intro, character: res.character };
+            this.quests.push({id: this.quests.length + 1, data: data, preferences: introReq.preferences, asset: this.selectedCharacter(), status: 'NOT_STARTED'})
             this.currentIntro = `CHARACTER:\n${this._formatCharacterData(res.character)}\nINTRO SCENE:\n\n${res.intro}`;
             this.selectedQuest.set(this.quests.slice(-1)[0]);
 

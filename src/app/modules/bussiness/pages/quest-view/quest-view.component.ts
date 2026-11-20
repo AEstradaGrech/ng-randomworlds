@@ -104,8 +104,9 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this._setupGameData();
   }
 
-  ngOnDestroy(): void {   
-    this._clearGameData();
+  ngOnDestroy(): void {
+    console.log('DESTROY >> Clearing data')   
+    this._clearGameData(this.hasFinishedQuest);
   }
 
   public onSubmit(){
@@ -549,7 +550,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     return true;
   }
 
-  private _clearGameData(){
+  private _clearGameData(clearSelectedChar: boolean = true){
     // Skip on the SERVER only (no localStorage on Node). ngOnDestroy runs during
     // SSR teardown, so without this the server render crashes. Note the `!`:
     // the browser MUST run this, or the cross-tab lock never clears.
@@ -560,7 +561,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       gameType: 'quest',
       gameStatus: "READY",
       charname:'',
-      selectedCharacter:undefined,
+      selectedCharacter: clearSelectedChar ? undefined : currentData?.selectedCharacter,
       character:undefined,
       isRandomCharacter:false,
       gameSessionId:'',
