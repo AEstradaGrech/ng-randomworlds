@@ -1,6 +1,6 @@
 <div class="h-100 flex column" [ngStyle]="{ 'width': width }">
     <div *ngIf="withLogo" class="logo">
-        <app-logo></app-logo>
+        <app-logo [titleColor]="colorsConfig.titleColor" [subtitleColor]="colorsConfig.subtitleColor"></app-logo>
     </div>
     @if(colorsConfig){
         <app-tree-menu #treemenu class="tree-menu" 

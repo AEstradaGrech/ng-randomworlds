@@ -22,6 +22,8 @@ export const questsViewSidebarConfig = [
 ]
 
 export const questViewSidebarColors:SideNavColorsConfig ={
+    titleColor: 'var(--fuchsia)',
+    subtitleColor: 'var(--fuchsia)',
     itemText: 'var(--fuchsia)',
     itemBg: 'var(--surface)',
     itemTextHover: 'white',
