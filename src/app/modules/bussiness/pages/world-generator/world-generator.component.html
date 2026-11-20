@@ -161,7 +161,7 @@
                 <button mat-stroked-button 
                   class="quest-card-btn text-btn-colors"
                   [disabled]="actionLoading()"
-                  [ngClass]="{'disabled-btn': actionLoading() }" 
+                  [ngClass]="{'disabled-btn': actionLoading(), 'all-teal' : selectedQuest() === quest }" 
                   (click)="onReviewQuestClick(quest)">
                     REVIEW
                 </button>

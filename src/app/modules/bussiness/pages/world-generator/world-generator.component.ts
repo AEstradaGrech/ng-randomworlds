@@ -1,4 +1,4 @@
-import { Component, inject, OnInit,  ElementRef, ViewChild, HostListener, signal, computed, effect, EffectRef, DestroyRef, } from '@angular/core';
+import { Component, inject, OnInit,  ElementRef, ViewChild, HostListener, signal, computed, effect, EffectRef, DestroyRef, OnChanges, SimpleChanges, } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router'
@@ -8,7 +8,7 @@ import {MatChipInputEvent} from '@angular/material/chips';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { QuestsService } from '../../services/quests.service';
-import { QuestCharacter, QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
+import { GeneratedQuest, QuestCharacter, QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { AssetModel, CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -16,7 +16,7 @@ import { ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { defer, finalize } from 'rxjs';
+import { defer, finalize, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-world-generator',
@@ -32,6 +32,7 @@ import { defer, finalize } from 'rxjs';
   ]
 })
 export class WorldGeneratorComponent extends BaseComponent implements OnInit{
+  
   /* (https://www.premiumbeat.com/blog/guide-to-basic-film-genres/#the-basic-film-genres)
   Action
   Comedy
@@ -47,8 +48,9 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   public selectedGenres: string[]=[]
   public selectedConstraints: string[]=[]
   public form!: FormGroup;
-  public selectedQuest = signal<any | null>(null);  
-  public quests:any[] = []
+  public selectedQuest = signal<any | null>(null);
+
+  public quests:GeneratedQuest[] = []
   public showSettings:string = 'visible';
   public isRandomCharacter:boolean = false;
   public isLoading = signal<boolean>(false);
@@ -108,7 +110,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   });
 
   ngOnInit(): void {
-      
+    
     this._setupGameData();
   }
 
@@ -343,9 +345,10 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
               this.quests = this.quests.slice(-1)
               this.quests[0].id = 1
             }
-            this.quests.push({id: this.quests.length + 1, data: res, preferences: introReq.preferences, asset: this.selectedCharacter(), status: 'NOT_STARTED'})
+            this.quests.push({id: this.quests.length + 1, data: res.character, preferences: introReq.preferences, asset: this.selectedCharacter(), status: 'NOT_STARTED'})
             this.currentIntro = `CHARACTER:\n${this._formatCharacterData(res.character)}\nINTRO SCENE:\n\n${res.intro}`;
-            this.selectedQuest.set(this.quests.slice(-1));
+            this.selectedQuest.set(this.quests.slice(-1)[0]);
+
         },
         error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while generating the quest preferences: ${error.message}`)
       })
@@ -381,6 +384,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   public onReviewQuestClick(quest:any){
     console.log(quest);
     this.selectedQuest.set(quest);
+
     if(quest.status === 'NOT_STARTED'){
       this.currentIntro = `CHARACTER:\n${this._formatCharacterData(quest.data.character)}\nINTRO SCENE:\n\n${quest.data.intro}`;
       this.selectedCharacter.set(quest.asset);

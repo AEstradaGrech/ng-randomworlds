@@ -1,3 +1,5 @@
+import { AssetModel } from "./smart-contract.interface"
+
 export interface ChatMessage{
     role:string,
     content:string
@@ -30,6 +32,13 @@ export interface QuestPreferences{
     genres: string[], 
     constraints: string[],
     suggestion: string,
+}
+export interface GeneratedQuest{
+    id:number,
+    data: QuestCharacter | RandomQuestDto,
+    preferences: QuestPreferences | string,
+    asset: AssetModel | null,
+    status:string
 }
 export interface QuestCharacter{
     name:string,
