@@ -1,9 +1,17 @@
-<mat-nav-list>
+<mat-nav-list class="tree-list">
     <ng-container *ngFor="let item of items">
         <a mat-list-item
            *ngIf="item.isVisible"
            (click)="openItem(item)"
            class="item-container"
+           [style.--item-bg-color]="itemBgColor"
+           [style.--item-bg-color-hover]="itemBgColorHover"
+           [style.--open-color]="openColor"
+           [style.--open-bg-color]="openBgColor"
+           [style.--selected-color]="selectedColor"
+           [style.--selected-bg-color]="selectedBgColor"
+           [style.--item-text-color]="itemTextColor"
+           [style.--item-text-hover]="itemTextHover"
            [ngClass]="{ 'open': item.isOpen, 'selected': selectedItem && item == selectedItem }"
            @fade>
             <mat-icon *ngIf="item.matIcon" class="menu-icon">{{item.matIcon}}</mat-icon>

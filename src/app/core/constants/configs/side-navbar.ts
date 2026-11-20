@@ -1,3 +1,4 @@
+import { SideNavColorsConfig } from "src/app/modules/shared/components/side-navbar/colors-config";
 import { TreeMenuItem } from "../../../modules/shared/components/tree-menu/tree-menu-item.model";
 
 export const adventuresViewSidebarConfig = [
@@ -20,9 +21,19 @@ export const questsViewSidebarConfig = [
     new TreeMenuItem('Story', 1, undefined, true, true, true),
 ]
 
+export const questViewSidebarColors:SideNavColorsConfig ={
+    itemText: 'var(--fuchsia)',
+    itemBg: 'var(--surface)',
+    itemTextHover: 'white',
+    itemBgHover: 'var(--teal)',
+    selected: 'white',
+    selectedBg: 'var(--fuchsia)',
+    open: 'white',
+    openBg: 'var(--teal)'
+} 
+
 export const chatSideBarConfig = [
     new TreeMenuItem('Prompting', 1, 'characterstudio/home', true, false, true),
     new TreeMenuItem('Session', 1, 'characterstudio/chat', false, false, false),
     new TreeMenuItem('Simple Prompt', 1, 'simple-prompt', false, false, false)
-    
 ]

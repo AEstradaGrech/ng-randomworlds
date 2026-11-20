@@ -81,7 +81,11 @@
         
         <div class="expandable-r">
             <div class="actions-display" [@panelStateR]="panelStateR">
-                <app-side-bar #sideBar [width]="'100%'" [config]="actionsBarConfig" (onSelect)="onMenuSelect($event)"></app-side-bar>
+                <app-side-bar #sideBar 
+                    [width]="'100%'" 
+                    [config]="actionsBarConfig" 
+                    [colorsConfig]="actionsBarColors"
+                    (onSelect)="onMenuSelect($event)"></app-side-bar>
             </div>
             <div class="btn-slot">
                 <button mat-stroked-button class="expand-btn" (click)="onOpenBtnClick('right')">

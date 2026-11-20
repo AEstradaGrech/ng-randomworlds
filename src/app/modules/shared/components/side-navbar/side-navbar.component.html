@@ -2,5 +2,20 @@
     <div *ngIf="withLogo" class="logo">
         <app-logo></app-logo>
     </div>
-    <app-tree-menu #treemenu class="tree-menu" [items]="config" (onSelect)="onMenuSelect($event)"></app-tree-menu>
+    @if(colorsConfig){
+        <app-tree-menu #treemenu class="tree-menu" 
+        [items]="config" 
+        [itemTextColor]="colorsConfig.itemText"
+        [itemBgColor]="colorsConfig.itemBg"
+        [itemTextHover]="colorsConfig.itemTextHover"
+        [itemBgColorHover]="colorsConfig.itemBgHover"
+        [selectedColor]="colorsConfig.selected"
+        [selectedBgColor]="colorsConfig.selectedBg"
+        [openColor]="colorsConfig.open"
+        [openBgColor]="colorsConfig.openBg"
+        (onSelect)="onMenuSelect($event)"></app-tree-menu>
+    }
+    @else{
+        <app-tree-menu #treemenu class="tree-menu" [items]="config" (onSelect)="onMenuSelect($event)"></app-tree-menu>
+    }
 </div>

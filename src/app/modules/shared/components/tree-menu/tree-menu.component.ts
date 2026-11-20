@@ -29,6 +29,19 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 export class TreeMenuComponent implements OnInit {
 
   @Input() items!: Array<TreeMenuItem>;
+  
+  @Input() itemTextColor:string = 'black';
+  @Input() itemTextHover:string = 'white';
+  
+  @Input() itemBgColor:string = 'black';
+  @Input() itemBgColorHover:string = 'black';
+  
+  @Input() selectedColor:string = 'white';
+  @Input() selectedBgColor:string = 'black';
+  
+  @Input() openColor:string = 'white';
+  @Input() openBgColor:string = 'red';
+
   @Output() onSelect: EventEmitter<TreeMenuItem> = new EventEmitter<TreeMenuItem>()
   public selectedItem!: TreeMenuItem
 

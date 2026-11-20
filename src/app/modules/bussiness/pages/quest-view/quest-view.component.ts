@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, DestroyRef, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { questsViewSidebarConfig } from 'src/app/core/constants/configs/side-navbar';
+import { questsViewSidebarConfig, questViewSidebarColors } from 'src/app/core/constants/configs/side-navbar';
 import { TreeMenuItem } from 'src/app/modules/shared/components/tree-menu/tree-menu-item.model';
 import { GameData, QueryCondition, SortedFilter } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router'
@@ -17,6 +17,7 @@ import { ESnackAlertType, GameOutcome } from 'src/app/modules/shared/models/comm
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { PlayerGameSession } from '../../models/smart-contract.interfaces';
 import { HttpEventType } from '@angular/common/http';
+import { SideNavColorsConfig } from 'src/app/modules/shared/components/side-navbar/colors-config';
 
 @Component({
   selector: 'app-quest-view',
@@ -44,6 +45,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   streamedText!:string;
   isLoading:boolean = false;
   actionsBarConfig:Array<TreeMenuItem> = [...questsViewSidebarConfig];
+  actionsBarColors: SideNavColorsConfig = questViewSidebarColors;
   panelStateR = 'hidden';
   panelStateL = 'hidden';
   gameData!:GameData;
