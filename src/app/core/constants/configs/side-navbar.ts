@@ -1,4 +1,4 @@
-import { SideNavColorsConfig } from "src/app/modules/shared/components/side-navbar/colors-config";
+import { SideNavColorsConfig } from "src/app/modules/shared/components/side-navbar/colors-config.model";
 import { TreeMenuItem } from "../../../modules/shared/components/tree-menu/tree-menu-item.model";
 
 export const adventuresViewSidebarConfig = [
@@ -22,8 +22,6 @@ export const questsViewSidebarConfig = [
 ]
 
 export const questViewSidebarColors:SideNavColorsConfig ={
-    titleColor: 'var(--fuchsia)',
-    subtitleColor: 'var(--fuchsia)',
     itemText: 'var(--fuchsia)',
     itemBg: 'var(--surface)',
     itemTextHover: 'white',

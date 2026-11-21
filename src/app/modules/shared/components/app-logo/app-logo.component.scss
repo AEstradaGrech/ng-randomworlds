@@ -1,14 +1,20 @@
 .logo-container{
     h1{
         color: var(--title-color);
+        margin: var(--title-margin);
     }
     h5{
         color: var(--subtitle-color);
+        margin: var(--subtitle-margin);
     }
 }
 .title-container{
-    margin-top: 9px;
-    margin-left: 7px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    text-align: var(--titles-align);
+    justify-content: var(--titles-justify);
+    margin: 0px 25px;
 }
 .title-row{
     font-size: 17px !important;
@@ -18,4 +24,6 @@
 }
 .logo{
     height: 78px;
+    border-radius: var(--image-radius);
+    margin: var(--image-margin);
 }

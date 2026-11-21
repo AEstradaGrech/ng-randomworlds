@@ -54,10 +54,10 @@ export class NotificationService {
   }
 
   public onAlertIconClick = (iconName:string) => {
-    console.log('ON ALERT ICON CLICK',iconName);
     this.onAlertIconClicked.next(iconName);
   }
   openSnack(type:ESnackAlertType, message: string, topPosition: boolean = true, duration:number | null = null){
+    console.log(' SNACK DUR', duration);
     this._snackBar.open(message, undefined, { duration: (duration? duration : this._duration), panelClass: this._getSnackStyle(type), verticalPosition: (topPosition ? 'top' : 'bottom')});
   }
 

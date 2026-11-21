@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { TreeMenuItem } from '../tree-menu/tree-menu-item.model';
 import { TreeMenuComponent } from '../tree-menu/tree-menu.component';
-import { SideNavColorsConfig } from './colors-config';
+import { SideNavColorsConfig } from './colors-config.model';
+import { AppLogoConfig } from '../app-logo/app-logo.model';
 
 @Component({
   selector: 'app-side-bar',
@@ -11,9 +12,12 @@ import { SideNavColorsConfig } from './colors-config';
 export class SideNavbarComponent {
   @Input() config!: Array<TreeMenuItem>;
   @Input() colorsConfig!: SideNavColorsConfig;
+  @Input() headerConfig!: AppLogoConfig;
   @Input() width: string = '240px'
   @Input() withLogo: boolean = true;
-  @Output() onSelect: EventEmitter<TreeMenuItem> = new EventEmitter<TreeMenuItem>()
+  
+  @Output() onSelect: EventEmitter<TreeMenuItem> = new EventEmitter<TreeMenuItem>();
+
   @ViewChild('treemenu') treeMenu!:TreeMenuComponent;
 
   public onMenuSelect(event:TreeMenuItem){

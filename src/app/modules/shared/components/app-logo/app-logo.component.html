@@ -1,9 +1,18 @@
 
 <div class="logo-container flex centered w-100">
-    <img class="logo" [src]="logoImg" alt="applogo"/>
+    <img class="logo" 
+        [src]="logoImg" 
+        alt="applogo"
+        [style.--image-radius]="logoImgRadius"
+        [style.--image-margin]="logoImgMargin"
+        />
     <div class="title-container"
+    [style.--titles-align]="titlesAlign"
+    [style.--titles-justify]="titlesJustify"
     [style.--title-color]="titleColor"
+    [style.--title-margin]="titleMargin"
     [style.--subtitle-color]="subtitleColor"
+    [style.--subtitle-margin]="subtitleMargin"
     >
         <h1>Random Worlds</h1>
         <h5>Gen.AI text-based game</h5>

@@ -1,6 +1,4 @@
 export interface SideNavColorsConfig{
-    titleColor:string,
-    subtitleColor:string,
     itemText:string,
     itemTextHover:string,
     itemBg:string,

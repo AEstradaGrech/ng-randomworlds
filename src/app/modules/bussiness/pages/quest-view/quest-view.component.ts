@@ -17,7 +17,9 @@ import { ESnackAlertType, GameOutcome } from 'src/app/modules/shared/models/comm
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { PlayerGameSession } from '../../models/smart-contract.interfaces';
 import { HttpEventType } from '@angular/common/http';
-import { SideNavColorsConfig } from 'src/app/modules/shared/components/side-navbar/colors-config';
+import { SideNavColorsConfig } from 'src/app/modules/shared/components/side-navbar/colors-config.model';
+import { AppLogoConfig } from 'src/app/modules/shared/components/app-logo/app-logo.model';
+import { questViewSideNavHeader } from 'src/app/core/constants/configs/app-logo';
 
 @Component({
   selector: 'app-quest-view',
@@ -46,6 +48,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   isLoading:boolean = false;
   actionsBarConfig:Array<TreeMenuItem> = [...questsViewSidebarConfig];
   actionsBarColors: SideNavColorsConfig = questViewSidebarColors;
+  actionsBarHeader: AppLogoConfig = questViewSideNavHeader;
   panelStateR = 'hidden';
   panelStateL = 'hidden';
   gameData!:GameData;
