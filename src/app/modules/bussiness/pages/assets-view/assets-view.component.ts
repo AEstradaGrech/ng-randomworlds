@@ -15,6 +15,8 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
 import Web3 from 'web3';
 import { catchError, concatMap, defer, EMPTY, finalize, from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { runInZone } from 'src/app/core/utilities/runInZone.operator';
+import { SquaredButtonConfig } from 'src/app/modules/shared/components/squared-button/squared-button.model';
+import { appSquaredButton, squaredPayButtonConfig } from 'src/app/core/constants/configs/squared-button';
 
 /**
  * Signature every handler passed to the #collectionsInfo template must satisfy,
@@ -32,11 +34,14 @@ export interface LoadedCollection {
   styleUrl: './assets-view.component.scss'
 })
 export class AssetsViewComponent extends BaseComponent implements OnInit, AfterViewInit{
+  
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   private _ngZone:NgZone = inject(NgZone);
   private _destroyRef:DestroyRef = inject(DestroyRef);
   private _authService: AuthService = inject(AuthService);
   
+  public squaredButtonConfig: SquaredButtonConfig = appSquaredButton;
+  public squaredPayButtonConfig: SquaredButtonConfig = squaredPayButtonConfig;
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   public collections: AssetsCollection[] = []
   public currentCollection!: AssetsCollection | null;
@@ -272,6 +277,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   }
   public onSellClick(model:AssetModel){
     console.log('-- on sell click (TODO) --', model)
+    this._notificationsService.openSnack(ESnackAlertType.WARN, 'Work In Progress');
   }
 
   public onUnlockAssetClick(model: AssetModel){

@@ -19,7 +19,30 @@
     display:flex;
     flex-direction: column;
 }
-
+.pay-menu-header{
+    display: flex; 
+    justify-content: center;
+    align-items: start; 
+    padding: 5px 5px;
+}
+.locked-menu-header{
+    display: flex; 
+    justify-content: center; 
+    align-items: start; 
+    padding: 5px 5px;
+}
+.collection-card-title{
+    color:var(--teal);
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+}
+.collection-card-subtitle{
+    font-style: oblique;
+    color: var(--fuchsia);
+    font-weight: 100;
+    font-size: 10px;
+}
 .lockedchar-card-content{
     margin: 5px 2px 5px 2px;
     color: var(--primary-color);
@@ -120,3 +143,15 @@
     background-color: var(--surface);
   }
 
+.locked-char-actions{
+    display: flex; 
+    justify-content: center;
+}
+
+.lock-menu-btn{
+    margin: 0px 5px;
+}
+
+.menu-card{
+    margin: 0px 5px;
+}

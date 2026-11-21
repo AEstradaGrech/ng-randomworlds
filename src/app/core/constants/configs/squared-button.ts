@@ -25,3 +25,16 @@ export const appSquaredButton: SquaredButtonConfig = {
     borderColorDisabled: 'grey',
     dangerColor: 'var(--danger)',
 }
+
+export const squaredPayButtonConfig: SquaredButtonConfig = {
+    textColor: 'var(--payment)',
+    borderColor: 'var(--payment-border)',
+    textColorHover: 'white',
+    borderColorHover: 'white',
+    backgroundHover: 'var(--payment)',
+    textColorOutlined: 'var(--teal)',
+    borderColorOutlined: 'var(--teal)',
+    textColorDisabled: 'grey',
+    borderColorDisabled: 'grey',
+    dangerColor: 'var(--danger)',
+}
