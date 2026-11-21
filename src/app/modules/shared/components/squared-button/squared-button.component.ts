@@ -9,7 +9,7 @@ import { defaultSquaredButton } from 'src/app/core/constants/configs/squared-but
 })
 export class SquaredButtonComponent {
 
-  loading = input.required<boolean>();
+  loading = input<boolean>();
 
   @Input() outline!:boolean;
   @Input() disable!:boolean;

@@ -37,7 +37,7 @@
                             </mat-chip-row>
                           }
                         </mat-chip-grid>
-                        <input matInput placeholder="Add Ambience..." #ambienceInput
+                        <input matInput placeholder="Add Ambience..." #ambienceInput 
                           [disabled]="formControlDisabled()"
                           [matChipInputFor]="ambienceChipGrid" 
                           [matAutocomplete]="ambsAuto"
@@ -86,7 +86,7 @@
                             </mat-chip-row>
                           }
                         </mat-chip-grid>
-                        <input matInput placeholder="Add Genre..." #genreInput
+                        <input matInput placeholder="Add Genre..." #genreInput readonly
                           [disabled]="formControlDisabled()"
                           [matChipInputFor]="genresChipGrid" 
                           [matAutocomplete]="gensAuto"
@@ -153,23 +153,20 @@
                 <mat-card-subtitle class="game-card-subtitle">Click Play to begin this Quest</mat-card-subtitle>
               </mat-card-header>
               <mat-card-actions class="game-card-actions">
-                <button mat-stroked-button 
-                  class="quest-card-btn text-btn-colors"
-                  [disabled]="actionLoading()"
-                  [ngClass]="{'disabled-btn': actionLoading(), 'all-teal' : selectedQuest() === quest }" 
-                  (click)="onReviewQuestClick(quest)">
-                    REVIEW
-                </button>
-                <button mat-stroked-button 
-                  class="quest-card-btn text-btn-colors" 
-                  [disabled]="actionLoading()"
-                  [ngClass]="{'disabled-btn': actionLoading() }"
-                  (click)="onPlayQuestClick(quest)">
-                  <div class="w-100 h-100 flex jc-center ai-center padding-6 absolute">
-                    <mat-spinner *ngIf="isStartingGame()" diameter="32"></mat-spinner>
-                  </div>
-                  <span>{{(isCharLocked() ? 'CONTINUE' : 'PLAY')}}</span>  
-                </button>
+                <app-squared-button class="quest-card-btn"
+                  [text]="'REVIEW'",
+                  [disable]="actionLoading()"
+                  [outline]="selectedQuest() === quest"
+                  [config]="squaredButtonConfig"
+                  (onClick)="onReviewQuestClick(quest)">
+                </app-squared-button>
+                <app-squared-button class="quest-card-btn"
+                  [text]="(isCharLocked() ? 'CONTINUE' : 'PLAY')",
+                  [loading]="isStartingGame()"
+                  [disable]="actionLoading()"
+                  [config]="squaredButtonConfig"
+                  (onClick)="onPlayQuestClick(quest)">
+              </app-squared-button>
               </mat-card-actions>   
             </mat-card>
           </ng-container>    
