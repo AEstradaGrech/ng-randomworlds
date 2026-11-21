@@ -1,22 +1,26 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { CatalogueModel, CharacterMetadata, CharacterProfile, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { CatalogueModel, CharacterMetadata, CharacterProfile, CollectionSummary, ModelInfo, TokenDetails } from 'src/app/core/interfaces/business/smart-contract.interface';
 import web3 from 'web3';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent, CHAR_DETAIL_DIALOG_SIZE } from '../char-detail-dialog/char-detail-dialog.component';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
-import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
+import { marketplaceNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { Router } from '@angular/router';
+import { catchError, defer, EMPTY, from, map, mergeMap, Observable, switchMap, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 
 @Component({
   selector: 'app-marketplace',
   templateUrl: './marketplace.component.html',
   styleUrl: './marketplace.component.scss'
 })
-export class MarketplaceComponent implements OnInit{
+export class MarketplaceComponent extends BaseComponent implements OnInit{
 
+  public nftCardButtonsConfig = marketplaceNftCardButtons;
   private _smartContractsService = inject(SmartContractsService);
   private _dialog:MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -26,34 +30,44 @@ export class MarketplaceComponent implements OnInit{
   public selectedPrice:string = '--'
   private _paymentTokens: Map<string,TokenDetails> = new Map<string, TokenDetails>();
   private _router:Router = inject(Router);
+  private _destroyRef = inject(DestroyRef);
+
   ngOnInit(): void {
-    this._smartContractsService.getCollectionsCatalogue().then(items => {
-      items.forEach(item => {
-        this._smartContractsService.getCollectionSummary(item).then(summary => {
-          this._setupCatalogueModels(summary);
-        })
-      })
+    defer(() => this._smartContractsService.getCollectionsCatalogue())
+    .pipe(
+      switchMap(addresses => from(addresses)),
+      mergeMap(address => {
+        return this._setupCollection(address)
+          .pipe( 
+            catchError(error => {
+              this._notificationsService.push(error.message);
+              return EMPTY;
+            })
+          )
+      }),
+      takeUntilDestroyed(this._destroyRef)
+    )
+    .subscribe({
+      next: model => this.modelsCatalogue.push(model),
+      error: error => this._notificationsService.push(`An error has occured while setting up the catalogue models: ${error.message}`)
     });
   }
+
   public onCharSelect(model:CatalogueModel){
     let cfg = new MatDialogConfig();
     cfg.data = {model:model, showContractData:true}
     Object.assign(cfg, CHAR_DETAIL_DIALOG_SIZE);
     this._dialog.open(CharDetailDialogComponent, cfg)
   }
+
   public onTokenSelect(change:MatRadioChange, model:CatalogueModel){
     this._updateSelectedPrice(change.value, model);
   }
-  private _updateSelectedPrice(selectedToken:string, model: CatalogueModel){
-    if(selectedToken !== 'ETH'){
-      let tokenDetails = this._paymentTokens.get(selectedToken);
-      this.selectedPrice = tokenDetails ? `${model.price * tokenDetails.multiplier}` : '--'
-    }
-    else this.selectedPrice = `${model.price}`;
-  }
+
   public onBuyClick(model:CatalogueModel){
     this._updateSelectedPrice(this.selectedToken, model);
   }
+
   public async onPayClick(model:CatalogueModel){
     const account = this._smartContractsService.connectedWallet;
     if(!account){
@@ -92,13 +106,43 @@ export class MarketplaceComponent implements OnInit{
     this.loading = false;
   }
 
-  private _setupCatalogueModels(summary:any){
-    summary.models.forEach((model:string) => {
-      this._smartContractsService.getModelInfo(model, summary.address).then(modelInfo => {
-        modelInfo.price = parseFloat(web3.utils.fromWei(modelInfo.price.toString(), 'ether'));
-        this._smartContractsService.withTimeout<CharacterMetadata>(24000, this._smartContractsService.getCharacterMetadata(`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`))
-          .then(metadata => {
-            let catalogueModel: CatalogueModel = {
+  private _setupCollection(address: string): Observable<CatalogueModel>{
+    let collectionSummary: CollectionSummary;
+    return defer(() => this._smartContractsService.getCollectionSummary(address))
+        .pipe(
+          catchError(error => { throw new Error(`An error has occured while retrieving the collection summary for contract ${address}: ${error.message} `);}),
+          tap(summary => collectionSummary = summary),
+          switchMap(summary => from(summary.models)),
+          mergeMap(model => {
+            return this._setupCatalogueModel(collectionSummary, model)
+              .pipe( 
+                catchError(error => {
+                  this._notificationsService.push(error.message);
+                  return EMPTY;
+                })
+              )
+          })
+        )
+  }
+
+  private _setupCatalogueModel(summary:CollectionSummary, model: string) : Observable<CatalogueModel>{
+    return defer(() => this._smartContractsService.getModelInfo(model, summary.address))
+    .pipe(
+      catchError(error => { throw new Error(`An error has occured while getting the model info for ${model} from contract ${summary.address}: ${error.message}`);}),
+      map(info => {
+          info.price = parseFloat(web3.utils.fromWei(info.price.toString(), 'ether'));
+          return info;
+      }),
+      switchMap(info => this._setupModelMetadata(summary, info))
+    )
+  }
+
+  private _setupModelMetadata(summary: CollectionSummary, modelInfo: ModelInfo) : Observable<CatalogueModel>{
+    return defer(() => this._smartContractsService.withTimeout<CharacterMetadata>(24000, this._smartContractsService.getCharacterMetadata(`${summary.gateway}/${summary.metaCid}/${modelInfo.fileName}.json`)))
+      .pipe(
+        catchError(error => { throw new Error(`An error has occured while setting the metadata for model ${modelInfo.name} of contract ${summary.address}: ${error.message}`)}),
+        map(metadata => {
+          let catalogueModel: CatalogueModel = {
               ...modelInfo,
               imageEndpoint: replaceEndpoint(`${summary.gateway}/${summary.modelsCid}/${modelInfo.fileName}${modelInfo.fileExtension}`, 'IPFS', 'ALCHEMY'),
               metadata: metadata,
@@ -110,13 +154,20 @@ export class MarketplaceComponent implements OnInit{
               collectionDescription:summary.description,
               paymentTokens: ['ETH']
             }
-            this.modelsCatalogue.push(catalogueModel);
+            return catalogueModel;
         })
-      })
-    })
+      )
   }
 
-
+  
+  private _updateSelectedPrice(selectedToken:string, model: CatalogueModel){
+    if(selectedToken !== 'ETH'){
+      let tokenDetails = this._paymentTokens.get(selectedToken);
+      this.selectedPrice = tokenDetails ? `${model.price * tokenDetails.multiplier}` : '--'
+    }
+    else this.selectedPrice = `${model.price}`;
+  }
+  
   private _convertToWei(ether:string, tokenDecimals:number){
     switch(tokenDecimals){
         case(3):

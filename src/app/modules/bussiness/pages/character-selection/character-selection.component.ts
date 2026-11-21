@@ -152,9 +152,10 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
 
   public onCardButtonClicked(event:NftCardClickAction){
     console.log('-- char selection >> card btn clicked --', event)
+    if(!(event.asset as AssetModel)) return
     switch(event.name){
       case('view'):
-        this.onViewClick(event.asset);
+        this.onViewClick(event.asset as AssetModel);
       break;
       case('select'):
         let data = localStorage.getItem('game-data');
@@ -165,7 +166,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
             return;
           }
         }
-        this.onSelectClick(event.asset);
+        this.onSelectClick(event.asset as AssetModel);
       break;
       default: break;
     }

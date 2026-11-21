@@ -1,79 +1,207 @@
-<div class="card-container">
-    <div class="img-container shadow">
-        @for(model of modelsCatalogue; track model){
-          <mat-card class="game-card" appearance="outlined">
-              <mat-card-header class="card-header">
-                  <div style="display: flex; align-items: center; justify-items: flex-start;">
-                      <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': model.logoUrl}"></div>
-                  </div>
-                  <div style="display: flexbox; align-items: center;">
-                      <mat-card-title class="game-card-title" [ngClass]="{'sold-color': !model.available}" >{{model.name}}</mat-card-title>
-                      <mat-card-subtitle class="game-card-subtitle">{{model.description}} - {{model.price}} (ETH)</mat-card-subtitle>
-                  </div>
+<!-- <app-nft-visor 
+    [assets]=assets() 
+    [nftCardButtonsConfig]="nftCardButtonsConfig"
+    [disabled]="loading" 
+    (onCardButtonClick)="onCardButtonClicked($event)"
+    [projectedButtonsTemplate]="[buyButton]">
+      <ng-template #buyButton let-model="model">  
+          <app-rounded-button [matMenuTriggerFor]="payMenu" 
+              [id]="'sell'"
+              [iconName]="'payment'"
+              [hoverColor]="'var(--payment)'"
+              [borderColor]="'var(--payment-border)'"
+              [disabled]="loading || model.isInGame"
+              >
+          </app-rounded-button>
+          <mat-menu #buyMenu="matMenu" yPosition="above" xPosition="after">
+            <app-token-selector-matmenu 
+            [buttonText]="'BUY'"
+            [title]="tokenSelectorTitle()"
+            [paymentTokens]="availableTokens()"
+            [withDefaultEth]="true"
+            [textColor]="'var(--teal)'"
+            [selectorColor]="'var(--fuchsia)'"
+            [selectorHoverColor]="'var(--teal)'"
+            [buttonTextColor]="'var(--payment)'"
+            [buttonBorderColor]="'var(--payment-border)'"
+            (onTokenChanged)="onSelectedTokenChange($event)",
+            (onTokenSelected)="onSelectedTokenPay($event)"
+            >
+            </app-token-selector-matmenu>
+          </mat-menu>
+      </ng-template>
+</app-nft-visor> -->
+
+
+<!-- <div class="img-container shadow">
+  @for(model of modelsCatalogue; track model){
+    <mat-card class="game-card" appearance="outlined">
+      <mat-card-header class="card-header">
+          <div style="display: flex; align-items: center; justify-items: flex-start;">
+              <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': model.logoUrl}"></div>
+          </div>
+          <div style="display: flexbox; align-items: center;">
+              <mat-card-title class="game-card-title" [ngClass]="{'sold-color': !model.available}" >{{model.name}}</mat-card-title>
+              <mat-card-subtitle class="game-card-subtitle">{{model.description}} - {{model.price}} (ETH)</mat-card-subtitle>
+          </div>
+      </mat-card-header>
+      <div class="card-body">
+          <img mat-card-image class="game-card-image" [src]="model.imageEndpoint" alt="Character NFT image">
+      </div>
+      <mat-card-actions class="game-card-actions">
+        <app-rounded-button [matMenuTriggerFor]="colMenu"
+          [id]="'col_view'"
+          [iconName]="'assignment'"
+          [hoverColor]="'var(--primary-btn-hover)'"
+          [borderColor]="'var(--primary-btn-border)'"
+          [disabled]="nftCardButtonsConfig">
+          </app-rounded-button>
+        <app-rounded-button
+          [id]="'char_view'"
+          [iconName]="'visibility'"
+          [hoverColor]="'var(--primary-btn-hover)'"
+          [borderColor]="'var(--primary-btn-border)'"
+          [disabled]="loading"
+          (onClickEvent)="onCharSelect(model)">
+          </app-rounded-button>
+        <app-rounded-button [matMenuTriggerFor]="payMenu"
+          [id]="'sell'"
+          [iconName]="'payment'"
+          [hoverColor]="'var(--secondary-btn-hover)'"
+          [borderColor]="'var(--secondary-btn-border)'"
+          [disabled]="loading"
+          [withSpinner]="true"
+          (onClickEvent)="onBuyClick(model)">
+        </app-rounded-button>
+        <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
+          <mat-card class="collection-card" appearance="outlined">
+              <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                <mat-card-title class="collection-card-title">{{model.collectionName}} ({{model.collectionSymbol}})</mat-card-title>
+                <mat-card-subtitle class="collection-card-subtitle">{{model.contractAddress}}</mat-card-subtitle>
               </mat-card-header>
-              <div class="card-body">
-                  <img mat-card-image class="game-card-image" [src]="model.imageEndpoint" alt="Character NFT image">
-              </div>
-              <mat-card-actions class="game-card-actions">
-                <app-rounded-button [matMenuTriggerFor]="colMenu"
-                  [id]="'col_view'"
-                  [iconName]="'assignment'"
-                  [hoverColor]="'var(--primary-btn-hover)'"
-                  [borderColor]="'var(--primary-btn-border)'"
-                  [disabled]="loading">
-                  </app-rounded-button>
-                <app-rounded-button
-                  [id]="'char_view'"
-                  [iconName]="'visibility'"
-                  [hoverColor]="'var(--primary-btn-hover)'"
-                  [borderColor]="'var(--primary-btn-border)'"
-                  [disabled]="loading"
-                  (onClickEvent)="onCharSelect(model)">
-                  </app-rounded-button>
-                <app-rounded-button [matMenuTriggerFor]="payMenu"
-                  [id]="'sell'"
-                  [iconName]="'payment'"
-                  [hoverColor]="'var(--secondary-btn-hover)'"
-                  [borderColor]="'var(--secondary-btn-border)'"
-                  [disabled]="loading"
-                  [withSpinner]="true"
-                  (onClickEvent)="onBuyClick(model)">
-                </app-rounded-button>
-                <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
-                  <mat-card class="collection-card" appearance="outlined">
-                      <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
-                        <mat-card-title class="collection-card-title">{{model.collectionName}} ({{model.collectionSymbol}})</mat-card-title>
-                        <mat-card-subtitle class="collection-card-subtitle">{{model.contractAddress}}</mat-card-subtitle>
-                      </mat-card-header>
-                      <img mat-card-image [src]="model.collectionUrl" alt="Photo of a Shiba Inu">
-                      <mat-card-content class="collection-card-content">
-                        <p>
-                          {{model.collectionDescription}}
-                        </p>
-                      </mat-card-content>
-                    </mat-card>
-                </mat-menu>
-                <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
-                  <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
-                    <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
-                      <mat-card-title class="collection-card-title">{{selectedToken}} - {{selectedPrice}}</mat-card-title>
-                      <mat-card-subtitle class="collection-card-subtitle">{{model.collectionName}}</mat-card-subtitle>
-                    </mat-card-header>
-                    <mat-card-content class="payment-card-content">
-                      <label style="font-weight: 400;">Payment Token</label>
-                      <mat-radio-group class="tokens-radio-group" [(ngModel)]="selectedToken" (click)="$event.stopPropagation()">
-                        @for(paymentToken of model.paymentTokens; track paymentToken){
-                          <mat-radio-button class="token-selector" [value]="paymentToken" (change)="onTokenSelect($event, model)">{{paymentToken}}</mat-radio-button>
-                        }
-                      </mat-radio-group>
-                    </mat-card-content>
-                    <mat-card-actions style="display: flex; justify-content: center;">
-                      <button mat-stroked-button class="pay-btn" (click)="onPayClick(model)">BUY</button>
-                    </mat-card-actions>
-                  </mat-card>
-                </mat-menu>
-              </mat-card-actions>
+              <img mat-card-image [src]="model.collectionUrl" alt="Photo of a Shiba Inu">
+              <mat-card-content class="collection-card-content">
+                <p>
+                  {{model.collectionDescription}}
+                </p>
+              </mat-card-content>
+            </mat-card>
+        </mat-menu>
+        <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
+          <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
+            <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+              <mat-card-title class="collection-card-title">{{selectedToken}} - {{selectedPrice}}</mat-card-title>
+              <mat-card-subtitle class="collection-card-subtitle">{{model.collectionName}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="payment-card-content">
+              <label style="font-weight: 400;">Payment Token</label>
+              <mat-radio-group class="tokens-radio-group" [(ngModel)]="selectedToken" (click)="$event.stopPropagation()">
+                @for(paymentToken of model.paymentTokens; track paymentToken){
+                  <mat-radio-button class="token-selector" [value]="paymentToken" (change)="onTokenSelect($event, model)">{{paymentToken}}</mat-radio-button>
+                }
+              </mat-radio-group>
+            </mat-card-content>
+            <mat-card-actions style="display: flex; justify-content: center;">
+              <button mat-stroked-button class="pay-btn" (click)="onPayClick(model)">BUY</button>
+            </mat-card-actions>
           </mat-card>
+        </mat-menu>
+      </mat-card-actions>
+    </mat-card>
+  }
+</div> -->
+<app-shell [visualization]="'horizontal'">
+  <ng-container class="shell-content">
+    <!-- <div style="padding-bottom: 10px;">
+      
+    </div> -->
+@for(model of modelsCatalogue; track model){
+    <!-- <mat-card class="game-card" appearance="outlined">
+      <mat-card-header class="card-header">
+          <div style="display: flex; align-items: center; justify-items: flex-start;">
+              <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': model.logoUrl}"></div>
+          </div>
+          <div style="display: flexbox; align-items: center;">
+              <mat-card-title class="game-card-title" [ngClass]="{'sold-color': !model.available}" >{{model.name}}</mat-card-title>
+              <mat-card-subtitle class="game-card-subtitle">{{model.description}} - {{model.price}} (ETH)</mat-card-subtitle>
+          </div>
+      </mat-card-header>
+      <div class="card-body">
+          <img mat-card-image class="game-card-image" [src]="model.imageEndpoint" alt="Character NFT image">
+      </div>
+      <mat-card-actions class="game-card-actions">
+        <app-rounded-button [matMenuTriggerFor]="colMenu"
+          [id]="'col_view'"
+          [iconName]="'assignment'"
+          [hoverColor]="'var(--primary-btn-hover)'"
+          [borderColor]="'var(--primary-btn-border)'"
+          [disabled]="loading">
+          </app-rounded-button>
+        <app-rounded-button
+          [id]="'char_view'"
+          [iconName]="'visibility'"
+          [hoverColor]="'var(--primary-btn-hover)'"
+          [borderColor]="'var(--primary-btn-border)'"
+          [disabled]="loading"
+          (onClickEvent)="onCharSelect(model)">
+          </app-rounded-button>
+        <app-rounded-button [matMenuTriggerFor]="payMenu"
+          [id]="'sell'"
+          [iconName]="'payment'"
+          [hoverColor]="'var(--secondary-btn-hover)'"
+          [borderColor]="'var(--secondary-btn-border)'"
+          [disabled]="loading"
+          [withSpinner]="true"
+          (onClickEvent)="onBuyClick(model)">
+        </app-rounded-button>
+        <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
+          <mat-card class="collection-card" appearance="outlined">
+              <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                <mat-card-title class="collection-card-title">{{model.collectionName}} ({{model.collectionSymbol}})</mat-card-title>
+                <mat-card-subtitle class="collection-card-subtitle">{{model.contractAddress}}</mat-card-subtitle>
+              </mat-card-header>
+              <img mat-card-image [src]="model.collectionUrl" alt="Photo of a Shiba Inu">
+              <mat-card-content class="collection-card-content">
+                <p>
+                  {{model.collectionDescription}}
+                </p>
+              </mat-card-content>
+            </mat-card>
+        </mat-menu>
+        <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
+          <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
+            <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+              <mat-card-title class="collection-card-title">{{selectedToken}} - {{selectedPrice}}</mat-card-title>
+              <mat-card-subtitle class="collection-card-subtitle">{{model.collectionName}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="payment-card-content">
+              <label style="font-weight: 400;">Payment Token</label>
+              <mat-radio-group class="tokens-radio-group" [(ngModel)]="selectedToken" (click)="$event.stopPropagation()">
+                @for(paymentToken of model.paymentTokens; track paymentToken){
+                  <mat-radio-button class="token-selector" [value]="paymentToken" (change)="onTokenSelect($event, model)">{{paymentToken}}</mat-radio-button>
+                }
+              </mat-radio-group>
+            </mat-card-content>
+            <mat-card-actions style="display: flex; justify-content: center;">
+              <button mat-stroked-button class="pay-btn" (click)="onPayClick(model)">BUY</button>
+            </mat-card-actions>
+          </mat-card>
+        </mat-menu>
+      </mat-card-actions>
+    </mat-card> -->
+  <app-nft-card 
+    [model]="model" 
+    [cardButtons]="nftCardButtonsConfig"
+    [disabled]="loading"
+    >
+    <!-- <ng-container class="projected-buttons">
+        @for(template of projectedButtonsTemplate; track template){
+            <ng-container *ngTemplateOutlet="template context: { $implicit: model, model: model }"></ng-container>
         }
-    </div>
-</div>
+    </ng-container> -->
+</app-nft-card>
+  }
+  </ng-container>
+</app-shell>
+
+

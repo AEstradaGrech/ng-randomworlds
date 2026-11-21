@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { AssetModel } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { AssetModel, CatalogueModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { AssetCardButtonState, NftCardClickAction, RoundedButtonConfig } from '../../models/common-interfaces';
 import { EAppButtons } from '../../models/common-enums';
 import { ALCHEMY_ENDPOINT, IPFS_ENDPOINT } from 'src/app/core/constants/configs/nft-card';
@@ -20,11 +20,29 @@ export class NftCardComponent implements OnInit, OnChanges {
     }
   }
 
-  @Input() model!: AssetModel;
+  @Input() model!: AssetModel | CatalogueModel;
   @Input() disabled: boolean = false;
   @Input() cardButtons: RoundedButtonConfig[] = [];
   @Input() onBtnStateChange!: EventEmitter<AssetCardButtonState>;
   @Output() onCardButtonClick: EventEmitter<NftCardClickAction> = new EventEmitter<NftCardClickAction>();
+
+  public get modelName():string{
+    return this.model as AssetModel ? 
+      this.modelAs<AssetModel>().metadata.name : 
+      this.modelAs<CatalogueModel>().name;
+  }
+
+  public get modelDescription():string{
+    return this.model as AssetModel ? 
+      this.modelAs<AssetModel>().metadata.description : 
+      this.modelAs<CatalogueModel>().description;
+  }
+
+  public get modelImage():string{
+    return this.model as AssetModel ? 
+      this.modelAs<AssetModel>().imageEndpoint : 
+      this.modelAs<CatalogueModel>().imageEndpoint;
+  }
 
   ngOnInit(): void {
     if(this.cardButtons.length > 0){
@@ -37,7 +55,8 @@ export class NftCardComponent implements OnInit, OnChanges {
     
     if(this.onBtnStateChange){
       this.onBtnStateChange.subscribe(change => {
-        if(change.contract === this.model.contractAddress && change.tokenId === this.model.tokenId){
+        let modelId = this.model as AssetModel ? `${this.modelAs<AssetModel>().tokenId}` : this.modelAs<CatalogueModel>().name;
+        if(change.contract === this.model.contractAddress && change.tokenId === modelId){
           let cfg = this.cardButtons.find(x => x.id === change.buttonId);
           if(cfg){
             cfg.disabled = change.disabled;
@@ -47,16 +66,23 @@ export class NftCardComponent implements OnInit, OnChanges {
       });
     }
   }
-
+  isAssetModel(model: AssetModel | CatalogueModel): model is AssetModel {
+    return 'tokenId' in model;   // ← la comprobación la escribes tú
+  }
+  modelAs<T>():T{
+    return this.model as T
+  }
   getCollectionLogo(): string {
-    return this.model ? 
-      (this.model.collectionLogoUrl.includes(IPFS_ENDPOINT) ? 
-        this.model.collectionLogoUrl.replace(IPFS_ENDPOINT, ALCHEMY_ENDPOINT) : 
-        this.model.collectionLogoUrl) : 
+    return this.model ? this.isAssetModel(this.model) ? 
+      (this.modelAs<AssetModel>().collectionLogoUrl.includes(IPFS_ENDPOINT) ? 
+        this.modelAs<AssetModel>().collectionLogoUrl.replace(IPFS_ENDPOINT, ALCHEMY_ENDPOINT) : 
+        this.modelAs<AssetModel>().collectionLogoUrl) : 
+      (this.modelAs<CatalogueModel>().collectionUrl.includes(IPFS_ENDPOINT) ? 
+        this.modelAs<CatalogueModel>().collectionUrl.replace(IPFS_ENDPOINT, ALCHEMY_ENDPOINT) : 
+        this.modelAs<CatalogueModel>().collectionUrl) :
       `url(assets/images/ng-app-logo.png)`;
   }
   onButtonClick(event:string){
-    console.log('-- clicked button ID --', event)
     this.onCardButtonClick.emit({name:event, asset: this.model});
   }
 }

@@ -1,6 +1,6 @@
 import { MatBadgePosition, MatBadgeSize } from "@angular/material/badge"
 import { QuestCharacter, QuestPreferences } from "src/app/core/interfaces/business/prompting.interface"
-import { AssetModel } from "src/app/core/interfaces/business/smart-contract.interface"
+import { AssetModel, CatalogueModel } from "src/app/core/interfaces/business/smart-contract.interface"
 import { EAppButtons } from "./common-enums"
 
 export interface QueryFilter{
@@ -61,7 +61,7 @@ export interface RoundedButtonConfig {
 
 export interface NftCardClickAction{
     name: string,
-    asset: AssetModel
+    asset: AssetModel | CatalogueModel
 }
 
 export interface MatBadgeConfig{
@@ -73,7 +73,7 @@ export interface MatBadgeConfig{
 
 export interface AssetCardButtonState {
   contract: string,
-  tokenId: number,
+  tokenId: string,
   buttonId: EAppButtons,
   disabled: boolean
 }

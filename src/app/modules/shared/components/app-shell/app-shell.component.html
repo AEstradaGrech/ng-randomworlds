@@ -16,7 +16,11 @@
             </div>
         </div>
     </section>
-    <section class="shell-screen shadow">
+    <section class="shell-screen shadow" 
+        [style.--view-type]="viewType()"
+        [style.--scroll-y]="scrollY()"
+        [style.--scroll-x]="scrollX()"
+        [style.--scroll-w]="scrollW()">
         <ng-content select=".shell-content"></ng-content>
     </section>
     <section style="display:block; align-items: center; margin:33px 12px 33px 7px">

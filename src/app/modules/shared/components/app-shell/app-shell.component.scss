@@ -7,11 +7,15 @@
 .shell-screen{
     display: flex;
     justify-content: center;
+    flex-wrap: var(--view-type);
     align-items: center;
     height: 100%;
     width: 97vw;
     margin: 15px 0px 10px 0px;
     border-radius: 15px;
+    overflow-y: var(--scroll-y);
+    overflow-y: var(--scroll-x);
+    scrollbar-width: var(--scroll-w);
 }
 
 .buttons-wrapper{

@@ -46,7 +46,6 @@ export class NftVisorComponent implements OnInit, OnChanges{
     }
   }
   public onChangeVisualization(){
-    console.log('-- on change visualization --');
     this.viewType = this.visualization === 'row' ? 'nowrap' : 'wrap';
     this.screenScroll = this.visualization === 'row' ? 'hidden' : 'auto';
     this.onVisualizationChange.emit(this.visualization);

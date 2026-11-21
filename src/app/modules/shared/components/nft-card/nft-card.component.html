@@ -2,12 +2,12 @@
     <mat-card-header class="card-header">
         <div mat-card-avatar class="game-card-header-image" [ngStyle]="{'background-image': getCollectionLogo()}"></div>
         <div style="display: flex; flex-direction: column; min-width: 0; flex: 1;">
-            <mat-card-title class="game-card-title">{{model.metadata.name}}</mat-card-title>
-            <mat-card-subtitle class="game-card-subtitle">{{model.metadata.description}}</mat-card-subtitle>
+            <mat-card-title class="game-card-title">{{modelName}}</mat-card-title>
+            <mat-card-subtitle class="game-card-subtitle">{{modelDescription}}</mat-card-subtitle>
         </div>
     </mat-card-header>
     <div class="card-body">
-        <img mat-card-image class="game-card-image" [src]="model.imageEndpoint" alt="Character NFT image">
+        <img mat-card-image class="game-card-image" [src]="modelImage" alt="Character NFT image">
     </div>
     <mat-card-actions class="game-card-actions">
         @for(btn of cardButtons; track btn){

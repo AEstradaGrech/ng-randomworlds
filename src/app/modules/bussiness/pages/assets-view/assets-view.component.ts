@@ -107,7 +107,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
             asset.isLocked = locked;
             if(locked){
               //asset.isInGame = checkSession
-              this.onCardBtnChange.emit({buttonId: EAppButtons.SELECT, disabled: true, contract: asset.contractAddress, tokenId: asset.tokenId});
+              this.onCardBtnChange.emit({buttonId: EAppButtons.SELECT, disabled: true, contract: asset.contractAddress, tokenId: `${asset.tokenId}`});
               this._smartContractsService.getPlayerSession(data.address, asset.tokenId).then(session => {
                 console.log('-- on player session --', session);
                 if(session.startedAt > 0)
@@ -389,12 +389,13 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   }
   public onCardButtonClicked(event:NftCardClickAction){
     console.log('-- char selection >> card btn clicked --', event)
+    if(!(event.asset as AssetModel)) return;
     switch(event.name){
       case('view'):
-        this.onViewClick(event.asset);
+        this.onViewClick(event.asset as AssetModel);
       break;
       case('select'):
-        this.onCardSelected(event.asset);
+        this.onCardSelected(event.asset as AssetModel);
       break;
       default: break;
     }
