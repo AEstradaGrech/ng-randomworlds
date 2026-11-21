@@ -1,0 +1,29 @@
+.squared-btn{
+    width: 100%;
+}
+.btn-colors{
+    --mdc-outlined-button-outline-color: var(--border-color);
+    --mdc-outlined-button-label-text-color: var(--text-color);
+    &.danger{
+      --mdc-outlined-button-outline-color: var(--danger-color);
+      --mdc-outlined-button-label-text-color: var(--danger-color);
+    }
+    &.outline{
+      --mdc-outlined-button-outline-color: var(--border-color-outlined);
+      --mdc-outlined-button-label-text-color: var(--text-color-outlined);
+    }
+}
+
+.disabled-btn{
+    border-color:var(--border-color-disabled);
+    color:var(--text-color-disabled); 
+}
+
+.btn-colors:hover{
+    --mdc-outlined-button-label-text-color: var(--text-color-hover);
+    --mdc-outlined-button-outline-color: var(--border-color-hover);
+    background-color: var(--hover-bg-color);
+    &.danger{
+      background-color: var(--danger-color);
+    }
+}

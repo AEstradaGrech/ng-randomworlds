@@ -1,0 +1,23 @@
+<button mat-stroked-button class="squared-btn btn-colors" 
+    (click)="onClicked()" 
+    [disabled]="disabled()"
+    [style.--text-color]="configuration().textColor"
+    [style.--border-color]="configuration().borderColor"
+    [style.--text-color-outlined]="configuration().textColorOutlined"
+    [style.--border-color-outlined]="configuration().borderColorOutlined"
+    [style.--text-color-hover]="configuration().textColorHover"
+    [style.--border-color-hover]="configuration().borderColorHover"
+    [style.--hover-bg-color]="configuration().backgroundHover"
+    [style.--text-color-disabled]="configuration().textColorDisabled"
+    [style.--border-color-disabled]="configuration().borderColorDisabled"
+    [style.--danger-color]="configuration().dangerColor" 
+    [ngClass]="{ 
+        'outline': outline,
+        'danger': danger,
+        'disabled-btn': disabled()
+    }">
+    <div class="w-100 h-100 flex jc-center ai-center padding-6 absolute">
+        <mat-spinner *ngIf="loading()" diameter="loadingDiameter"></mat-spinner>
+    </div>  
+    <span>{{text}}</span>
+</button>

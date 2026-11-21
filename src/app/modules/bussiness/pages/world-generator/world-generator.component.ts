@@ -17,6 +17,8 @@ import { SmartContractsService } from '../../services/smart-contracts.service';
 import { replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { defer, finalize, Subject } from 'rxjs';
+import { SquaredButtonConfig } from 'src/app/modules/shared/components/squared-button/squared-button.model';
+import { appSquaredButton } from 'src/app/core/constants/configs/squared-button';
 
 @Component({
   selector: 'app-world-generator',
@@ -32,7 +34,8 @@ import { defer, finalize, Subject } from 'rxjs';
   ]
 })
 export class WorldGeneratorComponent extends BaseComponent implements OnInit{
-  
+  public squaredButtonConfig: SquaredButtonConfig = appSquaredButton;
+
   public selectedAmbiences: string[] = []
   public selectedMoods: string[]=[]
   public selectedGenres: string[]=[]
@@ -96,7 +99,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   });
   public isCharLocked = computed(() => {
     let selectedChar: AssetModel | null = this.selectedCharacter();
-      return selectedChar ? selectedChar.isLocked : false;
+    return selectedChar && selectedChar.isLocked !== undefined ? selectedChar.isLocked : false;
   });
 
   ngOnInit(): void {
