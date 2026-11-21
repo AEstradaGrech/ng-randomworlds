@@ -12,4 +12,5 @@ export class AppShellComponent {
   scrollY = computed(() => { return this.visualization() === 'horizontal' ? 'hidden' : 'auto'});
   scrollX = computed(() => { return this.visualization() === 'horizontal' ? 'auto' : 'hidden'});
   scrollW = computed(() => { return this.visualization() === 'horizontal' ? 'thin' : 'none'});
+  contentJustify = computed(() => { return this.visualization() === 'horizontal' ? 'start' : 'center'});
 }

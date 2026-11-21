@@ -6,7 +6,7 @@
 }
 .shell-screen{
     display: flex;
-    justify-content: center;
+    justify-content: var(--content-justify);
     flex-wrap: var(--view-type);
     align-items: center;
     height: 100%;
