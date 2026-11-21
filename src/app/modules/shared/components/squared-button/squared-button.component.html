@@ -17,7 +17,7 @@
         'disabled-btn': disabled()
     }">
     <div class="w-100 h-100 flex jc-center ai-center padding-6 absolute">
-        <mat-spinner *ngIf="loading()" diameter="loadingDiameter"></mat-spinner>
+        <mat-spinner *ngIf="loading()" [diameter]="loadingDiameter"></mat-spinner>
     </div>  
     <span>{{text}}</span>
 </button>

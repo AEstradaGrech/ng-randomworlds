@@ -135,26 +135,12 @@
                 </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">
-              <!-- <button mat-stroked-button class="begin-btn" 
-                (click)="onGenerateClick()" 
-                [disabled]="actionLoading() || isCharLocked()" 
-                [ngClass]="{ 
-                  'text-btn-colors': !isCharLocked(),
-                  'disabled-btn': isCharLocked() || isStartingGame
-                }">
-                <div class="w-100 h-100 flex jc-center ai-center padding-6 absolute">
-                  <mat-spinner *ngIf="isLoading()" diameter="32"></mat-spinner>
-                </div>  
-                <span>GENERATE</span>
-              </button> -->
               <app-squared-button class="generate-btn"
                 [text]="'GENERATE'",
                 [loading]="isLoading()"
                 [disable]="actionLoading() || isCharLocked()"
                 [config]="squaredButtonConfig"
-                (onClick)="onGenerateClick()" 
-              >
-
+                (onClick)="onGenerateClick()">
               </app-squared-button>
             </mat-card-actions>
         </mat-card>
