@@ -39,7 +39,7 @@
             </div>
         </div>
     </div>
-  <div #nftsContainer class="img-container shadow" [style.--view-type]="viewType" [style.--vertical-scroll]="screenScroll">
+  <div #nftsContainer class="img-container shadow" [style.--view-type]="viewType" [style.--vertical-scroll]="screenScroll" [style.--content-justify]="contentJustify">
       @for(model of assets; track model){
         <app-nft-card 
             [model]="model" 

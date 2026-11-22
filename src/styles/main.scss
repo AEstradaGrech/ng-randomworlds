@@ -318,6 +318,10 @@ h2 {
     justify-content: center;
   }
 }
+.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+  overflow-wrap: anywhere;  // permite cortar una "palabra" larga en cualquier punto
+  min-width: 0;             // y que la etiqueta pueda encogerse dentro del flex
+}
 .error-snackbar .mat-simple-snackbar-action {
   color: #242424;
 }

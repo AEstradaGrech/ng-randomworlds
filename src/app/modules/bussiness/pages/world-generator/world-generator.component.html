@@ -162,7 +162,7 @@
                 </app-squared-button>
                 <app-squared-button class="quest-card-btn"
                   [text]="(isCharLocked() ? 'CONTINUE' : 'PLAY')",
-                  [loading]="isStartingGame()"
+                  [loading]="isStartingGame() && selectedQuest() === quest"
                   [disable]="actionLoading()"
                   [config]="squaredButtonConfig"
                   (onClick)="onPlayQuestClick(quest)">

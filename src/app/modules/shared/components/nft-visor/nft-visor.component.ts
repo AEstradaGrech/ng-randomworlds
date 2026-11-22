@@ -23,6 +23,7 @@ export class NftVisorComponent implements OnInit, OnChanges{
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
   public viewType: string = 'wrap';
   public screenScroll: string = 'auto';
+  public contentJustify: string = 'center';
   private _slideScrollState: ScrollState = {
       step: 100,
       mult: 1,
@@ -49,6 +50,7 @@ export class NftVisorComponent implements OnInit, OnChanges{
   public onChangeVisualization(){
     this.viewType = this.visualization === 'row' ? 'nowrap' : 'wrap';
     this.screenScroll = this.visualization === 'row' ? 'hidden' : 'auto';
+    this.contentJustify = this.visualization === 'row' ? 'start' : 'center';
     this.onVisualizationChange.emit(this.visualization);
   }
   public switchVisualization(){

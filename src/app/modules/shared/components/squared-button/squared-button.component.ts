@@ -12,7 +12,7 @@ export class SquaredButtonComponent {
   loading = input<boolean>();
 
   @Input() outline!:boolean;
-  @Input() disable!:boolean;
+  disable = input<boolean>();
   @Input() danger!:boolean;
   @Input() text:string = "Accept"
   @Input() loadingDiameter: number = 32;
@@ -25,7 +25,7 @@ export class SquaredButtonComponent {
   })
 
   disabled = computed(() => {
-    return this.loading() || this.disable
+    return this.loading() || this.disable()
   })
 
   public onClicked(){

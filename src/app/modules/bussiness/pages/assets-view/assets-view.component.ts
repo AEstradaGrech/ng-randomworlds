@@ -1,7 +1,7 @@
 import { Component, signal, inject, OnInit, ViewChild, ElementRef, NgZone, DestroyRef, AfterViewInit, EventEmitter } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SmartContractsService } from '../../services/smart-contracts.service';
-import { AssetModel, AssetsCollection, CollectionSummary, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
+import { AssetModel, AssetsCollection, CustomCharsCollection, NftDetailModel } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatSidenav } from '@angular/material/sidenav'; 
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent, CHAR_DETAIL_DIALOG_SIZE } from '../char-detail-dialog/char-detail-dialog.component';
@@ -13,7 +13,7 @@ import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/comm
 import { TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import Web3 from 'web3';
-import { catchError, concatMap, defer, EMPTY, finalize, from, map, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, concatMap, defer, EMPTY, finalize, from, map, Observable, switchMap } from 'rxjs';
 import { runInZone } from 'src/app/core/utilities/runInZone.operator';
 import { SquaredButtonConfig } from 'src/app/modules/shared/components/squared-button/squared-button.model';
 import { appSquaredButton, squaredPayButtonConfig } from 'src/app/core/constants/configs/squared-button';
@@ -461,6 +461,9 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     if(data){
       let gameData:GameData = JSON.parse(data);
       gameData.selectedCharacter = asset;
+      gameData.gameSessionId = '';
+      gameData.character = undefined;
+      gameData.gameStatus = '';
       localStorage.setItem('game-data', JSON.stringify(gameData));
       this._notificationsService.push(`Selected Character: ${asset.metadata.name}`);
     }

@@ -1,15 +1,20 @@
-import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef, signal } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, Inject, ElementRef, TemplateRef, signal, EventEmitter, DestroyRef } from '@angular/core';
 import { SmartContractsService } from '../../services/smart-contracts.service';
 import { AssetModel, CollectionSummary, CustomCharsCollection, NftDetailModel, WalletNFT } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent, CHAR_DETAIL_DIALOG_SIZE } from '../char-detail-dialog/char-detail-dialog.component';
-import { GameData, NftCardClickAction, RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
+import { AssetCardButtonState, GameData, NftCardClickAction, RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
 import { Router } from '@angular/router';
-import {ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
+import {EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
 import { defaultNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import Web3 from 'web3';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { defer, finalize, switchMap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { QuestsService } from '../../services/quests.service';
+import { SquaredButtonConfig } from 'src/app/modules/shared/components/squared-button/squared-button.model';
+import { appSquaredButton } from 'src/app/core/constants/configs/squared-button';
 
 @Component({
   selector: 'app-character-selection',
@@ -19,17 +24,22 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
 export class CharacterSelectionComponent extends BaseComponent implements OnInit {
   
   @ViewChild('sellButton') sellButton!: TemplateRef<any>;
-  
+  public squaredButtonConfig: SquaredButtonConfig = appSquaredButton;
   public assets = signal<AssetModel[]>([]);
   public collections:CollectionSummary[]=[];
   public customCharsCollection!: CustomCharsCollection | null;
-  public loading:boolean = false;
+  public loading = signal<boolean>(false);
+  public abandoning = signal<boolean>(false);
+  public onDisableUnfocused: EventEmitter<AssetCardButtonState> = new EventEmitter<AssetCardButtonState>();
+  public onCardBtnChange: EventEmitter<AssetCardButtonState> = new EventEmitter<AssetCardButtonState>();
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
   private _dialog:MatDialog = inject(MatDialog);
   private _router:Router = inject(Router);
   private _smartContractsService:SmartContractsService = inject(SmartContractsService);
   private _authService:AuthService = inject(AuthService);
-  
+  private _questsService: QuestsService = inject(QuestsService);
+  private _destroyRef:DestroyRef = inject(DestroyRef);
+
   @ViewChild('nftsContainer') nftsContainer!: ElementRef;
 
   constructor(){
@@ -77,13 +87,33 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
     });
   }
   public onUnlockAssetClick(model: AssetModel){
-     if(model.isInGame){
-      this._smartContractsService.abandonGame(model.contractAddress, model.tokenId).then(res => {
-        if(res){
-          this._getCharactersData();
-          this._notificationsService.openSnack(ESnackAlertType.WARN, 'Current game session abandoned', false, 3000);
-        }
-        else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while abandoning the game', false, 3000);
+    if(model.isInGame){
+      console.log('model owner address', model.ownerAddress);
+      this.loading.set(true);
+      this.abandoning.set(true);
+      this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+      this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+      defer(() => this._smartContractsService.abandonGame(model.contractAddress, model.tokenId))
+        .pipe(
+          switchMap(res => { return this._questsService.getCurrentQuestFor(model.tokenId, model.contractAddress, model.ownerAddress)}),
+          switchMap(currentQuest => {
+            return this._questsService.setQuestStatus(currentQuest.id, 'ABANDONED');
+          }),
+          finalize(() => {
+            this.loading.set(false);
+            this.abandoning.set(false);
+            this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+            this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+          }),
+          takeUntilDestroyed(this._destroyRef)
+        )
+        .subscribe({
+          next: res => {
+            if(res){
+              this._getCharactersData();
+              this._notificationsService.openSnack(ESnackAlertType.WARN, 'Current game session abandoned', false, 3000);
+            }
+        },error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while abandoning the game: ${error.message}`, false, 3000)
       });
     }
     else{

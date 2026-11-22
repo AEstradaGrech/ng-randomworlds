@@ -1,7 +1,9 @@
 <app-nft-visor 
     [assets]=assets() 
     [nftCardButtonsConfig]="nftCardButtonsConfig"
-    [disabled]="loading" 
+    [disabled]="loading()" 
+    [onDisableUnfocused]="onDisableUnfocused" 
+    [onCardBtnChange]="onCardBtnChange"
     (onCardButtonClick)="onCardButtonClicked($event)"
     [projectedButtonsTemplate]="[unlockBtn]">
     <ng-template #unlockBtn let-model="model">
@@ -12,11 +14,12 @@
                 [iconName]="'lock'"
                 [hoverColor]="'red'"
                 [borderColor]="'red'"
-                [disabled]="loading">
+                [disabled]="loading()"
+                [withSpinner]="abandoning()">
             </app-rounded-button>
             <mat-menu #unlockMenu="matMenu" yPosition="above" xPosition="after">
-                <mat-card class="collection-card" style="margin: 0px 5px" appearance="outlined">
-                    <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                <mat-card class="menu-card" appearance="outlined">
+                    <mat-card-header class="locked-menu-header">
                         <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
                         <mat-card-subtitle class="collection-card-subtitle">{{model.contractAddress}}</mat-card-subtitle>
                     </mat-card-header>
@@ -28,9 +31,19 @@
                             <h5>Character is recovering. Locked until {{model.lockedUntil}}</h5>
                         }
                     </mat-card-content>
-                    <mat-card-actions style="display: flex; justify-content: center;">
-                        <button mat-stroked-button class="pay-btn" (click)="onUnlockAssetClick(model)">{{model.isInGame ? 'ABANDON' : 'UNLOCK'}}</button>
-                        <button *ngIf="model.isInGame" mat-stroked-button class="pay-btn" (click)="onSelectClick(model)"> CONTINUE </button>
+                    <mat-card-actions class="locked-char-action">
+                        <app-squared-button class="lock-menu-btn"
+                            [text]="model.isInGame ? 'ABANDON' : 'UNLOCK'",
+                            [danger]="true"
+                            [config]="squaredButtonConfig"
+                            (onClick)="onUnlockAssetClick(model)">
+                        </app-squared-button>
+                        <app-squared-button *ngIf="model.isInGame" class="lock-menu-btn"
+                            [text]="'CONTINUE'",
+                            [outline]="true"
+                            [config]="squaredButtonConfig"
+                            (onClick)="onSelectClick(model)">
+                        </app-squared-button>
                     </mat-card-actions>
                 </mat-card>
             </mat-menu>

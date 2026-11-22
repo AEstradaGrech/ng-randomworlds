@@ -5,6 +5,7 @@
     border-radius: 15px;
     min-height: 90vh;
     max-height: 91vh;
+    justify-content: var(--content-justify);
     align-items: center;
     display: flex !important;
     flex-wrap: var(--view-type);
