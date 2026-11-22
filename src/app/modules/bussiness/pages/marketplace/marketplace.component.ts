@@ -29,6 +29,8 @@ export class MarketplaceComponent extends BaseComponent implements OnInit{
   public loading:boolean = false;
   public selectedToken:string = 'ETH';
   public selectedPrice:string = '--'
+  public visualization = signal<string>('vertical');
+
   private _paymentTokens: Map<string,TokenDetails> = new Map<string, TokenDetails>();
   private _router:Router = inject(Router);
   private _destroyRef = inject(DestroyRef);
@@ -134,6 +136,11 @@ export class MarketplaceComponent extends BaseComponent implements OnInit{
         )
   }
 
+  public switchVisualization(){
+    if(this.visualization() === 'vertical')
+      this.visualization.set('horizontal');
+    else this.visualization.set('vertical');
+  }
   public replacedEndpoint(url:string, current:string, newValue:string){
     return replaceEndpoint(url, current, newValue);
   }

@@ -5,6 +5,8 @@
                 <ng-content select=".upper-buttons-l"></ng-content>
                 <div style="margin-top: 5px">
                     <app-rounded-button
+                        matTooltip="Change screen visualization"
+                        [matTooltipPosition]="'after'"
                         [id]="'view-type'"
                         [iconName]="'select_all'"
                         [hoverColor]="'var(--primary-btn-hover)'"

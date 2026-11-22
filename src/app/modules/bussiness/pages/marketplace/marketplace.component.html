@@ -1,4 +1,16 @@
-<app-shell [visualization]="'horizontal'">
+<app-shell [visualization]="visualization()">
+  <ng-container class="upper-buttons-l">
+    <app-rounded-button
+        matTooltip="Change screen visualization"
+        [matTooltipPosition]="'after'"
+        [id]="'view-type'"
+        [iconName]="'select_all'"
+        [hoverColor]="'var(--primary-btn-hover)'"
+        [borderColor]="'var(--primary-btn-border)'"
+        [disabled]="loading"
+        (onClickEvent)="switchVisualization()">
+    </app-rounded-button>
+  </ng-container>
   <ng-container class="shell-content">
     @for(model of modelsCatalogue; track model){
       <app-nft-card 

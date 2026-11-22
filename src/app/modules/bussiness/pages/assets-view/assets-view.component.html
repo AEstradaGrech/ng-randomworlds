@@ -122,6 +122,8 @@
                 <ng-container class="upper-buttons-l">
                     <div style="display: grid">
                         <app-rounded-button 
+                            matTooltip="View collections"
+                            [matTooltipPosition]="'after'"
                             [id]="'view-cols'"
                             [iconName]="'skip_next'"
                             [hoverColor]="'var(--primary-btn-hover)'"
@@ -130,6 +132,8 @@
                             (onClickEvent)="sidenav.open()">
                         </app-rounded-button>
                         <app-rounded-button 
+                            matTooltip="Generate character"
+                            [matTooltipPosition]="'after'"
                             [id]="'generate-char'"
                             [iconName]="'android'"
                             [hoverColor]="'var(--fuchsia)'"
