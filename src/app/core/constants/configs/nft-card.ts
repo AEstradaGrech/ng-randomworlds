@@ -22,14 +22,6 @@ export const defaultNftCardButtons: RoundedButtonConfig[] = [
 
 export const marketplaceNftCardButtons: RoundedButtonConfig[] = [
     {
-        id: EAppButtons.VIEW_COLLECTION,
-        iconName: 'assignment',
-        color: 'var(--primary-btn-color)',
-        hoverColor: 'var(--teal)',
-        borderColor: 'var(--teal)',
-        withSpinner: false
-    },
-    {
         id: EAppButtons.VIEW,
         iconName: 'visibility',
         color: 'var(--primary-btn-color)',

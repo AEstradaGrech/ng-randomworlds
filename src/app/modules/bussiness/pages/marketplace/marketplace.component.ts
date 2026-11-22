@@ -6,12 +6,13 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CharDetailDialogComponent, CHAR_DETAIL_DIALOG_SIZE } from '../char-detail-dialog/char-detail-dialog.component';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
+import { NftCardClickAction, RoundedButtonConfig } from 'src/app/modules/shared/models/common-interfaces';
 import { marketplaceNftCardButtons, replaceEndpoint } from 'src/app/core/constants/configs/nft-card';
 import { Router } from '@angular/router';
 import { catchError, defer, EMPTY, from, map, mergeMap, Observable, switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
+import { EAppButtons } from 'src/app/modules/shared/models/common-enums';
 
 @Component({
   selector: 'app-marketplace',
@@ -67,7 +68,15 @@ export class MarketplaceComponent extends BaseComponent implements OnInit{
   public onBuyClick(model:CatalogueModel){
     this._updateSelectedPrice(this.selectedToken, model);
   }
-
+  public onCardButtonClicked(event:NftCardClickAction){
+    switch(event.name){
+      case EAppButtons.VIEW_COLLECTION:
+        break;
+      case EAppButtons.VIEW:
+        this.onCharSelect(event.asset as CatalogueModel);
+        break;
+    }
+  }
   public async onPayClick(model:CatalogueModel){
     const account = this._smartContractsService.connectedWallet;
     if(!account){
@@ -167,7 +176,7 @@ export class MarketplaceComponent extends BaseComponent implements OnInit{
     }
     else this.selectedPrice = `${model.price}`;
   }
-  
+
   private _convertToWei(ether:string, tokenDecimals:number){
     switch(tokenDecimals){
         case(3):

@@ -60,7 +60,6 @@ export class NftCardComponent implements OnInit, OnChanges {
           let cfg = this.cardButtons.find(x => x.id === change.buttonId);
           if(cfg){
             cfg.disabled = change.disabled;
-            console.log('-- on btn disabled change --');
           }
         }
       });
@@ -77,10 +76,8 @@ export class NftCardComponent implements OnInit, OnChanges {
       (this.modelAs<AssetModel>().collectionLogoUrl.includes(IPFS_ENDPOINT) ? 
         this.modelAs<AssetModel>().collectionLogoUrl.replace(IPFS_ENDPOINT, ALCHEMY_ENDPOINT) : 
         this.modelAs<AssetModel>().collectionLogoUrl) : 
-      (this.modelAs<CatalogueModel>().collectionUrl.includes(IPFS_ENDPOINT) ? 
-        this.modelAs<CatalogueModel>().collectionUrl.replace(IPFS_ENDPOINT, ALCHEMY_ENDPOINT) : 
-        this.modelAs<CatalogueModel>().collectionUrl) :
-      `url(assets/images/ng-app-logo.png)`;
+      (this.modelAs<CatalogueModel>().logoUrl) :
+      `url(assets/images/MetamaskIconBrown.png)`;
   }
   onButtonClick(event:string){
     this.onCardButtonClick.emit({name:event, asset: this.model});

@@ -52,7 +52,7 @@
                 (onVisualizationChange)="onVisorTypeChange($event)"
                 [projectedButtonsTemplate]="[sellButton, lockButton]">
                 <ng-template #sellButton let-model="model">  
-                    <app-rounded-button [matMenuTriggerFor]="(model.isInGame ? null :payMenu)" 
+                    <app-rounded-button [matMenuTriggerFor]="(model.isInGame ? null :sellMenu)" 
                         [id]="'sell'"
                         [iconName]="'payment'"
                         [hoverColor]="'var(--payment)'"
@@ -60,7 +60,7 @@
                         [disabled]="loading || model.isInGame"
                         >
                     </app-rounded-button>
-                    <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
+                    <mat-menu #sellMenu="matMenu" yPosition="above" xPosition="after">
                         <mat-card class="menu-card" appearance="outlined">
                             <mat-card-header class="pay-menu-header">
                                 <mat-card-title class="collection-card-title">{{model.collection}}</mat-card-title>
@@ -68,9 +68,8 @@
                             </mat-card-header>
                             <mat-card-content class="payment-card-content"></mat-card-content>
                             <mat-card-actions class="flex jc-center">
-                                <!-- <button mat-stroked-button class="pay-btn" (click)="onSellClick(model)">SELL</button> -->
                                  <app-squared-button  class="lock-menu-btn"
-                                        [text]="'PAY'",
+                                        [text]="'SELL'",
                                         [config]="squaredPayButtonConfig"
                                         (onClick)="onSellClick(model)">
                                     </app-squared-button>
