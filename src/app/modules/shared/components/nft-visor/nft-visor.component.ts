@@ -16,6 +16,7 @@ export class NftVisorComponent implements OnInit, OnChanges{
   @Input() projectedButtonsTemplate: TemplateRef<any>[] = [];
   @Input() skipButtonsPosition:string = 'center';
   @Input() visualization: string = 'row'; // | grid;
+  @Input() onDisableUnfocused!: EventEmitter<AssetCardButtonState>;
   @Input() onCardBtnChange!: EventEmitter<AssetCardButtonState>;
   @Output() onCardButtonClick: EventEmitter<NftCardClickAction> = new EventEmitter<NftCardClickAction>();
   @Output() onVisualizationChange: EventEmitter<string> = new EventEmitter<string>();

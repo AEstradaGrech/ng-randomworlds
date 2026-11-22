@@ -45,6 +45,7 @@
             [model]="model" 
             [cardButtons]="nftCardButtonsConfig"
             [disabled]="disabled"
+            [onDisableUnfocused]="onDisableUnfocused"
             [onBtnStateChange]="onCardBtnChange" 
             (onCardButtonClick)="onCardButtonClicked($event)">
             <ng-container class="projected-buttons">

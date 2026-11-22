@@ -23,6 +23,7 @@ export class NftCardComponent implements OnInit, OnChanges {
   @Input() model!: AssetModel | CatalogueModel;
   @Input() disabled: boolean = false;
   @Input() cardButtons: RoundedButtonConfig[] = [];
+  @Input() onDisableUnfocused!: EventEmitter<AssetCardButtonState>;
   @Input() onBtnStateChange!: EventEmitter<AssetCardButtonState>;
   @Output() onCardButtonClick: EventEmitter<NftCardClickAction> = new EventEmitter<NftCardClickAction>();
 
@@ -60,7 +61,22 @@ export class NftCardComponent implements OnInit, OnChanges {
           let cfg = this.cardButtons.find(x => x.id === change.buttonId);
           if(cfg){
             cfg.disabled = change.disabled;
+            cfg.withSpinner = change.loading ?? false;
           }
+        }
+      });
+    }
+    if(this.onDisableUnfocused){
+      this.onDisableUnfocused.subscribe(change => {
+        let modelId = this.model as AssetModel ? `${this.modelAs<AssetModel>().tokenId}` : this.modelAs<CatalogueModel>().name;
+        if(!(change.contract === this.model.contractAddress && change.tokenId === modelId)){
+          if(change.buttonId !== EAppButtons.ALL_BUTTONS){
+            let cfg = this.cardButtons.find(x => x.id === change.buttonId);
+            if(cfg){
+              cfg.disabled = change.disabled;
+            }
+          }
+          else this.cardButtons.forEach(cfg => cfg.disabled = change.disabled);
         }
       });
     }

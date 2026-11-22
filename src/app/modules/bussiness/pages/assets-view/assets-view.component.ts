@@ -55,6 +55,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public selectedContractAddress = signal<string>('');
   private _visorType:string = 'row';
   private _didInit: boolean = false;
+  public onDisableUnfocused: EventEmitter<AssetCardButtonState> = new EventEmitter<AssetCardButtonState>();
   public onCardBtnChange: EventEmitter<AssetCardButtonState> = new EventEmitter<AssetCardButtonState>();
   private onCollectionLoaded: EventEmitter<LoadedCollection> = new EventEmitter<LoadedCollection>();
   private _slideScrollState: ScrollState = {
@@ -286,6 +287,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     if(model.isInGame){
       this.loading.set(true);
       this.abandoning.set(true);
+      this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+      this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
       defer(() => this._smartContractsService.abandonGame(model.contractAddress, model.tokenId))
         .pipe(
           switchMap(res => { return this._questsService.getCurrentQuestFor(model.tokenId, model.contractAddress, model.ownerAddress)}),
@@ -295,6 +298,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
           finalize(() => {
             this.loading.set(false);
             this.abandoning.set(false);
+            this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+            this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
           }),
           takeUntilDestroyed(this._destroyRef)
         )

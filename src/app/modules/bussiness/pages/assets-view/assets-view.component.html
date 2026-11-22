@@ -46,7 +46,8 @@
             <app-nft-visor
                 [assets]=displayedAssets()
                 [nftCardButtonsConfig]="nftCardButtonsConfig"
-                [disabled]="loading()" 
+                [disabled]="loading()"
+                [onDisableUnfocused]="onDisableUnfocused" 
                 [onCardBtnChange]="onCardBtnChange"
                 (onCardButtonClick)="onCardButtonClicked($event)"
                 (onVisualizationChange)="onVisorTypeChange($event)"

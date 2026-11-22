@@ -75,5 +75,6 @@ export interface AssetCardButtonState {
   contract: string,
   tokenId: string,
   buttonId: EAppButtons,
-  disabled: boolean
+  disabled: boolean,
+  loading?: boolean
 }
