@@ -17,6 +17,7 @@ import { catchError, concatMap, defer, EMPTY, finalize, from, map, Observable, o
 import { runInZone } from 'src/app/core/utilities/runInZone.operator';
 import { SquaredButtonConfig } from 'src/app/modules/shared/components/squared-button/squared-button.model';
 import { appSquaredButton, squaredPayButtonConfig } from 'src/app/core/constants/configs/squared-button';
+import { QuestsService } from '../../services/quests.service';
 
 /**
  * Signature every handler passed to the #collectionsInfo template must satisfy,
@@ -39,7 +40,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   private _ngZone:NgZone = inject(NgZone);
   private _destroyRef:DestroyRef = inject(DestroyRef);
   private _authService: AuthService = inject(AuthService);
-  
+  private _questsService: QuestsService = inject(QuestsService);
   public squaredButtonConfig: SquaredButtonConfig = appSquaredButton;
   public squaredPayButtonConfig: SquaredButtonConfig = squaredPayButtonConfig;
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
@@ -47,7 +48,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public currentCollection!: AssetsCollection | null;
   public customCharsCollection!: CustomCharsCollection | null;
   public currentCollectionLogoUrl: any;
-  public loading:boolean = false;
+  public loading = signal<boolean>(false);
+  public abandoning = signal<boolean>(false);
   private _dialog:MatDialog = inject(MatDialog);
   public displayedAssets = signal<AssetModel[]>([]);
   public selectedContractAddress = signal<string>('');
@@ -282,12 +284,27 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
 
   public onUnlockAssetClick(model: AssetModel){
     if(model.isInGame){
-      this._smartContractsService.abandonGame(model.contractAddress, model.tokenId).then(res => {
-        if(res){
-          this._getAccountAssets();
-          this._notificationsService.openSnack(ESnackAlertType.WARN, 'Current game session abandoned', false, 3000);
-        }
-        else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while abandoning the game', false, 3000);
+      this.loading.set(true);
+      this.abandoning.set(true);
+      defer(() => this._smartContractsService.abandonGame(model.contractAddress, model.tokenId))
+        .pipe(
+          switchMap(res => { return this._questsService.getCurrentQuestFor(model.tokenId, model.contractAddress, model.ownerAddress)}),
+          switchMap(currentQuest => {
+            return this._questsService.setQuestStatus(currentQuest.id, 'ABANDONED');
+          }),
+          finalize(() => {
+            this.loading.set(false);
+            this.abandoning.set(false);
+          }),
+          takeUntilDestroyed(this._destroyRef)
+        )
+        .subscribe({
+          next: res => {
+            if(res){
+              this._getAccountAssets();
+              this._notificationsService.openSnack(ESnackAlertType.WARN, 'Current game session abandoned', false, 3000);
+            }
+        },error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while abandoning the game: ${error.message}`, false, 3000)
       });
     }
     else{
@@ -434,14 +451,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     }
   }
   public onCardSelected(asset: AssetModel){
-    console.log('-- on select click --', asset);
+    
     let data = localStorage.getItem('game-data');
     if(data){
       let gameData:GameData = JSON.parse(data);
-      // if(gameData.isLocked){
-      //   this._notificationsService.openSnack(ESnackAlertType.WARN, 'There is a game ongoing in another tab, cannot change the character', true);
-      //   return;
-      // }
       gameData.selectedCharacter = asset;
       localStorage.setItem('game-data', JSON.stringify(gameData));
       this._notificationsService.push(`Selected Character: ${asset.metadata.name}`);

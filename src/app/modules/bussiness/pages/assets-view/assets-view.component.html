@@ -46,7 +46,7 @@
             <app-nft-visor
                 [assets]=displayedAssets()
                 [nftCardButtonsConfig]="nftCardButtonsConfig"
-                [disabled]="loading" 
+                [disabled]="loading()" 
                 [onCardBtnChange]="onCardBtnChange"
                 (onCardButtonClick)="onCardButtonClicked($event)"
                 (onVisualizationChange)="onVisorTypeChange($event)"
@@ -57,7 +57,7 @@
                         [iconName]="'payment'"
                         [hoverColor]="'var(--payment)'"
                         [borderColor]="'var(--payment-border)'"
-                        [disabled]="loading || model.isInGame"
+                        [disabled]="loading() || model.isInGame"
                         >
                     </app-rounded-button>
                     <mat-menu #sellMenu="matMenu" yPosition="above" xPosition="after">
@@ -84,7 +84,8 @@
                             [iconName]="'lock'"
                             [hoverColor]="'red'"
                             [borderColor]="'red'"
-                            [disabled]="loading"
+                            [disabled]="loading()"
+                            [withSpinner]="abandoning()"
                             >
                         </app-rounded-button>
                         <mat-menu #unlockMenu="matMenu" yPosition="above" xPosition="after">
@@ -128,7 +129,7 @@
                             [iconName]="'skip_next'"
                             [hoverColor]="'var(--primary-btn-hover)'"
                             [borderColor]="'var(--primary-btn-border)'"
-                            [disabled]="loading"
+                            [disabled]="loading()"
                             (onClickEvent)="sidenav.open()">
                         </app-rounded-button>
                         <app-rounded-button 
@@ -138,7 +139,7 @@
                             [iconName]="'android'"
                             [hoverColor]="'var(--fuchsia)'"
                             [borderColor]="'var(--fuchsia)'"
-                            [disabled]="loading"
+                            [disabled]="loading()"
                             (onClickEvent)="onCreateCharacterClick()">
                         </app-rounded-button>
                     </div>
