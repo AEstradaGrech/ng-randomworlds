@@ -110,7 +110,6 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   }
 
   ngOnDestroy(): void {
-    console.log('DESTROY >> Clearing data')   
     this._clearGameData(this.hasFinishedQuest);
   }
 
@@ -567,7 +566,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       gameStatus: "READY",
       charname:'',
       selectedCharacter: clearSelectedChar ? undefined : currentData?.selectedCharacter,
-      character:undefined,
+      character: clearSelectedChar ? undefined : currentData?.character,
       isRandomCharacter:false,
       gameSessionId:'',
       userPreferences:undefined,
