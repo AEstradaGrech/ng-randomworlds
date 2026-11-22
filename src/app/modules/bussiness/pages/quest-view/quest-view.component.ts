@@ -71,17 +71,19 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   
   platformId: Object = inject(PLATFORM_ID);
 
+  private _finishedGameStatuses: string[] = ['COMPLETED', 'UNCERTAIN', 'FAILED'];
+  private _initialStates: string[] = ['READY', 'INITIALIZING', 'REINITIALIZING'];
   get hasGameOngoing():boolean{
     return this.gameData && this.gameData.gameSessionId !== '' && !this.hasFinishedQuest;
   }
   get hasFinishedQuest():boolean{
-    return this.gameData && this.gameData.gameStatus !== 'READY' && this.gameData.gameStatus !== 'INITIALIZING' && this.gameData.gameStatus !== 'ONGOING';
+    return this.gameData && this._finishedGameStatuses.includes(this.gameData.gameStatus);
   }
   get questFinishedIcon():string{
     return this.endgameIcon;
   }
   get didGameInit():boolean {
-    return this.gameData && this.gameData.gameStatus !== 'INITIALIZING';
+    return this.gameData && !this._initialStates.includes(this.gameData.gameStatus);
   }
 
   public collectionLogoImg(imgUrl: string):string{
@@ -374,6 +376,8 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     .pipe(
       tap(res => this.currentQuest = res),
       switchMap(res => {
+        if(res.intro)
+          this.gameData.intro = res.intro;
         if(this.currentQuest.blocks.length > 0){
           this.currentBlock = this.currentQuest.blocks.slice(-1)[0];
           this.sceneText = this.currentBlock.scene;
@@ -505,7 +509,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       this.gameData = gameData;
       this.charImageUrl = `url(${replaceEndpoint(this.gameData.selectedCharacter?.image ?? '', 'IPFS', 'ALCHEMY')}`;
     }  
-    this.btnTxt = this.hasGameOngoing ? "SUBMIT" : "BEGIN"
+    this.btnTxt = this.hasGameOngoing && this.didGameInit ? "SUBMIT" : "BEGIN";
     if(this.hasGameOngoing){
       this._setOngoingSession();
     }
@@ -527,7 +531,11 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this._service.saveNewQuest(req)
           .pipe(takeUntilDestroyed(this._destroyRef))
           .subscribe({
-            next: res => this.currentQuest = res,
+            next: res => {
+              this.currentQuest = res;
+              this.gameData.gameSessionId = this.currentQuest.id;
+              localStorage.setItem('game-data', JSON.stringify(gameData));
+            },
             error: error => this._notificationsService.openSnack(ESnackAlertType.WARN, error.message, true, 3000)            
           });
       }
@@ -554,7 +562,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     return true;
   }
 
-  private _clearGameData(clearSelectedChar: boolean = true){
+  private _clearGameData(isFullClear: boolean = true){
     // Skip on the SERVER only (no localStorage on Node). ngOnDestroy runs during
     // SSR teardown, so without this the server render crashes. Note the `!`:
     // the browser MUST run this, or the cross-tab lock never clears.
@@ -563,14 +571,14 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     let data: GameData ={
       username: currentData ? currentData.username : '',
       gameType: 'quest',
-      gameStatus: "READY",
+      gameStatus: isFullClear ? "READY" : currentData?.gameStatus ?? 'READY',
       charname:'',
-      selectedCharacter: clearSelectedChar ? undefined : currentData?.selectedCharacter,
-      character: clearSelectedChar ? undefined : currentData?.character,
+      selectedCharacter: isFullClear ? undefined : currentData?.selectedCharacter,
+      character: isFullClear ? undefined : currentData?.character,
       isRandomCharacter:false,
-      gameSessionId:'',
+      gameSessionId: isFullClear ? '' : currentData?.gameSessionId ?? '',
       userPreferences:undefined,
-      intro:"",
+      intro: isFullClear ? '' : currentData?.intro ?? '',
       currentBlock:0,
       isLocked: false
     }
