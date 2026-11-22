@@ -134,6 +134,9 @@ export class MarketplaceComponent extends BaseComponent implements OnInit{
         )
   }
 
+  public replacedEndpoint(url:string, current:string, newValue:string){
+    return replaceEndpoint(url, current, newValue);
+  }
   private _setupCatalogueModel(summary:CollectionSummary, model: string) : Observable<CatalogueModel>{
     return defer(() => this._smartContractsService.getModelInfo(model, summary.address))
     .pipe(

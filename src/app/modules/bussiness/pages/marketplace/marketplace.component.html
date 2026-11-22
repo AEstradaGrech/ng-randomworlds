@@ -17,11 +17,11 @@
             </app-rounded-button>
               <mat-menu #colMenu="matMenu" yPosition="above" xPosition="after">
                 <mat-card class="collection-card" appearance="outlined">
-                    <mat-card-header style="display: flex; justify-content: center; align-items: start; padding: 5px 0px 0;">
+                    <mat-card-header class=" flex jc-center collection-card-header">
                       <mat-card-title class="collection-card-title">{{model.collectionName}} ({{model.collectionSymbol}})</mat-card-title>
                       <mat-card-subtitle class="collection-card-subtitle">{{model.contractAddress}}</mat-card-subtitle>
                     </mat-card-header>
-                    <img mat-card-image [src]="model.collectionUrl" alt="Photo of a Shiba Inu">
+                    <img mat-card-image class="collection-menu-img" [src]="replacedEndpoint(model.collectionUrl, 'IPFS', 'ALCHEMY')" alt="Collection logo">
                     <mat-card-content class="collection-card-content">
                       <p>
                         {{model.collectionDescription}}

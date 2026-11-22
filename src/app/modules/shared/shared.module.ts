@@ -16,6 +16,7 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { ImageCardComponent } from './components/image-card/image-card.component';
 import { SlideshowComponent } from './components/slideshow/slideshow.component';
 import { SquaredButtonComponent } from './components/squared-button/squared-button.component';
+import { SafeUrlPipe } from './pipes/safe-url.pipe';
 
 @NgModule({
     //components, directives, and pipes that belong exclusively to this particular module
@@ -30,6 +31,7 @@ import { SquaredButtonComponent } from './components/squared-button/squared-butt
         TokenSelectorMatmenuComponent, 
         AppShellComponent, 
         SafeHtmlPipe,
+        SafeUrlPipe,
         ImageCardComponent,
         SlideshowComponent,
         SquaredButtonComponent
@@ -57,6 +59,7 @@ import { SquaredButtonComponent } from './components/squared-button/squared-butt
         TokenSelectorMatmenuComponent,
         AppShellComponent,
         SafeHtmlPipe,
+        SafeUrlPipe,
         ImageCardComponent,
         SlideshowComponent
     ],
