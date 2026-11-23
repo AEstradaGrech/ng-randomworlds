@@ -166,6 +166,11 @@ private getDefaultCurrencyTitle() : string {
   characterImages: Map<RandomWorldsCharacter, GenerateImageResponse[]> = new Map<RandomWorldsCharacter, GenerateImageResponse[]>();
 
   ngOnInit(): void {
+    if(!this.data.diffusionSettings) this._dialogRef.close();
+    
+    this.diffusionSettings = this.data.diffusionSettings;
+    
+    this._notificationsService.openSnack(ESnackAlertType.WARN, `Diffusion Settings: ${this.diffusionSettings.current_integration_settings.name}/${this.diffusionSettings.current_integration_settings.current_model}`, false, 3000);
     this.onContractLoaded.pipe(
       filter(() => !!this._connectedWallet),
       switchMap(address => 
@@ -248,13 +253,7 @@ private getDefaultCurrencyTitle() : string {
       age: new FormControl(''),
       isFemaleChar: new FormControl(this.isFemaleChar)
     })
-    this._imagesService.getProviderSettings().subscribe(res => {
-      if(res){
-        this.diffusionSettings = res;
-        this._notificationsService.openSnack(ESnackAlertType.WARN, `Diffusion Settings: ${this.diffusionSettings.current_integration_settings.name}/${this.diffusionSettings.current_integration_settings.current_model}`, false, 3000);
-      }
-      else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'DIFFUSION API SERVICE NOT AVAILABLE', false, 3000);
-    })
+    
     this._displayTabChangeAlerts("Ambiences");
   }
   

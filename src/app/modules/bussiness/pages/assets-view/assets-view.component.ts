@@ -18,6 +18,7 @@ import { runInZone } from 'src/app/core/utilities/runInZone.operator';
 import { SquaredButtonConfig } from 'src/app/modules/shared/components/squared-button/squared-button.model';
 import { appSquaredButton, squaredPayButtonConfig } from 'src/app/core/constants/configs/squared-button';
 import { QuestsService } from '../../services/quests.service';
+import { ImagesService } from '../../services/images.service';
 
 /**
  * Signature every handler passed to the #collectionsInfo template must satisfy,
@@ -41,6 +42,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   private _destroyRef:DestroyRef = inject(DestroyRef);
   private _authService: AuthService = inject(AuthService);
   private _questsService: QuestsService = inject(QuestsService);
+  private _imagesService: ImagesService = inject(ImagesService);
   public squaredButtonConfig: SquaredButtonConfig = appSquaredButton;
   public squaredPayButtonConfig: SquaredButtonConfig = squaredPayButtonConfig;
   public nftCardButtonsConfig: RoundedButtonConfig[] = defaultNftCardButtons;
@@ -423,19 +425,30 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     }
   }
   public onCreateCharacterClick(){
-    console.log('-- on create character click --');
-    this._dialog.open(CharacterCreatorDialogComponent, { 
-      data: {connectedWallet: this._smartContractsService.connectedWallet },
-      panelClass: ['char-creator-dialog-box']
-    })
-      .afterClosed()
-      .subscribe((result:TicketDto | string) => {
-        if(result && typeof result !== "string"){ 
-          this.selectCustomCharsCollection();
-          setTimeout(() => {this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created");}, 2000);
-          this._refreshCustomCharacters();
+    this._imagesService.getProviderSettings().subscribe({
+      next: res => {
+        if(res){
+          this._dialog.open(CharacterCreatorDialogComponent, { 
+            data: {
+              connectedWallet: this._smartContractsService.connectedWallet,
+              diffusionSettings: res
+            },
+            panelClass: ['char-creator-dialog-box']
+          })
+            .afterClosed()
+            .subscribe((result:TicketDto | string) => {
+              if(result && typeof result !== "string"){ 
+                this.selectCustomCharsCollection();
+                setTimeout(() => {this._notificationsService.openSnack(ESnackAlertType.SUCCESS, "On Character Created");}, 2000);
+                this._refreshCustomCharacters();
+              }
+              else this._notificationsService.push(result as string, 3000);
+          })
         }
-        else this._notificationsService.push(result as string, 3000);
+      },
+      error: error => {
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, 'DIFFUSION API SERVICE NOT AVAILABLE', false, 3000);
+      }
     })
   }
 
