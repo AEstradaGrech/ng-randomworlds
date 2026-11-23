@@ -19,7 +19,7 @@
             [hoverColor]="btn.hoverColor"
             [borderColor]="btn.borderColor"
             [withSpinner]="btn.withSpinner"
-            [disabled]="btn.disabled ?? false"
+            [disabled]="disabled || btn.disabled ?? false"
             (onClickEvent)="onButtonClick($event)">
             </app-rounded-button>
         }

@@ -49,7 +49,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public customCharsCollection!: CustomCharsCollection | null;
   public currentCollectionLogoUrl: any;
   public loading = signal<boolean>(false);
-  public abandoning = signal<boolean>(false);
+  public abandoning = signal<AssetModel | null>(null);
   private _dialog:MatDialog = inject(MatDialog);
   public displayedAssets = signal<AssetModel[]>([]);
   public selectedContractAddress = signal<string>('');
@@ -286,7 +286,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   public onUnlockAssetClick(model: AssetModel){
     if(model.isInGame){
       this.loading.set(true);
-      this.abandoning.set(true);
+      this.abandoning.set(model);
       this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
       this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
       defer(() => this._smartContractsService.abandonGame(model.contractAddress, model.tokenId))
@@ -297,7 +297,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
           }),
           finalize(() => {
             this.loading.set(false);
-            this.abandoning.set(false);
+            this.abandoning.set(null);
             this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
             this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
           }),

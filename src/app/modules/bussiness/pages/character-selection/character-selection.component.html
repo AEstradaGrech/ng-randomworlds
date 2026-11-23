@@ -12,10 +12,10 @@
                 [matMenuTriggerFor]="unlockMenu"
                 [id]="'unlock'"
                 [iconName]="'lock'"
-                [hoverColor]="'red'"
-                [borderColor]="'red'"
+                [hoverColor]="'var(--danger)'"
+                [borderColor]="'var(--danger)'"
                 [disabled]="loading()"
-                [withSpinner]="abandoning()">
+                [withSpinner]="abandoning() === model">
             </app-rounded-button>
             <mat-menu #unlockMenu="matMenu" yPosition="above" xPosition="after">
                 <mat-card class="menu-card" appearance="outlined">
