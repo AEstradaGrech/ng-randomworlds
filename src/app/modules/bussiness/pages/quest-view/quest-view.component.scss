@@ -156,8 +156,10 @@ cursor: pointer;
 border-color: currentColor;
 }
 
-.demo-row-is-clicked {
+.selected-row {
 font-weight: bold;
+background-color: var(--faded-ice);
+color: var(--fuchsia);
 }
 
 .choices-table{

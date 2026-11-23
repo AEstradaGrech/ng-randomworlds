@@ -26,6 +26,7 @@
     --primary-btn-border: var(--teal);
     --disabled-btn-color: rgb(63 58 58);
     --disabled-btn-bg-color: var(--faded-ice);
+    --secondary-text:#8eb8df;
 }
 .text-btn-colors{
     --mdc-outlined-button-outline-color: var(--fuchsia);
@@ -326,15 +327,15 @@ h2 {
   color: #242424;
 }
 
-.mat-mdc-table{
-  background-color: #ffffff !important;
-}
-.mat-mdc-header-row{
-  color:white !important;
-  background-color: rgb(155 215 13) !important;
+
+.mat-mdc-row{
+  background-color: var(--panel);
+  --mat-table-row-item-label-text-color: var(--teal);
+
 }
 .mat-mdc-row:nth-child(even){
-  background-color: #eeeeee;
+  background-color: var(--surface);
+  color: var(--secondary-text);
 }
 
 .cdk-overlay-pane:has(> .rw-alert--center){

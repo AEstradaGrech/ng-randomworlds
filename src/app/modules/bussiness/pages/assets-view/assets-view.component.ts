@@ -10,7 +10,7 @@ import { defaultNftCardButtons, replaceEndpoint } from 'src/app/core/constants/c
 import { CharacterCreatorDialogComponent } from './components/character-creator-dialog/character-creator-dialog.component';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
 import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/common-enums';
-import { TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
+import { RandomQuestDto, TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import Web3 from 'web3';
 import { catchError, concatMap, defer, EMPTY, finalize, from, map, Observable, switchMap } from 'rxjs';
@@ -293,10 +293,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
       defer(() => this._smartContractsService.abandonGame(model.contractAddress, model.tokenId))
         .pipe(
-          switchMap(res => { return this._questsService.getCurrentQuestFor(model.tokenId, model.contractAddress, model.ownerAddress)}),
-          switchMap(currentQuest => {
-            return this._questsService.setQuestStatus(currentQuest.id, 'ABANDONED');
-          }),
+          switchMap(res => this._abandonQuest(model.tokenId, model.contractAddress, model.ownerAddress)),
           finalize(() => {
             this.loading.set(false);
             this.abandoning.set(null);
@@ -319,6 +316,17 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     }
   }
 
+  private _abandonQuest(tokenId: number, address:string, owner:string) : Observable<RandomQuestDto>{
+    return this._questsService.getCurrentQuestFor(tokenId, address, owner)
+    .pipe(
+      switchMap(currentQuest => this._questsService.setQuestStatus(currentQuest.id, 'ABANDONED')),
+      catchError(error => { 
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, 
+          `An error has occured while abandoning the associated quest: ${error.message}`); 
+          return EMPTY;
+        })
+    )
+  }
   public onSlideViewClick(direction: string){
     if(this._slideScrollState.isScrolling) return;
     this._clickScrollState.direction = direction;

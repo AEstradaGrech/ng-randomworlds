@@ -60,7 +60,7 @@
                   </ng-container>
                 </div>
                 <div *ngIf="currentBlock && !isLoading" class="choices-table">
-                    <table mat-table [dataSource]="currentChoices" class="mat-elevation-z8 demo-table">
+                    <table mat-table [dataSource]="currentChoices" class="mat-elevation-z8">
                         <ng-container matColumnDef="choices">
                           <th mat-header-cell *matHeaderCellDef>Choices</th>
                           <td mat-cell *matCellDef="let element">{{element}}</td>
@@ -68,7 +68,7 @@
                         <tr
                             mat-row
                             (click)="selectedChoice = row"
-                            [class.demo-row-is-clicked]="selectedChoice === row"
+                            [class.selected-row]="selectedChoice === row"
                             *matRowDef="let row; columns: ['choices'];"
                         ></tr>
                       </table>

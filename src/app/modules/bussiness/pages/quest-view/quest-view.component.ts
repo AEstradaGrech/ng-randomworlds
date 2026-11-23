@@ -53,7 +53,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
   panelStateL = 'hidden';
   gameData!:GameData;
   currentQuest!:RandomQuestDto;
-  currentBlock!:QuestBlockDto | null;
+  currentBlock:QuestBlockDto | null = null;
   currentChoices: string[] = []; 
   selectedChoice!:string | null;
   endgameIcon:string = "mood"
