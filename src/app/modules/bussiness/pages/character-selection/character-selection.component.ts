@@ -16,6 +16,7 @@ import { QuestsService } from '../../services/quests.service';
 import { SquaredButtonConfig } from 'src/app/modules/shared/components/squared-button/squared-button.model';
 import { appSquaredButton } from 'src/app/core/constants/configs/squared-button';
 import { runInZone } from 'src/app/core/utilities/runInZone.operator';
+import { RandomQuestDto } from 'src/app/core/interfaces/business/prompting.interface';
 
 @Component({
   selector: 'app-character-selection',
@@ -165,10 +166,7 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
       this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
       defer(() => this._smartContractsService.abandonGame(model.contractAddress, model.tokenId))
         .pipe(
-          switchMap(res => { return this._questsService.getCurrentQuestFor(model.tokenId, model.contractAddress, model.ownerAddress)}),
-          switchMap(currentQuest => {
-            return this._questsService.setQuestStatus(currentQuest.id, 'ABANDONED');
-          }),
+          switchMap(res => this._abandonQuest$(model.tokenId, model.contractAddress, model.ownerAddress)),
           finalize(() => {
             this.abandoning.set(null);
             this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
@@ -194,6 +192,17 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
     }
   }
 
+  private _abandonQuest$(tokenId: number, address:string, owner:string) : Observable<RandomQuestDto>{
+    return this._questsService.getCurrentQuestFor(tokenId, address, owner)
+    .pipe(
+      switchMap(currentQuest => this._questsService.setQuestStatus(currentQuest.id, 'ABANDONED')),
+      catchError(error => { 
+        this._notificationsService.openSnack(ESnackAlertType.ERROR, 
+          `An error has occured while abandoning the associated quest: ${error.message}`); 
+          return EMPTY;
+        })
+    )
+  }
   public onViewCollectionClick(address:string){
     window.open(`https://sepolia.etherscan.io/token/${address}`, "_blank");
   }

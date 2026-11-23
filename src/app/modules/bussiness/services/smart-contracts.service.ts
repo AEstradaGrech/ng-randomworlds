@@ -118,11 +118,11 @@ export class SmartContractsService {
   public async abandonGame(collection:string, tokenId: number) : Promise<boolean>{
     let gameSession: any = GameSession(this.web3);
   
-    if(!gameSession) return false;
+    if(!gameSession) throw new Error('No game session contract found');
 
     let session = await this.getPlayerSession(collection, tokenId);
 
-    if(session.startedAt === 0) return false;
+    if(session.startedAt === 0) throw new Error('Game session is already finished');
 
     await gameSession.methods.abandon(collection, tokenId as number).send({from: this.connectedWallet });
 
