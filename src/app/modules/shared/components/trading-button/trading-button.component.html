@@ -1,0 +1,23 @@
+<app-rounded-button [matMenuTriggerFor]="tradeMenu" 
+    [id]="'trade'"
+    [iconName]="'payment'"
+    [hoverColor]="'var(--payment)'"
+    [borderColor]="'var(--payment-border)'"
+    [disabled]="disabled() || loading()"
+    [withSpinner]="loading()"
+    >
+</app-rounded-button>
+<mat-menu #tradeMenu="matMenu" yPosition="above" xPosition="after">
+    <app-token-selector-matmenu 
+    [buttonText]="buttonText()"
+    [title]="title()"
+    [withDefaultEth]="defaultEth()"
+    [textColor]="'var(--teal)'"
+    [selectorColor]="'var(--fuchsia)'"
+    [selectorHoverColor]="'var(--teal)'"
+    [buttonTextColor]="'var(--payment)'"
+    [buttonBorderColor]="'var(--payment-border)'"
+    (onTokenSelected)="onButtonClicked($event)"
+    >
+    </app-token-selector-matmenu>
+</mat-menu>

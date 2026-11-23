@@ -24,8 +24,8 @@
 }
 .pay-btn{
     width: 20%;
-    color: var(--btn-text-color);
-    border-color: var(--btn-border-color);
+    --mdc-outlined-button-label-text-color: var(--btn-text-color);
+    --mdc-outlined-button-outline-color: var(--btn-border-color);
 }
 .token-selector{
     --mdc-radio-selected-icon-color:var(--selector-color);

@@ -59,6 +59,7 @@ export interface RoundedButtonConfig {
     disabled?: boolean
 }
 
+
 export interface NftCardClickAction{
     name: string,
     asset: AssetModel | CatalogueModel

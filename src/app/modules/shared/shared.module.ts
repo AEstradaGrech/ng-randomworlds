@@ -18,6 +18,7 @@ import { SlideshowComponent } from './components/slideshow/slideshow.component';
 import { SquaredButtonComponent } from './components/squared-button/squared-button.component';
 import { SafeUrlPipe } from './pipes/safe-url.pipe';
 import { LockedCharButtonComponent } from './components/locked-char-button/locked-char-button.component';
+import { TradingButtonComponent } from './components/trading-button/trading-button.component';
 
 @NgModule({
     //components, directives, and pipes that belong exclusively to this particular module
@@ -36,7 +37,8 @@ import { LockedCharButtonComponent } from './components/locked-char-button/locke
         ImageCardComponent,
         SlideshowComponent,
         SquaredButtonComponent,
-        LockedCharButtonComponent
+        LockedCharButtonComponent,
+        TradingButtonComponent
     ],
     imports:[
         FormsModule, 
@@ -58,6 +60,7 @@ import { LockedCharButtonComponent } from './components/locked-char-button/locke
         RoundedButtonComponent,
         SquaredButtonComponent,
         LockedCharButtonComponent,
+        TradingButtonComponent,
         DragAndDropComponent,
         TokenSelectorMatmenuComponent,
         AppShellComponent,

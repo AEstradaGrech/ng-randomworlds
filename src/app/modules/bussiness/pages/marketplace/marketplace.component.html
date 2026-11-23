@@ -41,7 +41,11 @@
                     </mat-card-content>
                   </mat-card>
               </mat-menu>
-                <app-rounded-button [matMenuTriggerFor]="buyMenu" 
+              <app-trading-button
+              [loading]="loading"
+              (onButtonClick)="onPayClick(model)">
+              </app-trading-button>
+                <!-- <app-rounded-button [matMenuTriggerFor]="buyMenu" 
                     [id]="'buy'"
                     [iconName]="'payment'"
                     [hoverColor]="'var(--payment)'"
@@ -62,8 +66,8 @@
                   [buttonBorderColor]="'var(--payment-border)'"
                   (onTokenSelected)="onPayClick(model)"
                   >
-                  </app-token-selector-matmenu>
-                </mat-menu>
+                  </app-token-selector-matmenu> 
+                </mat-menu>-->
           </ng-container>
       </app-nft-card>
     }
