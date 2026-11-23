@@ -17,6 +17,7 @@
     [matBadge]="badgeValue" 
     [matBadgePosition]="badgeConfig.position"
     [matBadgeHidden]="hiddenBadge()"
+    [disabled]="disabled"
     [ngClass]="{'disabled-btn': disabled }">
     @if(disabled && withSpinner){
         <mat-spinner diameter="20"></mat-spinner>

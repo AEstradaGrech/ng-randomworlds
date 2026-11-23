@@ -42,32 +42,10 @@
                   </mat-card>
               </mat-menu>
               <app-trading-button
+              [disabled]="model.mints >= model.maxMints"
               [loading]="loading"
               (onButtonClick)="onPayClick(model)">
               </app-trading-button>
-                <!-- <app-rounded-button [matMenuTriggerFor]="buyMenu" 
-                    [id]="'buy'"
-                    [iconName]="'payment'"
-                    [hoverColor]="'var(--payment)'"
-                    [borderColor]="'var(--payment-border)'"
-                    [disabled]="loading"
-                    [withSpinner]="loading"
-                    >
-                </app-rounded-button>
-                <mat-menu #buyMenu="matMenu" yPosition="above" xPosition="after">
-                  <app-token-selector-matmenu 
-                  [buttonText]="'BUY'"
-                  [title]="'Pay with ETH'"
-                  [withDefaultEth]="true"
-                  [textColor]="'var(--teal)'"
-                  [selectorColor]="'var(--fuchsia)'"
-                  [selectorHoverColor]="'var(--teal)'"
-                  [buttonTextColor]="'var(--payment)'"
-                  [buttonBorderColor]="'var(--payment-border)'"
-                  (onTokenSelected)="onPayClick(model)"
-                  >
-                  </app-token-selector-matmenu> 
-                </mat-menu>-->
           </ng-container>
       </app-nft-card>
     }
