@@ -52,7 +52,20 @@
             [disabled]="isMinting()"
             (click)="$event.stopPropagation();onSkipImage('left')">
           </app-rounded-button>
-          <app-rounded-button [matMenuTriggerFor]="(currentImage() ? payMenu : null)"
+          <app-trading-button
+            [buttonText]="'MINT'"
+            [title]="tokenSelectorTitle()"
+            [menuTokens]="availableTokens()"
+            [defaultEth]="false"
+            [disabled]="!currentImage() || isMinting()"
+            [badgeValue]="availablePurchases()"
+            [matTooltip]="'Mint the current image & profile'"
+            [matTooltipPosition]="'above'" 
+            [size]="'35px'"
+            (onTokenChange)="onSelectedTokenChange($event)",
+            (onButtonClick)="onSelectedTokenPay($event)">
+          </app-trading-button>
+          <!-- <app-rounded-button [matMenuTriggerFor]="(currentImage() ? payMenu : null)"
             style="margin-right:13px"
             matTooltip="Mint the current image & profile"
             [matTooltipPosition]="'above'" 
@@ -79,7 +92,7 @@
             (onTokenSelected)="onSelectedTokenPay($event)"
             >
             </app-token-selector-matmenu>
-          </mat-menu>
+          </mat-menu> -->
           <app-rounded-button *ngIf="profileImagesCount() > 0"
             style="margin-right:13px"
             [id]="'skip_img_r'"

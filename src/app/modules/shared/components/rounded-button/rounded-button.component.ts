@@ -8,10 +8,6 @@ import { defaultButtonBadge } from 'src/app/core/constants/configs/nft-card';
   styleUrl: './rounded-button.component.scss'
 })
 export class RoundedButtonComponent implements OnInit, OnChanges {
-  ngOnChanges(changes: SimpleChanges): void {
-    if(changes['badgeValue'])
-      this.hiddenBadge.set(changes['badgeValue'].currentValue  && changes['badgeValue'].currentValue > 0 ? false : true);
-  }
 
   @Input() id: string | undefined = undefined;
   @Input() iconName: string | undefined = undefined;
@@ -25,8 +21,8 @@ export class RoundedButtonComponent implements OnInit, OnChanges {
   @Input() borderColor: string = 'var(--primary-btn-border)';
   @Input() disabledColor: string = 'var(--disabled-btn-color)';
   @Input() disabledBgColor: string = 'var(--disabled-btn-bg-color)';
-  @Input() size: string = '40px';
-  @Input() margin: string = '5px';
+  @Input() size: string | undefined = '40px';
+  @Input() margin: string | undefined = '5px';
   @Output() onClickEvent: EventEmitter<string> = new EventEmitter<string>();
   @Output() onMousedownEvent: EventEmitter<string> = new EventEmitter<string>();
   @Output() onMouseupEvent: EventEmitter<string> = new EventEmitter<string>();
@@ -37,8 +33,8 @@ export class RoundedButtonComponent implements OnInit, OnChanges {
 
   public get iconSize() : string{
     let pixelSize: string = '20px';
-    if(this.size.includes('px')){
-      let value = parseFloat(this.size.split('px')[0]) * 0.5;
+    if(this.size?.includes('px')){
+      let value = parseFloat(this.size?.split('px')[0]) * 0.5;
       pixelSize = `${value}px`;
     }
     return pixelSize;
@@ -54,6 +50,15 @@ export class RoundedButtonComponent implements OnInit, OnChanges {
       this.iconColor = this.hoverColor;
     if(!this.badgeConfig)
       this.badgeConfig = defaultButtonBadge;
+    if(!this.size)
+      this.size = '40px';
+    if(!this.margin)
+      this.margin = '5px';
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['badgeValue'])
+      this.hiddenBadge.set(changes['badgeValue'].currentValue  && changes['badgeValue'].currentValue > 0 ? false : true);
   }
 
   public onClick(): void {
