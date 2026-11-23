@@ -17,6 +17,7 @@ import { ImageCardComponent } from './components/image-card/image-card.component
 import { SlideshowComponent } from './components/slideshow/slideshow.component';
 import { SquaredButtonComponent } from './components/squared-button/squared-button.component';
 import { SafeUrlPipe } from './pipes/safe-url.pipe';
+import { LockedCharButtonComponent } from './components/locked-char-button/locked-char-button.component';
 
 @NgModule({
     //components, directives, and pipes that belong exclusively to this particular module
@@ -34,7 +35,8 @@ import { SafeUrlPipe } from './pipes/safe-url.pipe';
         SafeUrlPipe,
         ImageCardComponent,
         SlideshowComponent,
-        SquaredButtonComponent
+        SquaredButtonComponent,
+        LockedCharButtonComponent
     ],
     imports:[
         FormsModule, 
@@ -55,6 +57,7 @@ import { SafeUrlPipe } from './pipes/safe-url.pipe';
         NftVisorComponent,
         RoundedButtonComponent,
         SquaredButtonComponent,
+        LockedCharButtonComponent,
         DragAndDropComponent,
         TokenSelectorMatmenuComponent,
         AppShellComponent,

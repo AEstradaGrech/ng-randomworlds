@@ -25,12 +25,6 @@
     align-items: start; 
     padding: 5px 5px;
 }
-.locked-menu-header{
-    display: flex; 
-    justify-content: center; 
-    align-items: start; 
-    padding: 5px 5px;
-}
 .collection-card-title{
     color:var(--teal);
     font-size: 16px;
@@ -42,19 +36,6 @@
     color: var(--fuchsia);
     font-weight: 100;
     font-size: 10px;
-}
-.lockedchar-card-content{
-    margin: 5px 2px 5px 2px;
-    color: var(--primary-color);
-    font-weight: 200;
-    font-size: 14px;
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    h5 {
-        display: flex;
-        justify-content: center;
-    }
 }
 
 .sidenav-div{
@@ -143,14 +124,6 @@
     background-color: var(--surface);
   }
 
-.locked-char-actions{
-    display: flex; 
-    justify-content: center;
-}
-
-.lock-menu-btn{
-    margin: 0px 5px;
-}
 
 .menu-card{
     margin: 0px 5px;
