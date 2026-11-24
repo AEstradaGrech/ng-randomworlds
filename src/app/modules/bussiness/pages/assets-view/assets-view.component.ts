@@ -293,7 +293,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
       defer(() => this._smartContractsService.abandonGame(model.contractAddress, model.tokenId))
         .pipe(
-          switchMap(res => this._abandonQuest(model.tokenId, model.contractAddress, model.ownerAddress)),
+          switchMap(res => this._abandonQuest$(model.tokenId, model.contractAddress, model.ownerAddress)),
           finalize(() => {
             this.loading.set(false);
             this.abandoning.set(null);
@@ -316,7 +316,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     }
   }
 
-  private _abandonQuest(tokenId: number, address:string, owner:string) : Observable<RandomQuestDto>{
+  private _abandonQuest$(tokenId: number, address:string, owner:string) : Observable<RandomQuestDto>{
     return this._questsService.getCurrentQuestFor(tokenId, address, owner)
     .pipe(
       switchMap(currentQuest => this._questsService.setQuestStatus(currentQuest.id, 'ABANDONED')),

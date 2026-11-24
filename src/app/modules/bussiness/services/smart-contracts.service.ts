@@ -87,9 +87,6 @@ export class SmartContractsService {
 
     let session = await this.getPlayerSession(collection, tokenId);
 
-    console.log('STARTED SESSION',session);
-    let allFine =  session && checkAddresses(session.player, this.connectedWallet);
-    console.log('ALL FINE: ', allFine);
     return session && checkAddresses(session.player, this.connectedWallet);
   }
 
@@ -133,27 +130,30 @@ export class SmartContractsService {
 
 
   public async getPlayerSession(collection: string, tokenId: number) : Promise<PlayerGameSession>{
+    try{
+      let gameSession: any = GameSession(this.web3);
 
-    let gameSession: any = GameSession(this.web3);
+      let chainId: number = await this.authService.getConnectedChainId();
 
-    let chainId: number = await this.authService.getConnectedChainId();
+      let address: string = await gameSession._address;
 
-    let address: string = await gameSession._address;
+      let sessionKey = await gameSession.methods.getKey(collection, tokenId).call({ from: this.connectedWallet });
 
-    let sessionKey = await gameSession.methods.getKey(collection, tokenId).call({ from: this.connectedWallet });
+      let session = await gameSession.methods.sessions(sessionKey).call();
+      
+      let playerSession: PlayerGameSession = {
+        chainId: chainId,
+        contract: address,
+        player: session.player,
+        wager: parseInt(session.wager),
+        epoch: parseInt(session.epoch),
+        startedAt: parseInt(session.startedAt)
+      };
 
-    let session = await gameSession.methods.sessions(sessionKey).call();
-    
-    let playerSession: PlayerGameSession = {
-      chainId: chainId,
-      contract: address,
-      player: session.player,
-      wager: parseInt(session.wager),
-      epoch: parseInt(session.epoch),
-      startedAt: parseInt(session.startedAt)
-    };
-
-    return playerSession;
+      return playerSession;
+    }catch(error){
+      throw new Error(`An error has occured while retrieving the PlayerGameSession for wallet:${this.connectedWallet}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
   public getWordsContract() : any{
     return WordsCoin(this.web3);
@@ -181,7 +181,18 @@ export class SmartContractsService {
     }
     return 
   }
+  public async isCustomCharsContract(address:string) : Promise<boolean>{
+    try{
+      if(address.length === 0) throw new Error('Invalid address (empty)');
 
+      let immutableCols = await this.getCollectionsCatalogue();
+
+      return !immutableCols.includes(address); 
+
+    }catch(error){
+      throw new Error(`An error has occured while retrieving the Immutable Collections to compare: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
   public async getCollectionsCatalogue(): Promise<string[]>{
     return await this.immutableFactory.methods.getCatalogue().call();
   }

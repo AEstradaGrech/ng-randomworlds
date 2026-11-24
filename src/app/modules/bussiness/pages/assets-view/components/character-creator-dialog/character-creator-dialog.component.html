@@ -41,7 +41,7 @@
         @else{
           <img class="char-image" [src]="charImageUrl" alt="UnknownCharacter">
         }
-        <div style="display: flex; justify-content: center; align-items: center;">
+        <div class="flex jc-center ai-center">
           <app-rounded-button *ngIf="profileImagesCount() > 0"
             style="margin-right:13px"
             [id]="'skip_img_l'"
@@ -65,36 +65,8 @@
             (onTokenChange)="onSelectedTokenChange($event)",
             (onButtonClick)="onSelectedTokenPay($event)">
           </app-trading-button>
-          <!-- <app-rounded-button [matMenuTriggerFor]="(currentImage() ? payMenu : null)"
-            style="margin-right:13px"
-            matTooltip="Mint the current image & profile"
-            [matTooltipPosition]="'above'" 
-            [id]="'mint_nft'"
-            [iconName]="'payment'"
-            [size]="'35px'"
-            [hoverColor]="'var(--payment)'"
-            [borderColor]="'var(--payment-border)'"
-            [badgeValue]="availablePurchases()"
-            [disabled]="!currentImage() || isMinting()">
-          </app-rounded-button>
-          <mat-menu #payMenu="matMenu" yPosition="above" xPosition="after">
-            <app-token-selector-matmenu 
-            [buttonText]="'MINT'"
-            [title]="tokenSelectorTitle()"
-            [paymentTokens]="availableTokens()"
-            [withDefaultEth]="false"
-            [textColor]="'var(--teal)'"
-            [selectorColor]="'var(--fuchsia)'"
-            [selectorHoverColor]="'var(--teal)'"
-            [buttonTextColor]="'var(--payment)'"
-            [buttonBorderColor]="'var(--payment-border)'"
-            (onTokenChanged)="onSelectedTokenChange($event)",
-            (onTokenSelected)="onSelectedTokenPay($event)"
-            >
-            </app-token-selector-matmenu>
-          </mat-menu> -->
           <app-rounded-button *ngIf="profileImagesCount() > 0"
-            style="margin-right:13px"
+            style="margin-left:13px"
             [id]="'skip_img_r'"
             [iconName]="'keyboard_arrow_right'"
             [size]="'35px'"
@@ -131,18 +103,6 @@
                 [withSpinner]="isLoading && isGeneratingImage"
                 (click)="$event.stopPropagation();onGenerateImageClick()">
               </app-rounded-button>
-                <!-- <app-rounded-button
-                matTooltip="Enhance Image prompt from the currently displayed Profile"
-                [matTooltipPosition]="'above'" 
-                [id]="'save'"
-                [iconName]="'edit'"
-                [size]="'35px'"
-                [hoverColor]="'var(--primary-btn-hover)'"
-                [borderColor]="'var(--primary-btn-border)'"
-                [disabled]="!currentProfile() || isLoading || currentTicket()"
-                [withSpinner]="isLoading && isEnhancing"
-                (click)="$event.stopPropagation();onSaveDatasetChar()">
-              </app-rounded-button> -->
               <app-rounded-button
                 matTooltip="Enhance Image prompt from the currently displayed Profile"
                 [matTooltipPosition]="'above'" 

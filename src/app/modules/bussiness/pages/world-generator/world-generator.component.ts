@@ -8,7 +8,7 @@ import {MatChipInputEvent} from '@angular/material/chips';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import { GameData } from 'src/app/modules/shared/models/common-interfaces';
 import { QuestsService } from '../../services/quests.service';
-import { GeneratedQuest, GeneratedQuestData, QuestCharacter, QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
+import { GeneratedQuest, GeneratedQuestData, NewQuestRequest, QuestCharacter, QuestIntroRequest, QuestPreferences } from 'src/app/core/interfaces/business/prompting.interface';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { AssetModel, CharacterMetadata } from 'src/app/core/interfaces/business/smart-contract.interface';
 import { BaseComponent } from 'src/app/modules/shared/components/base.component';
@@ -19,6 +19,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { defer, finalize, Subject } from 'rxjs';
 import { SquaredButtonConfig } from 'src/app/modules/shared/components/squared-button/squared-button.model';
 import { appSquaredButton } from 'src/app/core/constants/configs/squared-button';
+import { checkAddresses } from 'src/app/core/utilities/addressComparator';
 
 @Component({
   selector: 'app-world-generator',
@@ -352,29 +353,96 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
   }
   public onPlayQuestClick(quest: any){
     if(quest.status === 'NOT_STARTED'){
-      this.isStartingGame.set(true);
-      this._gameData.character = quest.data.character;
-      this._gameData.intro = quest.data.intro;
-      this._gameData.userPreferences = quest.preferences;
-      localStorage.setItem('game-data', JSON.stringify(this._gameData));
-      this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Starting game');
-      defer(() => this._web3Service.startGame(this._gameData.selectedCharacter?.contractAddress ?? '', this._gameData.selectedCharacter?.tokenId ?? -1))
-        .pipe(
-          finalize(() => this.isStartingGame.set(false)),
-          takeUntilDestroyed(this._destroyRef)
-        )
-        .subscribe({
-          next:res => {
-            if(res)
-              this._router.navigateByUrl('randomworlds/game/quest');
-            
-            else this._notificationsService.openSnack(ESnackAlertType.WARN, 'An error has occured while starting the game: contract session address does not match the connected wallet') 
-          },
-          error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while starting the game: ${error.message}`)
-        });
+      const address = this._gameData.selectedCharacter?.contractAddress;
+      const tokenId = this._gameData.selectedCharacter?.tokenId;
+      if(address && tokenId){
+        this.isStartingGame.set(true);
+        this._gameData.character = quest.data.character;
+        this._gameData.intro = quest.data.intro;
+        this._gameData.userPreferences = quest.preferences;
+        localStorage.setItem('game-data', JSON.stringify(this._gameData));
+        this._notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Starting game');
+        defer(() => this._web3Service.startGame(address, tokenId))
+          .pipe(
+            finalize(() => this.isStartingGame.set(false)),
+            takeUntilDestroyed(this._destroyRef)
+          )
+          .subscribe({
+            next:res => {
+              if(!res) {
+                this._notificationsService.openSnack(ESnackAlertType.WARN, 'An error has occured while starting the game: attempting retry');
+                this._retrySession(address, tokenId, 3);
+              }
+              else this._router.navigateByUrl('randomworlds/game/quest'); 
+            },
+            error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while starting the game: ${error.message}`)
+          }); 
       }
-    
+      else this._notificationsService.openSnack(ESnackAlertType.WARN, 'Invalid contract address and / or char token ID'); 
+    }
     else this._router.navigateByUrl('randomworlds/game/quest');
+  }
+
+  private _retrySession(address:string, tokenId:number, retries: number = 1){
+    setTimeout(() => {
+      defer(() => this._web3Service.getPlayerSession(address, tokenId))
+      .pipe(
+        takeUntilDestroyed(this._destroyRef)
+      )
+      .subscribe({
+        next: session => {
+          if(checkAddresses(session.player, this._web3Service.connectedWallet ?? ''))
+            this._router.navigateByUrl('randomworlds/game/quest'); 
+          else{
+            let message = 'An error has occured while retrying the game start: Invalid Session Player & Contract.';
+            if(retries > 0){
+              this._retrySession(address, tokenId, --retries);
+              this._notificationsService.push(`${message} Retrying again`, 6000, 'bottom');
+            }
+            else {
+              this._notificationsService.openSnack(ESnackAlertType.ERROR, `${message} Try again later`);
+              this._saveFailedGame(address, tokenId);
+            };
+          }
+        },
+        error: error => {
+          if(retries > 0){
+            this._retrySession(address, tokenId, --retries);
+            this._notificationsService.openSnack(ESnackAlertType.WARN, `An error has occured while retrying the game start: ${error.message}. Retrying again`);
+          }
+          else this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while retrying the game start: ${error.message}. Cannot start the game`);
+        }
+      })
+    }, 3000);
+  }
+
+  private _saveFailedGame(address:string, tokenId:number){
+    if(this._gameData.character){
+      let req:NewQuestRequest = {
+      username:this._gameData.username,
+      charCollectionAddress:address,
+      charTokenId:`${tokenId}`,
+      character:this._gameData.character,
+      preferences:this._gameData.userPreferences as QuestPreferences,
+      intro:this._gameData.intro,
+      isRandomCharacter:this._gameData.isRandomCharacter,
+      maxBlocks:5
+    }
+    this._service.saveNewQuest(req)
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe({
+        next: res => {
+          this._gameData.gameSessionId = res.id;
+          localStorage.setItem('game-data', JSON.stringify(this._gameData));
+        },
+        error: error => this._notificationsService.openSnack(ESnackAlertType.WARN, error.message, true, 3000),
+        complete: () => this._router.navigateByUrl('randomworlds/home')            
+      });
+    }
+    else {
+      this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while saving the failed game: no QuestCharacter found in GameData. Abandon the game to restart`);
+      this._router.navigateByUrl('randomworlds/home'); 
+    }
   }
   public onReviewQuestClick(quest:any){
     console.log(quest);

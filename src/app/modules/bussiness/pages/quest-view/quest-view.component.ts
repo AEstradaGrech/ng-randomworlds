@@ -115,9 +115,35 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
     this._clearGameData(this.hasFinishedQuest);
   }
 
+  private _startNewGame$() : Observable<boolean>{
+    return defer(() => this._web3Service.isCustomCharsContract(this.gameData.selectedCharacter?.contractAddress ?? ''))
+      .pipe(
+        switchMap(res => this._web3Service.isAssetLocked(this.gameData.selectedCharacter?.contractAddress ?? '', res, this.gameData.selectedCharacter?.tokenId ?? -1)),
+        switchMap(isLocked => {
+          if(isLocked) throw new Error('Character is locked and recovering, choose another character to play');
+          return this._web3Service.startGame(this.gameData.selectedCharacter?.contractAddress ?? '', this.gameData.selectedCharacter?.tokenId ?? -1);
+        }),
+        finalize(() => this.isLoading = false)
+      );
+    }
+  
   public onSubmit(){
     if(this.btnTxt === 'PLAY AGAIN'){
-      this._setForNewGame();
+      this.isLoading = true;
+      this._startNewGame$().pipe(
+        finalize(() => this.isLoading = false),
+        takeUntilDestroyed(this._destroyRef)
+      )
+      .subscribe({
+        next: sessionStarted => {
+          if(sessionStarted){
+            this._setForNewGame();
+            this._setupGameData();
+          }
+          else this._notificationsService.openSnack(ESnackAlertType.ERROR, 'An error has occured while starting the Game Session');
+        },
+        error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while starting the NEW game: ${error.message}`)
+      })
       return;
     }
     if(this.currentBlock !== null && this.currentBlock.options.length === 0){
@@ -138,12 +164,14 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         })
       }
       else{
-        
         this._generateBlock$()
           .pipe(
             finalize(() => this.isLoading = false),
             takeUntilDestroyed(this._destroyRef)
           ).subscribe({
+            next: res => {
+              this.btnTxt = "SUBMIT";
+            },
             error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 3000)
           });
       }
@@ -168,7 +196,6 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         this.currentQuest.blocks.push(this.currentBlock);
       }
       this._handleQuest();
-      
     }
     else this._initializeQuest();
   }
@@ -235,11 +262,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
       takeUntilDestroyed(this._destroyRef)
     )
     .subscribe({
-      next: res => {
-        if(this.hasFinishedQuest){
-          this.btnTxt = 'PLAY AGAIN';
-        }
-      },
+      next: res => this.btnTxt = this.hasFinishedQuest ? 'PLAY AGAIN' : "SUBMIT",
       error: error => { 
         this.currentBlock = blockBackup;
         this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 3000);
