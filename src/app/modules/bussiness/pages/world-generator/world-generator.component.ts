@@ -416,7 +416,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
         },
         complete: () => this.isLoading.set(false)
       })
-    }, 3000);
+    }, 6000);
   }
 
   private _saveFailedGame(address:string, tokenId:number){

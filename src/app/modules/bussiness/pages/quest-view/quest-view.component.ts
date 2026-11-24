@@ -235,6 +235,9 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
           takeUntilDestroyed(this._destroyRef)
         )
         .subscribe({
+          next: res => {
+            this.btnTxt = "SUBMIT";
+          },
           error: error => {
             this._notificationsService.openSnack(ESnackAlertType.ERROR, error.message, true, 5000)
             this.gameData.gameStatus = 'READY';
@@ -617,7 +620,7 @@ export class QuestViewComponent extends BaseComponent implements OnInit, OnDestr
         },
         complete: () => this.isLoading = false
       })
-    }, 3000);
+    }, 6000);
   }
 
   private _shuffledFinalOptions(options: string[], selected: string[] = []) : string[]{
@@ -856,5 +859,6 @@ REMARKABLE COMMENT: ${data.comment}`
     this.btnTxt = "BEGIN";
     this.gameData.gameStatus = 'READY';
     this.gameData.currentBlock = 0;
+    localStorage.setItem('game-data', JSON.stringify(this.gameData));
   }
 }

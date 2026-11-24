@@ -178,6 +178,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     this.currentCollection = null;
     this.customCharsCollection = null;
     this.collections = [];
+    this.loading.set(true);
+    let immutableLoaded: boolean = false;
+    let customColsLoaded: boolean = false;
+    this.onDisableUnfocused
     defer(() => this._smartContractsService.getCollectionsCatalogue())
       .pipe(
         switchMap(cat => from(cat)),
@@ -196,14 +200,17 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
         next: collection => {
           if(collection){
             if (!this.currentCollection) {                           
-            this.currentCollection = collection;
-            this.currentCollectionLogoUrl = `url(${collection.summary.logoImage})`;
-          }
-          this.onCollectionLoaded.emit({address: collection.summary.address, isCustom: false, assets: collection.assets });
+              this.currentCollection = collection;
+              this.currentCollectionLogoUrl = `url(${collection.summary.logoImage})`;
+            }
+            this.onCollectionLoaded.emit({address: collection.summary.address, isCustom: false, assets: collection.assets });
           }
         },
         error: error => this._notificationsService.push(`An error has occured while loading the Immutable Collections catalogue: ${error.message}`),
         complete: () => {
+          immutableLoaded = true;
+          if(immutableLoaded && customColsLoaded)
+            this.loading.set(false);
           if(this.currentCollection){
             this._didInit = true;
             this.selectCollection(this.currentCollection);
@@ -223,6 +230,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
         )
         .subscribe({
           next: assets => {
+            customColsLoaded = true;
             if(this.customCharsCollection){
               this.customCharsCollection.assets = assets;
               this.onCollectionLoaded.emit({address: this.customCharsCollection.contractAddress, isCustom: false, assets: this.customCharsCollection.assets });
@@ -240,6 +248,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
           error: error => {
             this._notificationsService.push(`An error has occured while loading the Custom Characters data: ${error.message}`);
             this.customCharsCollection = null;
+          },
+          complete: () => {
+            if(immutableLoaded && customColsLoaded)
+              this.loading.set(false);
           }
         })
   }
@@ -295,7 +307,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
         .pipe(
           switchMap(res => this._abandonQuest$(model.tokenId, model.contractAddress, model.ownerAddress)),
           finalize(() => {
-            this.loading.set(false);
             this.abandoning.set(null);
             this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
             this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
@@ -308,7 +319,13 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
               this._getAccountAssets();
               this._notificationsService.openSnack(ESnackAlertType.WARN, 'Current game session abandoned', false, 3000);
             }
-        },error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while abandoning the game: ${error.message}`, false, 3000)
+          },error: error => {
+            this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while abandoning the game: ${error.message}`, false, 3000);
+            this.loading.set(false);
+            this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+            this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+            this._getAccountAssets();
+          }
       });
     }
     else{
@@ -321,10 +338,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     .pipe(
       switchMap(currentQuest => this._questsService.setQuestStatus(currentQuest.id, 'ABANDONED')),
       catchError(error => { 
-        this._notificationsService.openSnack(ESnackAlertType.ERROR, 
-          `An error has occured while abandoning the associated quest: ${error.message}`); 
-          return EMPTY;
-        })
+        throw new Error(`An error has occured while abandoning the associated quest: ${error.message}`); 
+      })
     )
   }
   public onSlideViewClick(direction: string){
