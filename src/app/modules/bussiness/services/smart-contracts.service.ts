@@ -87,6 +87,11 @@ export class SmartContractsService {
 
     let session = await this.getPlayerSession(collection, tokenId);
 
+    console.log('STARTED SESSION',session);
+    let allFine =  session && checkAddresses(session.player, this.connectedWallet);
+    console.log('ALL FINE: ', allFine);
+    if(!allFine)
+      console.log("START GAME FAILURE", session, this.connectedWallet);
     return session && checkAddresses(session.player, this.connectedWallet);
   }
 

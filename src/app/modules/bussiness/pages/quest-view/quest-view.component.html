@@ -75,7 +75,12 @@
                 </div>
             </mat-card-content>
             <mat-card-actions class="game-card-actions">
-              <button mat-stroked-button class="begin-btn text-btn-colors" (click)="onSubmit()" [disabled]="currentBlock && sceneText !== currentBlock.scene && !hasFinishedQuest">{{btnTxt}}</button>
+            <app-squared-button class="play-btn"
+                [text]="btnTxt",
+                [disable]="(currentBlock && sceneText !== currentBlock.scene && !hasFinishedQuest) || isLoading ? true : false"
+                [config]="squaredButtonConfig"
+                (onClick)="onSubmit()">
+              </app-squared-button>
             </mat-card-actions>
         </mat-card>
         
@@ -86,7 +91,8 @@
                     [config]="actionsBarConfig" 
                     [colorsConfig]="actionsBarColors"
                     [headerConfig]="actionsBarHeader"
-                    (onSelect)="onMenuSelect($event)"></app-side-bar>
+                    (onSelect)="onMenuSelect($event)">
+                </app-side-bar>
             </div>
             <div class="btn-slot">
                 <button mat-stroked-button class="expand-btn" (click)="onOpenBtnClick('right')">

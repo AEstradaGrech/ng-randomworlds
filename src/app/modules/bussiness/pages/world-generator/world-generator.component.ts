@@ -385,6 +385,7 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
 
   private _retrySession(address:string, tokenId:number, retries: number = 1){
     setTimeout(() => {
+      this.isLoading.set(true);
       defer(() => this._web3Service.getPlayerSession(address, tokenId))
       .pipe(
         takeUntilDestroyed(this._destroyRef)
@@ -406,12 +407,14 @@ export class WorldGeneratorComponent extends BaseComponent implements OnInit{
           }
         },
         error: error => {
+          let message ='An error has occured while retrying the game start';
           if(retries > 0){
             this._retrySession(address, tokenId, --retries);
-            this._notificationsService.openSnack(ESnackAlertType.WARN, `An error has occured while retrying the game start: ${error.message}. Retrying again`);
+            this._notificationsService.openSnack(ESnackAlertType.WARN, `${message}: ${error.message}. Retrying again`);
           }
-          else this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while retrying the game start: ${error.message}. Cannot start the game`);
-        }
+          else this._notificationsService.openSnack(ESnackAlertType.ERROR, `${message}: ${error.message}. Cannot start the game`);
+        },
+        complete: () => this.isLoading.set(false)
       })
     }, 3000);
   }
