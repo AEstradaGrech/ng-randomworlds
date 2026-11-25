@@ -112,10 +112,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   private _setAssetLockStatus$(data: LoadedCollection, asset: AssetModel) : Observable<AssetModel>{
     return defer(() => this._smartContractsService.isAssetLocked(data.address, data.isCustom, asset.tokenId))
       .pipe(
-        tap(isLocked => {
-          if(isLocked) 
-            this.onCardBtnChange.emit({buttonId: EAppButtons.SELECT, disabled: true, contract: asset.contractAddress, tokenId: `${asset.tokenId}`});
-        }),
         map(isLocked => {
           asset.isLocked = isLocked;
           return {...asset}

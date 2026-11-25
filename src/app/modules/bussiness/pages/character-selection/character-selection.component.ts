@@ -272,4 +272,9 @@ export class CharacterSelectionComponent extends BaseComponent implements OnInit
     }
     else this._notificationsService.push('No Game Data has been found in memory, go back to the home page')
   }
+
+  public onCharacterUnlocked(asset: AssetModel){
+    this._notificationsService.push(`Character ${asset.metadata.name} recovered!`);
+    this.onCardBtnChange.emit({buttonId: EAppButtons.SELECT, disabled: false, contract: asset.contractAddress, tokenId: `${asset.tokenId}`});
+  }
 }

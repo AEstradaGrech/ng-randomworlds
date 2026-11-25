@@ -13,7 +13,8 @@
                 [disabled]="loading()"
                 [loading]="abandoning() === model"
                 (onAbandonClick)="onUnlockAssetClick($event)"
-                (onContinueClick)="onSelectClick($event)">
+                (onContinueClick)="onSelectClick($event)"
+                (onCountdownFinish)="onCharacterUnlocked($event)">
             </app-locked-char-button>
         }
     </ng-template>
