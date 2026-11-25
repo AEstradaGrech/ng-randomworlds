@@ -24,10 +24,11 @@
                 <h5>Character is currently in game</h5>
             }
             @else{
-                <h5>Character is recovering. Locked until {{model().lockedUntil}}</h5>
+                <h5>Character is recovering. Locked until {{lockedUntil() | date: 'MMM d, HH:mm'}}</h5>
+                <span *ngIf="isLocked()"> Unlocks in: <span style="color: var(--danger)">{{unlocksIn()}}</span></span>
             }
         </mat-card-content>
-        <mat-card-actions class="locked-char-action">
+        <mat-card-actions class="locked-char-actions">
             <app-squared-button class="lock-menu-btn"
                 [text]="model().isInGame ? 'ABANDON' : 'UNLOCK'",
                 [danger]="true"

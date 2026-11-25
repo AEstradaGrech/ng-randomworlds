@@ -13,7 +13,7 @@ import { EAppButtons, ESnackAlertType } from 'src/app/modules/shared/models/comm
 import { RandomQuestDto, TicketDto } from 'src/app/core/interfaces/business/prompting.interface';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import Web3 from 'web3';
-import { catchError, concatMap, defer, EMPTY, finalize, from, map, Observable, switchMap } from 'rxjs';
+import { catchError, concatMap, defer, EMPTY, finalize, from, map, mergeMap, Observable, of, switchMap, tap, toArray } from 'rxjs';
 import { runInZone } from 'src/app/core/utilities/runInZone.operator';
 import { SquaredButtonConfig } from 'src/app/modules/shared/components/squared-button/squared-button.model';
 import { appSquaredButton, squaredPayButtonConfig } from 'src/app/core/constants/configs/squared-button';
@@ -102,29 +102,74 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       })
   }
 
+  private _setCollectionLockStatus$(data: LoadedCollection) : Observable<AssetModel>{
+    return of(data)
+      .pipe(
+        switchMap(data => from(data.assets)),
+        mergeMap(asset => this._setAssetLockStatus$(data, asset))
+      )
+  }
+  private _setAssetLockStatus$(data: LoadedCollection, asset: AssetModel) : Observable<AssetModel>{
+    return defer(() => this._smartContractsService.isAssetLocked(data.address, data.isCustom, asset.tokenId))
+      .pipe(
+        tap(isLocked => {
+          if(isLocked) 
+            this.onCardBtnChange.emit({buttonId: EAppButtons.SELECT, disabled: true, contract: asset.contractAddress, tokenId: `${asset.tokenId}`});
+        }),
+        map(isLocked => {
+          asset.isLocked = isLocked;
+          return {...asset}
+        }),
+        switchMap(asset => this._handleAssetLockData$(data, asset)),
+        catchError(error => {
+          this._notificationsService.push(`An error has occured while setting the lock data for asset ${asset.metadata.name}: ${error.message}`);
+          return EMPTY;
+        })
+      )
+  }
+  private _handleAssetLockData$(data:LoadedCollection, asset:AssetModel) : Observable<AssetModel>{
+    return asset.isLocked ? defer(() => this._smartContractsService.getPlayerSession(data.address, asset.tokenId))
+      .pipe(
+        tap(session => {
+          if(session.startedAt > 0)
+            asset.isInGame = true;
+        }),
+        switchMap(session => {
+          return defer(() => this._smartContractsService.isLockedUntil(data.address, data.isCustom, asset.tokenId))
+        }),
+        map(lockTime => {
+          asset.lockedUntil = Number(lockTime);
+          return asset;
+        }),
+        catchError(error => { throw new Error(error.message)})
+      ) : of(asset)
+  }
   ngOnInit(): void {
-  
     this.onCollectionLoaded.subscribe(data => {
-      if(data.assets.length === 0) return;
-      data.assets.forEach(asset => {
-        this._smartContractsService.isAssetLocked(data.address, data.isCustom, asset.tokenId)
-          .then(locked => {
-            asset.isLocked = locked;
-            if(locked){
-              //asset.isInGame = checkSession
-              this.onCardBtnChange.emit({buttonId: EAppButtons.SELECT, disabled: true, contract: asset.contractAddress, tokenId: `${asset.tokenId}`});
-              this._smartContractsService.getPlayerSession(data.address, asset.tokenId).then(session => {
-                console.log('-- on player session --', session);
-                if(session.startedAt > 0)
-                  asset.isInGame = true;
-              });
-              this._smartContractsService.isLockedUntil(data.address, data.isCustom, asset.tokenId)
-                .then(lockTime => {
-                  asset.lockedUntil = Number(lockTime);
-              });
+      this.loading.set(true);
+      this._setCollectionLockStatus$(data)
+        .pipe(
+          toArray(),
+          runInZone(this._ngZone),
+          takeUntilDestroyed(this._destroyRef)
+        ).subscribe({
+          next: assets => {
+            if(!data.isCustom){
+              let col = this.collections.find(c => c.summary.address === data.address);
+              if(col)
+                col.assets = [...assets];
+            }else {
+              if(this.customCharsCollection)
+                this.customCharsCollection.assets = [...assets];
             }
-          });
-      });
+          },
+          error: error => this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while setting the collection assets lock data for collection ${data.address}: ${error.message}`),
+          complete: () => {
+            this.loading.set(false);
+            //data.assets = [...data.assets];
+            
+          }
+        })
     });
     // takeUntilDestroyed: without it, every past visit to this route leaves a live
     // subscription. A stale, off-screen instance would then also run _getAccountAssets
