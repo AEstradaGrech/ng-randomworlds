@@ -156,8 +156,10 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
           next: assets => {
             if(!data.isCustom){
               let col = this.collections.find(c => c.summary.address === data.address);
-              if(col)
+              if(col){
                 col.assets = [...assets];
+                this.collections = [...this.collections.filter(c => c.summary.address === data.address), col];
+              }
             }else {
               if(this.customCharsCollection)
                 this.customCharsCollection.assets = [...assets];
@@ -278,7 +280,7 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
             customColsLoaded = true;
             if(this.customCharsCollection){
               this.customCharsCollection.assets = assets;
-              this.onCollectionLoaded.emit({address: this.customCharsCollection.contractAddress, isCustom: false, assets: this.customCharsCollection.assets });
+              this.onCollectionLoaded.emit({address: this.customCharsCollection.contractAddress, isCustom: true, assets: this.customCharsCollection.assets });
               if(this._visorType === 'grid')
                 this.onVisorTypeChange('grid');
               setTimeout(() => {

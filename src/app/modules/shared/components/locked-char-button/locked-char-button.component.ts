@@ -27,22 +27,23 @@ export class LockedCharButtonComponent  {
 
   lockedUntil = computed<Date | null>(() => {
     let unixLockDate = this.model().lockedUntil;
-    console.log('UNIX SIGNAL',unixLockDate);
-    console.log('LOCKED UNTIL', new Date(unixLockDate ?? 1* 1000));
-    //return new Date(1795631220 * 1000);
-    return unixLockDate ? new Date(unixLockDate) : new Date();
+    return unixLockDate ? new Date(unixLockDate * 1000) : new Date();
   });
 
   readonly remainingMs = computed(() =>{
     let releaseDate = this.lockedUntil();
+    console.log(releaseDate);
     return releaseDate ? Math.max(0, releaseDate.getTime() - this._clock.now()) : 0;
   })
 
-  isLocked = computed(() => this.remainingMs() ?? 0 > 0);
+  isLocked = computed(() => this.remainingMs() ?? (0 > 0));
 
   unlocksIn = computed(() =>{
-    const seconds = Math.ceil(this.remainingMs() ?? 0 / 1000);
-    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+    const s = Math.ceil(this.remainingMs() / 1000);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return h > 0 ? `${h}:${pad(m)}:${pad(s % 60)}` : `${m}:${pad(s % 60)}`;
   });
 
   
