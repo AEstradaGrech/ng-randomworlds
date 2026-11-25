@@ -13,10 +13,8 @@ export class NftCardComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['model']){  
       let cfg = this.cardButtons.find(x => x.id === EAppButtons.SELECT);
-      if(cfg){
-        cfg.disabled = changes['model'].currentValue.isInGame;
-        console.log('-- on btn disabled change --');
-      }
+      if(cfg)
+        cfg.disabled = changes['model'].currentValue.isLocked;
     }
   }
 

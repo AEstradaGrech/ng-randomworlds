@@ -555,5 +555,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
 
   public onCharacterUnlocked(asset: AssetModel){
     this._notificationsService.push(`Character ${asset.metadata.name} recovered!`);
+    this.onCardBtnChange.emit({buttonId: EAppButtons.SELECT, disabled: false, contract: asset.contractAddress, tokenId: `${asset.tokenId}`});
   }
 }
