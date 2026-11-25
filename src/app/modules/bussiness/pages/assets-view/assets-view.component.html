@@ -58,7 +58,7 @@
                         [iconName]="'payment'"
                         [hoverColor]="'var(--payment)'"
                         [borderColor]="'var(--payment-border)'"
-                        [disabled]="loading() || model.isInGame"
+                        [disabled]="loading() || model.isLocked"
                         >
                     </app-rounded-button>
                     <mat-menu #sellMenu="matMenu" yPosition="above" xPosition="after">
@@ -85,7 +85,8 @@
                             [disabled]="loading()"
                             [loading]="abandoning() === model"
                             (onAbandonClick)="onUnlockAssetClick($event)"
-                            (onContinueClick)="onCardSelected($event)">
+                            (onContinueClick)="onCardSelected($event)"
+                            (onCountdownFinish)="onCharacterUnlocked($event)">
                         </app-locked-char-button>
                     }
                 </ng-template>

@@ -552,4 +552,8 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
     }
     else this._notificationsService.push('No Game Data has been found in memory, go back to the home page')
   }
+
+  public onCharacterUnlocked(asset: AssetModel){
+    this._notificationsService.push(`Character ${asset.metadata.name} recovered!`);
+  }
 }
