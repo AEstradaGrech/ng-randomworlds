@@ -389,6 +389,28 @@ export class SmartContractsService {
     return walletNFTs;
   }
 
+  public async hasAssets(address:string | null = null) : Promise<boolean>{
+    const queriedAddress: string | null = address ?? this.connectedWallet;
+
+    if(!queriedAddress) throw new Error('No address to query found');
+
+    let addresses: string[] = await this.getCollectionsCatalogue();
+    console.log('WALLET NFT >> COLLECTIONS', addresses);
+    let customCollection = await this.getCustomCharsCatalogue();
+    if(customCollection)
+      addresses.push(customCollection.contractAddress);
+
+    console.log('WALLET NFT >> CUSTOM COLS', customCollection);
+    let checks: boolean[] = [];
+    for(let i = 0; i <addresses.length; i++){
+      let check = await this.hasCollectionAssets(queriedAddress, addresses[i]);
+      checks.push(check);
+    }
+    return checks.some(x => x === true);
+  }
+  public async hasCollectionAssets(address:string, collectionAddress:string) : Promise<any>{
+    return await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/nfts/${address}/collection-address/${collectionAddress}`));
+  }
   public async getWalletCollectionNFTs(address:string, collectionAddress:string) : Promise<any>{
     return await firstValueFrom(this.http.get<any>(`${this._baseUrl}/blockchain/wallet-nfts/${address}/collection-address/${collectionAddress}`));
   }

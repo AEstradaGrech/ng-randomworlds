@@ -350,7 +350,6 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
       defer(() => this._smartContractsService.abandonGame(model.contractAddress, model.tokenId))
         .pipe(
           switchMap(res => this._abandonQuest$(model.tokenId, model.contractAddress, model.ownerAddress)),
-          finalize(() => this._setButtonsOnUnlock(model, true)),
           takeUntilDestroyed(this._destroyRef)
         )
         .subscribe({

@@ -14,8 +14,7 @@ export const hasAssetsGuard: CanActivateFn = async(route, state) =>{
     }
     notificationsService.openSnack(ESnackAlertType.SUCCESS, 'Checking assets...');
     const smartContractsService = inject(SmartContractsService);
-    const assets = await smartContractsService.getWalletNFTs();
-    let canActivate = assets.length > 0;
+    let canActivate = await smartContractsService.hasAssets();
     if(!canActivate)
         notificationsService.openSnack(ESnackAlertType.WARN, 'You don\'t have any NFT to select. Buy one in the marketplace or generate a custom one');
     return canActivate;
