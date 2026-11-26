@@ -66,6 +66,25 @@ export class SmartContractsService {
       this.getCustomCharactersContract(contract).methods.lockedUntil(tokenId).call() :
       this.getCollectionContract(contract).methods.lockedUntil(tokenId).call();
   }
+
+  public async recoverCharacter(contract:string, tokenId: number) : Promise<boolean>{
+    if(!this.connectedWallet)
+      throw new Error('No connected wallet found');
+
+    let gameSession: any = GameSession(this.web3);
+    
+    if(!gameSession)
+      throw new Error('Unable to load the Game Session contract');
+
+    let recoveryFee = await gameSession.methods.recoveryFee().call();
+
+    await gameSession.methods.recoveryPayment(contract, tokenId).send({from:this.connectedWallet, value: BigInt(recoveryFee)});
+
+    let isCustomChar = await this.isCustomCharsContract(contract);
+
+    return await this.isAssetLocked(contract, isCustomChar, tokenId);
+  }
+
   public async startGame(collection:string, tokenId: number) : Promise<boolean>{
     
     if(!this.connectedWallet)

@@ -32,7 +32,6 @@ export class LockedCharButtonComponent  {
 
   readonly remainingMs = computed(() =>{
     let releaseDate = this.lockedUntil();
-    console.log(releaseDate);
     return releaseDate ? Math.max(0, releaseDate.getTime() - this._clock.now()) : 0;
   })
 

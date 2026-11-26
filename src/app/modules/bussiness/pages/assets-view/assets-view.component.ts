@@ -341,41 +341,60 @@ export class AssetsViewComponent extends BaseComponent implements OnInit, AfterV
   }
 
   public onUnlockAssetClick(model: AssetModel){
+    if(!model.isLocked){
+      this._notificationsService.openSnack(ESnackAlertType.WARN, `Character status is not marked as Locked...`);
+      return;
+    }
+    this._setButtonsOnUnlock(model, false);
     if(model.isInGame){
-      this.loading.set(true);
-      this.abandoning.set(model);
-      this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
-      this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: true, contract: model.contractAddress, tokenId: `${model.tokenId}`});
       defer(() => this._smartContractsService.abandonGame(model.contractAddress, model.tokenId))
         .pipe(
           switchMap(res => this._abandonQuest$(model.tokenId, model.contractAddress, model.ownerAddress)),
-          finalize(() => {
-            this.abandoning.set(null);
-            this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
-            this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
-          }),
+          finalize(() => this._setButtonsOnUnlock(model, true)),
           takeUntilDestroyed(this._destroyRef)
         )
         .subscribe({
           next: res => {
+            this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
             if(res){
               this._getAccountAssets();
               this._notificationsService.openSnack(ESnackAlertType.WARN, 'Current game session abandoned', false, 3000);
             }
-          },error: error => {
-            this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while abandoning the game: ${error.message}`, false, 3000);
-            this.loading.set(false);
-            this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
-            this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
-            this._getAccountAssets();
-          }
+          },
+          error: error => this._handleUnlockError(model, error)
       });
     }
     else{
-      //TODO payToUnlock
+      defer(() => this._smartContractsService.recoverCharacter(model.contractAddress, model.tokenId))
+      .pipe(
+        takeUntilDestroyed(this._destroyRef)
+      )
+      .subscribe({
+        next: isUnlocked => {
+          this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: false, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+          if(isUnlocked){
+            this.onCharacterUnlocked(model);
+          }
+          else this._notificationsService.openSnack(ESnackAlertType.WARN, `Response does not indicate that the character is unlocked but the transaction is submited, wait a few seconds and refresh the view`);
+          this._getAccountAssets();
+        },
+        error: error => this._handleUnlockError(model, error)
+      })
     }
   }
 
+  private _setButtonsOnUnlock(model:AssetModel, enable: boolean){
+    console.log("SETTING BUTTONS ON UNLOCK >> ENABLE:", enable);
+    this.abandoning.set(enable ? null : model);
+    this.loading.set(!enable);
+    this.onCardBtnChange.emit({buttonId: EAppButtons.VIEW, disabled: !enable, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+    this.onDisableUnfocused.emit({buttonId: EAppButtons.ALL_BUTTONS, disabled: !enable, contract: model.contractAddress, tokenId: `${model.tokenId}`});
+  }
+  private _handleUnlockError(model:AssetModel, error:any){
+    this._notificationsService.openSnack(ESnackAlertType.ERROR, `An error has occured while abandoning the game: ${error.message}`, false, 3000);
+    this._setButtonsOnUnlock(model, true);
+    this._getAccountAssets();
+  }
   private _abandonQuest$(tokenId: number, address:string, owner:string) : Observable<RandomQuestDto>{
     return this._questsService.getCurrentQuestFor(tokenId, address, owner)
     .pipe(
