@@ -1,0 +1,116 @@
+
+services:
+  ollama:
+    image: ollama/ollama:0.34.2
+    container_name: rw-ollama
+    ports:
+      - 11434:11434
+    volumes:
+      - C:\ollama-data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+  rw-mongo:
+    image: mongo:8
+    container_name: rw-db
+    ports:
+      - 127.0.0.1:27017:27017
+    volumes:
+      - rw-mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+  py-randomworlds:
+    image: pyrw:0.0.1
+    build:
+      context: ../py-adventuresapi
+      dockerfile: Dockerfile
+    pull_policy: build
+    container_name: rw-api
+    env_file:
+      - ../py-adventuresapi/.env
+    environment:
+      MONGO_URL: mongodb://rw-mongo:27017/
+      OLLAMA_BASE_URL: http://ollama:11434
+      REDIS_URL: redis://rw-redis:6379/0
+    ports:
+      - 9000:9000
+    depends_on:
+      rw-mongo:
+        condition: service_healthy
+      rw-redis:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    restart: unless-stopped
+  py-diffusion:
+    image: pydiff:0.0.1
+    build:
+      context: ../py-diffapi
+      dockerfile: Dockerfile
+    pull_policy: build
+    container_name: rw-diff
+    env_file:
+      - ../py-diffapi/.env
+    environment:
+      MONGO_URL: mongodb://rw-mongo:27017/
+    ports:
+      - 8080:8080
+    volumes:
+      - C:\rw-pydiff:/app/generated_images
+      - C:\hf-cache:/hf-cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    depends_on:
+      rw-mongo:
+        condition: service_healthy
+    restart: unless-stopped
+  ng-randomworlds:
+    image: ngrw:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_CONFIGURATION: production
+    pull_policy: build
+    container_name: rw-client
+    environment:
+      PORT: 5400
+    ports:
+      - 5400:5400
+    depends_on:
+      - py-randomworlds
+      - py-diffusion
+  rw-redis:
+    image: redis:8-alpine
+    container_name: rw-cache
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
+    ports:
+      - 127.0.0.1:6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+  
+volumes:
+  rw-mongo-data:

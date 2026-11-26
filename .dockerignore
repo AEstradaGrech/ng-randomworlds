@@ -1,0 +1,10 @@
+node_modules
+dist
+.angular
+.git
+.vscode
+.env
+*.md
+TODOs.txt
+Dockerfile
+docker-compose.yaml
